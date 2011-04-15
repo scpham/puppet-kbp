@@ -4,7 +4,8 @@ and actually start on those parts as well.
 
 Please keep in mind that we do not automatically update our repository on each
 change on our side, to give us some time in case of stupid mistakes (think
-passwords) to fix it. We do try to update regularly however.
+passwords) to fix it. We do try to update regularly however. Also, we only work
+with Debian Linux, so there's not cross-distro stuff in there. Sorry.
 
 If you have any questions or additions, feel free to send pull requests or
 create issues for this.
