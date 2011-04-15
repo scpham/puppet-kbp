@@ -29,6 +29,18 @@ class kbp-munin::client::apache {
 	}
 }
 
+class kbp-munin::client::puppetmaster {
+	include kbp-munin::client
+  munin::client::plugin { "puppet_client": 
+    script_path => "/usr/local/share/munin/plugins",
+    script      => "puppetmaster";
+  }
+
+  munin::client::plugin::config { "puppet_client":
+    content => "user root";
+  } 
+}
+
 class kbp-munin::server inherits munin::server {
 	include nagios::nsca
 
