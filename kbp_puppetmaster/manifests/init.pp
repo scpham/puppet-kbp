@@ -2,6 +2,7 @@ class kbp_puppetmaster {
 	include kbp-apache::passenger
 	include kbp_mysql::server
 	include kbp_vim::addon-manager
+  include kbp_munin::client
 
 	gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
 	gen_apt::source { "rabbitmq":
@@ -159,6 +160,15 @@ class kbp_puppetmaster {
 		content => "[mysqld]\nwait_timeout = 3600\n",
 		notify  => Service["mysql"];
 	}
+
+  munin::client::plugin { "puppet_client": 
+    script_path => "/usr/local/share/munin/plugins",
+    script      => "puppetmaster";
+  }
+
+  munin::client::plugin::config { "puppet_client":
+    content => "user root";
+  }
 	
 	apache::site { "puppetmaster":; }
 }
