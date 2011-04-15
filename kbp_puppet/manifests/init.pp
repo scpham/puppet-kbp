@@ -3,7 +3,7 @@ class kbp_puppet {
 
 	line { "Point to the new PM":
 		file    => "/etc/hosts",
-		ensure  => present,
+		ensure  => absent,
 		content => "85.10.218.243 puppet";
 	}
 }
