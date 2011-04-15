@@ -2,7 +2,7 @@ class kbp_puppetmaster {
 	include kbp-apache::passenger
 	include kbp_mysql::server
 	include kbp_vim::addon-manager
-  include kbp_munin::client
+	include kbp_munin::client
 
 	gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
 	gen_apt::source { "rabbitmq":
