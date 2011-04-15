@@ -1,4 +1,4 @@
-class kbp_puppetmaster_new {
+class kbp_puppetmaster {
 	include kbp-apache::passenger
 	include kbp_mysql::server
 	include kbp_vim::addon-manager
@@ -40,20 +40,20 @@ class kbp_puppetmaster_new {
 
 	kfile {
 		"/etc/puppet/puppet.conf":
-			source  => "kbp_puppetmaster_new/puppet.conf",
+			source  => "kbp_puppetmaster/puppet.conf",
 			require => Package["puppetmaster"];
 		"/etc/puppet/fileserver.conf":
-			source  => "kbp_puppetmaster_new/fileserver.conf",
+			source  => "kbp_puppetmaster/fileserver.conf",
 			require => Package["puppetmaster"];
 		"/etc/default/puppetmaster":
-			source => "kbp_puppetmaster_new/default/puppetmaster";
+			source => "kbp_puppetmaster/default/puppetmaster";
 		"/etc/default/puppetqd":
-			source => "kbp_puppetmaster_new/default/puppetqd";
+			source => "kbp_puppetmaster/default/puppetqd";
 		"/etc/rabbitmq/rabbitmq-env.conf":
-			source  => "kbp_puppetmaster_new/rabbitmq/rabbitmq-env.conf",
+			source  => "kbp_puppetmaster/rabbitmq/rabbitmq-env.conf",
 			require => Package["rabbitmq-server"];
 		"/etc/apache2/sites-available/puppetmaster":
-			source  => "kbp_puppetmaster_new/apache2/sites-available/puppetmaster",
+			source  => "kbp_puppetmaster/apache2/sites-available/puppetmaster",
 			notify  => Exec["reload-apache2"],
 			require => Package["apache2"];
 		"/usr/share/puppet":
@@ -67,7 +67,7 @@ class kbp_puppetmaster_new {
 		"/usr/share/puppet/rack/puppetmasterd/tmp":
 			ensure  => directory;
 		"/usr/share/puppet/rack/puppetmasterd/config.ru":
-			source  => "kbp_puppetmaster_new/config.ru",
+			source  => "kbp_puppetmaster/config.ru",
 			owner   => "puppet",
 			group   => "puppet";
 		"/var/lib/puppet/ssl/ca":
@@ -77,25 +77,25 @@ class kbp_puppetmaster_new {
 			mode    => 770,
 			require => Package["puppetmaster"];
 		"/var/lib/puppet/ssl/ca/ca_crl.pem":
-			source => "kbp_puppetmaster_new/ssl/ca/ca_crl.pem",
+			source => "kbp_puppetmaster/ssl/ca/ca_crl.pem",
 			owner  => "puppet",
 			group  => "puppet",
 			mode   => 664,
 			notify => Exec["reload-apache2"];
 		"/var/lib/puppet/ssl/ca/ca_crt.pem":
-			source => "kbp_puppetmaster_new/ssl/ca/ca_crt.pem",
+			source => "kbp_puppetmaster/ssl/ca/ca_crt.pem",
 			owner  => "puppet",
 			group  => "puppet",
 			mode   => 660,
 			notify => Exec["reload-apache2"];
 		"/var/lib/puppet/ssl/ca/ca_key.pem":
-			source => "kbp_puppetmaster_new/ssl/ca/ca_key.pem",
+			source => "kbp_puppetmaster/ssl/ca/ca_key.pem",
 			owner  => "puppet",
 			group  => "puppet",
 			mode   => 660,
 			notify => Exec["reload-apache2"];
 		"/var/lib/puppet/ssl/ca/ca_pub.pem":
-			source => "kbp_puppetmaster_new/ssl/ca/ca_pub.pem",
+			source => "kbp_puppetmaster/ssl/ca/ca_pub.pem",
 			owner  => "puppet",
 			group  => "puppet",
 			mode   => 640,
@@ -107,21 +107,21 @@ class kbp_puppetmaster_new {
 			mode   => 770;
 		# TODO remove this one once the PM works properly
 		"/var/lib/puppet/ssl/ca/signed/icinga.kumina.nl.pem":
-			source => "kbp_puppetmaster_new/ssl/ca/signed/icinga.kumina.nl.pem";
+			source => "kbp_puppetmaster/ssl/ca/signed/icinga.kumina.nl.pem";
 		"/var/lib/puppet/ssl/private_keys/puppet.pem":
-			source => "kbp_puppetmaster_new/ssl/private_keys/puppet.pem",
+			source => "kbp_puppetmaster/ssl/private_keys/puppet.pem",
 			owner  => "puppet",
 			mode   => 600,
 			notify => Exec["reload-apache2"];
 		"/var/lib/puppet/ssl/certs/puppet.pem":
-			source => "kbp_puppetmaster_new/ssl/certs/puppet.pem",
+			source => "kbp_puppetmaster/ssl/certs/puppet.pem",
 			notify => Exec["reload-apache2"];
 		"/usr/lib/rabbitmq/lib/rabbitmq_server-2.4.1/plugins/amqp_client-2.4.1.ez":
-			source  => "kbp_puppetmaster_new/rabbitmq/plugins/amqp_client-2.4.1.ez",
+			source  => "kbp_puppetmaster/rabbitmq/plugins/amqp_client-2.4.1.ez",
 			require => Package["rabbitmq-server"],
 			notify  => Exec["reload-rabbitmq"];
 		"/usr/lib/rabbitmq/lib/rabbitmq_server-2.4.1/plugins/rabbit_stomp-2.4.1.ez":
-			source  => "kbp_puppetmaster_new/rabbitmq/plugins/rabbit_stomp-2.4.1.ez",
+			source  => "kbp_puppetmaster/rabbitmq/plugins/rabbit_stomp-2.4.1.ez",
 			require => Package["rabbitmq-server"],
 			notify  => Exec["reload-rabbitmq"];
 	}
