@@ -142,7 +142,7 @@ class kbp_puppetmaster {
 		"/srv/puppet":
 			ensure  => directory,
 			owner   => "puppet",
-			mode    => 770,
+			mode    => 2770,
 			require => Kpackage["puppetmaster"];
 	}
 
