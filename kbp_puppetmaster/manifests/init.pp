@@ -5,7 +5,9 @@ class kbp_puppetmaster {
         class { "kbp_trending::puppetmaster": 
             method => "munin";
         }
+
 	gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
+
 	gen_apt::source { "rabbitmq":
 		uri          => "http://www.rabbitmq.com/debian",
 		distribution => "testing",
@@ -15,7 +17,7 @@ class kbp_puppetmaster {
 	kpackage {
 		"puppetmaster":
 			ensure  => present,
-			require => File["/etc/default/puppetmaster","/etc/apt/preferences.d/puppetmaster"];
+			require => Kfile["/etc/default/puppetmaster","/etc/apt/preferences.d/puppetmaster"];
 		["rails","rabbitmq-server","vim-puppet","libmysql-ruby","puppetmaster-common"]:
 			ensure  => latest;
 	}
@@ -23,18 +25,18 @@ class kbp_puppetmaster {
 	service { "puppetqd":
 		hasstatus => true,
 		ensure    => running,
-		require   => Package["puppetmaster"];
+		require   => Kpackage["puppetmaster"];
 	}
 
 	exec {
 		"Install syntax highlighting for .pp files":
 			command => "/usr/bin/vim-addons -w install puppet;",
 			creates => "/var/lib/vim/addons/syntax/puppet.vim",
-			require => Package["vim-puppet","vim-addon-manager"];
+			require => Kpackage["vim-puppet","vim-addon-manager"];
 		"Install the Stomp gem":
 			command => "/usr/bin/gem install stomp",
 			creates => "/var/lib/gems/1.8/gems/stomp-1.1.8",
-			require => Package["rails"];
+			require => Kpackage["rails"];
 		"reload-rabbitmq":
 			command     => "/etc/init.d/rabbitmq-server reload",
 			refreshonly => true;
@@ -43,21 +45,21 @@ class kbp_puppetmaster {
 	kfile {
 		"/etc/puppet/puppet.conf":
 			source  => "kbp_puppetmaster/puppet.conf",
-			require => Package["puppetmaster"];
+			require => Kpackage["puppetmaster"];
 		"/etc/puppet/fileserver.conf":
 			source  => "kbp_puppetmaster/fileserver.conf",
-			require => Package["puppetmaster"];
+			require => Kpackage["puppetmaster"];
 		"/etc/default/puppetmaster":
 			source => "kbp_puppetmaster/default/puppetmaster";
 		"/etc/default/puppetqd":
 			source => "kbp_puppetmaster/default/puppetqd";
 		"/etc/rabbitmq/rabbitmq-env.conf":
 			source  => "kbp_puppetmaster/rabbitmq/rabbitmq-env.conf",
-			require => Package["rabbitmq-server"];
+			require => Kpackage["rabbitmq-server"];
 		"/etc/apache2/sites-available/puppetmaster":
 			source  => "kbp_puppetmaster/apache2/sites-available/puppetmaster",
 			notify  => Exec["reload-apache2"],
-			require => Package["apache2"];
+			require => Kpackage["apache2"];
 		"/usr/share/puppet":
 			ensure  => directory;
 		"/usr/share/puppet/rack":
@@ -77,7 +79,7 @@ class kbp_puppetmaster {
 			owner   => "puppet",
 			group   => "puppet",
 			mode    => 770,
-			require => Package["puppetmaster"];
+			require => Kpackage["puppetmaster"];
 		"/var/lib/puppet/ssl/ca/ca_crl.pem":
 			source => "kbp_puppetmaster/ssl/ca/ca_crl.pem",
 			owner  => "puppet",
@@ -120,11 +122,11 @@ class kbp_puppetmaster {
 			notify => Exec["reload-apache2"];
 		"/usr/lib/rabbitmq/lib/rabbitmq_server-2.4.1/plugins/amqp_client-2.4.1.ez":
 			source  => "kbp_puppetmaster/rabbitmq/plugins/amqp_client-2.4.1.ez",
-			require => Package["rabbitmq-server"],
+			require => Kpackage["rabbitmq-server"],
 			notify  => Exec["reload-rabbitmq"];
 		"/usr/lib/rabbitmq/lib/rabbitmq_server-2.4.1/plugins/rabbit_stomp-2.4.1.ez":
 			source  => "kbp_puppetmaster/rabbitmq/plugins/rabbit_stomp-2.4.1.ez",
-			require => Package["rabbitmq-server"],
+			require => Kpackage["rabbitmq-server"],
 			notify  => Exec["reload-rabbitmq"];
 	}
 
@@ -141,7 +143,7 @@ class kbp_puppetmaster {
 			ensure  => directory,
 			owner   => "puppet",
 			mode    => 770,
-			require => Package["puppetmaster"];
+			require => Kpackage["puppetmaster"];
 	}
 
 	# Enforce ownership and permissions
@@ -149,11 +151,11 @@ class kbp_puppetmaster {
 		"Directory permissions in /srv/puppet for group root":
 			dir     => "/srv/puppet",
 			acl     => "default:group:root:rwx",
-			require => File["/srv/puppet"];
+			require => Kfile["/srv/puppet"];
 		"Directory permissions in /srv/puppet for user puppet":
 			dir     => "/srv/puppet",
 			acl     => "default:user:puppet:r-x",
-			require => File["/srv/puppet"];
+			require => Kfile["/srv/puppet"];
 	}
 
 	# This is so puppetmaster doesn't congest MySQL connections
