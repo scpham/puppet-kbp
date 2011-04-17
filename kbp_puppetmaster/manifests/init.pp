@@ -216,21 +216,49 @@ define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet
 		priority => 10,
 	}
 
+	# Set the defaults for this resource
+	kbp_puppetmaster::set_main {
+		"vardir":
+			puppetmaster => $name,
+			configfile   => $configfile,
+			value        => $vardir;
+		"ssldir":
+			puppetmaster => $name,
+			configfile   => $configfile,
+			value        => $ssldir;
+		"rundir":
+			puppetmaster => $name,
+			configfile   => $configfile,
+			value        => $rundir;
+		"logdir":
+			puppetmaster => $name,
+			configfile   => $configfile,
+			value        => $logdir;
+		"factpath":
+			puppetmaster => $name,
+			configfile   => $configfile,
+			value        => $factpath;
+		"pluginsync":
+			puppetmaster => $name,
+			configfile   => $configfile,
+			value        => $pluginsync;
+	}
+
 	add_content { "Set header for agent section in puppet.conf":
 		target   => $configfile,
-		content  => "[agent]",
+		content  => "\n[agent]",
 		priority => 20,
 	}
 
 	add_content { "Set header for master section in puppet.conf":
 		target   => $configfile,
-		content  => "[master]",
+		content  => "\n[master]",
 		priority => 30,
 	}
 
 	add_content { "Set header for queue section in puppet.conf":
 		target   => $configfile,
-		content  => "[queue]",
+		content  => "\n[queue]",
 		priority => 40,
 	}
 
@@ -351,7 +379,7 @@ define kbp_puppetmaster::environment ($manifest, $manifestdir, $modulepath, $pup
 
 	add_content { "Add environment ${name} to puppetmaster ${puppetmaster} in file ${configfile}":
 		target   => "${configfile}",
-		content  => "[${name}]\nmanifestdir = ${manifestdir}\nmodulepath = ${modulepath}\nmanifest = ${manifest}\n\n",
+		content  => "\n[${name}]\nmanifestdir = ${manifestdir}\nmodulepath = ${modulepath}\nmanifest = ${manifest}\n\n",
 		priority => 60,
 	}
 }
