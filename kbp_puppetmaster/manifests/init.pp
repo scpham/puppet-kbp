@@ -297,7 +297,7 @@ define kbp_puppetmaster::set_main ($puppetmaster, $value, $configfile = "/etc/pu
 		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
 	}
 
-	if $var
+	if $var {
 		$real_var = $var
 	} else {
 		$real_var = $name
