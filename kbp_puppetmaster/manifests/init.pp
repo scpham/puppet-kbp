@@ -167,18 +167,17 @@ class kbp_puppetmaster {
 	apache::site { "puppetmaster":; }
 }
 
-define kbp_puppetmaster::config ($address = "*:8140") {
-	# This is created in kbp_puppetmaster class
-	$rackroot = "/usr/local/share/puppet/rack"
+define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet/puppet.conf", $debug = false,
+				$factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet", $pluginsync = true,
+				$rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
+				$ssldir = "/var/lib/puppet/ssl", $vardir = "/var/lib/puppet") {
+	include gen_puppet::concat
 	# This needs to be created within this define
 	$rackdir = "${rackroot}/puppetmaster-${name}"
 
 	# TODO Files that need to be customized
-	# puppet.conf
 	# fileserver.conf
 	# auth.conf
-	# config.ru
-	# apache config
 
 	# Create the rack directory tree.
 	kfile { ["${rackdir}","${rackdir}/public","${rackdir}/tmp"]:
@@ -203,5 +202,52 @@ define kbp_puppetmaster::config ($address = "*:8140") {
 		"/etc/apache2/vhost-additions/${name}/ssl.conf":
 			notify  => Exec["reload-apache"],
 			content => template("kbp_puppetmaster/apache2/vhost-additions/ssl.conf.erb");
+	}
+
+	concat { $configfile:
+		owner => "root",
+		group => "root",
+		mode  => 0640,
+	}
+
+	add_content { "Set header for main section in puppet.conf":
+		target   => $configfile,
+		content  => "[main]",
+		priority => 10,
+	}
+
+	# TODO Set the other headers and the defaults that are part of the defined type
+
+	concat { "${rackdir}/config.ru":
+		owner => "puppet",
+		group => "puppet",
+		mode  => 0640,
+	}
+
+	add_content { "Add header for config.ru":
+		target   => "${rackdir}/config.ru",
+		content  => '$0 = "master"',
+		priority => 10,
+	}
+
+	add_content { "Add footer for config.ru":
+		target   => "${rackdir}/config.ru",
+		content  => "ARGV << \"--rack\"\nrequire 'puppet/application/master'\nrun Puppet::Application[:master].run\n",
+		priority => 20,
+	}
+
+	if $debug {
+		add_content { "Enable debug mode in config.ru":
+			target  => "${rackdir}/config.ru",
+			content => "ARGV << \"--debug\"\n",
+		}
+	}
+}
+
+define kbp_puppetmaster::environment ($puppetmaster) {
+	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
+	# resource you want to add this to.
+	if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
+		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
 	}
 }
