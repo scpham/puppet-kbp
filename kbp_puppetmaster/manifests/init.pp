@@ -317,7 +317,7 @@ define kbp_puppetmaster::set_agent ($puppetmaster, $value, $configfile = "/etc/p
 		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
 	}
 
-	if $var
+	if $var {
 		$real_var = $var
 	} else {
 		$real_var = $name
@@ -337,7 +337,7 @@ define kbp_puppetmaster::set_master ($puppetmaster, $value, $configfile = "/etc/
 		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
 	}
 
-	if $var
+	if $var {
 		$real_var = $var
 	} else {
 		$real_var = $name
@@ -357,7 +357,7 @@ define kbp_puppetmaster::set_queue ($puppetmaster, $value, $configfile = "/etc/p
 		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
 	}
 
-	if $var
+	if $var {
 		$real_var = $var
 	} else {
 		$real_var = $name
