@@ -1,0 +1,13 @@
+SSLEngine on
+SSLProtocol -ALL +SSLv3 +TLSv1
+SSLCipherSuite ALL:!ADH:RC4+RSA:+HIGH:+MEDIUM:-LOW:-SSLv2:-EXP
+
+SSLCertificateKeyFile   <%= vardir %>/ssl/private_keys/<%= fqdn %>.pem
+SSLCertificateFile      <%= vardir %>/ssl/certs/<%= fqdn %>.pem
+SSLCACertificateFile    <%= vardir %>/ssl/ca/ca_crt.pem
+SSLCertificateChainFile <%= vardir %>/ssl/ca/ca_crt.pem
+SSLCARevocationFile     <%= vardir %>/ssl/ca/ca_crl.pem
+SSLVerifyClient optional
+SSLVerifyDepth  1
+SSLOptions +StdEnvVars
+

@@ -1,3 +1,10 @@
+<Directory <%= rackdir %>>
+	Options None
+	AllowOverride None
+	Order allow,deny
+	allow from all
+</Directory>
+
 <FilesMatch "^\.">
 	Order allow,deny
 	allow from all

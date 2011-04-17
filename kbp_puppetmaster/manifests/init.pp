@@ -197,6 +197,9 @@ define kbp_puppetmaster::config ($address = "*:8140") {
 		"/etc/apache2/vhost-additions/${name}/permissions.conf":
 			notify  => Exec["reload-apache"],
 			source  => "kbp_puppetmaster/apache2/vhost-additions/permissions.conf";
+		"/etc/apache2/vhost-additions/${name}/rack.conf":
+			notify  => Exec["reload-apache"],
+			source  => "kbp_puppetmaster/apache2/vhost-additions/rack.conf";
 		"/etc/apache2/vhost-additions/${name}/ssl.conf":
 			notify  => Exec["reload-apache"],
 			content => template("kbp_puppetmaster/apache2/vhost-additions/ssl.conf.erb");
