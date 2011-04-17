@@ -168,11 +168,23 @@ class kbp_puppetmaster {
 	apache::site { "puppetmaster":; }
 }
 
-define kbp_puppetmaster::config () {
+define kbp_puppetmaster::config ($address = "*:8140") {
 	# TODO Files that need to be customized
 	# puppet.conf
 	# fileserver.conf
 	# auth.conf
 	# config.ru
 	# apache config
+
+	# The apache config should determine where to listen on
+	apache::site_config { "${name}":
+		address => $address,
+	}
+
+	# The vhost-addition should set the documentroot, the puppet directory,
+	# the additional apache permissions and debugging options.
+	kfile {
+		"/etc/apache2/vhost-additions/${name}/permissions.conf":
+			source => "kbp_puppetmaster/apache2/vhost-additions/permissions.conf";
+	}
 }
