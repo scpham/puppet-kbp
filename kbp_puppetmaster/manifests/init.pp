@@ -2,9 +2,9 @@ class kbp_puppetmaster {
 	include kbp-apache::passenger
 	include kbp_mysql::server
 	include kbp_vim::addon-manager
-        class { "kbp_trending::puppetmaster": 
-            method => "munin";
-        }
+	class { "kbp_trending::puppetmaster": 
+		method => "munin";
+	}
 
 	gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
 
@@ -163,6 +163,6 @@ class kbp_puppetmaster {
 		content => "[mysqld]\nwait_timeout = 3600\n",
 		notify  => Service["mysql"];
 	}
-	
-  apache::site { "puppetmaster":; }
+
+	apache::site { "puppetmaster":; }
 }
