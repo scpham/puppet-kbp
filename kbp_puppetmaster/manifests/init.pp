@@ -216,6 +216,24 @@ define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet
 		priority => 10,
 	}
 
+	add_content { "Set header for agent section in puppet.conf":
+		target   => $configfile,
+		content  => "[agent]",
+		priority => 20,
+	}
+
+	add_content { "Set header for master section in puppet.conf":
+		target   => $configfile,
+		content  => "[master]",
+		priority => 30,
+	}
+
+	add_content { "Set header for queue section in puppet.conf":
+		target   => $configfile,
+		content  => "[queue]",
+		priority => 40,
+	}
+
 	# TODO Set the other headers and the defaults that are part of the defined type
 
 	concat { "${rackdir}/config.ru":
@@ -244,10 +262,96 @@ define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet
 	}
 }
 
-define kbp_puppetmaster::environment ($puppetmaster) {
+define kbp_puppetmaster::set_main ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
 	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
 	# resource you want to add this to.
 	if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
 		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
+	}
+
+	if $var
+		$real_var = $var
+	} else {
+		$real_var = $name
+	}
+
+	add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'main'":
+		target   => "${configfile}",
+		content  => "${real_var} = ${value}",
+		priority => 15,
+	}
+}
+
+define kbp_puppetmaster::set_agent ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
+	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
+	# resource you want to add this to.
+	if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
+		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
+	}
+
+	if $var
+		$real_var = $var
+	} else {
+		$real_var = $name
+	}
+
+	add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'agent'":
+		target   => "${configfile}",
+		content  => "${real_var} = ${value}",
+		priority => 25,
+	}
+}
+
+define kbp_puppetmaster::set_master ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
+	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
+	# resource you want to add this to.
+	if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
+		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
+	}
+
+	if $var
+		$real_var = $var
+	} else {
+		$real_var = $name
+	}
+
+	add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'master'":
+		target   => "${configfile}",
+		content  => "${real_var} = ${value}",
+		priority => 35,
+	}
+}
+
+define kbp_puppetmaster::set_queue ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
+	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
+	# resource you want to add this to.
+	if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
+		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
+	}
+
+	if $var
+		$real_var = $var
+	} else {
+		$real_var = $name
+	}
+
+	add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'queue'":
+		target   => "${configfile}",
+		content  => "${real_var} = ${value}",
+		priority => 45,
+	}
+}
+
+define kbp_puppetmaster::environment ($manifest, $manifestdir, $modulepath, $puppetmaster, $configfile = "/etc/puppet/puppet.conf") {
+	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
+	# resource you want to add this to.
+	if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
+		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
+	}
+
+	add_content { "Add environment ${name} to puppetmaster ${puppetmaster} in file ${configfile}":
+		target   => "${configfile}",
+		content  => "[${name}]\nmanifestdir = ${manifestdir}\nmodulepath = ${modulepath}\nmanifest = ${manifest}\n\n",
+		priority => 60,
 	}
 }
