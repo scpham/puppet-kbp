@@ -210,7 +210,7 @@ define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet
 		mode  => 0640,
 	}
 
-	add_content { "Set header for main section in puppet.conf":
+	gen_puppet::concat::add_content { "Set header for main section in puppet.conf":
 		target   => $configfile,
 		content  => "[main]",
 		priority => 10,
@@ -244,19 +244,19 @@ define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet
 			value        => $pluginsync;
 	}
 
-	add_content { "Set header for agent section in puppet.conf":
+	gen_puppet::concat::add_content { "Set header for agent section in puppet.conf":
 		target   => $configfile,
 		content  => "\n[agent]",
 		priority => 20,
 	}
 
-	add_content { "Set header for master section in puppet.conf":
+	gen_puppet::concat::add_content { "Set header for master section in puppet.conf":
 		target   => $configfile,
 		content  => "\n[master]",
 		priority => 30,
 	}
 
-	add_content { "Set header for queue section in puppet.conf":
+	gen_puppet::concat::add_content { "Set header for queue section in puppet.conf":
 		target   => $configfile,
 		content  => "\n[queue]",
 		priority => 40,
@@ -270,20 +270,20 @@ define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet
 		mode  => 0640,
 	}
 
-	add_content { "Add header for config.ru":
+	gen_puppet::concat::add_content { "Add header for config.ru":
 		target   => "${rackdir}/config.ru",
 		content  => '$0 = "master"',
 		priority => 10,
 	}
 
-	add_content { "Add footer for config.ru":
+	gen_puppet::concat::add_content { "Add footer for config.ru":
 		target   => "${rackdir}/config.ru",
 		content  => "ARGV << \"--rack\"\nrequire 'puppet/application/master'\nrun Puppet::Application[:master].run\n",
 		priority => 20,
 	}
 
 	if $debug {
-		add_content { "Enable debug mode in config.ru":
+		gen_puppet::concat::add_content { "Enable debug mode in config.ru":
 			target  => "${rackdir}/config.ru",
 			content => "ARGV << \"--debug\"\n",
 		}
@@ -303,7 +303,7 @@ define kbp_puppetmaster::set_main ($puppetmaster, $value, $configfile = "/etc/pu
 		$real_var = $name
 	}
 
-	add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'main'":
+	gen_puppet::concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'main'":
 		target   => "${configfile}",
 		content  => "${real_var} = ${value}",
 		priority => 15,
@@ -323,7 +323,7 @@ define kbp_puppetmaster::set_agent ($puppetmaster, $value, $configfile = "/etc/p
 		$real_var = $name
 	}
 
-	add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'agent'":
+	gen_puppet::concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'agent'":
 		target   => "${configfile}",
 		content  => "${real_var} = ${value}",
 		priority => 25,
@@ -343,7 +343,7 @@ define kbp_puppetmaster::set_master ($puppetmaster, $value, $configfile = "/etc/
 		$real_var = $name
 	}
 
-	add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'master'":
+	gen_puppet::concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'master'":
 		target   => "${configfile}",
 		content  => "${real_var} = ${value}",
 		priority => 35,
@@ -363,7 +363,7 @@ define kbp_puppetmaster::set_queue ($puppetmaster, $value, $configfile = "/etc/p
 		$real_var = $name
 	}
 
-	add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'queue'":
+	gen_puppet::concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'queue'":
 		target   => "${configfile}",
 		content  => "${real_var} = ${value}",
 		priority => 45,
@@ -377,7 +377,7 @@ define kbp_puppetmaster::environment ($manifest, $manifestdir, $modulepath, $pup
 		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
 	}
 
-	add_content { "Add environment ${name} to puppetmaster ${puppetmaster} in file ${configfile}":
+	gen_puppet::concat::add_content { "Add environment ${name} to puppetmaster ${puppetmaster} in file ${configfile}":
 		target   => "${configfile}",
 		content  => "\n[${name}]\nmanifestdir = ${manifestdir}\nmodulepath = ${modulepath}\nmanifest = ${manifest}\n\n",
 		priority => 60,
