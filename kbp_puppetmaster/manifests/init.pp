@@ -194,13 +194,13 @@ define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet
 	# the additional apache permissions and debugging options.
 	kfile {
 		"/etc/apache2/vhost-additions/${name}/permissions.conf":
-			notify  => Exec["reload-apache"],
+			notify  => Exec["reload-apache2"],
 			source  => "kbp_puppetmaster/apache2/vhost-additions/permissions.conf";
 		"/etc/apache2/vhost-additions/${name}/rack.conf":
-			notify  => Exec["reload-apache"],
+			notify  => Exec["reload-apache2"],
 			source  => "kbp_puppetmaster/apache2/vhost-additions/rack.conf";
 		"/etc/apache2/vhost-additions/${name}/ssl.conf":
-			notify  => Exec["reload-apache"],
+			notify  => Exec["reload-apache2"],
 			content => template("kbp_puppetmaster/apache2/vhost-additions/ssl.conf.erb");
 	}
 
