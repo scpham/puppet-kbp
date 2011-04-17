@@ -109,7 +109,7 @@ class kbp_puppetmaster {
 			owner  => "puppet",
 			group  => "puppet",
 			mode   => 770;
-		# TODO remove this one once the PM works properly
+		# TODO remove this one once the PM works properly, ticket #598
 		"/var/lib/puppet/ssl/ca/signed/icinga.kumina.nl.pem":
 			source => "kbp_puppetmaster/ssl/ca/signed/icinga.kumina.nl.pem";
 		"/var/lib/puppet/ssl/private_keys/puppet.pem":
@@ -159,10 +159,20 @@ class kbp_puppetmaster {
 	}
 
 	# This is so puppetmaster doesn't congest MySQL connections
+	# TODO Check if this is still necessary, ticket #597
 	kfile { "/etc/mysql/conf.d/waittimeout.cnf":
 		content => "[mysqld]\nwait_timeout = 3600\n",
 		notify  => Service["mysql"];
 	}
 
 	apache::site { "puppetmaster":; }
+}
+
+define kbp_puppetmaster::config () {
+	# TODO Files that need to be customized
+	# puppet.conf
+	# fileserver.conf
+	# auth.conf
+	# config.ru
+	# apache config
 }
