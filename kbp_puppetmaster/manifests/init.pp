@@ -60,6 +60,12 @@ class kbp_puppetmaster {
 			source  => "kbp_puppetmaster/apache2/sites-available/puppetmaster",
 			notify  => Exec["reload-apache2"],
 			require => Kpackage["apache2"];
+		# These are needed for the custom configuration
+		"/usr/local/share/puppet":
+			ensure  => directory;
+		"/usr/local/share/puppet/rack":
+			ensure  => directory;
+		# TODO Delete until end, once custom config is working
 		"/usr/share/puppet":
 			ensure  => directory;
 		"/usr/share/puppet/rack":
@@ -74,6 +80,7 @@ class kbp_puppetmaster {
 			source  => "kbp_puppetmaster/config.ru",
 			owner   => "puppet",
 			group   => "puppet";
+		# TODO End of deletion
 		"/var/lib/puppet/ssl/ca":
 			ensure  => directory,
 			owner   => "puppet",
@@ -169,6 +176,11 @@ class kbp_puppetmaster {
 }
 
 define kbp_puppetmaster::config ($address = "*:8140") {
+	# This is created in kbp_puppetmaster class
+	$rackroot = "/usr/local/share/puppet/rack"
+	# This needs to be created within this define
+	$rackdir = "${rackroot}/puppetmaster-${name}"
+
 	# TODO Files that need to be customized
 	# puppet.conf
 	# fileserver.conf
@@ -176,15 +188,25 @@ define kbp_puppetmaster::config ($address = "*:8140") {
 	# config.ru
 	# apache config
 
+	# Create the rack directory tree.
+	kfile { ["${rackdir}","${rackdir}/public","${rackdir}/tmp"]:
+		ensure => directory,
+	}
+
 	# The apache config should determine where to listen on
 	apache::site_config { "${name}":
-		address => $address,
+		address      => $address,
+		documentroot => "${rackdir}/public",
 	}
 
 	# The vhost-addition should set the documentroot, the puppet directory,
 	# the additional apache permissions and debugging options.
 	kfile {
 		"/etc/apache2/vhost-additions/${name}/permissions.conf":
-			source => "kbp_puppetmaster/apache2/vhost-additions/permissions.conf";
+			notify  => Exec["reload-apache"],
+			source  => "kbp_puppetmaster/apache2/vhost-additions/permissions.conf";
+		"/etc/apache2/vhost-additions/${name}/ssl.conf":
+			notify  => Exec["reload-apache"],
+			content => template("kbp_puppetmaster/apache2/vhost-additions/ssl.conf.erb");
 	}
 }
