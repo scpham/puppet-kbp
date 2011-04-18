@@ -40,7 +40,7 @@ class kbp-base {
 		}
 
 		if $ensure == "present" {
-			file { "/home/$username":
+			kfile { "/home/$username":
 				ensure => $ensure ? {
 					"present" => directory,
 					default   => absent,
@@ -51,52 +51,48 @@ class kbp-base {
 				require => [User["$username"], Group["kumina"]],
 			}
 
-			file { "/home/$username/.ssh":
+			kfile { "/home/$username/.ssh":
 				ensure 	=> $ensure,
-				source 	=> "puppet://puppet/kbp-base/home/$username/.ssh",
+				source 	=> "kbp-base/home/$username/.ssh",
 				mode 	=> 700,
 				owner 	=> "$username",
 				group 	=> "kumina",
 				require => File["/home/$username"],
 			}
 
-			file { "/home/$username/.ssh/authorized_keys":
+			kfile { "/home/$username/.ssh/authorized_keys":
 				ensure 	=> $ensure,
-				source 	=> "puppet://puppet/kbp-base/home/$username/.ssh/authorized_keys",
-				mode 	=> 644,
+				source 	=> "kbp-base/home/$username/.ssh/authorized_keys",
 				owner 	=> "$username",
 				group 	=> "kumina",
 				require => File["/home/$username"],
 			}
 
-			file { "/home/$username/.bashrc":
+			kfile { "/home/$username/.bashrc":
 				ensure 	=> $ensure,
 				content => template("kbp-base/home/$username/.bashrc"),
-				mode 	=> 644,
 				owner 	=> "$username",
 				group 	=> "kumina",
 				require => File["/home/$username"],
 			}
 
-			file { "/home/$username/.bash_profile":
+			kfile { "/home/$username/.bash_profile":
 				ensure 	=> $ensure,
-				source 	=> "puppet://puppet/kbp-base/home/$username/.bash_profile",
-				mode 	=> 644,
+				source 	=> "kbp-base/home/$username/.bash_profile",
 				owner 	=> "$username",
 				group 	=> "kumina",
 				require => File["/home/$username"],
 			}
 
-			file { "/home/$username/.bash_aliases":
+			kfile { "/home/$username/.bash_aliases":
 				ensure 	=> $ensure,
-				source 	=> "puppet://puppet/kbp-base/home/$username/.bash_aliases",
-				mode 	=> 644,
+				source 	=> "kbp-base/home/$username/.bash_aliases",
 				owner 	=> "$username",
 				group 	=> "kumina",
 				require => File["/home/$username"],
 			}
 
-			file { "/home/$username/.darcs":
+			kfile { "/home/$username/.darcs":
 				ensure => $ensure ? {
 					"present" => directory,
 					default   => absent,
@@ -107,7 +103,7 @@ class kbp-base {
 				require => File["/home/$username"],
 			}
 
-			file { "/home/$username/.tmp":
+			kfile { "/home/$username/.tmp":
 				ensure => $ensure ? {
 					"present" => directory,
 					default   => absent,
@@ -118,29 +114,26 @@ class kbp-base {
 				require => File["/home/$username"],
 			}
 
-			file { "/home/$username/.darcs/author":
+			kfile { "/home/$username/.darcs/author":
 				ensure => $ensure,
-				mode => 644,
 				content => "$fullname <$username@kumina.nl>\n",
 				group => "kumina",
 				require => File["/home/$username/.darcs"],
 			}
 
-			file { "/home/$username/.gitconfig":
+			kfile { "/home/$username/.gitconfig":
 				ensure => $ensure,
-				mode => 644,
 				content => "[user]\n\tname = $fullname\n\temail = $username@kumina.nl\n",
 				group => "kumina";
 			}
 
-			file { "/home/$username/.reportbugrc":
+			kfile { "/home/$username/.reportbugrc":
 				ensure => $ensure,
-				mode => 644,
 				content => "REPORTBUGEMAIL=$username@kumina.nl\n",
 				group => "kumina";
 			}
 		} else {
-			file { "/home/$username":
+			kfile { "/home/$username":
 				ensure  => absent,
 				force   => true,
 				recurse => true,
@@ -198,12 +191,9 @@ class kbp-base {
 		}
 	}
 
-	file {
+	kfile {
 		"/etc/motd.tail":
-			source 	=> "puppet://puppet/kbp-base/motd.tail",
-			mode 	=> 644,
-			owner 	=> "root",
-			group 	=> "root";
+			source 	=> "kbp-base/motd.tail";
 	}
 
 	exec {
