@@ -4,17 +4,11 @@ class kbp-debian::etch {
 class kbp-debian::lenny {
 	# Don't pull in Recommends or Suggests dependencies when installing
 	# packages with apt.
-	file {
+	kfile {
 		"/etc/apt/apt.conf.d/no-recommends":
-			content => "APT::Install-Recommends \"false\";\n",
-			owner => "root",
-			group => "root",
-			mode => 644;
+			content => "APT::Install-Recommends \"false\";\n";
 		"/etc/apt/apt.conf.d/no-suggests":
-			content => "APT::Install-Suggests \"false\";\n",
-			owner => "root",
-			group => "root",
-			mode => 644;
+			content => "APT::Install-Suggests \"false\";\n";
 	}
 
 	gen_apt::source {
@@ -102,24 +96,20 @@ class kbp-debian inherits kbp-base {
                 ensure => latest,
         }
 
-        file { "/etc/timezone":
-                owner => "root",
-                group => "root",
-                mode => 644,
-                content => "Europe/Amsterdam\n",
-                require => Package["tzdata"],
-        }
-
-        file { "/etc/localtime":
-                ensure => link,
-		target => "/usr/share/zoneinfo/Europe/Amsterdam",
-                require => Package["tzdata"],
+        kfile { 
+		"/etc/timezone":
+                	content => "Europe/Amsterdam\n",
+	                require => Package["tzdata"];
+        	"/etc/localtime":
+        	        ensure => link,
+			target => "/usr/share/zoneinfo/Europe/Amsterdam",
+	                require => Package["tzdata"];
         }
 
         # Ensure /tmp always has the correct permissions. (It's a common
         # mistake to forget to do a chmod 1777 /tmp when /tmp is moved to its
         # own filesystem.)
-        file { "/tmp":
+        kfile { "/tmp":
                 mode => 1777,
         }
 
@@ -143,22 +133,16 @@ class kbp-debian inherits kbp-base {
 #                require => Package["vim"]
 #        }
 
-        file { "/etc/skel/.bash_profile":
-                owner => "root",
-                group => "root",
-                mode => 644,
-                source => "puppet://puppet/kbp-debian/skel/bash_profile",
+        kfile { "/etc/skel/.bash_profile":
+		source => "kbp-debian/skel/bash_profile";
         }
 
         package { "adduser":
                 ensure => installed,
         }
 
-        file { "/etc/adduser.conf":
-                source => "puppet://puppet/kbp-debian/adduser.conf",
-                mode => 644,
-                owner => "root",
-                group => "root",
+        kfile { "/etc/adduser.conf":
+                source => "kbp-debian/adduser.conf",
                 require => Package["adduser"],
         }
 
@@ -169,22 +153,16 @@ class kbp-debian inherits kbp-base {
 			ensure => installed;
         }
 
-	file {
+	kfile {
 		"/var/cache/debconf/locales.preseed":
-			source => "puppet://puppet/kbp-debian/locales.preseed",
-			owner => "root",
-			group => "root",
-			mode => 644;
+			source => "kbp-debian/locales.preseed";
 	}
 
 	# Mail on upgrades with cron-apt
 	kpackage { "cron-apt":; }
 
-        file { "/etc/cron-apt/config":
-                source => "puppet://puppet/kbp-debian/cron-apt/config",
-                owner => "root",
-                group => "root",
-                mode => 644,
+        kfile { "/etc/cron-apt/config":
+                source => "kbp-debian/cron-apt/config",
                 require => Package["cron-apt"],
         }
 
@@ -222,10 +200,6 @@ class kbp-debian inherits kbp-base {
 		ensure => latest;
 	}
 
-#        kfile { "/etc/apt/preferences":
-#                content => template("kbp-debian/${lsbdistcodename}/apt/preferences");
-#        }
-
 	gen_apt::preference { "all":
 		package => "*",
 		repo    => "${lsbdistcodename}-kumina";
@@ -237,7 +211,7 @@ class kbp-debian inherits kbp-base {
 	}
 
 
-	file { "/var/lib/puppet":
+	kfile { "/var/lib/puppet":
 		ensure => directory,
 		owner => "puppet",
 		group => "puppet",

@@ -156,10 +156,10 @@ class kbp_puppetmaster {
 
 	# This is so puppetmaster doesn't congest MySQL connections
 	# TODO Check if this is still necessary, ticket #597
-	kfile { "/etc/mysql/conf.d/waittimeout.cnf":
-		content => "[mysqld]\nwait_timeout = 3600\n",
-		notify  => Service["mysql"];
-	}
+#	kfile { "/etc/mysql/conf.d/waittimeout.cnf":
+#		content => "[mysqld]\nwait_timeout = 3600\n",
+#		notify  => Service["mysql"];
+#	}
 
 	apache::site { "puppetmaster":; }
 }

@@ -7,11 +7,8 @@ class kbp-syslog::client {
 }
 
 class kbp-syslog::server::etch inherits syslog-ng::server {
-	file { "/etc/logrotate.d/syslog-ng":
-		source => "puppet://puppet/kbp-syslog/server/logrotate.d/syslog-ng",
-		owner => "root",
-		group => "root",
-		mode => 644,
+	kfile { "/etc/logrotate.d/syslog-ng":
+		source => "kbp-syslog/server/logrotate.d/syslog-ng";
 	}
 }
 
@@ -19,11 +16,8 @@ class kbp-syslog::client::etch inherits sysklogd::client {
 }
 
 class kbp-syslog::server::lenny inherits rsyslog::server {
-	file { "/etc/logrotate.d/rsyslog":
-		source => "puppet://puppet/kbp-syslog/server/logrotate.d/rsyslog",
-		owner => "root",
-		group => "root",
-		mode => 644,
+	kfile { "/etc/logrotate.d/rsyslog":
+		source => "kbp-syslog/server/logrotate.d/rsyslog";
 	}
 }
 
@@ -31,11 +25,8 @@ class kbp-syslog::client::lenny inherits rsyslog::client {
 }
 
 class kbp-syslog::server::squeeze inherits rsyslog::server {
-	file { "/etc/logrotate.d/rsyslog":
-		source => "puppet://puppet/kbp-syslog/server/logrotate.d/rsyslog",
-		owner => "root",
-		group => "root",
-		mode => 644,
+	kfile { "/etc/logrotate.d/rsyslog":
+		source => "kbp-syslog/server/logrotate.d/rsyslog";
 	}
 }
 
