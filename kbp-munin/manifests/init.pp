@@ -44,7 +44,7 @@ class kbp-munin::client::puppetmaster {
 class kbp-munin::server inherits munin::server {
 	include nagios::nsca
 
-	File["/etc/munin/munin.conf"] {
+	Kfile["/etc/munin/munin.conf"] {
 		source => "puppet://puppet/kbp-munin/server/munin.conf",
 	}
 
