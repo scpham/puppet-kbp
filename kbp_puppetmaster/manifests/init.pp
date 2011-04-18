@@ -168,10 +168,6 @@ class kbp_puppetmaster {
 		content => "[mysqld]\nwait_timeout = 3600\n",
 		notify  => Service["mysql"];
 	}
-<<<<<<< HEAD
-	
-	apache::site { "puppetmaster":; }
-=======
 
 	apache::site { "puppetmaster":; }
 }
