@@ -99,11 +99,11 @@ class kbp-debian inherits kbp-base {
         kfile { 
 		"/etc/timezone":
                 	content => "Europe/Amsterdam\n",
-	                require => Package["tzdata"],
+	                require => Package["tzdata"];
         	"/etc/localtime":
         	        ensure => link,
 			target => "/usr/share/zoneinfo/Europe/Amsterdam",
-	                require => Package["tzdata"],
+	                require => Package["tzdata"];
         }
 
         # Ensure /tmp always has the correct permissions. (It's a common
