@@ -116,14 +116,9 @@ class kbp_puppetmaster {
 			owner  => "puppet",
 			group  => "puppet",
 			mode   => 770;
-		"/var/lib/puppet/ssl/private_keys/puppet.pem":
-			source => "kbp_puppetmaster/ssl/private_keys/puppet.pem",
-			owner  => "puppet",
-			mode   => 600,
-			notify => Exec["reload-apache2"];
-		"/var/lib/puppet/ssl/certs/puppet.pem":
-			source => "kbp_puppetmaster/ssl/certs/puppet.pem",
-			notify => Exec["reload-apache2"];
+		# TODO remove this one once the PM works properly, ticket #598
+		"/var/lib/puppet/ssl/ca/signed/icinga.kumina.nl.pem":
+			source => "kbp_puppetmaster/ssl/ca/signed/icinga.kumina.nl.pem";
 		"/usr/lib/rabbitmq/lib/rabbitmq_server-2.4.1/plugins/amqp_client-2.4.1.ez":
 			source  => "kbp_puppetmaster/rabbitmq/plugins/amqp_client-2.4.1.ez",
 			require => Kpackage["rabbitmq-server"],
@@ -168,10 +163,6 @@ class kbp_puppetmaster {
 		content => "[mysqld]\nwait_timeout = 3600\n",
 		notify  => Service["mysql"];
 	}
-<<<<<<< HEAD
-	
-	apache::site { "puppetmaster":; }
-=======
 
 	apache::site { "puppetmaster":; }
 }
