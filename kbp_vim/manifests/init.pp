@@ -7,6 +7,7 @@ class kbp_vim {
 		"set list":;
 		"set listchars=tab:»˙,trail:•":;
 		"set hlsearch":;
+		"set ruler":;
 		"set backupdir=~/.tmp/":
 			require => Global_vim_setting['silent execute "!mkdir -p ~/.tmp"'];
 		"set directory=~/.tmp/":

@@ -1,6 +1,7 @@
 class kbp-base {
 	include gen_base
 	include grub
+	include sysctl
 	include kbp_acpi
 	include kbp_apt
 	include kbp_puppet
