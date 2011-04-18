@@ -132,7 +132,7 @@ class kbp_icinga::server {
 		"/etc/icinga/config/generic":
 			ensure  => directory;
 		"/etc/icinga/config/generic/notify_commands.cfg":
-			source  => "kbp_icinga/server/config/generic/notify_commands.cfg";
+			source  => "kbp_icinga/server/config/generic/notify_commands.cfg",
 			notify  => Exec["reload-icinga"];
 	}
 
