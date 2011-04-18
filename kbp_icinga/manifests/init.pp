@@ -120,11 +120,11 @@ class kbp_icinga::server {
 			require => Package["icinga"];
 		"/etc/icinga/cgi.cfg":
 			source  => "kbp_icinga/server/cgi.cfg",
-#			notify  => Exec["reload-icinga"],
+			notify  => Exec["reload-icinga"],
 			require => Package["icinga"];
 		"/etc/icinga/icinga.cfg":
 			source  => "kbp_icinga/server/icinga.cfg",
-#			notify  => Exec["reload-icinga"],
+			notify  => Exec["reload-icinga"],
 			require => Package["icinga"];
 		"/etc/icinga/config":
 			ensure  => directory,
@@ -133,7 +133,7 @@ class kbp_icinga::server {
 			ensure  => directory;
 		"/etc/icinga/config/generic/notify_commands.cfg":
 			source  => "kbp_icinga/server/config/generic/notify_commands.cfg";
-#			notify  => Exec["reload-icinga"];
+			notify  => Exec["reload-icinga"];
 	}
 
 	kbp_icinga::service {
@@ -286,7 +286,7 @@ class kbp_icinga {
 
 		@@ekfile { "/etc/icinga/config/${conf_dir_name}/service_${name}.cfg;${fqdn}":
 			content => template("kbp_icinga/service"),
-#			notify  => Exec["reload-icinga"],
+			notify  => Exec["reload-icinga"],
 			require => File["/etc/icinga/config/${conf_dir_name}"],
 			tag     => "icinga_config";
 		}
@@ -307,7 +307,7 @@ class kbp_icinga {
 
 		@@ekfile { "/etc/icinga/config/${conf_dir_name}/host_${name}.cfg;${fqdn}":
 			content => template("kbp_icinga/host"),
-#			notify  => Exec["reload-icinga"],
+			notify  => Exec["reload-icinga"],
 			require => File["/etc/icinga/config/${conf_dir_name}"],
 			tag     => "icinga_config";
 		}
@@ -321,7 +321,7 @@ class kbp_icinga {
 
 		@@ekfile { "/etc/icinga/config/${conf_dir_name}/hostgroup_${name}.cfg;${fqdn}":
 			content => template("kbp_icinga/hostgroup"),
-#			notify  => Exec["reload-icinga"],
+			notify  => Exec["reload-icinga"],
 			require => File["/etc/icinga/config/${conf_dir_name}"],
 			tag     => "icinga_config";
 		}
@@ -335,7 +335,7 @@ class kbp_icinga {
 
 		@@ekfile { "/etc/icinga/config/${conf_dir_name}/contactgroup_${name}.cfg;${fqdn}":
 			content => template("kbp_icinga/contactgroup"),
-#			notify  => Exec["reload-icinga"],
+			notify  => Exec["reload-icinga"],
 			require => File["/etc/icinga/config/${conf_dir_name}"],
 			tag     => "icinga_config";
 		}
@@ -349,7 +349,7 @@ class kbp_icinga {
 
 		@@ekfile { "/etc/icinga/config/${conf_dir_name}/contact_${name}.cfg;${fqdn}":
 			content => template("kbp_icinga/contact"),
-#			notify  => Exec["reload-icinga"],
+			notify  => Exec["reload-icinga"],
 			require => File["/etc/icinga/config/${conf_dir_name}"],
 			tag     => "icinga_config";
 		}
@@ -363,7 +363,7 @@ class kbp_icinga {
 
 		@@ekfile { "/etc/icinga/config/${conf_dir_name}/timeperiod_${name}.cfg;${fqdn}":
 			content => template("kbp_icinga/timeperiod"),
-#			notify  => Exec["reload-icinga"],
+			notify  => Exec["reload-icinga"],
 			require => File["/etc/icinga/config/${conf_dir_name}"],
 			tag     => "icinga_config";
 		}
@@ -388,7 +388,7 @@ class kbp_icinga {
 
 		@@ekfile { "/etc/icinga/config/${conf_dir_name}/command_${name}.cfg;${fqdn}":
 			content => template("kbp_icinga/command"),
-#			notify  => Exec["reload-icinga"],
+			notify  => Exec["reload-icinga"],
 			require => File["/etc/icinga/config/${conf_dir_name}"],
 			tag     => "icinga_config";
 		}
