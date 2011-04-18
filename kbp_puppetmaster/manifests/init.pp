@@ -107,9 +107,6 @@ class kbp_puppetmaster {
 			owner  => "puppet",
 			group  => "puppet",
 			mode   => 770;
-		# TODO remove this one once the PM works properly
-		"/var/lib/puppet/ssl/ca/signed/icinga.kumina.nl.pem":
-			source => "kbp_puppetmaster/ssl/ca/signed/icinga.kumina.nl.pem";
 		"/var/lib/puppet/ssl/private_keys/puppet.pem":
 			source => "kbp_puppetmaster/ssl/private_keys/puppet.pem",
 			owner  => "puppet",
@@ -162,5 +159,5 @@ class kbp_puppetmaster {
 		notify  => Service["mysql"];
 	}
 	
-  apache::site { "puppetmaster":; }
+	apache::site { "puppetmaster":; }
 }
