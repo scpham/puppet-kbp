@@ -1,8 +1,8 @@
 class kbp_trending {
 }
 
-class kbp-munin::client::puppetmaster ($method="munin") {
+class kbp_trending::puppetmaster ($method="munin") {
     if $method == "munin" {
-        include kpb-munin::client::puppetmaster
+        include kbp-munin::client::puppetmaster
     }
 }
