@@ -13,13 +13,9 @@ class kbp-munin::client::apache {
 
 	kpackage { "libwww-perl":; }
 
-	file {
-		"/etc/apache2/conf.d/server-status":
-			content => template("kbp-munin/server-status"),
-			owner   => "root",
-			group   => "root",
-			mode    => 644,
-			notify  => Exec["reload-apache2"];
+	kfile { "/etc/apache2/conf.d/server-status":
+		content => template("kbp-munin/server-status"),
+		notify  => Exec["reload-apache2"];
 	}
 
 	munin::client::plugin {
@@ -45,28 +41,23 @@ class kbp-munin::server inherits munin::server {
 	include nagios::nsca
 
 	Kfile["/etc/munin/munin.conf"] {
-		source => "puppet://puppet/kbp-munin/server/munin.conf",
+		source => "kbp-munin/server/munin.conf",
 	}
 
-	file { "/etc/send_nsca.cfg":
-		source => "puppet://puppet/kbp-munin/server/send_nsca.cfg",
+	kfile { "/etc/send_nsca.cfg":
+		source => "kbp-munin/server/send_nsca.cfg",
 		mode => 640,
-		owner => "root",
 		group => "munin",
 		require => Package["nsca"],
 	}
 
-	package { "rsync":
-		ensure => installed,
-	}
+	kpackage { "rsync":; }
 
 	# The RRD files for Munin are stored on a memory backed filesystem, so
 	# sync it to disk on reboots.
-	file { "/etc/init.d/munin-server":
-		source => "puppet://puppet/munin/server/init.d/munin-server",
+	kfile { "/etc/init.d/munin-server":
+		source => "munin/server/init.d/munin-server",
 		mode => 755,
-		owner => "root",
-		group => "root",
 		require => [Package["rsync"], Package["munin"]],
 	}
 
@@ -81,10 +72,8 @@ class kbp-munin::server inherits munin::server {
 	}
 
 	# Cron job which syncs the RRD files to disk every 30 minutes.
-	file { "/etc/cron.d/munin-sync":
-		source => "puppet://puppet/munin/server/cron.d/munin-sync",
-		owner => "root",
-		group => "root",
+	kfile { "/etc/cron.d/munin-sync":
+		source => "munin/server/cron.d/munin-sync",
 		require => [Package["munin"], Package["rsync"]];
 	}
 }
