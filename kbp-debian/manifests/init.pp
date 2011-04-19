@@ -68,14 +68,14 @@ class kbp-debian inherits kbp-base {
         }
 
         # Packages we want to have installed
-        $wantedpackages = ["openssh-server", "vim", "less", "lftp", "screen",
-          "file", "debsums", "dlocate", "gnupg", "ucf", "elinks", "reportbug",
-          "tree", "netcat", "openssh-client", "tcpdump", "iproute", "acl",
-          "psmisc", "udev", "lsof", "bzip2", "strace", "pinfo", "lsb-release",
-          "ethtool", "host", "socat", "make", "nscd"]
+        $wantedpackages = ["openssh-server", "less", "lftp", "screen", "file", "debsums", "dlocate", "gnupg",
+		"ucf", "elinks", "reportbug", "tree", "netcat", "openssh-client", "tcpdump", "iproute", "acl",
+		"psmisc", "udev", "lsof", "bzip2", "strace", "pinfo", "lsb-release", "ethtool", "host",
+		"socat", "make", "nscd"]
         kpackage { $wantedpackages:
                 ensure => installed;
         }
+
 	package { "ca-certificates":
 		ensure => installed;
 	}
@@ -124,14 +124,6 @@ class kbp-debian inherits kbp-base {
                 linkto => "/usr/bin/pinfo",
                 require => Package["pinfo"]
         }
-
-#        # XXX Need to improve check_alternatives so it changes all slave links
-#        # for the alternative too. Which means using update-alternatives instead
-#        # of just changing the symlink.
-#        alternative { "editor":
-#                path => "/usr/bin/vim.basic",
-#                require => Package["vim"]
-#        }
 
         kfile { "/etc/skel/.bash_profile":
 		source => "kbp-debian/skel/bash_profile";

@@ -1,7 +1,7 @@
 class kbp_puppetmaster {
 	include kbp-apache::passenger
 	include kbp_mysql::server
-	include kbp_vim::addon-manager
+	include kbp_vim::puppet
 	class { "kbp_trending::puppetmaster":
 		method => "munin";
 	}
@@ -18,7 +18,7 @@ class kbp_puppetmaster {
 		"puppetmaster":
 			ensure  => present,
 			require => Kfile["/etc/default/puppetmaster","/etc/apt/preferences.d/puppetmaster"];
-		["rails","rabbitmq-server","vim-puppet","libmysql-ruby","puppetmaster-common"]:
+		["rails","rabbitmq-server","libmysql-ruby","puppetmaster-common"]:
 			ensure  => latest;
 	}
 
@@ -29,10 +29,6 @@ class kbp_puppetmaster {
 	}
 
 	exec {
-		"Install syntax highlighting for .pp files":
-			command => "/usr/bin/vim-addons -w install puppet;",
-			creates => "/var/lib/vim/addons/syntax/puppet.vim",
-			require => Kpackage["vim-puppet","vim-addon-manager"];
 		"Install the Stomp gem":
 			command => "/usr/bin/gem install stomp",
 			creates => "/var/lib/gems/1.8/gems/stomp-1.1.8",
