@@ -17,3 +17,11 @@ class kbp_vim {
 		'silent execute "!mkdir -p ~/.tmp"':;
 	}
 }
+
+class kbp_vim::puppet {
+	include gen_vim
+
+	gen_vim::addon { "puppet":
+		package => "vim-puppet",
+	}
+}
