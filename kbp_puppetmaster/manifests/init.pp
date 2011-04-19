@@ -1,7 +1,7 @@
 class kbp_puppetmaster {
 	include kbp-apache::passenger
 	include kbp_mysql::server
-	include kbp_vim::addon-manager
+	include kbp_vim::puppet
 	class { "kbp_trending::puppetmaster":
 		method => "munin";
 	}
