@@ -1,0 +1,21 @@
+<Directory <%= rackdir %>>
+	Options None
+	AllowOverride None
+	Order allow,deny
+	allow from all
+</Directory>
+
+<FilesMatch "^\.">
+	Order allow,deny
+	allow from all
+</FilesMatch>
+
+<DirectoryMatch "^(.*/)*\..*">
+	Order allow,deny
+	allow from all
+</DirectoryMatch>
+
+<LocationMatch ^(.*/)\..*>
+	Order allow,deny
+	allow from all
+</LocationMatch>
