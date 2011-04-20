@@ -42,9 +42,6 @@ class kbp_puppetmaster {
 		"/etc/puppet/puppet.conf":
 			source  => "kbp_puppetmaster/puppet.conf",
 			require => Kpackage["puppetmaster"];
-		"/etc/puppet/fileserver.conf":
-			source  => "kbp_puppetmaster/fileserver.conf",
-			require => Kpackage["puppetmaster"];
 		"/etc/default/puppetmaster":
 			source => "kbp_puppetmaster/default/puppetmaster";
 		"/etc/default/puppetqd":
