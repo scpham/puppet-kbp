@@ -77,41 +77,6 @@ class kbp_puppetmaster {
 			owner   => "puppet",
 			group   => "puppet";
 		# TODO End of deletion
-		"/var/lib/puppet/ssl/ca":
-			ensure  => directory,
-			owner   => "puppet",
-			group   => "puppet",
-			mode    => 770,
-			require => Kpackage["puppetmaster"];
-		"/var/lib/puppet/ssl/ca/ca_crl.pem":
-			source => "kbp_puppetmaster/ssl/ca/ca_crl.pem",
-			owner  => "puppet",
-			group  => "puppet",
-			mode   => 664,
-			notify => Exec["reload-apache2"];
-		"/var/lib/puppet/ssl/ca/ca_crt.pem":
-			source => "kbp_puppetmaster/ssl/ca/ca_crt.pem",
-			owner  => "puppet",
-			group  => "puppet",
-			mode   => 660,
-			notify => Exec["reload-apache2"];
-		"/var/lib/puppet/ssl/ca/ca_key.pem":
-			source => "kbp_puppetmaster/ssl/ca/ca_key.pem",
-			owner  => "puppet",
-			group  => "puppet",
-			mode   => 660,
-			notify => Exec["reload-apache2"];
-		"/var/lib/puppet/ssl/ca/ca_pub.pem":
-			source => "kbp_puppetmaster/ssl/ca/ca_pub.pem",
-			owner  => "puppet",
-			group  => "puppet",
-			mode   => 640,
-			notify => Exec["reload-apache2"];
-		"/var/lib/puppet/ssl/ca/signed":
-			ensure => directory,
-			owner  => "puppet",
-			group  => "puppet",
-			mode   => 770;
 		"/usr/lib/rabbitmq/lib/rabbitmq_server-2.4.1/plugins/amqp_client-2.4.1.ez":
 			source  => "kbp_puppetmaster/rabbitmq/plugins/amqp_client-2.4.1.ez",
 			require => Kpackage["rabbitmq-server"],
