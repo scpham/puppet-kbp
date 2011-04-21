@@ -12,6 +12,11 @@ class kbp_ferm {
 			proto  => "tcp",
 			dport  => "8140",
 			action => "ACCEPT";
+		"NRPE connections_v46":
+			saddr  => "puppet.kumina.nl",
+			proto  => "tcp",
+			dport  => "5666",
+			action => "ACCEPT";
 	}
 
 	# Basic rules
