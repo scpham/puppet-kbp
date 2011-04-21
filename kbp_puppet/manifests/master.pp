@@ -98,7 +98,7 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 	kfile {
 		"/etc/apache2/vhost-additions/${name}/permissions.conf":
 			notify  => Exec["reload-apache2"],
-			source  => "kbp_puppet/master/apache2/vhost-additions/permissions.conf";
+			content => template("kbp_puppet/master/apache2/vhost-additions/permissions.conf.erb");
 		"/etc/apache2/vhost-additions/${name}/rack.conf":
 			notify  => Exec["reload-apache2"],
 			source  => "kbp_puppet/master/apache2/vhost-additions/rack.conf";
