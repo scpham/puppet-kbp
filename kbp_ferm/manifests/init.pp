@@ -58,3 +58,4 @@ class kbp_ferm {
 			icmptype => "echo-request",
 			action   => "ACCEPT";
 	}
+}
