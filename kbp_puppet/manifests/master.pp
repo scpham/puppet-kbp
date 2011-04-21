@@ -183,31 +183,6 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 			section    => 'master',
 		}
 	}
-
-	concat { "${rackdir}/config.ru":
-		owner => "puppet",
-		group => "puppet",
-		mode  => 0640,
-	}
-
-	gen_puppet::concat::add_content { "Add header for config.ru":
-		target   => "${rackdir}/config.ru",
-		content  => '$0 = "master"',
-		order    => 10,
-	}
-
-	gen_puppet::concat::add_content { "Add footer for config.ru":
-		target   => "${rackdir}/config.ru",
-		content  => "ARGV << \"--rack\"\nrequire 'puppet/application/master'\nrun Puppet::Application[:master].run\n",
-		order    => 20,
-	}
-
-	if $debug {
-		gen_puppet::concat::add_content { "Enable debug mode in config.ru":
-			target  => "${rackdir}/config.ru",
-			content => "ARGV << \"--debug\"\n",
-		}
-	}
 }
 
 define kbp_puppet::master::environment ($manifest, $manifestdir, $modulepath, $puppetmaster, $configfile = "/etc/puppet/puppet.conf") {
