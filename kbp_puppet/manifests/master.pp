@@ -16,22 +16,11 @@ class kbp_puppet::master {
 		"/etc/puppet/fileserver.conf":
 			source  => "kbp_puppet/master/fileserver.conf",
 			require => Kpackage["puppetmaster"];
-		"/etc/apache2/sites-available/puppetmaster":
-			source  => "kbp_puppet/master/apache2/sites-available/puppetmaster",
-			notify  => Exec["reload-apache2"],
-			require => Kpackage["apache2"];
 		# These are needed for the custom configuration
 		"/usr/local/share/puppet":
 			ensure  => directory;
 		"/usr/local/share/puppet/rack":
 			ensure  => directory;
-	}
-
-	mysql::server::db { "puppet":; }
-
-	mysql::server::grant { "puppet":
-		user     => "puppet",
-		password => "ui6Nae9Xae4a";
 	}
 
 	# Enforce Puppet modules directory permissions.
@@ -67,24 +56,39 @@ class kbp_puppet::master {
 # most settings will be indeed default.
 #
 define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/puppet/puppet.conf", $debug = false,
+				$dbname = false, $dbuser = false, $dbpasswd = false, $dbhost = false, $dbsocket = false,
 				$factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet", $pluginsync = true,
 				$rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
 				$ssldir = "/var/lib/puppet/ssl", $vardir = "/var/lib/puppet") {
 	include gen_puppet::concat
-	# This needs to be created within this define
-	$rackdir = "${rackroot}/puppetmaster-${name}"
+
+	# If the name is 'default', we want to change the puppetmaster name (pname)
+	# we're using for this instance to something without crud.
+	if $name == 'default' {
+		$pname = 'puppetmaster'
+	} else {
+		$sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
+		$pname - "puppetmaster-${sanitized_name}"
+	}
+
+	gen_puppet::master::config { $name:
+		configfile => $configfile,
+		debug      => $debug,
+		factpath   => $factpath,
+		logdir     => $logdir,
+		pluginsync => $pluginsync,
+		rackroot   => $rackroot,
+		rundir     => $rundir,
+		ssldir     => $ssldir,
+		vardir     => $vardir,
+	}
 
 	# TODO Files that need to be customized
 	# fileserver.conf
 	# auth.conf
 
-	# Create the rack directory tree.
-	kfile { ["${rackdir}","${rackdir}/public","${rackdir}/tmp"]:
-		ensure => directory,
-	}
-
 	# The apache config should determine where to listen on
-	apache::site_config { "${name}":
+	apache::site_config { "${pname}":
 		address      => $address,
 		documentroot => "${rackdir}/public",
 	}
@@ -103,65 +107,82 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 			content => template("kbp_puppet/master/apache2/vhost-additions/ssl.conf.erb");
 	}
 
-	concat { $configfile:
-		owner => "root",
-		group => "root",
-		mode  => 0640,
+	if $name == 'default' {
+		$real_dbname = 'puppet'
+		$real_dbuser = 'puppet'
+		# Yes, we have a default password. That's not problem since MySQL
+		# only allows access from restricted hosts.
+		$real_dbpasswd = 'puppet'
+	} else {
+		$real_dbname = $dbname ? {
+			false   => $pname,
+			default => $dbname,
+		}
+		$real_dbuser = $dbuser ? {
+			# TODO We should make sure this is never longer than 16 chars
+			false   => "pm_${sanitized_name}",
+			default => $dbuser,
+		}
+		$real_dbpasswd = $dbpasswd ? {
+			false   => $pname,
+			default => $dbpasswd,
+		}
 	}
 
-	gen_puppet::concat::add_content { "Set header for main section in puppet.conf":
-		target   => $configfile,
-		content  => "[main]",
-		order    => 10,
+	# Setup the MySQL only if one of the following condition apply:
+	# - dbhost is false or localhost (false implies localhost)
+	# - dbhost is equal to local fqdn
+	if $dbhost or $dbhost == 'localhost' or $dbhost == $fqdn {
+		mysql::server::db { $real_dbname:; }
+
+		mysql::server::grant { $real_dbname:
+			user     => $real_dbuser,
+			password => $real_dbpasswd,
+		}
 	}
 
-	# Set the defaults for this resource
-	kbp_puppet::master::set_main {
-		"vardir":
-			puppetmaster => $name,
-			configfile   => $configfile,
-			value        => $vardir;
-		"ssldir":
-			puppetmaster => $name,
-			configfile   => $configfile,
-			value        => $ssldir;
-		"rundir":
-			puppetmaster => $name,
-			configfile   => $configfile,
-			value        => $rundir;
-		"logdir":
-			puppetmaster => $name,
-			configfile   => $configfile,
-			value        => $logdir;
-		"factpath":
-			puppetmaster => $name,
-			configfile   => $configfile,
-			value        => $factpath;
-		"pluginsync":
-			puppetmaster => $name,
-			configfile   => $configfile,
-			value        => $pluginsync;
+	gen_puppet::set_config {
+		"Set database adapter for $name.":
+			configfile => $configfile,
+			var        => 'dbadapter',
+			value      => 'mysql',
+			section    => 'master';
+		"Set database user for $name.":
+			configfile => $configfile,
+			var        => 'dbuser',
+			value      => $real_dbuser,
+			section    => 'master';
+		"Set database name for $name.":
+			configfile => $configfile,
+			var        => 'dbname',
+			value      => $real_dbname,
+			section    => 'master';
+		"Set database password for $name.":
+			configfile => $configfile,
+			var        => 'dbpassword',
+			value      => $real_dbpasswd,
+			section    => 'master';
 	}
 
-	gen_puppet::concat::add_content { "Set header for agent section in puppet.conf":
-		target   => $configfile,
-		content  => "\n[agent]",
-		order    => 20,
+	# Only set the host if it's needed.
+	if $dbhost {
+		gen_puppet::set_config { "Set database host for $name.":
+			configfile => $configfile,
+			var        => 'dbhost',
+			value      => $dbhost,
+			section    => 'master',
+		}
 	}
 
-	gen_puppet::concat::add_content { "Set header for master section in puppet.conf":
-		target   => $configfile,
-		content  => "\n[master]",
-		order    => 30,
+	# Only set the socket if it's needed.
+	if $dbsocket {
+		gen_puppet::set_config { "Set database socket for $name.":
+			configfile => $configfile,
+			var        => 'dbsocket',
+			value      => $dbsocket,
+			section    => 'master',
+		}
 	}
-
-	gen_puppet::concat::add_content { "Set header for queue section in puppet.conf":
-		target   => $configfile,
-		content  => "\n[queue]",
-		order    => 40,
-	}
-
-	# TODO Set the other headers and the defaults that are part of the defined type
 
 	concat { "${rackdir}/config.ru":
 		owner => "puppet",
@@ -186,86 +207,6 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 			target  => "${rackdir}/config.ru",
 			content => "ARGV << \"--debug\"\n",
 		}
-	}
-}
-
-define kbp_puppet::master::set_main ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
-	# $puppetmaster should be the same as the $name from the kbp_puppet::master::config
-	# resource you want to add this to.
-	if ! defined(Kbp_puppet::Master::Config[$puppetmaster]) {
-		fail("There's no kbp_puppet::master::config { \"${puppetmaster}\" }!")
-	}
-
-	if $var {
-		$real_var = $var
-	} else {
-		$real_var = $name
-	}
-
-	gen_puppet::concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'main'":
-		target   => "${configfile}",
-		content  => "${real_var} = ${value}",
-		order    => 15,
-	}
-}
-
-define kbp_puppet::master::set_agent ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
-	# $puppetmaster should be the same as the $name from the kbp_puppet::master::config
-	# resource you want to add this to.
-	if ! defined(Kbp_puppet::Master::Config[$puppetmaster]) {
-		fail("There's no kbp_puppet::master::config { \"${puppetmaster}\" }!")
-	}
-
-	if $var {
-		$real_var = $var
-	} else {
-		$real_var = $name
-	}
-
-	gen_puppet::concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'agent'":
-		target   => "${configfile}",
-		content  => "${real_var} = ${value}",
-		order    => 25,
-	}
-}
-
-define kbp_puppet::master::set_master ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
-	# $puppetmaster should be the same as the $name from the kbp_puppet::master::config
-	# resource you want to add this to.
-	if ! defined(Kbp_puppet::Master::Config[$puppetmaster]) {
-		fail("There's no kbp_puppet::master::config { \"${puppetmaster}\" }!")
-	}
-
-	if $var {
-		$real_var = $var
-	} else {
-		$real_var = $name
-	}
-
-	gen_puppet::concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'master'":
-		target   => "${configfile}",
-		content  => "${real_var} = ${value}",
-		order    => 35,
-	}
-}
-
-define kbp_puppet::master::set_queue ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
-	# $puppetmaster should be the same as the $name from the kbp_puppet::master::config
-	# resource you want to add this to.
-	if ! defined(Kbp_puppet::Master::Config[$puppetmaster]) {
-		fail("There's no kbp_puppet::master::config { \"${puppetmaster}\" }!")
-	}
-
-	if $var {
-		$real_var = $var
-	} else {
-		$real_var = $name
-	}
-
-	gen_puppet::concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'queue'":
-		target   => "${configfile}",
-		content  => "${real_var} = ${value}",
-		order    => 45,
 	}
 }
 
