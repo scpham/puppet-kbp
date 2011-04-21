@@ -6,7 +6,6 @@ class kbp_puppet::master {
 	include kbp_rabbitmq
 	include kbp-apache::passenger
 	include kbp_mysql::server
-	include kbp_vim::addon-manager
 	class { "kbp_trending::puppetmaster":
 		method => "munin";
 	}
@@ -59,6 +58,14 @@ class kbp_puppet::master {
 	apache::site { "puppetmaster":; }
 }
 
+# kbp_puppet::master::config
+#
+# Setup a puppetmaster in the Kumina way, using Apache and passenger.
+# Allows for multiple puppetmasters with (mostly) different configs.
+# Keep in mind that if you want default puppetmaster (which is
+# probably most of the time), you just need to name it "default" and
+# most settings will be indeed default.
+#
 define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/puppet/puppet.conf", $debug = false,
 				$factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet", $pluginsync = true,
 				$rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
