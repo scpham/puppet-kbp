@@ -66,13 +66,13 @@ class kbp_icinga::client {
 class kbp_icinga::server {
 	include gen_icinga::server
 
-	@@ferm::new::rule { "NRPE connections from ${fqdn}_v46":
-		saddr  => "${fqdn}",
-		proto  => "tcp",
-		dport  => "5666",
-		action => "ACCEPT",
-		tag    => "ferm";
-	}
+#	@@ferm::new::rule { "NRPE connections from ${fqdn}_v46":
+#		saddr  => "${fqdn}",
+#		proto  => "tcp",
+#		dport  => "5666",
+#		action => "ACCEPT",
+#		tag    => "ferm";
+#	}
 
 	kbp_icinga::servercommand {
 		["check_ssh","check_smtp"]:
