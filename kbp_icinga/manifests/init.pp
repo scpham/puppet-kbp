@@ -106,6 +106,9 @@ class kbp_icinga::server {
 		"check_mysql":
 			conf_dir  => "generic",
 			argument1 => "-u nagios";
+		"check_loadtrend":
+			conf_dir  => "generic",
+			nrpe      => true;
 		"check_sslcert":
 			conf_dir  => "generic",
 			argument1 => '$ARG1$',
