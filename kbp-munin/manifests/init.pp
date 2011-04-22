@@ -36,7 +36,8 @@ class kbp-munin::client::puppetmaster {
             script      => "puppet_";
     }
 
-    munin::client::plugin::config { "puppet_*":
+    munin::client::plugin::config { "puppet_":
+        section => "puppet_*",
         content => "user root";
     }
 }
