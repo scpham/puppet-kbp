@@ -1,7 +1,7 @@
 class kbp_ferm {
 	include ferm::new
 
-	<<|| tag == "ferm" ||>>
+	Ferm::New::Rule <<| tag == "ferm" |>>
 
 	# Basic rules
 	ferm::new::rule {
