@@ -1,5 +1,17 @@
 class kbp-apache inherits apache {
 	include kbp-munin::client::apache
+
+	ferm::new::rule {
+		"HTTP connections_v46":
+			proto  => "tcp",
+			dport  => "80",
+			action => "ACCEPT";
+		"HTTPS connections_v46":
+			proto  => "tcp",
+			dport  => "443",
+			action => "ACCEPT";
+	}
+
 	kfile {
 		"/etc/apache2/mods-available/deflate.conf":
 			source => "kbp-apache/mods-available/deflate.conf",
