@@ -124,11 +124,6 @@ class kbp_icinga::server {
 	}
 
 	kfile {
-		"/etc/icinga/htpasswd.users":
-			source  => "kbp_icinga/server/htpasswd.users",
-			group   => "www-data",
-			mode    => 640,
-			require => Package["icinga"];
 		"/etc/icinga/cgi.cfg":
 			source  => "kbp_icinga/server/cgi.cfg",
 			notify  => Exec["reload-icinga"],
