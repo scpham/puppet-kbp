@@ -66,6 +66,14 @@ class kbp_icinga::client {
 class kbp_icinga::server {
 	include gen_icinga::server
 
+	@@ferm::new::rule { "NRPE connections_${fqdn}_v46":
+		saddr  => "${fqdn}",
+		proto  => "tcp",
+		dport  => "5666",
+		action => "ACCEPT",
+		tag    => "ferm";
+	}
+
 	kbp_icinga::servercommand {
 		["check_ssh","check_smtp"]:
 			conf_dir => "generic";
@@ -106,6 +114,9 @@ class kbp_icinga::server {
 		"check_mysql":
 			conf_dir  => "generic",
 			argument1 => "-u nagios";
+		"check_loadtrend":
+			conf_dir  => "generic",
+			nrpe      => true;
 		"check_sslcert":
 			conf_dir  => "generic",
 			argument1 => '$ARG1$',
@@ -113,11 +124,6 @@ class kbp_icinga::server {
 	}
 
 	kfile {
-		"/etc/icinga/htpasswd.users":
-			source  => "kbp_icinga/server/htpasswd.users",
-			group   => "www-data",
-			mode    => 640,
-			require => Package["icinga"];
 		"/etc/icinga/cgi.cfg":
 			source  => "kbp_icinga/server/cgi.cfg",
 			notify  => Exec["reload-icinga"],

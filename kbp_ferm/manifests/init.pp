@@ -1,23 +1,7 @@
 class kbp_ferm {
 	include ferm::new
 
-	ferm::new::rule {
-		"Munin connections_v46":
-			saddr  => "munin.kumina.nl",
-			proto  => "tcp",
-			dport  => "4949",
-			action => "ACCEPT";
-		"Puppet connections_v46":
-			saddr  => "puppet.kumina.nl",
-			proto  => "tcp",
-			dport  => "8140",
-			action => "ACCEPT";
-		"NRPE connections_v46":
-			saddr  => "puppet.kumina.nl",
-			proto  => "tcp",
-			dport  => "5666",
-			action => "ACCEPT";
-	}
+	Ferm::New::Rule <<| tag == "ferm" |>>
 
 	# Basic rules
 	ferm::new::rule {
@@ -25,10 +9,6 @@ class kbp_ferm {
 			proto    => "icmp",
 			icmptype => "echo-request",
 			action   => "ACCEPT";
-		"SSH_v46":
-			proto  => "tcp",
-			dport  => "22",
-			action => "ACCEPT";
 		"Drop UDP packets_v46":
 			prio  => "a0",
 			proto => "udp";
