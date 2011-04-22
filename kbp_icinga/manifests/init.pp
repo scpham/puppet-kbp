@@ -66,7 +66,7 @@ class kbp_icinga::client {
 class kbp_icinga::server {
 	include gen_icinga::server
 
-	@@ferm::new::rule { "NRPE connections_${fqdn}_v46":
+	@@ferm::new::rule { "NRPE connections from ${fqdn}_v46":
 		saddr  => "${fqdn}",
 		proto  => "tcp",
 		dport  => "5666",

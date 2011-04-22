@@ -45,7 +45,7 @@ class kbp-munin::client::puppetmaster {
 class kbp-munin::server inherits munin::server {
 	include nagios::nsca
 
-	@@ferm::new::rule { "Munin connections_${fqdn}_v46":
+	@@ferm::new::rule { "Munin connections from ${fqdn}_v46":
 		saddr  => "${fqdn}",
 		proto  => "tcp",
 		dport  => "4949",
