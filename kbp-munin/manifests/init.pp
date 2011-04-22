@@ -31,9 +31,9 @@ class kbp-munin::client::puppetmaster {
         "puppet_nodes":
             script_path => "/usr/local/share/munin/plugins",
             script      => "puppet_";
-        "puppet_totals":
-            script_path => "/usr/local/share/munin/plugins",
-            script      => "puppet_";
+#        "puppet_totals":
+#            script_path => "/usr/local/share/munin/plugins",
+#            script      => "puppet_";
     }
 
     munin::client::plugin::config { "puppet_":
