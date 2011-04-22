@@ -7,6 +7,14 @@ class kbp_puppetmaster {
 		method => "munin";
 	}
 
+	@@ferm::new::rule { "Puppet connections_${fqdn}_v46":
+		saddr  => "${fqdn}",
+		proto  => "tcp",
+		dport  => "8140",
+		action => "ACCEPT",
+		tag    => "ferm";
+	}
+
 	gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
 
 	gen_apt::source { "rabbitmq":

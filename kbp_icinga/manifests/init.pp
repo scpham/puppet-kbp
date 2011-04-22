@@ -1,4 +1,12 @@
 class kbp_icinga::client {
+	@@ferm::new::rule { "NRPE connections_${fqdn}_v46":
+		saddr  => "${fqdn}",
+		proto  => "tcp",
+		dport  => "5666",
+		action => "ACCEPT",
+		tag    => "ferm";
+	}
+
 	kbp_icinga::configdir { "${environment}/${fqdn}":
 		sub => $environment;
 	}
