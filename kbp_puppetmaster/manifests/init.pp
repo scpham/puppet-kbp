@@ -38,6 +38,12 @@ class kbp_puppetmaster {
 		require   => Kpackage["puppetmaster"];
 	}
 
+	service { "rabbitmq-server":
+		hasstatus => true,
+		ensure    => stopped,
+		require   => Kpackage["puppetmaster"];
+	}
+
 	exec {
 		"Install the Stomp gem":
 			command => "/usr/bin/gem install stomp",
