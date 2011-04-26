@@ -66,6 +66,25 @@
               </policyEntries>
             </policyMap>
         </destinationPolicy> 
+
+    <plugins>
+      <simpleAuthenticationPlugin>
+        <users>
+          <authenticationUser username="puppet" password="diekequ1ohTh" groups="systemusers,everyone"/>
+        </users>
+      </simpleAuthenticationPlugin>
+
+      <authorizationPlugin>
+        <map>
+          <authorizationMap>
+            <authorizationEntries>
+              <authorizationEntry topic="puppet.>" write="systemusers" read="systemusers" admin="systemusers" />
+              <authorizationEntry topic="ActiveMQ.Advisory.>" read="everyone,all" write="everyone,all" admin="everyone,all"/>
+            </authorizationEntries>
+          </authorizationMap>
+        </map>
+      </authorizationPlugin>
+    </plugins>
  
         
         <!-- 
