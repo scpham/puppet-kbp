@@ -1,6 +1,7 @@
 class kbp_mysql::server {
 	include mysql::server
 	include kbp_mysql::monitoring::icinga::server
+        class { "kbp_trending::client::mysql":; }
 }
 
 class kbp_mysql::monitoring::icinga::server

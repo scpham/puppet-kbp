@@ -42,6 +42,29 @@ class kbp-munin::client::puppetmaster {
     }
 }
 
+class kbp-munin::client::mysql {
+    include kbp-munin::client
+    if versioncmp($lsbdistrelease, 6) >= 0 {
+        kpackage {"libcache-cache-perl":
+            ensure => latest;
+        }
+
+        define munin_mysql {
+            munin::client::plugin { "mysql_${name}":
+                script => "mysql_";
+        }
+
+        munin_mysql {["bin_relay_log","commands","connections",
+            "files_tables","innodb_bpool","innodb_bpool_act",
+            "innodb_insert_buf","innodb_io","innodb_io_pend",
+            "innodb_log","innodb_rows","innodb_semaphores",
+            "innodb_tnx","myisam_indexes","network_traffic",
+            "qcache","qcache_mem","replication","select_types",
+            "slow","sorts","table_locks","tmp_tables"]:;
+        }
+    }
+}
+
 class kbp-munin::server inherits munin::server {
 	include nagios::nsca
 
