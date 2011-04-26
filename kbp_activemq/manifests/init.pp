@@ -1,3 +1,3 @@
 class kbp_activemq {
-	include activemq
+	include gen_activemq
 }
