@@ -52,6 +52,7 @@ class kbp-munin::client::mysql {
         define munin_mysql {
             munin::client::plugin { "mysql_${name}":
                 script => "mysql_";
+            }
         }
 
         munin_mysql {["bin_relay_log","commands","connections",
