@@ -45,7 +45,7 @@ class kbp-munin::client::puppetmaster {
 class kbp-munin::server inherits munin::server {
 	include nagios::nsca
 
-	if $fqdn = "management.kumina.nl" {
+	if $fqdn == "management.kumina.nl" {
 		@@ferm::new::rule { "Munin connections from ${fqdn}_v46":
 			saddr  => "${fqdn}",
 			proto  => "tcp",
