@@ -45,12 +45,23 @@ class kbp-munin::client::puppetmaster {
 class kbp-munin::server inherits munin::server {
 	include nagios::nsca
 
-	@@ferm::new::rule { "Munin connections from ${fqdn}_v46":
-		saddr  => "${fqdn}",
-		proto  => "tcp",
-		dport  => "4949",
-		action => "ACCEPT",
-		tag    => "ferm";
+	if $fqdn = "management.kumina.nl" {
+		@@ferm::new::rule { "Munin connections from ${fqdn}_v46":
+			saddr  => "${fqdn}",
+			proto  => "tcp",
+			dport  => "4949",
+			action => "ACCEPT",
+			ensure => absent,
+			tag    => "ferm";
+		}
+	} else {
+		@@ferm::new::rule { "Munin connections from ${fqdn}_v46":
+			saddr  => "${fqdn}",
+			proto  => "tcp",
+			dport  => "4949",
+			action => "ACCEPT",
+			tag    => "ferm";
+		}
 	}
 
 	Kfile["/etc/munin/munin.conf"] {
