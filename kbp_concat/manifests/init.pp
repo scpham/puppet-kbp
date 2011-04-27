@@ -1,7 +1,7 @@
 class kbp_concat {
 	include common::concat::setup
 
-	define add_content($target, $content, $order=15) {
+	define add_content($target, $content, $order=15, $ensure=present) {
 		$body = $content ? {
 			false   => $name,
 			default => $content,
@@ -10,7 +10,8 @@ class kbp_concat {
 		concat::fragment{ "${target}_fragment_${name}":
 			content => "${body}\n",
 			target  => $target,
-			order   => $order;
+			order   => $order,
+			ensure  => $ensure;
 		}
 	}
 }
