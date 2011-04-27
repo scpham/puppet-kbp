@@ -27,18 +27,66 @@ class kbp-munin::client::apache {
 
 class kbp-munin::client::puppetmaster {
     include kbp-munin::client
-    munin::client::plugin { "puppet_client":
-        script_path => "/usr/local/share/munin/plugins",
-        script      => "puppetmaster";
+    munin::client::plugin {
+        "puppet_nodes":
+            script_path => "/usr/local/share/munin/plugins",
+            script      => "puppet_";
+        "puppet_totals":
+            script_path => "/usr/local/share/munin/plugins",
+            script      => "puppet_";
     }
 
-    munin::client::plugin::config { "puppet_client":
+    munin::client::plugin::config { "puppet_":
+        section => "puppet_*",
         content => "user root";
-    } 
+    }
+}
+
+class kbp-munin::client::mysql {
+    include kbp-munin::client
+    if versioncmp($lsbdistrelease, 6) >= 0 {
+        kpackage {"libcache-cache-perl":
+            ensure => latest;
+        }
+
+        define munin_mysql {
+            munin::client::plugin { "mysql_${name}":
+                script => "mysql_";
+            }
+        }
+
+        munin_mysql {["bin_relay_log","commands","connections",
+            "files_tables","innodb_bpool","innodb_bpool_act",
+            "innodb_insert_buf","innodb_io","innodb_io_pend",
+            "innodb_log","innodb_rows","innodb_semaphores",
+            "innodb_tnx","myisam_indexes","network_traffic",
+            "qcache","qcache_mem","replication","select_types",
+            "slow","sorts","table_locks","tmp_tables"]:;
+        }
+    }
 }
 
 class kbp-munin::server inherits munin::server {
 	include nagios::nsca
+
+	if $fqdn == "management.kumina.nl" {
+		@@ferm::new::rule { "Munin connections from ${fqdn}_v46":
+			saddr  => "${fqdn}",
+			proto  => "tcp",
+			dport  => "4949",
+			action => "ACCEPT",
+			ensure => absent,
+			tag    => "ferm";
+		}
+	} else {
+		@@ferm::new::rule { "Munin connections from ${fqdn}_v46":
+			saddr  => "${fqdn}",
+			proto  => "tcp",
+			dport  => "4949",
+			action => "ACCEPT",
+			tag    => "ferm";
+		}
+	}
 
 	Kfile["/etc/munin/munin.conf"] {
 		source => "kbp-munin/server/munin.conf",

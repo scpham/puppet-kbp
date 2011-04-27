@@ -4,6 +4,14 @@ class kbp-nagios::server::plugins inherits nagios::server::plugins {
 class kbp-nagios::server inherits nagios::server {
 	include kbp-nagios::server::plugins
 
+	@@ferm::new::rule { "NRPE connections from ${fqdn}_v46":
+		saddr  => "${fqdn}",
+		proto  => "tcp",
+		dport  => "5666",
+		action => "ACCEPT",
+		tag    => "ferm";
+	}
+
 	kfile { "/etc/nagios3/local.d":
 		source => "kbp-nagios/nagios3/local.d",
 		recurse => true,

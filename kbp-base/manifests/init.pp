@@ -5,6 +5,7 @@ class kbp-base {
 	include kbp_acpi
 	include kbp_apt
 	include kbp_puppet
+	include kbp_ssh
 	include kbp_vim
 	include kbp_time
 	include kbp_sudo

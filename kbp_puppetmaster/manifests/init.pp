@@ -1,10 +1,19 @@
 class kbp_puppetmaster {
+	include kbp_activemq
 	include kbp-apache::passenger
 	include kbp_mysql::server
 	include kbp_vim::puppet
         include kbp_gitlistchanges
 	class { "kbp_trending::puppetmaster":
 		method => "munin";
+	}
+
+	@@ferm::new::rule { "Puppet connections from ${fqdn}_v46":
+		saddr  => "${fqdn}",
+		proto  => "tcp",
+		dport  => "8140",
+		action => "ACCEPT",
+		tag    => "ferm";
 	}
 
 	gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
@@ -26,6 +35,12 @@ class kbp_puppetmaster {
 	service { "puppetqd":
 		hasstatus => true,
 		ensure    => running,
+		require   => Kpackage["puppetmaster"];
+	}
+
+	service { "rabbitmq-server":
+		hasstatus => true,
+		ensure    => stopped,
 		require   => Kpackage["puppetmaster"];
 	}
 
