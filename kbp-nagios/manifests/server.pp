@@ -50,7 +50,10 @@ class kbp-nagios::server inherits nagios::server {
 		"/etc/nagios3/conf.d/timeperiods.cfg":
 			source => "kbp-nagios/nagios3/conf.d/timeperiods.cfg",
 			notify => Exec["reload-nagios3"];
-		"/etc/cron.d/nagios-check-alive":
-			source => "kbp-nagios/nagios-check-alive";
+		"/etc/cron.d/nagios-check-alive-cron":
+			source => "kbp-nagios/nagios-check-alive-cron";
+		"/usr/bin/nagios-check-alive":
+			source => "kbp-nagios/nagios-check-alive",
+			mode   => 755;
 	}
 }
