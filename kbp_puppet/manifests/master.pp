@@ -184,11 +184,3 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 		}
 	}
 }
-
-define kbp_puppet::master::environment ($manifest, $manifestdir, $modulepath, $configfile = "/etc/puppet/puppet.conf") {
-	gen_puppet::concat::add_content { "Add environment ${name} in file ${configfile}":
-		target   => "${configfile}",
-		content  => "\n[${name}]\nmanifestdir = ${manifestdir}\nmodulepath = ${modulepath}\nmanifest = ${manifest}\n\n",
-		order    => 60,
-	}
-}
