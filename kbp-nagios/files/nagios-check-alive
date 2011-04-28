@@ -1,0 +1,2 @@
+# Send an email in case Nagios is down
+*/5 * * * * root /etc/init.d/nagios3 status | fgrep -v '(running)'
