@@ -16,8 +16,15 @@ class kbp-syslog::client::etch inherits sysklogd::client {
 }
 
 class kbp-syslog::server::lenny inherits rsyslog::server {
-	kfile { "/etc/logrotate.d/rsyslog":
-		source => "kbp-syslog/server/logrotate.d/rsyslog";
+	include kbp_logrotate
+	gen_logrotate::rotate { "rsyslog":
+		log => ["/var/log/syslog", "/var/log/mail.info", "/var/log/mail.warn",
+			"/var/log/mail.err", "/var/log/mail.log", "/var/log/daemon.log",
+			"/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log",
+			"/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
+			"/var/log/messages"],
+		options => ["daily", "rotate 90", "missingok", "notifempty", "compress", "sharedscripts"],
+		postrotate => "invoke-rc.d rsyslog reload > /dev/null";
 	}
 }
 
@@ -25,8 +32,15 @@ class kbp-syslog::client::lenny inherits rsyslog::client {
 }
 
 class kbp-syslog::server::squeeze inherits rsyslog::server {
-	kfile { "/etc/logrotate.d/rsyslog":
-		source => "kbp-syslog/server/logrotate.d/rsyslog";
+	include kbp_logrotate
+	gen_logrotate::rotate { "rsyslog":
+		log => ["/var/log/syslog", "/var/log/mail.info", "/var/log/mail.warn",
+			"/var/log/mail.err", "/var/log/mail.log", "/var/log/daemon.log",
+			"/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log",
+			"/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
+			"/var/log/messages"],
+		options => ["daily", "rotate 90", "missingok", "notifempty", "compress", "sharedscripts"],
+		postrotate => "invoke-rc.d rsyslog reload > /dev/null";
 	}
 }
 

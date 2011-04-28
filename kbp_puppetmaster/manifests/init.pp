@@ -8,12 +8,10 @@ class kbp_puppetmaster {
 		method => "munin";
 	}
 
-	@@ferm::new::rule { "Puppet connections from ${fqdn}_v46":
-		saddr  => "${fqdn}",
+	ferm::new::rule { "Puppet connections_v46":
 		proto  => "tcp",
 		dport  => "8140",
-		action => "ACCEPT",
-		tag    => "ferm";
+		action => "ACCEPT";
 	}
 
 	gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }

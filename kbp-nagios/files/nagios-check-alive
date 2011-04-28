@@ -1,0 +1,17 @@
+#!/bin/sh
+
+HOSTNAME="`hostname --fqdn`"
+
+if ! /etc/init.d/nagios3 status > /dev/null
+then
+	MESSAGE="No sleep for you! Nagios on $HOSTNAME seems down!"
+	echo "$MESSAGE"
+	for number in `grep pager /etc/nagios3/custom.d/contacts.cfg | sed -e 's/,/ /'`
+	do
+		case "$number" in
+		+*)
+			/usr/local/bin/send_sms -n "$number" -m "$MESSAGE" -s 'Grim Reaper'
+			;;
+		esac
+	done
+fi
