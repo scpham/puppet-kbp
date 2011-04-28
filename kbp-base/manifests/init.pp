@@ -1,6 +1,5 @@
 class kbp-base {
 	include gen_base
-	include grub
 	include sysctl
 	include kbp_acpi
 	include kbp_apt
@@ -181,7 +180,7 @@ class kbp-base {
 
 	# Packages we like and want :)
 	kpackage {
-		["binutils"]:
+		["binutils","console-tools"]:
 			ensure => installed;
 		["hidesvn","bash-completion","bc","tcptraceroute","diffstat"]:
 			ensure => latest;
@@ -196,6 +195,9 @@ class kbp-base {
 	kfile {
 		"/etc/motd.tail":
 			source 	=> "kbp-base/motd.tail";
+		"/etc/console-tools/config":
+			source  => "kbp-base/console-tools/config",
+			require => Package["console-tools"];
 	}
 
 	exec {
