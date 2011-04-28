@@ -196,7 +196,8 @@ class kbp-base {
 		"/etc/motd.tail":
 			source 	=> "kbp-base/motd.tail";
 		"/etc/console-tools/config":
-			source 	=> "kbp-base/console-tools/config";
+			source  => "kbp-base/console-tools/config",
+			require => Package["console-tools"];
 	}
 
 	exec {
