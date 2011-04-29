@@ -71,7 +71,7 @@ class kbp_icinga::server {
 		proto  => "tcp",
 		dport  => "5666",
 		action => "ACCEPT",
-		tag    => "ferm";
+		tag    => "ferm_general_rule";
 	}
 
 	kbp_icinga::servercommand {
