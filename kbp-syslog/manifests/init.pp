@@ -6,7 +6,7 @@ class kbp-syslog::client {
 	include "kbp-syslog::client::$lsbdistcodename"
 
 	@@ferm::new::rule { "Syslog traffix from ${fqdn}":
-		saddr  => ${fqdn},
+		saddr  => $fqdn,
 		proto  => "udp",
 		dport  => 514,
 		action => "ACCEPT",
