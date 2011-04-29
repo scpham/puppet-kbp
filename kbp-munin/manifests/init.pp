@@ -76,7 +76,7 @@ class kbp-munin::server inherits munin::server {
 			dport  => "4949",
 			action => "ACCEPT",
 			ensure => absent,
-			tag    => "ferm";
+			tag    => "ferm_general_rule";
 		}
 	} else {
 		@@ferm::new::rule { "Munin connections from ${fqdn}_v46":
