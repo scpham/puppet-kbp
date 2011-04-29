@@ -12,7 +12,7 @@ class kbp-syslog::client {
 		proto  => "udp",
 		dport  => 514,
 		action => "ACCEPT",
-		tag    => "ferm_syslog";
+		tag    => "ferm_syslog_rule";
 	}
 }
 
