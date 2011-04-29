@@ -1,7 +1,7 @@
 class kbp_approx {
 	include approx
 
-	Kfile["/etc/approx/approx.conf"] {
+	Kfile <| title == "/etc/approx/approx.conf" |> {
 		source => "kbp_approx/approx.conf",
 	}
 
