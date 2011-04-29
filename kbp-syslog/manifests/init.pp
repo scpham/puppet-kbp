@@ -4,6 +4,14 @@ class kbp-syslog::server {
 
 class kbp-syslog::client {
 	include "kbp-syslog::client::$lsbdistcodename"
+
+	@@ferm::new::rule { "Syslog traffix from ${fqdn}":
+		saddr  => ${fqdn},
+		proto  => "udp",
+		dport  => 514,
+		action => "ACCEPT",
+		tag    => "ferm_syslog";
+	}
 }
 
 class kbp-syslog::server::etch inherits syslog-ng::server {

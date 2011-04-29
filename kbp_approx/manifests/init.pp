@@ -1,6 +1,10 @@
 class kbp_approx {
 	include approx
 
+	Kfile["/etc/approx/approx.conf"] {
+		source => "kbp-apt-proxy/approx/approx.conf",
+	}
+
 	ferm::new::rule { "APT proxy_v46":
 		proto     => "tcp",
 		dport     => "9999",
