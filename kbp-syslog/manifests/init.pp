@@ -1,5 +1,7 @@
 class kbp-syslog::server {
 	include "kbp-syslog::server::$lsbdistcodename"
+
+	Ferm::New::Rule <<| tag == "ferm_syslog" |>>
 }
 
 class kbp-syslog::client {
@@ -18,8 +20,6 @@ class kbp-syslog::server::etch inherits syslog-ng::server {
 	kfile { "/etc/logrotate.d/syslog-ng":
 		source => "kbp-syslog/server/logrotate.d/syslog-ng";
 	}
-
-	Ferm::New::Rule <<| tag == "ferm_syslog" |>>
 }
 
 class kbp-syslog::client::etch inherits sysklogd::client {
