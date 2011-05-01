@@ -69,23 +69,12 @@ class kbp-munin::client::mysql {
 class kbp-munin::server inherits munin::server {
 	include nagios::nsca
 
-	if $fqdn == "management.kumina.nl" {
-		@@ferm::new::rule { "Munin connections from ${fqdn}_v46":
-			saddr  => "${fqdn}",
-			proto  => "tcp",
-			dport  => "4949",
-			action => "ACCEPT",
-			ensure => absent,
-			tag    => "ferm";
-		}
-	} else {
-		@@ferm::new::rule { "Munin connections from ${fqdn}_v46":
-			saddr  => "${fqdn}",
-			proto  => "tcp",
-			dport  => "4949",
-			action => "ACCEPT",
-			tag    => "ferm";
-		}
+	@@ferm::new::rule { "Munin connections from ${fqdn}_v46":
+		saddr  => "${fqdn}",
+		proto  => "tcp",
+		dport  => "4949",
+		action => "ACCEPT",
+		tag    => "ferm_general_rule";
 	}
 
 	Kfile["/etc/munin/munin.conf"] {

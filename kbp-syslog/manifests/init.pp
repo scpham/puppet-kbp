@@ -1,9 +1,19 @@
 class kbp-syslog::server {
 	include "kbp-syslog::server::$lsbdistcodename"
+
+	Ferm::New::Rule <<| tag == 'ferm_syslog_rule' |>>
 }
 
 class kbp-syslog::client {
 	include "kbp-syslog::client::$lsbdistcodename"
+
+	@@ferm::new::rule { "Syslog traffic from ${fqdn}_v46":
+		saddr  => $fqdn,
+		proto  => "udp",
+		dport  => 514,
+		action => "ACCEPT",
+		tag    => "ferm_syslog_rule";
+	}
 }
 
 class kbp-syslog::server::etch inherits syslog-ng::server {
