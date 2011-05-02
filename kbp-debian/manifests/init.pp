@@ -82,7 +82,7 @@ class kbp-debian inherits kbp-base {
 
         # Packages we do not need, thank you very much!
         $unwantedpackages = ["pidentd", "dhcp3-client",
-          "dictionaries-common", "doc-linux-text", "doc-debian", "finger",
+          "dictionaries-common", "doc-linux-text", "doc-debian",
            "iamerican", "ibritish", "ispell", "laptop-detect", "libident",
            "mpack", "mtools", "popularity-contest", "procmail", "tcsh",
            "w3m", "wamerican", "ppp", "pppoe", "pppoeconf", "at", "mdetect",
