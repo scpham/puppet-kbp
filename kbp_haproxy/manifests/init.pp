@@ -1,7 +1,7 @@
 class kbp_haproxy::monitoring::icinga {
 	define site ($address) {
 		$confdir = "${environment}/${name}"
-		
+
 		kbp_icinga::configdir { $confdir:
 			sub => $environment;
 		}
