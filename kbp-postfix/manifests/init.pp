@@ -17,3 +17,13 @@ class kbp-postfix inherits postfix {
 		subscribe => File["/etc/ssl/certs"],
 	}
 }
+
+class kbp-postfix::secondary {
+	include kbp-postfix
+
+	ferm::new::rule { "SMTP connections":
+		proto  => "tcp",
+		dport  => 25,
+		action => "ACCEPT";
+	}
+}
