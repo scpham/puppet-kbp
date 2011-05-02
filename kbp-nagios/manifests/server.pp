@@ -9,7 +9,7 @@ class kbp-nagios::server inherits nagios::server {
 		proto  => "tcp",
 		dport  => "5666",
 		action => "ACCEPT",
-		tag    => "ferm";
+		tag    => "ferm_general_rule";
 	}
 
 	kfile { "/etc/nagios3/local.d":
