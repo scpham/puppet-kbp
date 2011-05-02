@@ -180,7 +180,7 @@ class kbp-base {
 
 	# Packages we like and want :)
 	kpackage {
-		["binutils","console-tools"]:
+		["binutils","console-tools","finger","pwgen","whois"]:
 			ensure => installed;
 		["hidesvn","bash-completion","bc","tcptraceroute","diffstat"]:
 			ensure => latest;
