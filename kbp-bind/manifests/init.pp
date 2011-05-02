@@ -9,7 +9,7 @@ class kbp-bind inherits bind {
 		content => "env.querystats /var/cache/bind/named.stats\nuser bind",
 	}
 
-	ferm::new::rule { "DNS connections":
+	ferm::new::rule { "DNS connections_v46":
 		proto  => "(tcp udp)",
 		dport  => 53,
 		action => "ACCEPT";
