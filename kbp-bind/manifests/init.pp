@@ -9,7 +9,7 @@ class kbp-bind inherits bind {
 		content => "env.querystats /var/cache/bind/named.stats\nuser bind",
 	}
 
-	@@ferm::new::rule { "Allow AXFR transfers from ${fqdn}":
+	@@ferm::new::rule { "Allow AXFR transfers from ${fqdn}_v46":
 		saddr  => $fqdn,
 		proto  => "(tcp udp)",
 		dport  => 53,
