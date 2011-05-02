@@ -12,7 +12,7 @@ class kbp-bind inherits bind {
 	@@ferm::new::rule { "Allow ${fqdn} do AXFR transfers":
 		saddr  => $fqdn,
 		proto  => "(tcp udp)",
-		dpot   => 53,
+		dport  => 53,
 		action => "ACCEPT",
 		tag    => "ferm_bind_rule_${environment}";
 	}
