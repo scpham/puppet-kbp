@@ -96,7 +96,7 @@ class kbp-debian inherits kbp-base {
                 ensure => latest,
         }
 
-        kfile { 
+        kfile {
 		"/etc/timezone":
                 	content => "Europe/Amsterdam\n",
 	                require => Package["tzdata"];

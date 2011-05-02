@@ -180,12 +180,12 @@ class kbp-base {
 
 	# Packages we like and want :)
 	kpackage {
-		["binutils","console-tools","finger","pwgen","whois"]:
+		["binutils","console-tools"]:
 			ensure => installed;
 		["hidesvn","bash-completion","bc","tcptraceroute","diffstat"]:
 			ensure => latest;
-    }
-	
+	}
+
 	if versioncmp($lsbdistrelease, 6.0) < 0 {
 		kpackage { "tcptrack":
 			ensure => latest,

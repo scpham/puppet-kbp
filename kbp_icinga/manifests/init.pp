@@ -318,7 +318,7 @@ class kbp_icinga {
 			tag     => "icinga_config";
 		}
 	}
-	
+
 	define hostgroup($conf_dir="false", $hg_alias, $members="false") {
 		$conf_dir_name = $conf_dir ? {
 			"false" => "${environment}/${fqdn}",

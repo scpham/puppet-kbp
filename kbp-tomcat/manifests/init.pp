@@ -204,7 +204,7 @@ class kbp-tomcat inherits tomcat {
 	#   default.
 	#
 	define apache_proxy_ajp_site($port,
-		                     $ssl=false,	
+		                     $ssl=false,
 		                     $serveralias=false,
 				     $path="/",
 		                     $documentroot=false,
