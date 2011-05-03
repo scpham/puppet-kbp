@@ -3,7 +3,7 @@ class kbp_puppet::master {
 	include gen_puppet::queue
 	include kbp_puppet::vim
 	include gen_rails
-	include kbp_rabbitmq
+	include kbp_activemq
 	include kbp-apache::passenger
 	include kbp_mysql::server
 	class { "kbp_trending::puppetmaster":
@@ -16,11 +16,6 @@ class kbp_puppet::master {
 		"/etc/puppet/fileserver.conf":
 			source  => "kbp_puppet/master/fileserver.conf",
 			require => Kpackage["puppetmaster"];
-		# These are needed for the custom configuration
-		"/usr/local/share/puppet":
-			ensure  => directory;
-		"/usr/local/share/puppet/rack":
-			ensure  => directory;
 	}
 
 	# Enforce Puppet modules directory permissions.
@@ -68,7 +63,7 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 		$pname = 'puppetmaster'
 	} else {
 		$sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
-		$pname - "puppetmaster-${sanitized_name}"
+		$pname = "puppetmaster-${sanitized_name}"
 	}
 
 	gen_puppet::master::config { $name:
