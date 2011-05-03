@@ -27,3 +27,13 @@ class kbp-postfix::secondary {
 		action => "ACCEPT";
 	}
 }
+
+class kbp-postfix::primary {
+	include kbp-postfix
+
+	ferm::new::rule { "SMTP connections_v46":
+		proto  => "tcp",
+		dport  => "(25 465)",
+		action => "ACCEPT";
+	}
+}
