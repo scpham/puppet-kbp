@@ -3,7 +3,7 @@ class kbp_puppet::master {
 	include gen_puppet::queue
 	include kbp_puppet::vim
 	include gen_rails
-	include kbp_rabbitmq
+	include kbp_activemq
 	include kbp-apache::passenger
 	include kbp_mysql::server
 	class { "kbp_trending::puppetmaster":
