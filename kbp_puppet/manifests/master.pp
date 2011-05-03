@@ -68,7 +68,7 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 		$pname = 'puppetmaster'
 	} else {
 		$sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
-		$pname - "puppetmaster-${sanitized_name}"
+		$pname = "puppetmaster-${sanitized_name}"
 	}
 
 	gen_puppet::master::config { $name:
