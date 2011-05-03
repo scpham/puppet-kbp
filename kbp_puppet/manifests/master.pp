@@ -66,6 +66,9 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 		$pname = "puppetmaster-${sanitized_name}"
 	}
 
+	# The rackdir that is being used
+	$rackdir = "${rackroot}/${pname}"
+
 	gen_puppet::master::config { $name:
 		configfile => $configfile,
 		debug      => $debug,
