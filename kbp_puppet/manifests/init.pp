@@ -22,9 +22,5 @@ class kbp_puppet::test_default_config {
 }
 
 class kbp_puppet::vim {
-	include kbp_vim
-
-	kbp_vim { "puppet":
-		package => "vim-puppet",
-	}
+	include kbp_vim::puppet
 }
