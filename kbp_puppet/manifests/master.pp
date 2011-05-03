@@ -16,11 +16,6 @@ class kbp_puppet::master {
 		"/etc/puppet/fileserver.conf":
 			source  => "kbp_puppet/master/fileserver.conf",
 			require => Kpackage["puppetmaster"];
-		# These are needed for the custom configuration
-		"/usr/local/share/puppet":
-			ensure  => directory;
-		"/usr/local/share/puppet/rack":
-			ensure  => directory;
 	}
 
 	# Enforce Puppet modules directory permissions.
