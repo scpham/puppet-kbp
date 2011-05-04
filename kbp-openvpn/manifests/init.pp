@@ -34,6 +34,6 @@ class kbp-openvpn::server inherits openvpn::server {
 			mod    => "state",
 			param  => "state",
 			value  => "(ESTABLISHED RELATED)",
-			action => "DROP";
+			action => "ACCEPT";
 	}
 }
