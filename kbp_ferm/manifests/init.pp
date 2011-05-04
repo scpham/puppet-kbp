@@ -35,6 +35,7 @@ class kbp_ferm {
 			action => "REJECT",
 			chain  => "FORWARD";
 		"Respond to ICMP packets (NDP)_v6":
+			prio     => 00001,
 			proto    => "icmpv6",
 			icmptype => "(neighbour-solicitation neighbour-advertisement)",
 			action   => "ACCEPT";
