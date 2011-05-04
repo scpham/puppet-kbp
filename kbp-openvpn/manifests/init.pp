@@ -21,4 +21,19 @@ class kbp-openvpn::server inherits openvpn::server {
 		dport  => 1194,
 		action => "ACCEPT";
 	}
+
+	ferm::new::mod {
+		"INVALID (forward)_v4":
+			chain  => "FORWARD",
+			mod    => "state",
+			param  => "state",
+			value  => "INVALID",
+			action => "DROP";
+		"ESTABLISHED RELATED (forward)_v4":
+			chain  => "FORWARD",
+			mod    => "state",
+			param  => "state",
+			value  => "(ESTABLISHED RELATED)",
+			action => "DROP";
+	}
 }
