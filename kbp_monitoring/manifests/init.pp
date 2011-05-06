@@ -12,7 +12,7 @@ class kbp_monitoring::client::sslcert {
 class kbp_monitoring::server($package="icinga") {
 	case $package {
 		"icinga": { include kbp_icinga::server }
-		"nagios": { include kbp_nagios::server }
+		"nagios": { include kbp-nagios::server }
 	}
 
 	@@ferm::new::rule {
