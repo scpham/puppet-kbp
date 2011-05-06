@@ -1,5 +1,15 @@
-class kbp_drbd {
+class kbp_drbd($otherhost) {
 	include kbp_drbd::monitoring::icinga
+
+	Ferm::New::Rule <<| tag == "ferm_drbd_rule_${otherhost}" |>>
+
+	@@ferm::new::rule { "DRBD connections from ${fqdn}":
+		saddr  => $fqdn,
+		proto  => "tcp",
+		dport  => 7789,
+		action => "ACCEPT",
+		tag    => "ferm_drbd_rule_${fqdn}";
+	}
 }
 
 class kbp_drbd::monitoring::icinga {
