@@ -7,7 +7,7 @@ class kbp-syslog::server {
 class kbp-syslog::client {
 	include "kbp-syslog::client::$lsbdistcodename"
 
-	@@ferm::new::rule { "Syslog traffic from ${fqdn}_v46":
+	@@ferm::new::rule { "Syslog traffic from ${fqdn}_v4":
 		saddr  => $fqdn,
 		proto  => "udp",
 		dport  => 514,
