@@ -66,21 +66,6 @@ class kbp_icinga::client {
 class kbp_icinga::server {
 	include gen_icinga::server
 
-	@@ferm::new::rule {
-		"NRPE connections from ${fqdn}_v46":
-			saddr  => "${fqdn}",
-			proto  => "tcp",
-			dport  => "5666",
-			action => "ACCEPT",
-			tag    => "ferm_general_rule";
-		"MySQL connections from ${fqdn}":
-			saddr  => "${fqdn}",
-			proto  => "tcp",
-			dport  => "3306",
-			action => "ACCEPT",
-			tag    => "ferm_mysql_rule_monitoring";
-	}
-
 	kbp_icinga::servercommand {
 		["check_ssh","check_smtp"]:
 			conf_dir => "generic";
