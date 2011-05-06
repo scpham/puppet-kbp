@@ -74,11 +74,11 @@ class kbp_icinga::server {
 			conf_dir => "generic",
 			nrpe     => true;
 		"check-host-alive":
-			conf_dir => "generic",
+			conf_dir    => "generic",
 			commandname => "check_ping",
-			argument1 => "-w 5000,100%",
-			argument2 => "-c 5000,100%",
-			argument3 => "-p 1";
+			argument1   => "-w 5000,100%",
+			argument2   => "-c 5000,100%",
+			argument3   => "-p 1";
 		"check_http":
 			conf_dir    => "generic",
 			commandname => "check_http",

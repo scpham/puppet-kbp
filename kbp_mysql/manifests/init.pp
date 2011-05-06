@@ -3,6 +3,7 @@ class kbp_mysql::server {
 	include kbp_mysql::monitoring::icinga::server
 	class { "kbp_trending::mysql":; }
 
+	Ferm::New::Rule <<| tag == "ferm_mysql_rule_${environment}" |>>
 	Ferm::New::Rule <<| tag == "ferm_mysql_rule_monitoring" |>>
 }
 
