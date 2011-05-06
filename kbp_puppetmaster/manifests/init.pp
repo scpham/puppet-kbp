@@ -26,7 +26,7 @@ class kbp_puppetmaster {
 		"puppetmaster":
 			ensure  => present,
 			require => Kfile["/etc/default/puppetmaster","/etc/apt/preferences.d/puppetmaster"];
-		["rails","rabbitmq-server","libmysql-ruby","puppetmaster-common"]:
+		["rails","rabbitmq-server","libmysql-ruby","puppetmaster-common","ipaddress-ruby"]:
 			ensure  => latest;
 	}
 
