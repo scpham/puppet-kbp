@@ -1,5 +1,5 @@
 class kbp-apache inherits apache {
-	include kbp-munin::client::apache
+	include kbp_munin::client::apache
 
 	ferm::new::rule {
 		"HTTP connections_v46":
