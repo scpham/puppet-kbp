@@ -3,7 +3,7 @@ class kbp_ferm {
 
 	Ferm::New::Rule <<| tag == 'ferm_general_rule' |>>
 
-	@chain {
+	@ferm::new::chain {
 		["PREROUTING_v4","PREROUTING_v6"]:
 			table => "nat";
 		["POSTROUTING_v4","POSTROUTING_v6"]:
