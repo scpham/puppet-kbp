@@ -3,6 +3,15 @@ class kbp_ferm {
 
 	Ferm::New::Rule <<| tag == 'ferm_general_rule' |>>
 
+	@chain {
+		["PREROUTING_v4","PREROUTING_v6"]:
+			table => "nat";
+		["POSTROUTING_v4","POSTROUTING_v6"]:
+			table  => "nat",
+			policy => "ACCEPT";
+		["ACCOUNTING_v4","ACCOUNTING_v6"]:;
+	}
+
 	# Basic rules
 	ferm::new::rule {
 		"Respond to ICMP packets_v4":
