@@ -1,6 +1,6 @@
 class kbp_nfs::client {
 	include gen_nfs::client
-	include kbp_trending::client::nfs
+	include kbp_trending::nfs
 }
 
 class kbp_nfs::client::trending::munin {
