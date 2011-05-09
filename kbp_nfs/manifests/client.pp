@@ -23,7 +23,7 @@ define kbp_nfs::client::mount ($source) {
 
 	# Check if the mount is still available, if not, remount
 	exec { "/bin/mount -o remount ${name}":
-		unless  => "cd ${name}",
+		unless  => "/bin/sh -c 'cd ${name}'",
 		require => Gen_nfs::Client::Mount["${name}"],
 	}
 }
