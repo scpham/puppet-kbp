@@ -1,4 +1,4 @@
-class kbp-munin::client inherits munin::client {
+class kbp_munin::client inherits munin::client {
 	kpackage { "libnet-snmp-perl":; }
 
 	munin::client::plugin::config { "files_user_plugin":
@@ -7,14 +7,14 @@ class kbp-munin::client inherits munin::client {
 	}
 }
 
-class kbp-munin::client::apache {
+class kbp_munin::client::apache {
 	# This class is should be included in kbp-apache to collect apache data for munin
-	include kbp-munin::client
+	include kbp_munin::client
 
 	kpackage { "libwww-perl":; }
 
 	kfile { "/etc/apache2/conf.d/server-status":
-		content => template("kbp-munin/server-status"),
+		content => template("kbp_munin/server-status"),
 		notify  => Exec["reload-apache2"];
 	}
 
@@ -25,8 +25,8 @@ class kbp-munin::client::apache {
 	}
 }
 
-class kbp-munin::client::puppetmaster {
-    include kbp-munin::client
+class kbp_munin::client::puppetmaster {
+    include kbp_munin::client
     munin::client::plugin {
         "puppet_nodes":
             script_path => "/usr/local/share/munin/plugins",
@@ -42,8 +42,8 @@ class kbp-munin::client::puppetmaster {
     }
 }
 
-class kbp-munin::client::mysql {
-    include kbp-munin::client
+class kbp_munin::client::mysql {
+    include kbp_munin::client
     if versioncmp($lsbdistrelease, 6) >= 0 {
         kpackage {"libcache-cache-perl":
             ensure => latest;
@@ -72,7 +72,7 @@ class kbp_munin::client::nfs {
 	munin::client::plugin { "nfs_client":; }
 }
 
-class kbp-munin::server inherits munin::server {
+class kbp_munin::server inherits munin::server {
 	include nagios::nsca
 
 	@@ferm::new::rule { "Munin connections from ${fqdn}_v46":
@@ -84,11 +84,11 @@ class kbp-munin::server inherits munin::server {
 	}
 
 	Kfile["/etc/munin/munin.conf"] {
-		source => "kbp-munin/server/munin.conf",
+		source => "kbp_munin/server/munin.conf",
 	}
 
 	kfile { "/etc/send_nsca.cfg":
-		source => "kbp-munin/server/send_nsca.cfg",
+		source => "kbp_munin/server/send_nsca.cfg",
 		mode => 640,
 		group => "munin",
 		require => Package["nsca"],
