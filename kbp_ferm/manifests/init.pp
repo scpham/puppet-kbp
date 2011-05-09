@@ -15,8 +15,7 @@ class kbp_ferm {
 		"Nicely reject tcp packets_v46":
 			prio       => "a1",
 			proto      => "tcp",
-			action     => "REJECT",
-			rejectwith => "tcp-reset";
+			action     => "REJECT reject-with tcp-reset";
 		"Reject everything else_v46":
 			prio   => "a2",
 			action => "REJECT";
@@ -27,8 +26,7 @@ class kbp_ferm {
 		"Nicely reject tcp packets (forward)_v46":
 			prio       => "a1",
 			proto      => "tcp",
-			action     => "REJECT",
-			rejectwith => "tcp-reset",
+			action     => "REJECT reject-with tcp-reset",
 			chain      => "FORWARD";
 		"Reject everything else (forward)_v46":
 			prio   => "a2",
