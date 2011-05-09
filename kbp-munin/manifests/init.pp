@@ -66,6 +66,12 @@ class kbp-munin::client::mysql {
     }
 }
 
+class kbp_munin::client::nfs {
+	include kbp_munin::client
+
+	munin::client::plugin { "nfs_client":; }
+}
+
 class kbp-munin::server inherits munin::server {
 	include nagios::nsca
 
