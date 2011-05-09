@@ -20,4 +20,10 @@ define kbp_nfs::client::mount ($source) {
 		content => "${name}",
 		require => Kpackage["offsite-backup"],
 	}
+
+	# Check if the mount is still available, if not, remount
+	exec { "/bin/mount -o remount ${name}":
+		unless  => "cd ${name}",
+		require => Gen_nfs::Client::Mount["${name}"],
+	}
 }
