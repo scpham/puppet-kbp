@@ -58,10 +58,10 @@
                        
                        http://activemq.apache.org/message-cursors.html
                        
+                  -->
                   <pendingQueuePolicy>
                     <vmQueueCursor/>
                   </pendingQueuePolicy>
-                  -->
                 </policyEntry>
               </policyEntries>
             </policyMap>
