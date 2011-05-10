@@ -98,9 +98,9 @@
             http://activemq.apache.org/producer-flow-control.html
              
         <systemUsage>
-            <systemUsage>
+            <systemUsage sendFailIfNoSpaceAfterTimeout="3000">
                 <memoryUsage>
-                    <memoryUsage limit="20 mb"/>
+                    <memoryUsage limit="512 mb"/>
                 </memoryUsage>
                 <storeUsage>
                     <storeUsage limit="1 gb"/>
