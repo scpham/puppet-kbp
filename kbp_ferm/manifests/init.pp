@@ -52,3 +52,23 @@ class kbp_ferm {
 			action   => "ACCEPT";
 	}
 }
+
+define forward($inc, $proto, $port, $dest, $dport) {
+	ferm::new::rule {
+		"Accept all ${proto} traffic from ${inc} to ${dest}:${port}_v4":
+			chain     => "FORWARD",
+			interface => "eth1",
+			saddr     => $inc,
+			daddr     => $dest,
+			proto     => $proto,
+			dport     => $port,
+			action    => "ACCEPT";
+		"Forward all ${proto} traffic from ${inc} to ${port} to ${dest}:${dport}_v4":
+			table  => "nat",
+			chain  => "PREROUTING",
+			daddr  => $inc,
+			proto  => $proto,
+			dport  => $port,
+			action => "DNAT to \"${dest}:${dport}\"";
+	}
+}
