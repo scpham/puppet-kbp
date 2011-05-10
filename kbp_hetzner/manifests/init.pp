@@ -1,5 +1,6 @@
 class kbp_hetzner inherits hetzner {
 	include munin::client
+
 	package { "lm-sensors":
 		ensure => "latest";
 	}
@@ -11,19 +12,25 @@ class kbp_hetzner inherits hetzner {
 	}
 
 	exec { "/sbin/modprobe f71882fg":
-		refreshonly => true,
-	}
-
-	#can be removed after all hosts have kickpuppet'd
-	file { "/etc/modprobe.d/hetzner-sensors.conf":
-		content => "f71882fg\n",
-		ensure  => "absent",
-		notify  => Exec["/sbin/modprobe f71882fg"];
+		refreshonly => true;
 	}
 
 	line { "f71882fg": # Load the module on boot
-		file 	=> "/etc/modules",
-		ensure 	=> "present",
-		content	=> "f71882fg";
+		file    => "/etc/modules",
+		ensure  => "present",
+		content => "f71882fg";
+	}
+
+	ferm::new::rule {
+		"Allow guests to connect to the internet":
+			chain     => "FORWARD",
+			interface => "ubr1",
+			outerface => "ubr0",
+			action    => "ACCEPT";
+		"Allow the internet to connect to guests":
+			chain     => "FORWARD",
+			interface => "ubr0",
+			outerface => "ubr1",
+			action    => "ACCEPT";
 	}
 }
