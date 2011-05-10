@@ -11,13 +11,14 @@ class kbp_nfs::server::default_config {
 		incoming_port => "4000",
 		outgoing_port => "4001",
 		mountd_port   => "4002",
+		lock_port     => "4003",
 		rpcmountdopts => "--state-directory-path /srv/nfs",
 		statdopts     => "--state-directory-path /srv/nfs",
 	}
 
 	ferm::new::rule { "Ports for nfsd":
 		proto  => "(tcp udp)",
-		dport  => "(4000 4001 4002)",
+		dport  => "(2049 4000 4001 4002 4003)",
 		action => "ACCEPT";
 	}
 }
