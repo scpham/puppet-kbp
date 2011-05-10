@@ -1,7 +1,11 @@
-class kbp-syslog::server {
+class kbp-syslog::server($environmentonly=false) {
 	include "kbp-syslog::server::$lsbdistcodename"
 
-	Ferm::New::Rule <<| tag == 'ferm_syslog_rule' |>>
+	if ($environmentonly) {
+		Ferm::New::Rule <<| tag == "ferm_syslog_rule_${environment}" |>>
+	} else {
+		Ferm::New::Rule <<| tag == "ferm_syslog_rule" |>>
+	}
 }
 
 class kbp-syslog::client {
