@@ -21,3 +21,10 @@ class kbp_trending::nfs ($method="munin") {
 		default: { fail("No trending for ${method}.") }
 	}
 }
+
+class kbp_trending::nfsd ($method="munin") {
+	case $method {
+		"munin": { include kbp_munin::client::nfsd }
+		default: { fail("No trending for ${method}.") }
+	}
+}
