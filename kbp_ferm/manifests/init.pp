@@ -53,7 +53,7 @@ class kbp_ferm {
 	}
 }
 
-define forward($inc, $proto, $port, $dest, $dport) {
+define kbp_ferm::forward($inc, $proto, $port, $dest, $dport) {
 	ferm::new::rule {
 		"Accept all ${proto} traffic from ${inc} to ${dest}:${port}_v4":
 			chain     => "FORWARD",
