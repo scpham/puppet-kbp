@@ -26,43 +26,44 @@ class kbp_munin::client::apache {
 }
 
 class kbp_munin::client::puppetmaster {
-    include kbp_munin::client
-    munin::client::plugin {
-        "puppet_nodes":
-            script_path => "/usr/local/share/munin/plugins",
-            script      => "puppet_";
-        "puppet_totals":
-            script_path => "/usr/local/share/munin/plugins",
-            script      => "puppet_";
-    }
+	include kbp_munin::client
+	munin::client::plugin {
+		"puppet_nodes":
+			script_path => "/usr/local/share/munin/plugins",
+			script      => "puppet_";
+		"puppet_totals":
+			script_path => "/usr/local/share/munin/plugins",
+			script      => "puppet_";
+	}
 
-    munin::client::plugin::config { "puppet_":
-        section => "puppet_*",
-        content => "user root";
-    }
+	munin::client::plugin::config { "puppet_":
+		section => "puppet_*",
+		content => "user root";
+	}
 }
 
 class kbp_munin::client::mysql {
-    include kbp_munin::client
-    if versioncmp($lsbdistrelease, 6) >= 0 {
-        kpackage {"libcache-cache-perl":
-            ensure => latest;
-        }
+	include kbp_munin::client
+	if versioncmp($lsbdistrelease, 6) >= 0 {
 
-        define munin_mysql {
-            munin::client::plugin { "mysql_${name}":
-                script => "mysql_";
-            }
-        }
+	kpackage {"libcache-cache-perl":
+		ensure => latest;
+	}
 
-        munin_mysql {["bin_relay_log","commands","connections",
-            "files_tables","innodb_bpool","innodb_bpool_act",
-            "innodb_insert_buf","innodb_io","innodb_io_pend",
-            "innodb_log","innodb_rows","innodb_semaphores",
-            "innodb_tnx","myisam_indexes","network_traffic",
-            "qcache","qcache_mem","replication","select_types",
-            "slow","sorts","table_locks","tmp_tables"]:;
-        }
+	define munin_mysql {
+	    munin::client::plugin { "mysql_${name}":
+		script => "mysql_";
+	    }
+	}
+
+	munin_mysql {["bin_relay_log","commands","connections",
+	    "files_tables","innodb_bpool","innodb_bpool_act",
+	    "innodb_insert_buf","innodb_io","innodb_io_pend",
+	    "innodb_log","innodb_rows","innodb_semaphores",
+	    "innodb_tnx","myisam_indexes","network_traffic",
+	    "qcache","qcache_mem","replication","select_types",
+	    "slow","sorts","table_locks","tmp_tables"]:;
+	}
     }
 }
 
@@ -70,6 +71,12 @@ class kbp_munin::client::nfs {
 	include kbp_munin::client
 
 	munin::client::plugin { "nfs_client":; }
+}
+
+class kbp_munin::client::nfsd {
+	include kbp_munin::client
+
+	munin::client::plugin { "nfsd":; }
 }
 
 class kbp_munin::server inherits munin::server {
