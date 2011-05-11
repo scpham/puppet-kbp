@@ -1,10 +1,13 @@
 class kbp_nfs::client {
 	include gen_nfs::client
 	include kbp_trending::nfs
-}
 
-class kbp_nfs::client::trending::munin {
-	
+	@@ferm::new::rule { "allow nfs for $hostname in environment $environment":
+		tag    => "ferm_nfs_rule_${environment}",
+		proto  => "(tcp udp)",
+		saddr  => $ipaddress,
+		action => "ACCEPT",
+	}
 }
 
 define kbp_nfs::client::mount ($source) {
