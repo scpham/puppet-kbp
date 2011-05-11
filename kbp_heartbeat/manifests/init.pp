@@ -3,7 +3,7 @@ class kbp_heartbeat($otherhost) {
 
 	@@ferm::new::rule { "Heartbeat connections from ${fqdn}":
 		saddr  => $fqdn,
-		proto  => "tcp",
+		proto  => "udp",
 		dport  => 694,
 		action => "ACCEPT",
 		tag    => "ferm_heartbeat_rule_${fqdn}";
