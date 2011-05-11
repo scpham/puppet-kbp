@@ -2,7 +2,7 @@ class kbp_nfs::client {
 	include gen_nfs::client
 	include kbp_trending::nfs
 
-	@@ferm::new::rule { "allow nfs for $hostname in environment $environment":
+	@@ferm::new::rule { "NFS connections from ${fqdn}":
 		tag    => "ferm_nfs_rule_${environment}",
 		proto  => "(tcp udp)",
 		saddr  => $ipaddress,
