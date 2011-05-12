@@ -1,10 +1,13 @@
 class kbp_nfs::client {
 	include gen_nfs::client
 	include kbp_trending::nfs
-}
 
-class kbp_nfs::client::trending::munin {
-	
+	@@ferm::new::rule { "NFS connections from ${fqdn}_v4":
+		tag    => "ferm_nfs_rule_${environment}",
+		proto  => "(tcp udp)",
+		saddr  => $ipaddress,
+		action => "ACCEPT",
+	}
 }
 
 define kbp_nfs::client::mount ($source) {
