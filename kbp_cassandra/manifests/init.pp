@@ -3,6 +3,7 @@ class kbp_cassandra::server {
 		saddr  => "localhost",
 		proto  => "tcp",
 		dport  => 8080,
-		action => "ACCEPT";
+		action => "ACCEPT"
+		tag    => "ferm_cassandra_rule_jmx";
 	}
 }
