@@ -8,7 +8,7 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false) {
 		"Glassfish JMX port for ${name}":
 			proto  => "tcp",
 			dport  => $jmxport,
-			action => "ACCEPT"
+			action => "ACCEPT",
 			tag    => "ferm_glassfish_rule";
 	}
 
@@ -17,7 +17,7 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false) {
 			"Glassfish web for ${name}":
 				proto  => "tcp",
 				dport  => $webport,
-				action => "ACCEPT"
+				action => "ACCEPT",
 				tag    => "ferm_glassfish_rule";
 		}
 	}
