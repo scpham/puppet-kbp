@@ -1,9 +1,9 @@
 class kbp_ferm {
 	include ferm::new
 
-	Ferm::New::Rule <<| tag == 'ferm_general_rule' |>>
+	Ferm::Rule <<| tag == 'ferm_general_rule' |>>
 
-	@ferm::new::chain {
+	@ferm::chain {
 		["PREROUTING_v4","PREROUTING_v6"]:
 			table => "nat";
 		["POSTROUTING_v4","POSTROUTING_v6"]:
@@ -13,7 +13,7 @@ class kbp_ferm {
 	}
 
 	# Basic rules
-	ferm::new::rule {
+	ferm::rule {
 		"Respond to ICMP packets_v4":
 			proto    => "icmp",
 			icmptype => "echo-request",
@@ -54,7 +54,7 @@ class kbp_ferm {
 }
 
 define kbp_ferm::forward($inc, $proto, $port, $dest, $dport) {
-	ferm::new::rule {
+	ferm::rule {
 		"Accept all ${proto} traffic from ${inc} to ${dest}:${port}_v4":
 			chain     => "FORWARD",
 			interface => "eth1",

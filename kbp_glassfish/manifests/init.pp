@@ -1,5 +1,5 @@
 define kbp_glassfish::domain($adminport, $jmxport, $webport=false) {
-	ferm::new::rule {
+	ferm::rule {
 		"Glassfish admin panel for ${name}":
 			proto  => "tcp",
 			dport  => $adminport,
@@ -13,7 +13,7 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false) {
 	}
 
 	if $webport {
-		ferm::new::rule {
+		ferm::rule {
 			"Glassfish web for ${name}":
 				proto  => "tcp",
 				dport  => $webport,

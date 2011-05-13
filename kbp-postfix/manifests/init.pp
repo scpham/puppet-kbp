@@ -2,7 +2,7 @@ class kbp-postfix inherits postfix {
 	include munin::client
 	include openssl::common
 
-    munin::client::plugin { ["postfix_mailqueue", "postfix_mailstats", "postfix_mailvolume"]:
+	munin::client::plugin { ["postfix_mailqueue", "postfix_mailstats", "postfix_mailvolume"]:
 		ensure => present,
 	}
 
@@ -21,7 +21,7 @@ class kbp-postfix inherits postfix {
 class kbp-postfix::secondary {
 	include kbp-postfix
 
-	ferm::new::rule { "SMTP connections_v46":
+	ferm::rule { "SMTP connections_v46":
 		proto  => "tcp",
 		dport  => 25,
 		action => "ACCEPT";
@@ -31,7 +31,7 @@ class kbp-postfix::secondary {
 class kbp-postfix::primary {
 	include kbp-postfix
 
-	ferm::new::rule { "SMTP connections_v46":
+	ferm::rule { "SMTP connections_v46":
 		proto  => "tcp",
 		dport  => "(25 465)",
 		action => "ACCEPT";

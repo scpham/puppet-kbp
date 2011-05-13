@@ -1,7 +1,7 @@
 class kbp-libvirt inherits libvirt {
 	include munin::client
 
-	ferm::new::mod { "Allow bridged packets":
+	ferm::mod { "Allow bridged packets":
 		chain  => "FORWARD",
 		mod    => "physdev",
 		param  => "physdev-is-bridged",

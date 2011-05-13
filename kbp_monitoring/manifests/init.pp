@@ -1,6 +1,7 @@
 class kbp_monitoring::client::sslcert {
 	include kbp_monitoring::client
 	include kbp_sudo
+
 	gen_sudo::rule { "check_sslcert sudo rules":
 		entity => "nagios",
 		as_user => "root",
@@ -15,7 +16,7 @@ class kbp_monitoring::server($package="icinga") {
 		"nagios": { include kbp-nagios::server }
 	}
 
-	@@ferm::new::rule {
+	@@ferm::rule {
 		"NRPE connections from ${fqdn}_v46":
 			saddr  => "${fqdn}",
 			proto  => "tcp",

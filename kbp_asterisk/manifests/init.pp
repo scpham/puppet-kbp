@@ -1,13 +1,13 @@
 class kbp_asterisk::server {
 	include asterisk::server
 
-	ferm::new::rule { "SIP connections":
+	ferm::rule { "SIP connections":
 		proto  => "udp",
 		dport  => "(sip 15000:15100)",
 		action => "ACCEPT";
 	}
 
-	@@ferm::new::rule { "Asterisk CDR logging from ${fqdn}_v4":
+	@@ferm::rule { "Asterisk CDR logging from ${fqdn}_v4":
 		saddr  => "81.30.39.28",
 		proto  => "tcp",
 		dport  => 3306,

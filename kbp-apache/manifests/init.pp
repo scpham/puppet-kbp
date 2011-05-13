@@ -1,7 +1,7 @@
 class kbp-apache inherits apache {
 	include kbp_munin::client::apache
 
-	ferm::new::rule {
+	ferm::rule {
 		"HTTP connections_v46":
 			proto  => "tcp",
 			dport  => "80",
