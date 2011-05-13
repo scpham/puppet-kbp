@@ -8,7 +8,7 @@ class kbp_puppetmaster {
 		method => "munin";
 	}
 
-	ferm::rule { "Puppet connections_v46":
+	ferm::rule { "Puppet connections":
 		proto  => "tcp",
 		dport  => "8140",
 		action => "ACCEPT";

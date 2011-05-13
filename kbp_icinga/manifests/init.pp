@@ -1,13 +1,3 @@
-class kbp_icinga::cassandra {
-	@@ferm::rule { "Cassandra monitoring from ${fqdn}":
-		saddr  => $fqdn,
-		proto  => "tcp",
-		dport  => "(7000 8080 9160)",
-		action => "ACCEPT",
-		tag    => "ferm_cassandra_rule_monitoring";
-	}
-}
-
 class kbp_icinga::client {
 	kbp_icinga::configdir { "${environment}/${fqdn}":
 		sub => $environment;

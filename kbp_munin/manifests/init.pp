@@ -82,8 +82,8 @@ class kbp_munin::client::nfsd {
 class kbp_munin::server inherits munin::server {
 	include nagios::nsca
 
-	@@ferm::rule { "Munin connections from ${fqdn}_v46":
-		saddr  => "${fqdn}",
+	@@ferm::rule { "Munin connections from ${fqdn}":
+		saddr  => $fqdn,
 		proto  => "tcp",
 		dport  => "4949",
 		action => "ACCEPT",

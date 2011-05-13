@@ -18,26 +18,26 @@ class kbp_ferm {
 			proto    => "icmp",
 			icmptype => "echo-request",
 			action   => "ACCEPT";
-		"Drop UDP packets_v46":
+		"Drop UDP packets":
 			prio  => "a0",
 			proto => "udp";
-		"Nicely reject tcp packets_v46":
+		"Nicely reject tcp packets":
 			prio       => "a1",
 			proto      => "tcp",
 			action     => "REJECT reject-with tcp-reset";
-		"Reject everything else_v46":
+		"Reject everything else":
 			prio   => "a2",
 			action => "REJECT";
-		"Drop UDP packets (forward)_v46":
+		"Drop UDP packets (forward)":
 			prio  => "a0",
 			proto => "udp",
 			chain => "FORWARD";
-		"Nicely reject tcp packets (forward)_v46":
+		"Nicely reject tcp packets (forward)":
 			prio       => "a1",
 			proto      => "tcp",
 			action     => "REJECT reject-with tcp-reset",
 			chain      => "FORWARD";
-		"Reject everything else (forward)_v46":
+		"Reject everything else (forward)":
 			prio   => "a2",
 			action => "REJECT",
 			chain  => "FORWARD";

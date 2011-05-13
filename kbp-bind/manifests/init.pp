@@ -11,13 +11,13 @@ class kbp-bind inherits bind {
 #		content => "env.querystats /var/cache/bind/named.stats\nuser bind",
 #	}
 
-	ferm::rule { "DNS connections_v46":
+	ferm::rule { "DNS connections":
 		proto  => "(tcp udp)",
 		dport  => 53,
 		action => "ACCEPT";
 	}
 
-	@@ferm::rule { "Allow AXFR transfers from ${fqdn}_v46":
+	@@ferm::rule { "Allow AXFR transfers from ${fqdn}":
 		saddr  => $fqdn,
 		proto  => "(tcp udp)",
 		dport  => 53,

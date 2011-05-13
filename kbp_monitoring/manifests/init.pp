@@ -17,23 +17,29 @@ class kbp_monitoring::server($package="icinga") {
 	}
 
 	@@ferm::rule {
-		"NRPE connections from ${fqdn}_v46":
-			saddr  => "${fqdn}",
+		"NRPE monitoring from ${fqdn}":
+			saddr  => $fqdn,
 			proto  => "tcp",
 			dport  => "5666",
 			action => "ACCEPT",
 			tag    => "ferm_general_rule";
-		"MySQL connections from ${fqdn}":
-			saddr  => "${fqdn}",
+		"MySQL monitoring from ${fqdn}":
+			saddr  => $fqdn,
 			proto  => "tcp",
 			dport  => "3306",
 			action => "ACCEPT",
 			tag    => "ferm_mysql_rule_monitoring";
-		"Sphinxsearch connections from ${fqdn}":
-			saddr  => "${fqdn}",
+		"Sphinxsearch monitoring from ${fqdn}":
+			saddr  => $fqdn,
 			proto  => "tcp",
 			dport  => "3312",
 			action => "ACCEPT",
 			tag    => "ferm_sphinxsearch_rule_monitoring";
+		"Cassandra monitoring from ${fqdn}":
+			saddr  => $fqdn,
+			proto  => "tcp",
+			dport  => "(7000 8080 9160)",
+			action => "ACCEPT",
+			tag    => "ferm_cassandra_rule_monitoring";
 	}
 }
