@@ -6,9 +6,7 @@ class kbp_puppet::master {
 	include kbp_activemq
 	include kbp-apache::passenger
 	include kbp_mysql::server
-	class { "kbp_trending::puppetmaster":
-		method => "munin";
-	}
+	include kbp_trending::puppetmaster
 
 	gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
 
@@ -38,8 +36,6 @@ class kbp_puppet::master {
 			acl     => "default:user:puppet:r-x",
 			require => Kfile["/srv/puppet"];
 	}
-
-	apache::site { "puppetmaster":; }
 }
 
 # kbp_puppet::master::config
@@ -94,16 +90,19 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 	# The vhost-addition should set the documentroot, the puppet directory,
 	# the additional apache permissions and debugging options.
 	kfile {
-		"/etc/apache2/vhost-additions/${name}/permissions.conf":
+		"/etc/apache2/vhost-additions/${pname}/permissions.conf":
 			notify  => Exec["reload-apache2"],
 			content => template("kbp_puppet/master/apache2/vhost-additions/permissions.conf.erb");
-		"/etc/apache2/vhost-additions/${name}/rack.conf":
+		"/etc/apache2/vhost-additions/${pname}/rack.conf":
 			notify  => Exec["reload-apache2"],
 			source  => "kbp_puppet/master/apache2/vhost-additions/rack.conf";
-		"/etc/apache2/vhost-additions/${name}/ssl.conf":
+		"/etc/apache2/vhost-additions/${pname}/ssl.conf":
 			notify  => Exec["reload-apache2"],
 			content => template("kbp_puppet/master/apache2/vhost-additions/ssl.conf.erb");
 	}
+
+	# Enable the site
+	apache::site { "${pname}":; }
 
 	if $name == 'default' {
 		$real_dbname = 'puppet'

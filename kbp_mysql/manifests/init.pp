@@ -1,7 +1,7 @@
 class kbp_mysql::server {
 	include mysql::server
 	include kbp_mysql::monitoring::icinga::server
-	class { "kbp_trending::mysql":; }
+	include kbp_trending::mysql
 
 	Ferm::Rule <<| tag == "mysql_${environment}" |>>
 	Ferm::Rule <<| tag == "mysql_monitoring" |>>
