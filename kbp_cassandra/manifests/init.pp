@@ -1,9 +1,5 @@
 class kbp_cassandra::server {
-	ferm::new::rule { "Cassandra JMX connections":
-		saddr  => "localhost",
-		proto  => "tcp",
-		dport  => 8080,
-		action => "ACCEPT",
-		tag    => "ferm_cassandra_rule_jmx";
-	}
+	Ferm::New::Rule <<| tag == "ferm_cassandra_rule_JMX_${environment}" |>>
+	Ferm::New::Rule <<| tag == "ferm_cassandra_rule_cluster_${environment}" |>>
+	Ferm::New::Rule <<| tag == "ferm_cassandra_rule_client_${environment}" |>>
 }
