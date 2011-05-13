@@ -7,7 +7,7 @@ SSLCertificateFile      <%= vardir %>/ssl/certs/<%= fqdn %>.pem
 SSLCACertificateFile    <%= vardir %>/ssl/ca/ca_crt.pem
 SSLCertificateChainFile <%= vardir %>/ssl/ca/ca_crt.pem
 SSLCARevocationFile     <%= vardir %>/ssl/ca/ca_crl.pem
-SSLVerifyClient optional
+SSLVerifyClient required
 SSLVerifyDepth  1
 SSLOptions +StdEnvVars
 
