@@ -10,12 +10,6 @@ class kbp_puppet::master {
 
 	gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
 
-	kfile {
-		"/etc/puppet/fileserver.conf":
-			source  => "kbp_puppet/master/fileserver.conf",
-			require => Kpackage["puppetmaster"];
-	}
-
 	# Enforce Puppet modules directory permissions.
 	kfile {
 		"/srv/puppet":
