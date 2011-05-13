@@ -7,13 +7,13 @@ class kbp_mysql::server {
 	Ferm::Rule <<| tag == "mysql_monitoring" |>>
 }
 
-class kbp_mysql::client {
+class kbp_mysql::client($customtag="mysql_${environment}") {
 	@@ferm::rule { "MySQL connections from ${fqdn}":
 		saddr  => $fqdn,
 		proto  => "tcp",
 		dport  => 3306,
 		action => "ACCEPT",
-		tag    => "mysql_${environment}";
+		tag    => $customtag;
 	}
 }
 
