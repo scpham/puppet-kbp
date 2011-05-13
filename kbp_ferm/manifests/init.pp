@@ -1,7 +1,7 @@
 class kbp_ferm {
 	include ferm::new
 
-	Ferm::Rule <<| tag == 'ferm_general_rule' |>>
+	Ferm::Rule <<| tag == "general" |>>
 
 	@ferm::chain {
 		["PREROUTING_v4","PREROUTING_v6"]:

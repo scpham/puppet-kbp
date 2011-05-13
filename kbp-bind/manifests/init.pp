@@ -22,6 +22,6 @@ class kbp-bind inherits bind {
 		proto  => "(tcp udp)",
 		dport  => 53,
 		action => "ACCEPT",
-		tag    => "ferm_bind_rule_${environment}";
+		tag    => "bind_${environment}";
 	}
 }

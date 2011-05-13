@@ -12,6 +12,6 @@ class kbp_asterisk::server {
 		proto  => "tcp",
 		dport  => 3306,
 		action => "ACCEPT",
-		tag    => "ferm_mysql_rule_asterisk";
+		tag    => "mysql_asterisk";
 	}
 }

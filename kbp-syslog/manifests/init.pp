@@ -2,9 +2,9 @@ class kbp-syslog::server($environmentonly=false) {
 	include "kbp-syslog::server::$lsbdistcodename"
 
 	if ($environmentonly) {
-		Ferm::Rule <<| tag == "ferm_syslog_rule_${environment}" |>>
+		Ferm::Rule <<| tag == "syslog_${environment}" |>>
 	} else {
-		Ferm::Rule <<| tag == "ferm_syslog_rule" |>>
+		Ferm::Rule <<| tag == "syslog" |>>
 	}
 }
 
@@ -16,7 +16,7 @@ class kbp-syslog::client {
 		proto  => "udp",
 		dport  => 514,
 		action => "ACCEPT",
-		tag    => ["ferm_syslog_rule","ferm_syslog_rule_${environment}"];
+		tag    => ["syslog","syslog_${environment}"];
 	}
 }
 

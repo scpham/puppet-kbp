@@ -87,7 +87,7 @@ class kbp_munin::server inherits munin::server {
 		proto  => "tcp",
 		dport  => "4949",
 		action => "ACCEPT",
-		tag    => "ferm_general_rule";
+		tag    => "general";
 	}
 
 	Kfile["/etc/munin/munin.conf"] {
