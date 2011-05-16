@@ -20,9 +20,9 @@ class kbp-debian::lenny {
 			components => "main";
 	}
 
-        package { "mailx":
-                ensure => installed
-        }
+	package { "mailx":
+		ensure => installed
+	}
 
 	# Package which makes sure the installed Backports.org repository key is
 	# up-to-date.
@@ -42,12 +42,12 @@ class kbp-debian::squeeze {
 	}
 
 	gen_apt::source {
-	        "${lsbdistcodename}-updates":
-		            comment => "Repository for update packages in $lsbdistcodename, such as SpamAssassin and Clamav",
-		            sourcetype => "deb",
-		            uri => "$aptproxy/debian/",
-		            distribution => "${lsbdistcodename}-updates",
-		            components => "main";
+		"${lsbdistcodename}-updates":
+			    comment => "Repository for update packages in $lsbdistcodename, such as SpamAssassin and Clamav",
+			    sourcetype => "deb",
+			    uri => "$aptproxy/debian/",
+			    distribution => "${lsbdistcodename}-updates",
+			    components => "main";
 	}
 
 	kpackage { "bsd-mailx":
@@ -56,94 +56,94 @@ class kbp-debian::squeeze {
 }
 
 class kbp-debian inherits kbp-base {
-        $aptproxy = "http://apt-proxy.sys.kumina.nl:9999"
+	$aptproxy = "http://apt-proxy.sys.kumina.nl:9999"
 
 	include "kbp-debian::$lsbdistcodename"
 	include rng-tools
 
-        define check_alternatives($linkto) {
-                exec { "/usr/sbin/update-alternatives --set $name $linkto":
-                        unless => "/bin/sh -c '[ -L /etc/alternatives/$name ] && [ /etc/alternatives/$name -ef $linkto ]'"
-                }
-        }
+	define check_alternatives($linkto) {
+		exec { "/usr/sbin/update-alternatives --set $name $linkto":
+			unless => "/bin/sh -c '[ -L /etc/alternatives/$name ] && [ /etc/alternatives/$name -ef $linkto ]'"
+		}
+	}
 
-        # Packages we want to have installed
-        $wantedpackages = ["openssh-server", "less", "lftp", "screen", "file", "debsums", "dlocate", "gnupg",
+	# Packages we want to have installed
+	$wantedpackages = ["openssh-server", "less", "lftp", "screen", "file", "debsums", "dlocate", "gnupg",
 		"ucf", "elinks", "reportbug", "tree", "netcat", "openssh-client", "tcpdump", "iproute", "acl",
 		"psmisc", "udev", "lsof", "bzip2", "strace", "pinfo", "lsb-release", "ethtool", "host",
 		"socat", "make", "nscd"]
-        kpackage { $wantedpackages:
-                ensure => installed;
-        }
+	kpackage { $wantedpackages:
+		ensure => installed;
+	}
 
 	package { "ca-certificates":
 		ensure => installed;
 	}
 
-        # Packages we do not need, thank you very much!
-        $unwantedpackages = ["pidentd", "dhcp3-client",
-          "dictionaries-common", "doc-linux-text", "doc-debian",
-           "iamerican", "ibritish", "ispell", "laptop-detect", "libident",
-           "mpack", "mtools", "popularity-contest", "procmail", "tcsh",
-           "w3m", "wamerican", "ppp", "pppoe", "pppoeconf", "at", "mdetect",
-           "tasksel"]
-        kpackage { $unwantedpackages:
-                ensure => absent;
-        }
+	# Packages we do not need, thank you very much!
+	$unwantedpackages = ["pidentd", "dhcp3-client",
+	  "dictionaries-common", "doc-linux-text", "doc-debian",
+	   "iamerican", "ibritish", "ispell", "laptop-detect", "libident",
+	   "mpack", "mtools", "popularity-contest", "procmail", "tcsh",
+	   "w3m", "wamerican", "ppp", "pppoe", "pppoeconf", "at", "mdetect",
+	   "tasksel"]
+	kpackage { $unwantedpackages:
+		ensure => absent;
+	}
 
-        # Local timezone
-        package { "tzdata":
-                ensure => latest,
-        }
+	# Local timezone
+	package { "tzdata":
+		ensure => latest,
+	}
 
-        kfile {
+	kfile {
 		"/etc/timezone":
-                	content => "Europe/Amsterdam\n",
-	                require => Package["tzdata"];
-        	"/etc/localtime":
-        	        ensure => link,
+			content => "Europe/Amsterdam\n",
+			require => Package["tzdata"];
+		"/etc/localtime":
+			ensure => link,
 			target => "/usr/share/zoneinfo/Europe/Amsterdam",
-	                require => Package["tzdata"];
-        }
+			require => Package["tzdata"];
+	}
 
-        # Ensure /tmp always has the correct permissions. (It's a common
-        # mistake to forget to do a chmod 1777 /tmp when /tmp is moved to its
-        # own filesystem.)
-        kfile { "/tmp":
-                mode => 1777,
-        }
+	# Ensure /tmp always has the correct permissions. (It's a common
+	# mistake to forget to do a chmod 1777 /tmp when /tmp is moved to its
+	# own filesystem.)
+	kfile { "/tmp":
+		mode => 1777,
+	}
 
-        service { "ssh":
-                ensure => running,
-                require => Package["openssh-server"],
-        }
+	service { "ssh":
+		ensure => running,
+		require => Package["openssh-server"],
+	}
 
-        # We want to use pinfo as infobrowser, so when the symlink is not
-        # pointing towards pinfo, we need to run update-alternatives
-        check_alternatives { "infobrowser":
-                linkto => "/usr/bin/pinfo",
-                require => Package["pinfo"]
-        }
+	# We want to use pinfo as infobrowser, so when the symlink is not
+	# pointing towards pinfo, we need to run update-alternatives
+	check_alternatives { "infobrowser":
+		linkto => "/usr/bin/pinfo",
+		require => Package["pinfo"]
+	}
 
-        kfile { "/etc/skel/.bash_profile":
+	kfile { "/etc/skel/.bash_profile":
 		source => "kbp-debian/skel/bash_profile";
-        }
+	}
 
-        package { "adduser":
-                ensure => installed,
-        }
+	package { "adduser":
+		ensure => installed,
+	}
 
-        kfile { "/etc/adduser.conf":
-                source => "kbp-debian/adduser.conf",
-                require => Package["adduser"],
-        }
+	kfile { "/etc/adduser.conf":
+		source => "kbp-debian/adduser.conf",
+		require => Package["adduser"],
+	}
 
-        package {
+	package {
 		"locales":
 			require => File["/var/cache/debconf/locales.preseed"],
 			responsefile => "/var/cache/debconf/locales.preseed",
 			ensure => installed;
-        }
+	}
 
 	kfile {
 		"/var/cache/debconf/locales.preseed":
@@ -153,10 +153,10 @@ class kbp-debian inherits kbp-base {
 	# Mail on upgrades with cron-apt
 	kpackage { "cron-apt":; }
 
-        kfile { "/etc/cron-apt/config":
-                source => "kbp-debian/cron-apt/config",
-                require => Package["cron-apt"],
-        }
+	kfile { "/etc/cron-apt/config":
+		source => "kbp-debian/cron-apt/config",
+		require => Package["cron-apt"],
+	}
 
 	gen_apt::source {
 		"${lsbdistcodename}-base":

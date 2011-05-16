@@ -82,7 +82,7 @@ class kbp-zope inherits zope {
 	}
 
 	define instance($port, $domain=false, $aliases=false, $debugmode=false,
-	                $zodbcachesize=20000, $zeosocket=false, $products_from=false,
+			$zodbcachesize=20000, $zeosocket=false, $products_from=false,
 			$user="zope", $group="zope") {
 		# Set up a local Zope instance
 		#

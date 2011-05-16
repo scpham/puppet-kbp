@@ -54,16 +54,16 @@ class kbp-subversion inherits trac {
 		ensure => installed,
 	}
 
-        # Use the prefork mpm. The threaded mpms may cause SVN corruption. (See
-        # http://www.szakmeister.net/blog/fsfsverify/)
-        package { ["apache2-mpm-prefork", "libapache2-svn"]:
-                ensure => installed,
-        }
+	# Use the prefork mpm. The threaded mpms may cause SVN corruption. (See
+	# http://www.szakmeister.net/blog/fsfsverify/)
+	package { ["apache2-mpm-prefork", "libapache2-svn"]:
+		ensure => installed,
+	}
 
 	apache::module {
 		"authnz_ldap":
 			ensure => present;
 		"dav_svn":
 			require => Package["libapache2-svn"];
-        }
+	}
 }

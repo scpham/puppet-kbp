@@ -1,4 +1,5 @@
 class kbp-base {
+	include gen_puppet::concat
 	include gen_base
 	include sysctl
 	include kbp_acpi
@@ -25,7 +26,13 @@ class kbp-base {
 			order             => 10; # legacy, only used on lenny systems
 	}
 
-	define staff_user($ensure = "present", $fullname, $uid, $password_hash) {
+	concat { "/etc/ssh/kumina.keys":
+		owner => "root",
+		group => "root",
+		mode  => 0644,
+	}
+
+	define staff_user($ensure = "present", $fullname, $uid, $password_hash, $sshkeys = "") {
 		$username = $name
 		user { "$username":
 			comment 	=> $fullname,
@@ -42,10 +49,7 @@ class kbp-base {
 
 		if $ensure == "present" {
 			kfile { "/home/$username":
-				ensure => $ensure ? {
-					"present" => directory,
-					default   => absent,
-				},
+				ensure => directory,
 				mode 	=> 750,
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -53,8 +57,7 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.ssh":
-				ensure 	=> $ensure,
-				source 	=> "kbp-base/home/$username/.ssh",
+				ensure 	=> directory,
 				mode 	=> 700,
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -62,15 +65,20 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.ssh/authorized_keys":
-				ensure 	=> $ensure,
-				source 	=> "kbp-base/home/$username/.ssh/authorized_keys",
+				ensure 	=> present,
+				content => "$sshkeys",
 				owner 	=> "$username",
 				group 	=> "kumina",
 				require => File["/home/$username"],
 			}
 
+			gen_puppet::concat::add_content { "Add $username to Kumina SSH keyring":
+				target  => "/etc/ssh/kumina.keys",
+				content => "# $fullname <$username@kumina.nl>\n$sshkeys",
+			}
+
 			kfile { "/home/$username/.bashrc":
-				ensure 	=> $ensure,
+				ensure 	=> present,
 				content => template("kbp-base/home/$username/.bashrc"),
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -78,7 +86,7 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.bash_profile":
-				ensure 	=> $ensure,
+				ensure 	=> present,
 				source 	=> "kbp-base/home/$username/.bash_profile",
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -86,7 +94,7 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.bash_aliases":
-				ensure 	=> $ensure,
+				ensure 	=> present,
 				source 	=> "kbp-base/home/$username/.bash_aliases",
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -94,10 +102,7 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.darcs":
-				ensure => $ensure ? {
-					"present" => directory,
-					default   => absent,
-				},
+				ensure => directory,
 				mode 	=> 755,
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -105,10 +110,7 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.tmp":
-				ensure => $ensure ? {
-					"present" => directory,
-					default   => absent,
-				},
+				ensure => directory,
 				mode 	=> 755,
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -116,20 +118,20 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.darcs/author":
-				ensure => $ensure,
+				ensure => present,
 				content => "$fullname <$username@kumina.nl>\n",
 				group => "kumina",
 				require => File["/home/$username/.darcs"],
 			}
 
 			kfile { "/home/$username/.gitconfig":
-				ensure => $ensure,
+				ensure => present,
 				content => "[user]\n\tname = $fullname\n\temail = $username@kumina.nl\n",
 				group => "kumina";
 			}
 
 			kfile { "/home/$username/.reportbugrc":
-				ensure => $ensure,
+				ensure => present,
 				content => "REPORTBUGEMAIL=$username@kumina.nl\n",
 				group => "kumina";
 			}
@@ -153,7 +155,8 @@ class kbp-base {
 		"tim":
 			fullname      => "Tim Stoop",
 			uid           => 10001,
-			password_hash => "BOGUS";
+			password_hash => "BOGUS",
+			sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCcRYiKZ1yPUU8+oRaDI/TyRSyFu2fwbknvr/Q3rwbQZm2K8iTfY4/WUeu/oSZOnCn5uoNjGax88RZx92DK0yYpOHtUwG/nShtTwte0Mx4zW8Sfq343OPle2b2gp/0V6dx1Nq21rmQrh0Ql23Thmi33cmKUvPgwYXvsIKfM68J2bG9+hIiucQX0AY7oH8UCX6uJmjOB2nPBsCMAmBHLsfV9LTvSobYAJLEt0m2wV+BqPZW5zLj7HyrGCDa5+85EB4MuQsiYuVdAjQJ3JF/FD0w7LrtuwhKZuS/Qwn4vXah1FlTBlIfw6IxWrQ0+CBCx4h/E4lbxgLTHCB4sanhUGKQtVV1/CFEA9GYCtDbNepFmjuZM1IubarpJmMicOebIW6yT9/035jKuS+nJG2xOLfV4MNPDkuAwqgg1DJ1JmqpG8y1+rHuswbXhlxlfKw/SEooH6I8NDv+TxHSkyo5siacNRsfQ8rQf9fKJdhD0twZuOZU8Zz9wpFz6VCYMkgKp05U= smartcard Tim Stoop\n";
 		"kees":
 			fullname      => "Kees Meijs",
 			password_hash => "BOGUS",
@@ -167,15 +170,18 @@ class kbp-base {
 		"pieter":
 			fullname      => "Pieter Lexis",
 			uid           => 10005,
-			password_hash => "BOGUS";
+			password_hash => "BOGUS",
+			sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCY+AGY7jg8z5DBdajz04kGz9yyDcmhDBqW1n3G6LfkxQ0neOWGqtQi7uBDGoamhc2y6uuFHaR5vUk0uvsxhch6DjJ4xlCZGjiSqWDaUD7QSj70PTYvy2Ol0nqDXWbA0g4gNovTE3dNH1TyAQEJ7Ox1qW5s+RgSwLGh+suIyjsbjgR/t+tMMqDSEBN4Hbqbvfr/RJMpK/yA+FFTFllVN0nb+EuX4L2pnzjpIBIShXdL+gfjghOpJ31dpgWxgUrTXGOLXtB97CjGZ4MIKvPLkOpZPILIkADcx1FNg9lwd/QiLeTnWg7fPMbc4BIfEWvVp7UoCU/VmjJlSuuOgKtDAq0J pieter@kumina.nl\n";
 		"rutger":
 			fullname      => "Rutger Spiertz",
 			uid           => 10003,
-			password_hash => "BOGUS";
+			password_hash => "BOGUS",
+			sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCMZBz0sRqmfs4QT4dXVQeMIc+PdDChsjSUQv+SkN//z+igMw6qe5acC8EXUk5CR7VfaOjttp+sgoOxsvFPdFnrcozUsssnUynfVQ4GHCpDu0iOoUtz+WuGGonauAimhFsO2apkYLlO2qipt/z6B+bPQsbOxIVLpLLCa1kFKux7Td4vGddxbCxtFECd/4QUuS42G5q8nET3cdiqHM+QHXs1bnOqa6nxOxhnKX1jlqPT5nwdd8pI+RChGcjD4UofL9IYtz+Nd8wZi/h0tcOUh/ORV1bpJFwTCdWwaQ7Z7bf2Aanzn6iJz14nM0n19EOdvcB5NS/1mE54U9S3qJN+fQT3bOm47R07BIXmCEah6uZUAezkzsnXAsntgn2YDZFhjX+6Xd0iALAlhOyOMVfjJ0cq/qv1WhqScyOOETZhwOjLm4lewigpRnctJBt87p8MArPTBbJJA4TayC9eP6IfZ6plu0Be+W+xvrh/ga3oxMiyg6LWCf2yeTRUut7aIyswxY8= rutger@kumina.nl\n";
 		"ed":
 			fullname      => "Ed Schouten",
 			uid           => 10004,
-			password_hash => "BOGUS";
+			password_hash => "BOGUS",
+			sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCXah/YknMvN7CCOAK642FZfnXYVZ2uYZsy532v8pOISzH9W8mJ4FqBi0g1oAFhTZs0VNc9ouNfMDG178LSITL+ui/6T9exOEd4a0pCXuArVFmc5EVEUl3F+/qZPcOnWs7e3KaiV1dGLYDI0LhdG9ataHHR3sSPI/YAhroDLDTSVqFURXL7eyqR/aEv7nPEkY4zhQQzTECSQdadwEtGnovjNNL2aEj8rVVle5lVjbSk4N7x0ixyb4eTPB1z5FnwAlVkxHhTnsxTK28ulkrVCgKE30KS97dRG/EjA81pOzajRYTyLztqSkJnpKpL/lPfUCG7VkNfQKF+0O/KRhUfr2zb cardno:00050000057D\n";
 	}
 
 	# Packages we like and want :)
