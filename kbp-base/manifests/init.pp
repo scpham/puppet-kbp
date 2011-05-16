@@ -1,4 +1,5 @@
 class kbp-base {
+	include gen_puppet::concat
 	include gen_base
 	include sysctl
 	include kbp_acpi
@@ -23,6 +24,12 @@ class kbp-base {
 			command           => "ALL",
 			password_required => true,
 			order             => 10; # legacy, only used on lenny systems
+	}
+
+	concat { "/etc/ssh/kumina.keys":
+		owner => "root",
+		group => "root",
+		mode  => 0644,
 	}
 
 	define staff_user($ensure = "present", $fullname, $uid, $password_hash) {
@@ -67,6 +74,12 @@ class kbp-base {
 				owner 	=> "$username",
 				group 	=> "kumina",
 				require => File["/home/$username"],
+			}
+
+			gen_puppet::concat::add_content { "Add $username to Kumina SSH keyring":
+				target   => "/etc/ssh/kumina.keys",
+				content  => "XXX: Test",
+				order    => 10,
 			}
 
 			kfile { "/home/$username/.bashrc":
