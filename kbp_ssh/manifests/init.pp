@@ -1,5 +1,5 @@
 class kbp_ssh {
-	ferm::new::rule { "SSH_v46":
+	ferm::rule { "SSH":
 		proto  => "tcp",
 		dport  => "22",
 		action => "ACCEPT",

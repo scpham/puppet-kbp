@@ -3,17 +3,13 @@ class kbp-mailscanner inherits amavisd-new {
 	include kbp-mailscanner::spamchecker
 	include kbp-mailscanner::virusscanner
 
-	file { "/etc/amavis/conf.d/40-kbp":
-		owner => "root",
-		group => "root",
-		mode => 644,
-		source => "puppet://puppet/kbp-mailscanner/amavis/conf.d/40-kbp",
+	kfile { "/etc/amavis/conf.d/40-kbp":
+		source => "kbp-mailscanner/amavis/conf.d/40-kbp",
 		require => Package["amavisd-new"],
 		notify => Service["amavis"],
 	}
 
-	package { ["zoo", "arj", "cabextract"]:
-		ensure => installed,
+	kpackage { ["zoo", "arj", "cabextract"]:
 		notify => Service["amavis"],
 	}
 
@@ -29,11 +25,8 @@ class kbp-mailscanner inherits amavisd-new {
 }
 
 class kbp-mailscanner::spamchecker inherits spamassassin {
-	file { "/etc/spamassassin/local.cf":
-		source => "puppet://puppet/kbp-mailscanner/spamassassin/local.cf",
-		owner => "root",
-		group => "root",
-		mode => 644,
+	kfile { "/etc/spamassassin/local.cf":
+		source => "kbp-mailscanner/spamassassin/local.cf",
 		notify => Service["amavis"],
 	}
 
@@ -41,9 +34,7 @@ class kbp-mailscanner::spamchecker inherits spamassassin {
 	# spam), but the details differ.
 	# http://spamassassinbook.packtpub.com/chapter11.htm has a good
 	# description on the differences.
-	package { ["pyzor", "razor"]:
-		ensure => installed,
-	}
+	kpackage { ["pyzor", "razor"]:; }
 }
 
 class kbp-mailscanner::virusscanner inherits clamav {

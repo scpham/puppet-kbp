@@ -1,6 +1,6 @@
 class kbp_monitoring::client::sslcert {
-	include kbp_monitoring::client
 	include kbp_sudo
+
 	gen_sudo::rule { "check_sslcert sudo rules":
 		entity => "nagios",
 		as_user => "root",
@@ -15,24 +15,30 @@ class kbp_monitoring::server($package="icinga") {
 		"nagios": { include kbp-nagios::server }
 	}
 
-	@@ferm::new::rule {
-		"NRPE connections from ${fqdn}_v46":
-			saddr  => "${fqdn}",
+	@@ferm::rule {
+		"NRPE monitoring from ${fqdn}":
+			saddr  => $fqdn,
 			proto  => "tcp",
 			dport  => "5666",
 			action => "ACCEPT",
-			tag    => "ferm_general_rule";
-		"MySQL connections from ${fqdn}":
-			saddr  => "${fqdn}",
+			tag    => "general";
+		"MySQL monitoring from ${fqdn}":
+			saddr  => $fqdn,
 			proto  => "tcp",
 			dport  => "3306",
 			action => "ACCEPT",
-			tag    => "ferm_mysql_rule_monitoring";
-		"Sphinxsearch connections from ${fqdn}":
-			saddr  => "${fqdn}",
+			tag    => "mysql_monitoring";
+		"Sphinxsearch monitoring from ${fqdn}":
+			saddr  => $fqdn,
 			proto  => "tcp",
 			dport  => "3312",
 			action => "ACCEPT",
-			tag    => "ferm_sphinxsearch_rule_monitoring";
+			tag    => "sphinxsearch_monitoring";
+		"Cassandra monitoring from ${fqdn}":
+			saddr  => $fqdn,
+			proto  => "tcp",
+			dport  => "(7000 8080 9160)",
+			action => "ACCEPT",
+			tag    => "cassandra_monitoring";
 	}
 }
