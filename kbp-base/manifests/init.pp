@@ -78,7 +78,7 @@ class kbp-base {
 
 			gen_puppet::concat::add_content { "Add $username to Kumina SSH keyring":
 				target  => "/etc/ssh/kumina.keys",
-				content => file("kbp-base/home/$username/.ssh/authorized_keys"),
+				content => file("puppet://puppet/kbp-base/home/$username/.ssh/authorized_keys"),
 			}
 
 			kfile { "/home/$username/.bashrc":
