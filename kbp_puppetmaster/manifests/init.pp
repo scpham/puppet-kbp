@@ -26,7 +26,7 @@ class kbp_puppetmaster {
 		"puppetmaster":
 			ensure  => present,
 			require => Kfile["/etc/default/puppetmaster","/etc/apt/preferences.d/puppetmaster"];
-		["rails","libmysql-ruby","puppetmaster-common","ipaddress-ruby"]:
+		["rails","libmysql-ruby","puppetmaster-common","ipaddress-ruby","puppetstoredconfigcleanhenker"]:
 			ensure  => latest;
 	}
 
@@ -104,6 +104,13 @@ class kbp_puppetmaster {
 			dir     => "/srv/puppet",
 			acl     => "default:user:puppet:r-x",
 			require => Kfile["/srv/puppet"];
+	}
+
+	# Automatically purge old hosts from the database
+	kfile { "/etc/cron.daily/puppetstoredconfigcleanhenker":
+		mode   => 755,
+		source => "kbp_puppetmaster/puppetstoredconfigcleanhenker.cron"
+		require => Kpackage["puppetstoredconfigcleanhenker"];
 	}
 
 	apache::site { "puppetmaster":; }
