@@ -49,10 +49,7 @@ class kbp-base {
 
 		if $ensure == "present" {
 			kfile { "/home/$username":
-				ensure => $ensure ? {
-					"present" => directory,
-					default   => absent,
-				},
+				ensure => directory,
 				mode 	=> 750,
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -60,8 +57,7 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.ssh":
-				ensure 	=> $ensure,
-				source 	=> "kbp-base/home/$username/.ssh",
+				ensure 	=> directory,
 				mode 	=> 700,
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -69,7 +65,7 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.ssh/authorized_keys":
-				ensure 	=> $ensure,
+				ensure 	=> present,
 				content => "$sshkeys",
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -82,7 +78,7 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.bashrc":
-				ensure 	=> $ensure,
+				ensure 	=> present,
 				content => template("kbp-base/home/$username/.bashrc"),
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -90,7 +86,7 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.bash_profile":
-				ensure 	=> $ensure,
+				ensure 	=> present,
 				source 	=> "kbp-base/home/$username/.bash_profile",
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -98,7 +94,7 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.bash_aliases":
-				ensure 	=> $ensure,
+				ensure 	=> present,
 				source 	=> "kbp-base/home/$username/.bash_aliases",
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -106,10 +102,7 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.darcs":
-				ensure => $ensure ? {
-					"present" => directory,
-					default   => absent,
-				},
+				ensure => directory,
 				mode 	=> 755,
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -117,10 +110,7 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.tmp":
-				ensure => $ensure ? {
-					"present" => directory,
-					default   => absent,
-				},
+				ensure => directory,
 				mode 	=> 755,
 				owner 	=> "$username",
 				group 	=> "kumina",
@@ -128,20 +118,20 @@ class kbp-base {
 			}
 
 			kfile { "/home/$username/.darcs/author":
-				ensure => $ensure,
+				ensure => present,
 				content => "$fullname <$username@kumina.nl>\n",
 				group => "kumina",
 				require => File["/home/$username/.darcs"],
 			}
 
 			kfile { "/home/$username/.gitconfig":
-				ensure => $ensure,
+				ensure => present,
 				content => "[user]\n\tname = $fullname\n\temail = $username@kumina.nl\n",
 				group => "kumina";
 			}
 
 			kfile { "/home/$username/.reportbugrc":
-				ensure => $ensure,
+				ensure => present,
 				content => "REPORTBUGEMAIL=$username@kumina.nl\n",
 				group => "kumina";
 			}
