@@ -26,7 +26,7 @@ class kbp_puppetmaster {
 		"puppetmaster":
 			ensure  => present,
 			require => Kfile["/etc/default/puppetmaster","/etc/apt/preferences.d/puppetmaster"];
-		["rails","rabbitmq-server","libmysql-ruby","puppetmaster-common","ipaddress-ruby"]:
+		["rails","libmysql-ruby","puppetmaster-common","ipaddress-ruby"]:
 			ensure  => latest;
 	}
 
@@ -36,21 +36,12 @@ class kbp_puppetmaster {
 		require   => Kpackage["puppetmaster"];
 	}
 
-	service { "rabbitmq-server":
-		hasstatus => true,
-		ensure    => stopped,
-		require   => Kpackage["puppetmaster"];
-	}
-
 	exec {
 		"Install the Stomp gem":
 			command => "/usr/bin/gem install stomp",
 			creates => "/var/lib/gems/1.8/gems/stomp-1.1.8",
 			require => Kpackage["rails"];
-		"reload-rabbitmq":
-			command     => "/etc/init.d/rabbitmq-server reload",
-			refreshonly => true;
-	}
+		}
 
 	kfile {
 		"/etc/puppet/puppet.conf":
@@ -60,9 +51,6 @@ class kbp_puppetmaster {
 			source => "kbp_puppetmaster/default/puppetmaster";
 		"/etc/default/puppetqd":
 			source => "kbp_puppetmaster/default/puppetqd";
-		"/etc/rabbitmq/rabbitmq-env.conf":
-			source  => "kbp_puppetmaster/rabbitmq/rabbitmq-env.conf",
-			require => Kpackage["rabbitmq-server"];
 		"/etc/apache2/sites-available/puppetmaster":
 			source  => "kbp_puppetmaster/apache2/sites-available/puppetmaster",
 			notify  => Exec["reload-apache2"],
@@ -88,14 +76,6 @@ class kbp_puppetmaster {
 			owner   => "puppet",
 			group   => "puppet";
 		# TODO End of deletion
-		"/usr/lib/rabbitmq/lib/rabbitmq_server-2.4.1/plugins/amqp_client-2.4.1.ez":
-			source  => "kbp_puppetmaster/rabbitmq/plugins/amqp_client-2.4.1.ez",
-			require => Kpackage["rabbitmq-server"],
-			notify  => Exec["reload-rabbitmq"];
-		"/usr/lib/rabbitmq/lib/rabbitmq_server-2.4.1/plugins/rabbit_stomp-2.4.1.ez":
-			source  => "kbp_puppetmaster/rabbitmq/plugins/rabbit_stomp-2.4.1.ez",
-			require => Kpackage["rabbitmq-server"],
-			notify  => Exec["reload-rabbitmq"];
 	}
 
 	mysql::server::db { "puppet":; }
