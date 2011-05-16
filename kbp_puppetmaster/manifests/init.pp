@@ -109,7 +109,7 @@ class kbp_puppetmaster {
 	# Automatically purge old hosts from the database
 	kfile { "/etc/cron.daily/puppetstoredconfigcleanhenker":
 		mode   => 755,
-		source => "kbp_puppetmaster/puppetstoredconfigcleanhenker.cron"
+		source => "kbp_puppetmaster/puppetstoredconfigcleanhenker.cron",
 		require => Kpackage["puppetstoredconfigcleanhenker"];
 	}
 
