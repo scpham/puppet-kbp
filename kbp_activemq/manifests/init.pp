@@ -17,7 +17,7 @@ class kbp_activemq {
 	ferm::rule { "Connections to admin port":
 		dport  => "8161",
 		proto  => "tcp",
-		saddr  => "localhost",
+		saddr  => "${fqdn}",
 		action => "ACCEPT",
 	}
 }
