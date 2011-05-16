@@ -32,7 +32,7 @@ class kbp-base {
 		mode  => 0644,
 	}
 
-	define staff_user($ensure = "present", $fullname, $uid, $password_hash, $sshkeys) {
+	define staff_user($ensure = "present", $fullname, $uid, $password_hash, $sshkeys = "") {
 		$username = $name
 		user { "$username":
 			comment 	=> $fullname,
