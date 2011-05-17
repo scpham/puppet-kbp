@@ -204,10 +204,10 @@ class kbp-tomcat inherits tomcat {
 	#   default.
 	#
 	define apache_proxy_ajp_site($port,
-		                     $ssl=false,
-		                     $serveralias=false,
+				     $ssl=false,
+				     $serveralias=false,
 				     $path="/",
-		                     $documentroot=false,
+				     $documentroot=false,
 				     $ipaddress=$ipaddress,
 				     $ensure="present") {
 
@@ -259,15 +259,15 @@ class kbp-tomcat inherits tomcat {
 	file { "/usr/share/tomcat5.5/common/lib/mysql-connector-java.jar":
 		ensure => "/usr/share/java/mysql-connector-java.jar",
 		require => Package["libmysql-java"],
-        }
+	}
 
-        # This is a housekeeping define, it needs to be set explicitly to allow for logfile
-        # archiving and removal
-        define keepclean ($ensure = present, $compress_after_days = 30, $remove_after_days = 60) {
-                file { "/etc/cron.daily/archive-tomcat-logfiles":
-                        ensure => $ensure,
-                        mode => 755,
-                        content => template("kbp-tomcat/cron.daily/archive-tomcat-logfiles.erb"),
-                }
-        }
+	# This is a housekeeping define, it needs to be set explicitly to allow for logfile
+	# archiving and removal
+	define keepclean ($ensure = present, $compress_after_days = 30, $remove_after_days = 60) {
+		file { "/etc/cron.daily/archive-tomcat-logfiles":
+			ensure => $ensure,
+			mode => 755,
+			content => template("kbp-tomcat/cron.daily/archive-tomcat-logfiles.erb"),
+		}
+	}
 }

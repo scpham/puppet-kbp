@@ -12,10 +12,10 @@ class kbp-php::common inherits php::common {
 		ensure => installed,
 	}
 
-        munin::client::plugin { "apc":
-                script_path => "/usr/local/share/munin/plugins/apc_",
-                require => Package["php-apc"],
-        }
+	munin::client::plugin { "apc":
+		script_path => "/usr/local/share/munin/plugins/apc_",
+		require => Package["php-apc"],
+	}
 }
 
 class kbp-php::php5::common inherits php::php5::common {

@@ -40,5 +40,11 @@ class kbp_monitoring::server($package="icinga") {
 			dport  => "(7000 8080 9160)",
 			action => "ACCEPT",
 			tag    => "cassandra_monitoring";
+		"Glassfish monitoring from ${fqdn}":
+			saddr  => $fqdn,
+			proto  => "tcp",
+			dport  => "80",
+			action => "ACCEPT",
+			tag    => "glassfish_monitoring";
 	}
 }
