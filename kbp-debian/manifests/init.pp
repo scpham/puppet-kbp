@@ -201,12 +201,4 @@ class kbp-debian inherits kbp-base {
 	if $lsbdistcodename == "lenny" {
 		gen_apt::preference { ["libvirt-bin","virtinst","libvirt-doc","libvirt0","facter","virt-manager","libasound2","libbrlapi0.5","kvm","rake","python-django","varnish","linux-image-2.6-amd64","firmware-bnx2","drbd8-utils","heartbeat"]:; }
 	}
-
-
-	kfile { "/var/lib/puppet":
-		ensure => directory,
-		owner => "puppet",
-		group => "puppet",
-		mode => 751;
-	}
 }
