@@ -79,6 +79,16 @@ class kbp_munin::client::nfsd {
 	munin::client::plugin { "nfsd":; }
 }
 
+class kbp_munin::client::bind9 {
+	include kbp_munin::client
+
+	munin::client::plugin { "bind9_rndc":; }
+
+	munin::client::plugin::config { "bind9_rndc":
+		content => "env.querystats /var/cache/bind/named.stats\nuser bind",
+	}
+}
+
 class kbp_munin::server inherits munin::server {
 	include nagios::nsca
 
