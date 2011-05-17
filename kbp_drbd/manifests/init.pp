@@ -1,14 +1,11 @@
 class kbp_drbd($otherhost) {
 	include kbp_drbd::monitoring::icinga
 
-	Ferm::Rule <<| tag == "drbd_${otherhost}" |>>
-
-	@@ferm::rule { "DRBD connections from ${fqdn}":
-		saddr  => $fqdn,
+	ferm::rule { "DRBD connections from ${otherhost}":
+		saddr  => $otherhost,
 		proto  => "tcp",
 		dport  => 7789,
-		action => "ACCEPT",
-		tag    => "drbd_${fqdn}";
+		action => "ACCEPT";
 	}
 }
 
