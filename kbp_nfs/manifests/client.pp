@@ -2,11 +2,11 @@ class kbp_nfs::client {
 	include gen_nfs::client
 	include kbp_trending::nfs
 
-	@@ferm::rule { "NFS connections from ${fqdn}_v4":
-		tag    => "nfs_${environment}",
+	@@ferm::rule { "NFS connections from ${fqdn}":
+		saddr  => $fqdn,
 		proto  => "(tcp udp)",
-		saddr  => $ipaddress,
 		action => "ACCEPT",
+		tag    => "nfs_${environment}";
 	}
 }
 
