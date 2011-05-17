@@ -1,13 +1,11 @@
 define kbp_glassfish::domain($adminport, $jmxport, $webport=false) {
 	ferm::rule {
 		"Glassfish admin panel for ${name}":
-			saddr  => "localhost",
 			proto  => "tcp",
 			dport  => $adminport,
 			action => "ACCEPT",
 			tag    => "glassfish_admin_${environment}";
 		"Glassfish JMX port for ${name}":
-			saddr  => "localhost",
 			proto  => "tcp",
 			dport  => $jmxport,
 			action => "ACCEPT",
@@ -16,7 +14,6 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false) {
 
 	if $webport {
 		ferm::rule { "Glassfish web for ${name}":
-			saddr  => "localhost",
 			proto  => "tcp",
 			dport  => $webport,
 			action => "ACCEPT",
