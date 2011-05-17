@@ -7,7 +7,7 @@ class kbp_sunmq($withJMS=false) {
 	}
 	
 	if $withJMS {
-		ferm::rule { "JMS port":
+		ferm::rule { "SunMQ JMS port":
 			proto  => "tcp",
 			dport  => "10234",
 			action => "ACCEPT",
