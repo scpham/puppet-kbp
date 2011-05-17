@@ -64,7 +64,7 @@ class kbp_munin::client::mysql {
 			"slow","sorts","table_locks","tmp_tables"]:;
 		}
 	} elsif versioncmp($lsbdistrelease, 6) < 0 {
-		munin::client::plugin { "mysql_bytes","mysql_innodb","mysql_queries","mysql_slowqueries","mysql_threads"]:;  }
+		munin::client::plugin { ["mysql_bytes","mysql_innodb","mysql_queries","mysql_slowqueries","mysql_threads"]:;  }
 	}
 }
 
