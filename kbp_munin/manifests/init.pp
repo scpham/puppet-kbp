@@ -45,7 +45,6 @@ class kbp_munin::client::puppetmaster {
 class kbp_munin::client::mysql {
 	include kbp_munin::client
 	if versioncmp($lsbdistrelease, 6) >= 0 {
-
 		kpackage {"libcache-cache-perl":
 			ensure => latest;
 		}
@@ -57,16 +56,14 @@ class kbp_munin::client::mysql {
 		}
 
 		munin_mysql {["bin_relay_log","commands","connections",
-		    "files_tables","innodb_bpool","innodb_bpool_act",
-		    "innodb_insert_buf","innodb_io","innodb_io_pend",
-		    "innodb_log","innodb_rows","innodb_semaphores",
-		    "innodb_tnx","myisam_indexes","network_traffic",
-		    "qcache","qcache_mem","replication","select_types",
-		    "slow","sorts","table_locks","tmp_tables"]:;
+			"files_tables","innodb_bpool","innodb_bpool_act",
+			"innodb_insert_buf","innodb_io","innodb_io_pend",
+			"innodb_log","innodb_rows","innodb_semaphores",
+			"innodb_tnx","myisam_indexes","network_traffic",
+			"qcache","qcache_mem","replication","select_types",
+			"slow","sorts","table_locks","tmp_tables"]:;
 		}
-	}
-
-	if versioncmp($lsbdistrelease, 6) < 0 {
+	} elsif versioncmp($lsbdistrelease, 6) < 0 {
 		munin::client::plugin { "mysql_bytes","mysql_innodb","mysql_queries","mysql_slowqueries","mysql_threads"]:;  }
 	}
 }
