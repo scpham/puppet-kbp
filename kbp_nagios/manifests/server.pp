@@ -4,13 +4,6 @@ class kbp_nagios::server::plugins inherits nagios::server::plugins {
 class kbp_nagios::server inherits nagios::server {
 	include kbp_nagios::server::plugins
 
-	kfile { "/etc/nagios3/local.d":
-		source => "kbp_nagios/nagios3/local.d",
-		recurse => true,
-		ignore => ".*.swp",
-		notify => Exec["reload-nagios3"],
-	}
-
 	kfile {
 		"/etc/nagios3/conf.d/contacts.cfg":
 			source => "kbp_nagios/nagios3/conf.d/contacts.cfg",
