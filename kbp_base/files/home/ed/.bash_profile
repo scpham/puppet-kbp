@@ -15,5 +15,5 @@ if [ -d ~/bin ] ; then
     PATH=~/bin:/sbin:/usr/sbin:/usr/local/sbin:"${PATH}"
 fi
 
-EMAIL=rutger@kumina.nl
+EMAIL=ed@kumina.nl
 export EMAIL
