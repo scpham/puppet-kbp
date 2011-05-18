@@ -39,4 +39,5 @@ define kbp_nfs::server::config ($need_gssd = "no", $need_idmapd = "no", $need_st
 	Ferm::Rule <<| tag == "nfs_${environment}" |>> {
 		dport => "(2049 ${incoming_port} ${outgoing_port} ${mountd_port} ${lock_port})",
 	}
+	Ferm::Rule <<| tag == "nfs_monitoring" |>>
 }

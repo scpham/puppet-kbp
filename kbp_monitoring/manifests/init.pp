@@ -19,19 +19,19 @@ class kbp_monitoring::server($package="icinga") {
 		"NRPE monitoring from ${fqdn}":
 			saddr  => $fqdn,
 			proto  => "tcp",
-			dport  => "5666",
+			dport  => 5666,
 			action => "ACCEPT",
 			tag    => "general";
 		"MySQL monitoring from ${fqdn}":
 			saddr  => $fqdn,
 			proto  => "tcp",
-			dport  => "3306",
+			dport  => 3306,
 			action => "ACCEPT",
 			tag    => "mysql_monitoring";
 		"Sphinxsearch monitoring from ${fqdn}":
 			saddr  => $fqdn,
 			proto  => "tcp",
-			dport  => "3312",
+			dport  => 3312,
 			action => "ACCEPT",
 			tag    => "sphinxsearch_monitoring";
 		"Cassandra monitoring from ${fqdn}":
@@ -43,8 +43,14 @@ class kbp_monitoring::server($package="icinga") {
 		"Glassfish monitoring from ${fqdn}":
 			saddr  => $fqdn,
 			proto  => "tcp",
-			dport  => "80",
+			dport  => 80,
 			action => "ACCEPT",
 			tag    => "glassfish_monitoring";
+		"NFS monitoring from ${fqdn}":
+			saddr  => $fqdn,
+			proto  => "tcp",
+			dport  => 2049,
+			action => "ACCEPT",
+			tag    => "nfs_monitoring";
 	}
 }
