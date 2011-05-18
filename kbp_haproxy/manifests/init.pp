@@ -1,5 +1,5 @@
 define kbp_haproxy::site ($address, $port=80) {
-	ferm::rule { "HAProxy forwards for ${name}":
+	ferm::rule { "HAProxy forward for ${name}":
 		proto  => "tcp",
 		dport  => $port,
 		action => "ACCEPT";
