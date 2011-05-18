@@ -7,7 +7,7 @@ SSLCertificateFile      <%= ssldir %>/certs/<%= fqdn %>.pem
 SSLCACertificateFile    <%= ssldir %>/ca/ca_crt.pem
 SSLCertificateChainFile <%= ssldir %>/ca/ca_crt.pem
 SSLCARevocationFile     <%= ssldir %>/ca/ca_crl.pem
-SSLVerifyClient required
+SSLVerifyClient require
 SSLVerifyDepth  1
 SSLOptions +StdEnvVars
 
