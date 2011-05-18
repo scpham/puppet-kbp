@@ -186,7 +186,7 @@ class kbp-base {
 
 	# Packages we like and want :)
 	kpackage {
-		["binutils","console-tools"]:
+		["binutils","console-tools","realpath"]:
 			ensure => installed;
 		["hidesvn","bash-completion","bc","tcptraceroute","diffstat"]:
 			ensure => latest;
