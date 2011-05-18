@@ -2,7 +2,7 @@ class kbp_cassandra::client($customtag="cassandra_${environment}") {
 	@@ferm::rule { "Cassandra connections from ${fqdn}":
 		saddr  => $fqdn,
 		proto  => "tcp",
-		dport  => 8080,
+		dport  => 9160,
 		action => "ACCEPT",
 		tag    => $customtag;
 	}
