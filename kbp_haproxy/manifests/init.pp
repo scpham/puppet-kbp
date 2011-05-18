@@ -1,12 +1,14 @@
-define kbp_haproxy::site ($listenaddress, $port=80) {
+define kbp_haproxy::site ($listenaddress, $port=80, $monitoring=true) {
 	ferm::rule { "HAProxy forward for ${name}":
 		proto  => "tcp",
 		dport  => $port,
 		action => "ACCEPT";
 	}
 
-	kbp_haproxy::monitoring::icinga::site { "${name}":
-		address => $listenaddress;
+	if $monitoring {
+		kbp_haproxy::monitoring::icinga::site { "${name}":
+			address => $listenaddress;
+		}
 	}
 }
 
