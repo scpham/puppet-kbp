@@ -16,6 +16,6 @@ class kbp_cassandra::server($customtag="cassandra_${environment}") {
 		action => "ACCEPT",
 		tag    => $customtag;
 	}
-	Ferm::Rule <<| tag == "cassandra_${environment}" |>>
+	Ferm::Rule <<| tag == $customtag |>>
 	Ferm::Rule <<| tag == "cassandra_monitoring" |>>
 }
