@@ -1,3 +1,15 @@
+define kbp_haproxy::site ($address, $port=80) {
+	ferm::rule { "HAProxy forwards for ${name}":
+		proto  => "tcp",
+		dport  => $port,
+		action => "ACCEPT";
+	}
+
+	kbp_haproxy::monitoring::icinga::site { "${name}":
+		address => $address;
+	}
+}
+
 class kbp_haproxy::monitoring::icinga {
 	define site ($address) {
 		$confdir = "${environment}/${name}"
