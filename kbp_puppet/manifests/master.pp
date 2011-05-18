@@ -4,7 +4,7 @@ class kbp_puppet::master {
 	include kbp_puppet::vim
 	include gen_rails
 	include kbp_activemq
-	include kbp-apache::passenger
+	include kbp_apache::passenger
 	include kbp_mysql::server
 	include kbp_trending::puppetmaster
 

@@ -8,7 +8,7 @@ class kbp_munin::client inherits munin::client {
 }
 
 class kbp_munin::client::apache {
-	# This class is should be included in kbp-apache to collect apache data for munin
+	# This class is should be included in kbp_apache to collect apache data for munin
 	include kbp_munin::client
 
 	kpackage { "libwww-perl":; }
