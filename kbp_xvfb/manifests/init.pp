@@ -1,5 +1,5 @@
 class kbp_xvfb {
-	include xvfb
+	include gen_xvfb
 
 	kfile { "/usr/local/bin/xvfb-run-patched":
 		source => "kbp_xvfb/xvfb-run-patched.sh",
