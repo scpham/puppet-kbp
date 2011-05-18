@@ -44,7 +44,8 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 				$dbname = false, $dbuser = false, $dbpasswd = false, $dbhost = false, $dbsocket = false,
 				$factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet", $pluginsync = true,
 				$rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
-				$ssldir = "/var/lib/puppet/ssl", $vardir = "/var/lib/puppet") {
+				$ssldir = "/var/lib/puppet/ssl", $templatedir = '$confdir/templates',
+				$vardir = "/var/lib/puppet") {
 	include gen_puppet::concat
 
 	# If the name is 'default', we want to change the puppetmaster name (pname)
@@ -60,15 +61,16 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 	$rackdir = "${rackroot}/${pname}"
 
 	gen_puppet::master::config { $name:
-		configfile => $configfile,
-		debug      => $debug,
-		factpath   => $factpath,
-		logdir     => $logdir,
-		pluginsync => $pluginsync,
-		rackroot   => $rackroot,
-		rundir     => $rundir,
-		ssldir     => $ssldir,
-		vardir     => $vardir,
+		configfile  => $configfile,
+		debug       => $debug,
+		factpath    => $factpath,
+		logdir      => $logdir,
+		pluginsync  => $pluginsync,
+		rackroot    => $rackroot,
+		rundir      => $rundir,
+		ssldir      => $ssldir,
+		templatedir => $templatedir,
+		vardir      => $vardir,
 	}
 
 	# TODO Files that need to be customized
