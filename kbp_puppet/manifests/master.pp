@@ -84,7 +84,7 @@ define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $deb
 	apache::site_config { "${pname}":
 		address      => $address,
 		documentroot => "${rackdir}/public",
-		domain       => $fqdn,
+		template     => "apache/sites-available/simple-fqdn.erb",
 	}
 
 	# The vhost-addition should set the documentroot, the puppet directory,
