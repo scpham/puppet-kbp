@@ -11,7 +11,7 @@ class kbp_monitoring::client::sslcert {
 
 class kbp_monitoring::server($package="icinga") {
 	case $package {
-		"icinga": { include kbp_icinga::server }
+		"icinga": { include gen_icinga::server }
 		"nagios": { include kbp_nagios::server }
 	}
 
@@ -58,7 +58,7 @@ class kbp_monitoring::server($package="icinga") {
 define kbp_monitoring::haproxy($address, $package="icinga") {
 	case $package {
 		"icinga": {
-			kbp_icinga::haproxy { "${name}":
+			gen_icinga::haproxy { "${name}":
 				address => $address;
 			}
 		}

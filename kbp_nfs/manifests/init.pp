@@ -3,7 +3,7 @@ class kbp_nfs {
 }
 
 class kbp_nfs::monitoring::icinga {
-	kbp_icinga::service { "nfs_daemon_${fqdn}":
+	gen_icinga::service { "nfs_daemon_${fqdn}":
 		service_description => "NFS daemon",
 		checkcommand        => "check_nfs";
 	}
