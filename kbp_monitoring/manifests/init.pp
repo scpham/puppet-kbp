@@ -58,7 +58,7 @@ class kbp_monitoring::server($package="icinga") {
 define kbp_monitoring::haproxy($address, $package="icinga") {
 	case $package {
 		"icinga": {
-			gen_icinga::haproxy { "${name}":
+			kbp_icinga::haproxy { "${name}":
 				address => $address;
 			}
 		}
