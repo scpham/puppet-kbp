@@ -1,4 +1,4 @@
-class gen_icinga::client {
+class kbp_icinga::client {
 	gen_icinga::configdir { "${environment}/${fqdn}":
 		sub => $environment;
 	}
@@ -63,7 +63,7 @@ class gen_icinga::client {
 	}
 }
 
-class gen_icinga::server {
+class kbp_icinga::server {
 	include gen_icinga::server
 
 	gen_apt::preference { ["icinga","icinga-core","icinga-cgi","icinga-common","icinga-doc"]:; }
@@ -227,7 +227,7 @@ class gen_icinga::server {
 	}
 }
 
-define gen_icinga::haproxy::site ($address) {
+define kbp_icinga::haproxy::site ($address) {
 	$confdir = "${environment}/${name}"
 
 	gen_icinga::configdir { $confdir:
