@@ -45,19 +45,19 @@ class kbp_icinga::client {
 
 	kfile {
 		"/usr/lib/nagios/plugins/check_cpu":
-			source  => "kbp_icinga/client/check_cpu",
+			source  => "gen_icinga/client/check_cpu",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
 		"/usr/lib/nagios/plugins/check_open_files":
-			source  => "kbp_icinga/client/check_open_files",
+			source  => "gen_icinga/client/check_open_files",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
 		"/usr/lib/nagios/plugins/check_memory":
-			source  => "kbp_icinga/client/check_memory",
+			source  => "gen_icinga/client/check_memory",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
 		"/usr/lib/nagios/plugins/check_drbd":
-			source  => "kbp_icinga/client/check_drbd",
+			source  => "gen_icinga/client/check_drbd",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
 	}
