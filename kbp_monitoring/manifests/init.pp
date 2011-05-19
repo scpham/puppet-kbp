@@ -11,7 +11,7 @@ class kbp_monitoring::client::sslcert {
 
 class kbp_monitoring::server($package="icinga") {
 	case $package {
-		"icinga": { include gen_icinga::server }
+		"icinga": { include kbp_icinga::server }
 		"nagios": { include kbp_nagios::server }
 	}
 
