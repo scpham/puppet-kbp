@@ -205,51 +205,16 @@ class kbp_icinga::server {
 			register   => "0";
 	}
 
-	kbp_icinga::contact {
-		"kumina_email":
-			conf_dir          => "generic",
-			c_alias           => "Kumina bv email",
-			notification_type => "email",
-			contact_data      => "rutger@kumina.nl";
-		"kumina_sms":
-			conf_dir          => "generic",
-			c_alias           => "Kumina bv SMS",
-			notification_type => "sms",
-			contactgroups     => "kumina_sms_all",
-			contact_data      => "+31653680300";
-		"tim_sms":
-			conf_dir          => "generic",
-			c_alias           => "Tim SMS",
-			notification_type => "sms",
-			contactgroups     => "kumina_sms_all",
-			contact_data      => "+31625300480";
-		"rutger_sms":
-			conf_dir          => "generic",
-			c_alias           => "Rutger SMS",
-			notification_type => "sms",
-			contactgroups     => "kumina_sms_all",
-			contact_data      => "+31627416182";
-	}
-
-	kbp_icinga::timeperiod {
-		"24x7":
-			conf_dir  => "generic",
-			tp_alias  => "24 hours a day, 7 days a week",
-			monday    => "00:00-24:00",
-			tuesday   => "00:00-24:00",
-			wednesday => "00:00-24:00",
-			thursday  => "00:00-24:00",
-			friday    => "00:00-24:00",
-			saturday  => "00:00-24:00",
-			sunday    => "00:00-24:00";
-		"workhours":
-			conf_dir  => "generic",
-			tp_alias  => "Kumina bv work hours",
-			monday    => "08:00-18:00",
-			tuesday   => "08:00-18:00",
-			wednesday => "08:00-18:00",
-			thursday  => "08:00-18:00",
-			friday    => "08:00-18:00";
+	kbp_icinga::timeperiod { "24x7":
+		conf_dir  => "generic",
+		tp_alias  => "24 hours a day, 7 days a week",
+		monday    => "00:00-24:00",
+		tuesday   => "00:00-24:00",
+		wednesday => "00:00-24:00",
+		thursday  => "00:00-24:00",
+		friday    => "00:00-24:00",
+		saturday  => "00:00-24:00",
+		sunday    => "00:00-24:00";
 	}
 
 	kbp_icinga::hostgroup {
@@ -259,21 +224,6 @@ class kbp_icinga::server {
 		"wh_hosts":
 			conf_dir => "generic",
 			hg_alias => "Workhours availability servers";
-	}
-
-	kbp_icinga::contactgroup {
-		"kumina":
-			conf_dir => "generic",
-			cg_alias => "Kumina bv";
-		"kumina_email":
-			conf_dir => "generic",
-			cg_alias => "Kumina bv email";
-		"kumina_sms":
-			conf_dir => "generic",
-			cg_alias => "Kumina bv SMS";
-		"kumina_sms_all":
-			conf_dir => "generic",
-			cg_alias => "Kumina bv SMS employees";
 	}
 }
 
