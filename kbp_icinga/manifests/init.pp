@@ -66,7 +66,7 @@ class kbp_icinga::client {
 class kbp_icinga::server {
 	include gen_icinga::server
 
-	gen_apt::preference { ["icinga","icinga-core","icinga-cgi","icinga-doc"]:; }
+	gen_apt::preference { ["icinga","icinga-core","icinga-cgi","icinga-common","icinga-doc"]:; }
 
 	kbp_icinga::servercommand {
 		["check_ssh","check_smtp"]:
