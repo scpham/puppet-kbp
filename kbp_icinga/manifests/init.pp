@@ -45,19 +45,19 @@ class kbp_icinga::client {
 
 	kfile {
 		"/usr/lib/nagios/plugins/check_cpu":
-			source  => "gen_icinga/client/check_cpu",
+			source  => "kbp_icinga/client/check_cpu",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
 		"/usr/lib/nagios/plugins/check_open_files":
-			source  => "gen_icinga/client/check_open_files",
+			source  => "kbp_icinga/client/check_open_files",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
 		"/usr/lib/nagios/plugins/check_memory":
-			source  => "gen_icinga/client/check_memory",
+			source  => "kbp_icinga/client/check_memory",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
 		"/usr/lib/nagios/plugins/check_drbd":
-			source  => "gen_icinga/client/check_drbd",
+			source  => "kbp_icinga/client/check_drbd",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
 	}
@@ -119,11 +119,11 @@ class kbp_icinga::server {
 
 	kfile {
 		"/etc/icinga/cgi.cfg":
-			source  => "gen_icinga/server/cgi.cfg",
+			source  => "kbp_icinga/server/cgi.cfg",
 			notify  => Exec["reload-icinga"],
 			require => Package["icinga"];
 		"/etc/icinga/icinga.cfg":
-			source  => "gen_icinga/server/icinga.cfg",
+			source  => "kbp_icinga/server/icinga.cfg",
 			notify  => Exec["reload-icinga"],
 			require => Package["icinga"];
 		"/etc/icinga/config":
@@ -132,7 +132,7 @@ class kbp_icinga::server {
 		"/etc/icinga/config/generic":
 			ensure  => directory;
 		"/etc/icinga/config/generic/notify_commands.cfg":
-			source  => "gen_icinga/server/config/generic/notify_commands.cfg",
+			source  => "kbp_icinga/server/config/generic/notify_commands.cfg",
 			notify  => Exec["reload-icinga"];
 	}
 
