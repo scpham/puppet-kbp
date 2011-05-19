@@ -9,7 +9,7 @@ class kbp_base {
 	include kbp_vim
 	include kbp_time
 	include kbp_sudo
-	include gen_icinga::client
+	include kbp_icinga::client
 
 	gen_sudo::rule {
 		"User root has total control":
