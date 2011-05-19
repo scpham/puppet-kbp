@@ -41,5 +41,5 @@ class kbp_apache::passenger {
 		ensure => latest;
 	}
 
-	apache::module { "ssl":; }
+	apache::module { ["ssl","passenger"]:; }
 }
