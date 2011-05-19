@@ -227,7 +227,7 @@ class kbp_icinga::server {
 	}
 }
 
-define kbp_icinga::haproxy::site ($address) {
+define kbp_icinga::haproxy ($address) {
 	$confdir = "${environment}/${name}"
 
 	gen_icinga::configdir { $confdir:
