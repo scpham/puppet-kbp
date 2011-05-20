@@ -3,7 +3,10 @@ class kbp_puppetmaster {
 	include kbp_apache::passenger
 	include kbp_mysql::server
 	include kbp_vim::puppet
-	include kbp_gitlistchanges
+	include kbp_git
+	include kbp_git::listchanges
+	include kbp_git::gitg
+
 	class { "kbp_trending::puppetmaster":
 		method => "munin";
 	}
