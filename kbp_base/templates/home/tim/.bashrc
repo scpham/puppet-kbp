@@ -36,7 +36,8 @@ esac
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*)
-    PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}<%= "." << dcenv %>: ${PWD/$HOME/~}\007"'
+    #PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}<%= "." << dcenv %>: ${PWD/$HOME/~}\007"'
+    PROMPT_COMMAND='echo -ne "\033]0;${HOSTNAME}: ${PWD/$HOME/~}\007"'
     ;;
 *)
     ;;
@@ -69,4 +70,11 @@ alias l='ls -CF'
 # sources /etc/bash.bashrc).
 if [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
+fi
+
+# If we're on testpuppetmaster, I want to see the branch
+if [ `cat /etc/hostname` == "testpuppetmaster" ]; then
+	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w $(__git_ps1 "(%s)")\[\033[00m\]\$ '
+else
+	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h<%= "." << domain %> [<%= environment %>]\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 fi
