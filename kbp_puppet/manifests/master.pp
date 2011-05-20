@@ -125,7 +125,7 @@ define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $deb
 	# Setup the MySQL only if one of the following condition apply:
 	# - dbhost is false or localhost (false implies localhost)
 	# - dbhost is equal to local fqdn
-	if $dbhost or $dbhost == 'localhost' or $dbhost == $fqdn {
+	if $dbhost or ($dbhost == 'localhost') or ($dbhost == $fqdn) {
 		mysql::server::db { $real_dbname:; }
 
 		mysql::server::grant { $real_dbname:
