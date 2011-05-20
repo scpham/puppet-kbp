@@ -76,10 +76,6 @@ define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $deb
 		vardir      => $vardir,
 	}
 
-	# TODO Files that need to be customized
-	# fileserver.conf
-	# auth.conf
-
 	# The apache config should determine where to listen on
 	apache::site_config { "${pname}":
 		address      => $address,
@@ -139,25 +135,40 @@ define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $deb
 	}
 
 	gen_puppet::set_config {
-		"Set database adapter for $name.":
+		"Set database adapter for ${name}.":
 			configfile => $configfile,
 			var        => 'dbadapter',
 			value      => 'mysql',
 			section    => 'master';
-		"Set database user for $name.":
+		"Set database user for ${name}.":
 			configfile => $configfile,
 			var        => 'dbuser',
 			value      => $real_dbuser,
 			section    => 'master';
-		"Set database name for $name.":
+		"Set database name for ${name}.":
 			configfile => $configfile,
 			var        => 'dbname',
 			value      => $real_dbname,
 			section    => 'master';
-		"Set database password for $name.":
+		"Set database password for ${name}.":
 			configfile => $configfile,
 			var        => 'dbpassword',
 			value      => $real_dbpasswd,
+			section    => 'master';
+		"Set storeconfig for ${name}.":
+			configfile => $configfile,
+			var        => 'storeconfigs',
+			value      => 'true',
+			section    => 'master';
+		"Set thin_storeconfigs for ${name}.":
+			configfile => $configfile,
+			var        => 'thin_storeconfigs',
+			value      => 'true',
+			section    => 'master';
+		"Set dbmigrate for ${name}.":
+			configfile => $configfile,
+			var        => 'dbmigrate',
+			value      => 'true',
 			section    => 'master';
 	}
 
