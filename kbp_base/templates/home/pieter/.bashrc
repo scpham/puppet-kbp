@@ -26,7 +26,7 @@ fi
 #    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h<%= "." << dcenv %>\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 #    ;;
 #*)
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h<%= "." << dcenv %>:\w\$ '
+#    PS1='${debian_chroot:+($debian_chroot)}\u@\h<%= "." << dcenv %>:\w\$ '
 #    ;;
 #esac
 
@@ -72,4 +72,4 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 #2 line prompt
-PS1='\[\033[32m\]\h: \w\n\[\033[1;31m\]\u \[\033[1;34m\]\[\033[1;36m\]\[\033[0m\]\$ \[\033[0m\]'
+PS1='\[\033[32m\]\h: \w $(__git_ps1 "(%s)")\n\[\033[1;31m\]\u \[\033[1;34m\]\[\033[1;36m\]\[\033[0m\]\$ \[\033[0m\]'
