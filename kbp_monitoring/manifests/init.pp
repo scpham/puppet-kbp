@@ -54,3 +54,13 @@ class kbp_monitoring::server($package="icinga") {
 			tag    => "nfs_monitoring";
 	}
 }
+
+define kbp_monitoring::haproxy($address, $package="icinga") {
+	case $package {
+		"icinga": {
+			kbp_icinga::haproxy { "${name}":
+				address => $address;
+			}
+		}
+	}
+}

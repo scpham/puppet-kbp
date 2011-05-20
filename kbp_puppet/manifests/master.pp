@@ -40,10 +40,10 @@ class kbp_puppet::master {
 # probably most of the time), you just need to name it "default" and
 # most settings will be indeed default.
 #
-define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/puppet/puppet.conf", $debug = false,
+define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $debug = false,
 				$dbname = false, $dbuser = false, $dbpasswd = false, $dbhost = false, $dbsocket = false,
 				$factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet", $pluginsync = true,
-				$rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
+				$port = "8140", $rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
 				$ssldir = "/var/lib/puppet/ssl", $templatedir = '$confdir/templates',
 				$vardir = "/var/lib/puppet") {
 	include gen_puppet::concat
@@ -59,6 +59,9 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 
 	# The rackdir that is being used
 	$rackdir = "${rackroot}/${pname}"
+
+	# The address to bind to
+	$address = "*:${port}"
 
 	gen_puppet::master::config { $name:
 		configfile  => $configfile,
@@ -81,6 +84,7 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 	apache::site_config { "${pname}":
 		address      => $address,
 		documentroot => "${rackdir}/public",
+		template     => "apache/sites-available/simple-fqdn.erb",
 	}
 
 	# The vhost-addition should set the documentroot, the puppet directory,
@@ -175,5 +179,11 @@ define kbp_puppet::master::config ($address = "*:8140", $configfile = "/etc/pupp
 			value      => $dbsocket,
 			section    => 'master',
 		}
+	}
+
+	ferm::rule { "HTTP connections for ${pname}":
+		proto  => "tcp",
+		dport  => $port,
+		action => "ACCEPT",
 	}
 }

@@ -1,4 +1,0 @@
-define contactgroup {
-	contactgroup_name <%= name %>
-	alias             <%= cg_alias %>
-}
