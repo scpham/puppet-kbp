@@ -3,7 +3,9 @@ class kbp_icinga::client {
 		sub => $environment;
 	}
 
-	gen_icinga::host { "${fqdn}":; }
+	gen_icinga::host { "${fqdn}":
+		parents => $parent;
+	}
 
 	gen_icinga::service {
 		"ssh_${fqdn}":
@@ -109,8 +111,8 @@ class kbp_icinga::server {
 			conf_dir  => "generic",
 			argument1 => "-u nagios";
 		"check_loadtrend":
-			conf_dir  => "generic",
-			nrpe      => true;
+			conf_dir => "generic",
+			nrpe     => true;
 		"check_sslcert":
 			conf_dir  => "generic",
 			argument1 => '$ARG1$',
@@ -181,23 +183,23 @@ class kbp_icinga::server {
 
 	gen_icinga::host {
 		"generic_ha_host":
-			conf_dir                      => "generic",
-			use                           => "false",
-			hostgroups                    => "ha_hosts",
-			initialstate                  => "u",
-			notifications_enabled         => "1",
-			event_handler_enabled         => "0",
-			flap_detection_enabled        => "1",
-			process_perf_data             => "1",
-			retain_status_information     => "1",
-			retain_nonstatus_information  => "1",
-			check_command                 => "check-host-alive",
-			check_interval                => "120",
-			notification_period           => "24x7",
-			notification_interval         => "36000",
-			contact_groups                => "kumina",
-			max_check_attempts            => "3",
-			register                      => "0";
+			conf_dir                     => "generic",
+			use                          => "false",
+			hostgroups                   => "ha_hosts",
+			initialstate                 => "u",
+			notifications_enabled        => "1",
+			event_handler_enabled        => "0",
+			flap_detection_enabled       => "1",
+			process_perf_data            => "1",
+			retain_status_information    => "1",
+			retain_nonstatus_information => "1",
+			check_command                => "check-host-alive",
+			check_interval               => "120",
+			notification_period          => "24x7",
+			notification_interval        => "36000",
+			contact_groups               => "kumina",
+			max_check_attempts           => "3",
+			register                     => "0";
 		"generic_wh_host":
 			conf_dir   => "generic",
 			use        => "generic_ha_host",
