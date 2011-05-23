@@ -205,16 +205,25 @@ class kbp_icinga::server {
 			register   => "0";
 	}
 
-	gen_icinga::timeperiod { "24x7":
-		conf_dir  => "generic",
-		tp_alias  => "24 hours a day, 7 days a week",
-		monday    => "00:00-24:00",
-		tuesday   => "00:00-24:00",
-		wednesday => "00:00-24:00",
-		thursday  => "00:00-24:00",
-		friday    => "00:00-24:00",
-		saturday  => "00:00-24:00",
-		sunday    => "00:00-24:00";
+	gen_icinga::timeperiod {
+		"24x7":
+			conf_dir  => "generic",
+			tp_alias  => "24 hours a day, 7 days a week",
+			monday    => "00:00-24:00",
+			tuesday   => "00:00-24:00",
+			wednesday => "00:00-24:00",
+			thursday  => "00:00-24:00",
+			friday    => "00:00-24:00",
+			saturday  => "00:00-24:00",
+			sunday    => "00:00-24:00";
+		"workhours":
+			conf_dir  => "generic",
+			tp_alias  => "Kumina bv work hours",
+			monday    => "08:00-18:00",
+			tuesday   => "08:00-18:00",
+			wednesday => "08:00-18:00",
+			thursday  => "08:00-18:00",
+			friday    => "08:00-18:00";
 	}
 
 	gen_icinga::hostgroup {
@@ -224,6 +233,37 @@ class kbp_icinga::server {
 		"wh_hosts":
 			conf_dir => "generic",
 			hg_alias => "Workhours availability servers";
+	}
+
+	gen_icinga::serviceescalation {
+		"escalation_ha":
+			hostgroup_name => "ha_hosts",
+			first_notificatopn => 2,
+			last_notification => ,
+			notification_interval => 600,
+			escalation_period => "24x7",
+			contact_groups => "";
+		"escalation_ha_all":
+			hostgroup_name => "ha_hosts",
+			first_notificatopn => ,
+			last_notification => ,
+			notification_interval => 600,
+			escalation_period => "24x7",
+			contact_groups => "";
+		"escalation_wh":
+			hostgroup_name => "wh_hosts",
+			first_notificatopn => ,
+			last_notification => ,
+			notification_interval => 600,
+			escalation_period => ,
+			contact_groups => "";
+		"escalation_wh_all":
+			hostgroup_name => "wh_hosts",
+			first_notificatopn => ,
+			last_notification => ,
+			notification_interval => 600,
+			escalation_period => ,
+			contact_groups => "";
 	}
 }
 
