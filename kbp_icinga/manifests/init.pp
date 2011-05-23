@@ -234,37 +234,6 @@ class kbp_icinga::server {
 			conf_dir => "generic",
 			hg_alias => "Workhours availability servers";
 	}
-
-	gen_icinga::serviceescalation {
-		"escalation_ha":
-			hostgroup_name => "ha_hosts",
-			first_notificatopn => 2,
-			last_notification => ,
-			notification_interval => 600,
-			escalation_period => "24x7",
-			contact_groups => "";
-		"escalation_ha_all":
-			hostgroup_name => "ha_hosts",
-			first_notificatopn => ,
-			last_notification => ,
-			notification_interval => 600,
-			escalation_period => "24x7",
-			contact_groups => "";
-		"escalation_wh":
-			hostgroup_name => "wh_hosts",
-			first_notificatopn => ,
-			last_notification => ,
-			notification_interval => 600,
-			escalation_period => ,
-			contact_groups => "";
-		"escalation_wh_all":
-			hostgroup_name => "wh_hosts",
-			first_notificatopn => ,
-			last_notification => ,
-			notification_interval => 600,
-			escalation_period => ,
-			contact_groups => "";
-	}
 }
 
 define kbp_icinga::haproxy ($address) {
