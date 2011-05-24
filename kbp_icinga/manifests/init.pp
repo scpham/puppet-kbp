@@ -109,7 +109,8 @@ class kbp_icinga::server {
 			argument1   => "-C nfs -c2,3";
 		"check_mysql":
 			conf_dir  => "generic",
-			argument1 => "-u nagios";
+			argument1 => "-u nagios",
+			argument2 => "-p bah8Vahphu6i";
 		"check_loadtrend":
 			conf_dir => "generic",
 			nrpe     => true;
