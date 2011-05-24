@@ -48,7 +48,7 @@ class kbp_monitoring::server($package="icinga") {
 			tag    => "glassfish_monitoring";
 		"NFS monitoring from ${fqdn}":
 			saddr  => $fqdn,
-			proto  => "tcp",
+			proto  => "(tcp udp)",
 			dport  => 2049,
 			action => "ACCEPT",
 			tag    => "nfs_monitoring";
