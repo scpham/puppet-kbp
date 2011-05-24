@@ -53,7 +53,7 @@ class kbp_syslog::server::squeeze inherits rsyslog::server {
 			"/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log",
 			"/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
 			"/var/log/messages"],
-		options => ["daily", "rotate 90", "missingok", "notifempty", "compress", "sharedscripts"],
+		options => ["daily", "rotate 90", "missingok", "notifempty", "compress", "delaycompress", "sharedscripts"],
 		postrotate => "invoke-rc.d rsyslog reload > /dev/null";
 	}
 }
