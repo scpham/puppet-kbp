@@ -49,7 +49,7 @@ class kbp_monitoring::server($package="icinga") {
 		"NFS monitoring from ${fqdn}":
 			saddr  => $fqdn,
 			proto  => "(tcp udp)",
-			dport  => 2049,
+			dport  => "(111 2049)",
 			action => "ACCEPT",
 			tag    => "nfs_monitoring";
 	}
