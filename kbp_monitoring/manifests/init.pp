@@ -53,6 +53,12 @@ class kbp_monitoring::server($package="icinga") {
 			action => "ACCEPT",
 			tag    => "nfs_monitoring";
 	}
+
+	@@mysql::user { "MySQL monitoring user for ${fqdn}":
+		user     => "nagios",
+		password => "bah8Vahphu6i",
+		tag      => "mysql_monitoring";
+	}
 }
 
 define kbp_monitoring::haproxy($address, $package="icinga") {

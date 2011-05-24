@@ -5,6 +5,7 @@ class kbp_mysql::server {
 
 	Ferm::Rule <<| tag == "mysql_${environment}" |>>
 	Ferm::Rule <<| tag == "mysql_monitoring" |>>
+	Mysql::User <<| tag == "mysql_monitoring" |>>
 }
 
 class kbp_mysql::client($customtag="mysql_${environment}") {
@@ -21,10 +22,5 @@ class kbp_mysql::monitoring::icinga::server {
 	gen_icinga::service { "mysql_${fqdn}":
 		service_description => "MySQL service",
 		checkcommand        => "check_mysql";
-	}
-
-	mysql::user { "monitoring_user":
-		user     => "nagios",
-		password => "bah8Vahphu6i";
 	}
 }
