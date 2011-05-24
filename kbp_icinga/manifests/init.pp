@@ -246,7 +246,11 @@ define kbp_icinga::haproxy ($address) {
 	}
 
 	gen_icinga::host { "${name}":
-		address => $address;
+		address => $address,
+		parents => $loadbalancer::otherhost ? {
+			undef   => $fqdn,
+			default => "${fqdn}, ${loadbalancer::otherhost}",
+		}
 	}
 
 	gen_icinga::service { "virtual_host_${name}":
