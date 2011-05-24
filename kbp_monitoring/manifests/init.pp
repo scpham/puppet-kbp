@@ -57,6 +57,7 @@ class kbp_monitoring::server($package="icinga") {
 	@@mysql::user { "MySQL monitoring user for ${fqdn}":
 		user     => "nagios",
 		password => "bah8Vahphu6i",
+		hostname => $fqdn,
 		tag      => "mysql_monitoring";
 	}
 }
