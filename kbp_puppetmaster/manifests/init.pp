@@ -85,7 +85,8 @@ class kbp_puppetmaster {
 
 	mysql::server::grant { "puppet":
 		user     => "puppet",
-		password => "ui6Nae9Xae4a";
+		password => "ui6Nae9Xae4a",
+		db       => "puppet";
 	}
 
 	# Enforce Puppet modules directory permissions.

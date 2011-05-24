@@ -131,6 +131,7 @@ define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $deb
 		mysql::server::grant { $real_dbname:
 			user     => $real_dbuser,
 			password => $real_dbpasswd,
+			db       => $real_dbname;
 		}
 	}
 
