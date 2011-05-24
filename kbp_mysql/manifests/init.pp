@@ -22,4 +22,9 @@ class kbp_mysql::monitoring::icinga::server {
 		service_description => "MySQL service",
 		checkcommand        => "check_mysql";
 	}
+
+	mysql::user { "monitoring_user":
+		user     => "nagios",
+		password => "bah8Vahphu6i";
+	}
 }
