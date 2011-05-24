@@ -126,7 +126,7 @@ class kbp_base {
 
 			kfile { "/home/$username/.gitconfig":
 				ensure => present,
-				content => "[user]\n\tname = $fullname\n\temail = $username@kumina.nl\n",
+				content => template("kbp_base/git/.gitconfig"),
 				group => "kumina";
 			}
 
