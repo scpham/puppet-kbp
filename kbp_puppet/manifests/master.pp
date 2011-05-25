@@ -40,7 +40,7 @@ class kbp_puppet::master {
 # probably most of the time), you just need to name it "default" and
 # most settings will be indeed default.
 #
-define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $debug = false,
+define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet/puppet.conf", $debug = false,
 				$dbname = false, $dbuser = false, $dbpasswd = false, $dbhost = false, $dbsocket = false,
 				$factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet", $pluginsync = true,
 				$port = "8140", $rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
