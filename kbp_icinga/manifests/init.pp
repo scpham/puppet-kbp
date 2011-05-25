@@ -73,8 +73,7 @@ class kbp_icinga::server {
 	gen_icinga::servercommand {
 		["check_ssh","check_smtp"]:
 			conf_dir => "generic";
-		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker"]:
-#		"check_loadtrend"]:
+		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend"]:
 			conf_dir => "generic",
 			nrpe     => true;
 		"check-host-alive":
@@ -107,20 +106,6 @@ class kbp_icinga::server {
 			conf_dir    => "generic",
 			commandname => "check_rpc",
 			argument1   => "-C nfs -c2,3";
-		"check_mysql":
-			conf_dir  => "generic",
-			argument1 => "-u nagios",
-			argument2 => "-p",
-			nrpe      => true;
-		"check_mysql_slave":
-			conf_dir  => "generic",
-			argument1 => "-u nagios",
-			argument2 => "-p",
-			argument3 => "-S",
-			nrpe      => true;
-		"check_loadtrend":
-			conf_dir => "generic",
-			nrpe     => true;
 		"check_sslcert":
 			conf_dir  => "generic",
 			argument1 => '$ARG1$',

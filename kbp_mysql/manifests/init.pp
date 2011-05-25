@@ -25,6 +25,6 @@ class kbp_mysql::monitoring::icinga::server {
 	}
 
 	mysql::user { "monitoring":
-		user     => "nagios";
+		user => "nagios";
 	}
 }
