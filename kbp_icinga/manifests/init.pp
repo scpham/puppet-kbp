@@ -1,4 +1,6 @@
 class kbp_icinga::client {
+	include gen_icinga
+
 	gen_icinga::configdir { "${environment}/${fqdn}":
 		sub => $environment;
 	}
