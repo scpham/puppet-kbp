@@ -21,6 +21,7 @@ class kbp_mysql::client($customtag="mysql_${environment}") {
 class kbp_mysql::monitoring::icinga::server {
 	gen_icinga::service { "mysql_${fqdn}":
 		service_description => "MySQL service",
-		checkcommand        => "check_mysql";
+		checkcommand        => "check_mysql",
+		nrpe                => true;
 	}
 }
