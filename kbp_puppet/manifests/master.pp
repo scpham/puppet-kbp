@@ -94,6 +94,7 @@ define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $deb
 			source  => "kbp_puppet/master/apache2/vhost-additions/rack.conf";
 		"/etc/apache2/vhost-additions/${pname}/ssl.conf":
 			notify  => Exec["reload-apache2"],
+			require => Kfile["${ssldir}/ca/ca_crt.pem","${ssldir}/ca/ca_crl.pem"],
 			content => template("kbp_puppet/master/apache2/vhost-additions/ssl.conf.erb");
 	}
 
