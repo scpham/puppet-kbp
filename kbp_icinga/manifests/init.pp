@@ -62,6 +62,10 @@ class kbp_icinga::client {
 			source  => "gen_icinga/client/check_drbd",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
+		"/usr/lib/nagios/plugins/check_mysql":
+			source  => "gen_icinga/client/check_mysql",
+			mode    => 755,
+			require => Package["nagios-plugins-kumina"];
 	}
 }
 
