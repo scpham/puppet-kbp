@@ -15,6 +15,7 @@ class kbp_icinga::client {
 			checkcommand        => "check_ssh";
 		"disk_space_${fqdn}":
 			service_description => "Disk space",
+			servicegroups       => "wh_services_critsms",
 			checkcommand        => "check_disk_space",
 			nrpe                => true;
 		"ksplice_${fqdn}":
@@ -23,6 +24,7 @@ class kbp_icinga::client {
 			nrpe                => true;
 		"puppet_state_${fqdn}":
 			service_description => "Puppet state freshness",
+			servicegroups       => "mail_services",
 			checkcommand        => "check_puppet_state_freshness",
 			nrpe                => true;
 		"cpu_${fqdn}":
@@ -39,6 +41,7 @@ class kbp_icinga::client {
 			nrpe                => true;
 		"memory_${fqdn}":
 			service_description => "Memory usage",
+			servicegroups       => "wh_services_critsms",
 			checkcommand        => "check_memory",
 			nrpe                => true;
 		"zombie_processes_${fqdn}":
@@ -140,7 +143,8 @@ class kbp_icinga::server {
 	gen_icinga::service {
 		"generic_ha_service":
 			conf_dir                     => "generic",
-			use                          => "false",
+			use                          => false,
+			servicegroups                => "ha_services",
 			initialstate                 => "u",
 			active_checks_enabled        => "1",
 			passive_checks_enabled       => "1",
@@ -162,28 +166,20 @@ class kbp_icinga::server {
 			max_check_attempts           => "3",
 			notification_period          => "24x7",
 			notification_options         => "w,u,c,r",
-			contact_groups               => "kumina_email, kumina_sms",
+			contact_groups               => "kumina_email",
 			register                     => "0";
 		"generic_wh_service":
 			conf_dir            => "generic",
 			use                 => "generic_ha_service",
+			servicegroups       => "wh_services_warnsms",
 			notification_period => "workhours",
 			register            => "0";
-		"generic_passive_service":
-			conf_dir              => "generic",
-			use                   => "generic_ha_service",
-			checkcommand          => "return-ok",
-			active_checks_enabled => "0",
-			max_check_attempts    => "1",
-			check_freshness       => "1",
-			freshnessthreshold    => "360",
-			register              => "0";
 	}
 
 	gen_icinga::host {
 		"generic_ha_host":
 			conf_dir                     => "generic",
-			use                          => "false",
+			use                          => false,
 			hostgroups                   => "ha_hosts",
 			initialstate                 => "u",
 			notifications_enabled        => "1",
@@ -234,6 +230,21 @@ class kbp_icinga::server {
 		"wh_hosts":
 			conf_dir => "generic",
 			hg_alias => "Workhours availability servers";
+	}
+
+	gen_icinga::servicegroup {
+		"ha_services":
+			conf_dir => "generic",
+			sg_alias => "High availability services";
+		"wh_services_critsms":
+			conf_dir => "generic",
+			sg_alias => "Workhours availability services, sms on Crit only";
+		"wh_services_warnsms":
+			conf_dir => "generic",
+			sg_alias => "Workhours availability services, sms on Warn and Crit";
+		"mail_services":
+			conf_dir => "generic",
+			sg_alias => "Mail alert only services";
 	}
 }
 
