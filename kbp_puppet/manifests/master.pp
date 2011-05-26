@@ -128,8 +128,8 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 		}
 		$real_dbuser = $dbuser ? {
 			# We should make sure this is never longer than 16 chars
-			false   => regsubst("pm_${sanitized_name}",'(.{1,16}).*','\1')
-			default => regsubst($dbuser,'(.{1,16}).*','\1')
+			false   => regsubst("pm_${sanitized_name}",'(.{1,16}).*','\1'),
+			default => regsubst($dbuser,'(.{1,16}).*','\1'),
 		}
 		$real_dbpasswd = $dbpasswd ? {
 			false   => $pname,
