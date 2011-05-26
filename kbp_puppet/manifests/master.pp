@@ -83,6 +83,20 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 		template     => "apache/sites-available/simple-fqdn.erb",
 	}
 
+	# Open the port in Apache
+	line { "Make Apache listen to port ${port} for puppetmaster ${name}.":
+		content => "Listen ${port}",
+		file    => "/etc/apache2/ports.conf",
+		require => Kpackage["apache2"],
+	}
+
+	# Open the firewall for our puppetmaster
+	ferm::rule { "Connections to puppetmaster ${name}.":
+		proto  => "tcp",
+		dport  => $port,
+		action => "ACCEPT",
+	}
+
 	# The vhost-addition should set the documentroot, the puppet directory,
 	# the additional apache permissions and debugging options.
 	kfile {
@@ -109,13 +123,13 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 		$real_dbpasswd = 'puppet'
 	} else {
 		$real_dbname = $dbname ? {
-			false   => $pname,
+			false   => regsubst($pname,'-','_','G'),
 			default => $dbname,
 		}
 		$real_dbuser = $dbuser ? {
-			# TODO We should make sure this is never longer than 16 chars
-			false   => "pm_${sanitized_name}",
-			default => $dbuser,
+			# We should make sure this is never longer than 16 chars
+			false   => regsubst("pm_${sanitized_name}",'(.{1,16}).*','\1')
+			default => regsubst($dbuser,'(.{1,16}).*','\1')
 		}
 		$real_dbpasswd = $dbpasswd ? {
 			false   => $pname,
