@@ -1,7 +1,7 @@
 class kbp_networking {
 	include gen_puppet::concat
 	concat { "/etc/network/interfaces.puppet":; }
-	define interface_ip ($interface=eth0, $address, $netmask, $gateway) {
+	define interface_ip ($interface=eth0, $address, $netmask, $gateway=false) {
 		gen_puppet::concat::add_content { "${name}":
 			target  => "/etc/network/interfaces.puppet",
 			content => template("kbp_networking/interfaces.erb");
