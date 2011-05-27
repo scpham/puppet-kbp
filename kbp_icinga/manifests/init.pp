@@ -192,7 +192,7 @@ class kbp_icinga::server {
 			check_interval               => "120",
 			notification_period          => "24x7",
 			notification_interval        => "36000",
-			contact_groups               => "kumina",
+			contact_groups               => "kumina_email",
 			max_check_attempts           => "3",
 			register                     => "0";
 		"generic_wh_host":
@@ -245,6 +245,21 @@ class kbp_icinga::server {
 		"mail_services":
 			conf_dir => "generic",
 			sg_alias => "Mail alert only services";
+	}
+}
+
+define kbp_icinga::virtualhost($address, $conf_dir, $parents=false) {
+	gen_icinga::configdir { "${conf_dir}/${name}":
+		sub => $conf_dir;
+	}
+
+	gen_icinga::host { "${name}":
+		conf_dir => "$conf_dir/${name}",
+		address  => $address,
+		parents  => $parents ? {
+			false   => undef,
+			default => $parents,
+		};
 	}
 }
 
