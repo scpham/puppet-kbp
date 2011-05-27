@@ -55,6 +55,14 @@ class kbp_monitoring::server($package="icinga") {
 	}
 }
 
+class kbp_monitoring::heartbeat($package="icinga") {
+	case $package {
+		"icinga": {
+			kbp_icinga::heartbeat { "${name}":; }
+		}
+	}
+}
+
 define kbp_monitoring::haproxy($address, $package="icinga") {
 	case $package {
 		"icinga": {

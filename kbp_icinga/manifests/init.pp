@@ -67,6 +67,10 @@ class kbp_icinga::client {
 			source  => "gen_icinga/client/check_drbd",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
+		"/usr/lib/nagios/plugins/check_heartbeat":
+			source  => "gen_icinga/client/check_heartbeat",
+			mode    => 755,
+			require => Package["nagios-plugins-kumina"];
 #		"/usr/lib/nagios/plugins/check_mysql":
 #			source  => "gen_icinga/client/check_mysql",
 #			mode    => 755,
@@ -82,7 +86,7 @@ class kbp_icinga::server {
 	gen_icinga::servercommand {
 		["check_ssh","check_smtp"]:
 			conf_dir => "generic";
-		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend"]:
+		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat"]:
 			conf_dir => "generic",
 			nrpe     => true;
 		"check-host-alive":
@@ -245,6 +249,14 @@ class kbp_icinga::server {
 		"mail_services":
 			conf_dir => "generic",
 			sg_alias => "Mail alert only services";
+	}
+}
+
+define kbp_icinga::heartbeat {
+	gen_icinga::service { "heartbeat_${fqdn}":
+		service_description => "Heartbeat",
+		checkcommand        => "check_heartbeat",
+		nrpe                => true;
 	}
 }
 
