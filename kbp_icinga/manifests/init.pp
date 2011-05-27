@@ -31,10 +31,10 @@ class kbp_icinga::client {
 			service_description => "CPU usage",
 			checkcommand        => "check_cpu",
 			nrpe                => true;
-#		"loadtrend_${fqdn}":
-#			service_description => "Load average",
-#			checkcommand        => "check_loadtrend",
-#			nrpe                => true;
+		"loadtrend_${fqdn}":
+			service_description => "Load trend",
+			checkcommand        => "check_loadtrend",
+			nrpe                => true;
 		"open_files_${fqdn}":
 			service_description => "Open files",
 			checkcommand        => "check_open_files",
@@ -71,10 +71,6 @@ class kbp_icinga::client {
 			source  => "gen_icinga/client/check_heartbeat",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
-#		"/usr/lib/nagios/plugins/check_mysql":
-#			source  => "gen_icinga/client/check_mysql",
-#			mode    => 755,
-#			require => Package["nagios-plugins-kumina"];
 	}
 }
 
