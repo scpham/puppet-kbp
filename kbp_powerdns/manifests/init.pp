@@ -1,6 +1,7 @@
 class kbp_powerdns::master {
 	include powerdns::master
 
-	Ferm::Rule <<| tag == "bind_${environment}" |>>
-	Ferm::Rule <<| tag == "poweradmin_${environment}" |>>
+	Gen_ferm::Rule <<| tag == "bind_${environment}" |>>
+
+	Gen_ferm::Rule <<| tag == "poweradmin_${environment}" |>>
 }

@@ -91,7 +91,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 	}
 
 	# Open the firewall for our puppetmaster
-	ferm::rule { "Connections to puppetmaster ${name}.":
+	gen_ferm::rule { "Connections to puppetmaster ${name}.":
 		proto  => "tcp",
 		dport  => $port,
 		action => "ACCEPT",
@@ -208,7 +208,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 		}
 	}
 
-	ferm::rule { "HTTP connections for ${pname}":
+	gen_ferm::rule { "HTTP connections for ${pname}":
 		proto  => "tcp",
 		dport  => $port,
 		action => "ACCEPT",

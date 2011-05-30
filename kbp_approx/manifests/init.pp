@@ -5,7 +5,7 @@ class kbp_approx {
 		source => "kbp_approx/approx.conf",
 	}
 
-	ferm::rule { "APT proxy":
+	gen_ferm::rule { "APT proxy":
 		proto     => "tcp",
 		dport     => "9999",
 		action    => "ACCEPT";

@@ -93,7 +93,7 @@ class kbp_munin::client::bind9 {
 class kbp_munin::server inherits munin::server {
 	include nagios::nsca
 
-	@@ferm::rule { "Munin connections from ${fqdn}":
+	@@gen_ferm::rule { "Munin connections from ${fqdn}":
 		saddr  => $fqdn,
 		proto  => "tcp",
 		dport  => "4949",

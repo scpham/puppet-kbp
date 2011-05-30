@@ -3,13 +3,13 @@ class kbp_bind inherits bind {
 		method => "munin"
 	}
 
-	ferm::rule { "DNS connections":
+	gen_ferm::rule { "DNS connections":
 		proto  => "(tcp udp)",
 		dport  => 53,
 		action => "ACCEPT";
 	}
 
-	@@ferm::rule { "Allow AXFR transfers from ${fqdn}":
+	@@gen_ferm::rule { "Allow AXFR transfers from ${fqdn}":
 		saddr  => $fqdn,
 		proto  => "(tcp udp)",
 		dport  => 53,

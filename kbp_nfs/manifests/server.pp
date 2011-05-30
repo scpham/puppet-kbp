@@ -36,8 +36,8 @@ define kbp_nfs::server::config ($need_gssd = "no", $need_idmapd = "no", $need_st
 		statdopts       => $statdopts,
 	}
 
-	Ferm::Rule <<| tag == "nfs_${environment}" |>> {
+	Gen_ferm::Rule <<| tag == "nfs_${environment}" |>> {
 		dport => "(111 2049 ${incoming_port} ${outgoing_port} ${mountd_port} ${lock_port})",
 	}
-	Ferm::Rule <<| tag == "nfs_monitoring" |>>
+	Gen_ferm::Rule <<| tag == "nfs_monitoring" |>>
 }

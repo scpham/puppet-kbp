@@ -19,7 +19,7 @@ class kbp_activemq {
 	}
 
 	# Open the management port
-	ferm::rule { "Connections to admin port":
+	gen_ferm::rule { "Connections to admin port":
 		dport  => "8161",
 		proto  => "tcp",
 		saddr  => "${fqdn}",

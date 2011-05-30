@@ -21,7 +21,7 @@ class kbp_postfix inherits postfix {
 class kbp_postfix::secondary {
 	include kbp_postfix
 
-	ferm::rule { "SMTP connections":
+	gen_ferm::rule { "SMTP connections":
 		proto  => "tcp",
 		dport  => 25,
 		action => "ACCEPT";
@@ -31,7 +31,7 @@ class kbp_postfix::secondary {
 class kbp_postfix::primary {
 	include kbp_postfix
 
-	ferm::rule { "SMTP connections":
+	gen_ferm::rule { "SMTP connections":
 		proto  => "tcp",
 		dport  => "(25 465)",
 		action => "ACCEPT";

@@ -5,8 +5,8 @@ class kbp_mysql::server($otherhost=false) {
 		otherhost => $otherhost,
 	}
 
-	Ferm::Rule <<| tag == "mysql_${environment}" |>>
-	Ferm::Rule <<| tag == "mysql_monitoring" |>>
+	Gen_ferm::Rule <<| tag == "mysql_${environment}" |>>
+	Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
 }
 
 class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}") {
@@ -14,7 +14,7 @@ class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}") {
 		otherhost => $otherhost,
 	}
 
-	Ferm::Rule <<| tag == "mysql_${fqdn}" |>>
+	Gen_ferm::Rule <<| tag == "mysql_${fqdn}" |>>
 	Mysql::Server::Grant <<| tag == "mysql_${fqdn}" |>>
 
 	@@mysql::server::grant {
@@ -32,7 +32,7 @@ class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}") {
 			tag         => $otherhost;
 	}
 
-	@@ferm::rule { "MySQL slaving from ${fqdn}":
+	@@gen_ferm::rule { "MySQL slaving from ${fqdn}":
 		saddr  => $fqdn,
 		proto  => "tcp",
 		dport  => 3306,
@@ -48,7 +48,7 @@ class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}") {
 }
 
 class kbp_mysql::client($customtag="mysql_${environment}") {
-	@@ferm::rule { "MySQL connections from ${fqdn}":
+	@@gen_ferm::rule { "MySQL connections from ${fqdn}":
 		saddr  => $fqdn,
 		proto  => "tcp",
 		dport  => 3306,

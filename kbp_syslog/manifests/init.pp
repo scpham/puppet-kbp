@@ -2,16 +2,16 @@ class kbp_syslog::server($environmentonly=false) {
 	include "kbp_syslog::server::$lsbdistcodename"
 
 	if ($environmentonly) {
-		Ferm::Rule <<| tag == "syslog_${environment}" |>>
+		Gen_ferm::Rule <<| tag == "syslog_${environment}" |>>
 	} else {
-		Ferm::Rule <<| tag == "syslog" |>>
+		Gen_ferm::Rule <<| tag == "syslog" |>>
 	}
 }
 
 class kbp_syslog::client {
 	include "kbp_syslog::client::$lsbdistcodename"
 
-	@@ferm::rule { "Syslog traffic from ${fqdn}":
+	@@gen_ferm::rule { "Syslog traffic from ${fqdn}":
 		saddr  => $fqdn,
 		proto  => "udp",
 		dport  => 514,

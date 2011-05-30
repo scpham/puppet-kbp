@@ -15,7 +15,7 @@ class kbp_monitoring::server($package="icinga") {
 		"nagios": { include kbp_nagios::server }
 	}
 
-	@@ferm::rule {
+	@@gen_ferm::rule {
 		"NRPE monitoring from ${fqdn}":
 			saddr  => $fqdn,
 			proto  => "tcp",

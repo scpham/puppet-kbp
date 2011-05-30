@@ -21,7 +21,7 @@ class kbp_hetzner inherits hetzner {
 		content => "f71882fg";
 	}
 
-	ferm::rule {
+	gen_ferm::rule {
 		"Allow guests to connect to the internet":
 			chain     => "FORWARD",
 			interface => "ubr1",
