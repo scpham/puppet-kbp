@@ -91,7 +91,7 @@ class kbp_munin::client::bind9 {
 }
 
 class kbp_munin::server inherits munin::server {
-	include nagios::nsca
+	include kbp_nsca::client
 
 	@@gen_ferm::rule { "Munin connections from ${fqdn}":
 		saddr  => $fqdn,
@@ -105,11 +105,9 @@ class kbp_munin::server inherits munin::server {
 		source => "kbp_munin/server/munin.conf",
 	}
 
-	kfile { "/etc/send_nsca.cfg":
-		source => "kbp_munin/server/send_nsca.cfg",
-		mode => 640,
-		group => "munin",
-		require => Package["nsca"],
+	Kfile <| title == "/etc/send_nsca.cfg" |> {
+		mode    => 640,
+		group   => "munin",
 	}
 
 	kpackage { "rsync":; }

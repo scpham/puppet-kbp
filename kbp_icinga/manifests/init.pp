@@ -76,6 +76,7 @@ class kbp_icinga::client {
 
 class kbp_icinga::server {
 	include gen_icinga::server
+	include kbp_nsca::server
 
 	gen_apt::preference { ["icinga","icinga-core","icinga-cgi","icinga-common","icinga-doc"]:; }
 
