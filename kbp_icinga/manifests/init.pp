@@ -252,6 +252,14 @@ class kbp_icinga::server {
 	}
 }
 
+class kbp_icinga::heartbeat {
+	gen_icinga::service { "heartbeat_${fqdn}":
+		service_description => "Heartbeat",
+		checkcommand        => "check_heartbeat",
+		nrpe                => true;
+	}
+}
+
 define kbp_icinga::virtualhost($address, $conf_dir, $parents=false) {
 	gen_icinga::configdir { "${conf_dir}/${name}":
 		sub => $conf_dir;
@@ -267,15 +275,7 @@ define kbp_icinga::virtualhost($address, $conf_dir, $parents=false) {
 	}
 }
 
-define kbp_icinga::heartbeat {
-	gen_icinga::service { "heartbeat_${fqdn}":
-		service_description => "Heartbeat",
-		checkcommand        => "check_heartbeat",
-		nrpe                => true;
-	}
-}
-
-define kbp_icinga::haproxy ($address) {
+define kbp_icinga::haproxy($address) {
 	$confdir = "${environment}/${name}"
 
 	gen_icinga::configdir { $confdir:
@@ -296,5 +296,14 @@ define kbp_icinga::haproxy ($address) {
 		hostname            => $name,
 		checkcommand        => "check_http_vhost",
 		argument1           => $name;
+	}
+}
+
+define kbp_icinga::java {
+	gen_icinga::service { "java_heap_usage_${name}":
+		service_description => "Java heap usage ${name}",
+		check_command       => "check_java_heap_usage",
+		argument1           => $name,
+		nrpe                => true;
 	}
 }

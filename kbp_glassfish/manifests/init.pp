@@ -1,4 +1,4 @@
-define kbp_glassfish::domain($adminport, $jmxport, $webport=false) {
+define kbp_glassfish::domain($adminport, $jmxport, $webport=false, java_monitoring=false) {
 	gen_ferm::rule {
 		"Glassfish admin panel for ${name}":
 			proto  => "tcp",
@@ -19,6 +19,10 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false) {
 			action => "ACCEPT",
 			tag    => "glassfish_web_${environment}";
 		}
+	}
+
+	if $java_monitoring {
+		kbp_monitoring::java { "${name}":; }
 	}
 }
 
