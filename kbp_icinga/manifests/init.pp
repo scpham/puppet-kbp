@@ -119,6 +119,10 @@ class kbp_icinga::server {
 			conf_dir  => "generic",
 			argument1 => '$ARG1$',
 			nrpe      => true;
+		"check_java_heap_usage":
+			conf_dir  => "generic",
+			argument1 => '$ARG1$',
+			nrpe      => true;
 	}
 
 	kfile {
