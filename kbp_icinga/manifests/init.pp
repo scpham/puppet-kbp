@@ -314,7 +314,7 @@ define kbp_icinga::haproxy($address) {
 }
 
 define kbp_icinga::java($contact_groups=false, $servicegroups=false) {
-	gen_icinga::service { "java_heap_usage_${name}":
+	gen_icinga::service { "java_heap_usage_${name}_${fqdn}":
 		service_description => "Java heap usage ${name}",
 		checkcommand        => "check_java_heap_usage",
 		argument1           => $name,
