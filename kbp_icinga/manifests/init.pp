@@ -313,11 +313,19 @@ define kbp_icinga::haproxy($address) {
 	}
 }
 
-define kbp_icinga::java {
+define kbp_icinga::java($contact_groups=false, $servicegroups=false) {
 	gen_icinga::service { "java_heap_usage_${name}":
 		service_description => "Java heap usage ${name}",
-		check_command       => "check_java_heap_usage",
+		checkcommand        => "check_java_heap_usage",
 		argument1           => $name,
+		contact_groups      => $contact_groups ? {
+			false   => undef,
+			default => $contact_groups,
+		},
+		servicegroups       => $servicegroups ? {
+			false   => undef,
+			default => $servicegroups,
+		},
 		nrpe                => true;
 	}
 }

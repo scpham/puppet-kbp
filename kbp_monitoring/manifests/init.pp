@@ -73,10 +73,13 @@ define kbp_monitoring::haproxy($address, $package="icinga") {
 	}
 }
 
-define kbp_monitoring::java($package="icinga") {
+define kbp_monitoring::java($package="icinga", contact_groups=false, servicegroups=false) {
 	case $package {
 		"icinga": {
-			kbp_icinga::java { "${name}":; }
+			kbp_icinga::java { "${name}":
+				contact_groups => $contact_groups,
+				servicegroups  => $servicegroups;
+			}
 		}
 	}
 }
