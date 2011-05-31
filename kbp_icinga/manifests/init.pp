@@ -86,6 +86,10 @@ class kbp_icinga::server {
 		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat"]:
 			conf_dir => "generic",
 			nrpe     => true;
+		"return-ok":
+			conf_dir    => "generic",
+			commandname => "check_dummy",
+			argument1   => "0";
 		"check-host-alive":
 			conf_dir    => "generic",
 			commandname => "check_ping",
@@ -152,7 +156,7 @@ class kbp_icinga::server {
 			servicegroups                => "ha_services",
 			initialstate                 => "u",
 			active_checks_enabled        => "1",
-			passive_checks_enabled       => "1",
+			passive_checks_enabled       => "0",
 			parallelize_check            => "1",
 			obsess_over_service          => "1",
 			check_freshness              => "0",
@@ -179,6 +183,15 @@ class kbp_icinga::server {
 			servicegroups       => "wh_services_warnsms",
 			notification_period => "workhours",
 			register            => "0";
+		"generic_passive_service":
+			conf_dir               => "generic",
+			use                    => "generic_wh_service",
+			servicegroups          => "wh_services_warnsms",
+			active_checks_enabled  => "0",
+			passive_checks_enabled => "1",
+			checkcommand           => "return-ok",
+			notification_period    => "workhours",
+			register               => "0";
 	}
 
 	gen_icinga::host {
@@ -261,7 +274,7 @@ class kbp_icinga::heartbeat {
 	}
 }
 
-define kbp_icinga::virtualhost($address, $conf_dir, $parents=false) {
+define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false) {
 	gen_icinga::configdir { "${conf_dir}/${name}":
 		sub => $conf_dir;
 	}
