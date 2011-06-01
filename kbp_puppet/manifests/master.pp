@@ -213,10 +213,4 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 		dport  => $port,
 		action => "ACCEPT",
 	}
-
-	cron { "Remove orphaned resources":
-		command => "/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf -e \"delete from puppet.resources where host_id not in (select id from puppet.hosts);\"";
-		user    => "root",
-		minute  => [0,30];
-	}
 }

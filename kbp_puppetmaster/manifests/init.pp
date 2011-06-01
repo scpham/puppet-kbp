@@ -241,6 +241,12 @@ define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet
 			content => "ARGV << \"--debug\"\n",
 		}
 	}
+
+	cron { "Remove orphaned resources":
+		command => "/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf -e \"delete from puppet.resources where host_id not in (select id from puppet.hosts);\"",
+		user    => "root",
+		minute  => [0,30];
+	}
 }
 
 define kbp_puppetmaster::set_main ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
