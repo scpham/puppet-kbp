@@ -275,6 +275,13 @@ class kbp_icinga::heartbeat {
 	}
 }
 
+class kbp_icinga::nfs {
+	gen_icinga::service { "nfs_daemon_${fqdn}":
+		service_description => "NFS daemon",
+		checkcommand        => "check_nfs";
+	}
+}
+
 define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false) {
 	gen_icinga::configdir { "${conf_dir}/${name}":
 		sub => $conf_dir;
