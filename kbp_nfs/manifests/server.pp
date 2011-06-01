@@ -1,6 +1,7 @@
 class kbp_nfs::server ($default_config = true) {
 	include gen_nfs::server
 	include kbp_trending::nfsd
+	include kbp_monitoring::nfs
 
 	if $default_config {
 		# Use this for a default NFS server
