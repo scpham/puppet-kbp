@@ -87,9 +87,10 @@ class kbp_icinga::server {
 			conf_dir => "generic",
 			nrpe     => true;
 		"return-ok":
-			conf_dir    => "generic",
-			commandname => "check_dummy",
-			argument1   => "0";
+			conf_dir      => "generic",
+			commandname   => "check_dummy",
+			host_argument => false,
+			argument1     => "0";
 		"check-host-alive":
 			conf_dir    => "generic",
 			commandname => "check_ping",
