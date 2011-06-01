@@ -99,7 +99,6 @@ class kbp_icinga::server {
 			argument3   => "-p 1";
 		"check_http":
 			conf_dir    => "generic",
-			commandname => "check_http",
 			argument1   => '-I $HOSTADDRESS$';
 		"check_http_vhost":
 			conf_dir      => "generic",
@@ -115,7 +114,6 @@ class kbp_icinga::server {
 			argument3     => '-r $ARG3$';
 		"check_tcp":
 			conf_dir    => "generic",
-			commandname => "check_tcp",
 			argument1   => '-p $ARG1$';
 		"check_nfs":
 			conf_dir    => "generic",
@@ -129,6 +127,11 @@ class kbp_icinga::server {
 			conf_dir  => "generic",
 			argument1 => '$ARG1$',
 			nrpe      => true;
+		"check_imaps":
+			conf_dir    => "generic",
+			commandname => "check_imap",
+			argument1   => "-p 993",
+			argument2   => "-S";
 	}
 
 	kfile {
