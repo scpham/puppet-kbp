@@ -41,6 +41,11 @@ class kbp_icinga::client {
 			service_description => "Open files",
 			checkcommand        => "check_open_files",
 			nrpe                => true;
+		"ntpd_${fqdn}":
+			service_description => "NTPD",
+			servicegroups       => "mail_services",
+			checkcommand        => "check_ntpd",
+			nrpe                => true;
 		"memory_${fqdn}":
 			service_description => "Memory usage",
 			servicegroups       => "wh_services_critsms",
