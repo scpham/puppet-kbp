@@ -117,7 +117,7 @@ class kbp_puppetmaster {
 		require => Kpackage["puppetstoredconfigcleanhenker"];
 	}
 
-	apache::site { "puppetmaster":; }
+	kbp_apache::site { "puppetmaster":; }
 }
 
 define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet/puppet.conf", $debug = false,

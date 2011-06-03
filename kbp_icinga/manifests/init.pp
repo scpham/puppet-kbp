@@ -340,3 +340,40 @@ define kbp_icinga::java($contact_groups=false, $servicegroups=false) {
 		nrpe                => true;
 	}
 }
+
+define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn) {
+	if $address {
+		if $conf_dir {
+			$confdir = "${conf_dir}/${name}"
+
+			gen_icinga::configdir { $confdir:
+				sub => $conf_dir;
+			}
+		} else {
+			$confdir = "${environment}/${name}"
+
+			gen_icinga::configdir { $confdir:
+				sub => $environment;
+			}
+		}
+
+		gen_icinga::host { "${name}":
+			address => $address,
+			parents => $parents;
+		}
+
+		gen_icinga::service { "vhost_${name}":
+			conf_dir            => $confdir,
+			service_description => "Vhost ${name}",
+			hostname            => $name,
+			checkcommand        => "check_http_vhost",
+			argument1           => $name;
+		}
+	} else {
+		gen_icinga::service { "vhost_${name}_${fqdn}":
+			service_description => "Vhost ${name}",
+			checkcommand        => "check_http_vhost",
+			argument1           => $name;
+		}
+	}
+}

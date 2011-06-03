@@ -91,3 +91,24 @@ define kbp_monitoring::java($package="icinga", contact_groups=false, servicegrou
 		}
 	}
 }
+
+define kbp_monitoring::site($package="icinga", $address=false, $conf_dir=$false, $parents=$false) {
+	case $package {
+		"icinga": {
+			kbp_icinga::site { "${name}":
+				address  => $address ? {
+					false   => undef,
+					default => $adddress,
+				},
+				conf_dir => $conf_dir ? {
+					false   => undef,
+					default => $adddress,
+				},
+				parents  => $parents ? {
+					false   => undef,
+					default => $adddress,
+				};
+			}
+		}
+	}
+}

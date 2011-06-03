@@ -50,3 +50,12 @@ class kbp_apache::passenger {
 class kbp_apache::ssl {
 	apache::module { "ssl":; }
 }
+
+define kbp_apache::site($ensure="present", $priority="") {
+	kbp_monitoring::site { "${name}":; }
+
+	apache::site { "${name}":
+		ensure   => $ensure,
+		priority => $priority;
+	}
+}
