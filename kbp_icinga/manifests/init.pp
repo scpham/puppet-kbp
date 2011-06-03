@@ -105,6 +105,12 @@ class kbp_icinga::server {
 			commandname   => "check_http",
 			host_argument => '-I $HOSTADDRESS$',
 			argument1     => '-H $ARG1$';
+		"check_http_vhost_auth":
+			conf_dir      => "generic",
+			commandname   => "check_http",
+			host_argument => '-I $HOSTADDRESS$',
+			argument1     => '-H $ARG1$',
+			argument2     => "-e 401,403";
 		"check_http_vhost_url_and_response":
 			conf_dir      => "generic",
 			commandname   => "check_http",
@@ -341,7 +347,7 @@ define kbp_icinga::java($contact_groups=false, $servicegroups=false) {
 	}
 }
 
-define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn) {
+define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=false) {
 	if $address {
 		if $conf_dir {
 			$confdir = "${conf_dir}/${name}"
@@ -366,13 +372,19 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn) {
 			conf_dir            => $confdir,
 			service_description => "Vhost ${name}",
 			hostname            => $name,
-			checkcommand        => "check_http_vhost",
+			checkcommand        => $auth ? {
+				false   => "check_http_vhost",
+				default => "check_http_vhost_auth",
+			},
 			argument1           => $name;
 		}
 	} else {
 		gen_icinga::service { "vhost_${name}_${fqdn}":
 			service_description => "Vhost ${name}",
-			checkcommand        => "check_http_vhost",
+			checkcommand        => $auth ? {
+				false   => "check_http_vhost",
+				default => "check_http_vhost_auth",
+			},
 			argument1           => $name;
 		}
 	}

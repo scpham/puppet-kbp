@@ -51,8 +51,10 @@ class kbp_apache::ssl {
 	apache::module { "ssl":; }
 }
 
-define kbp_apache::site($ensure="present", $priority="") {
-	kbp_monitoring::site { "${name}":; }
+define kbp_apache::site($ensure="present", $priority="", auth=false) {
+	kbp_monitoring::site { "${name}":
+		auth => $auth;
+	}
 
 	apache::site { "${name}":
 		ensure   => $ensure,
