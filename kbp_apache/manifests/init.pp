@@ -52,8 +52,10 @@ class kbp_apache::ssl {
 }
 
 define kbp_apache::site($ensure="present", $priority="", auth=false) {
-	kbp_monitoring::site { "${name}":
-		auth => $auth;
+	if $ensure == "present" {
+		kbp_monitoring::site { "${name}":
+			auth => $auth;
+		}
 	}
 
 	apache::site { "${name}":
