@@ -28,9 +28,11 @@ class kbp_icinga::client {
 			checkcommand        => "check_puppet_state_freshness",
 			nrpe                => true;
 		"cpu_${fqdn}":
-			service_description => "CPU usage",
-			checkcommand        => "check_cpu",
-			nrpe                => true;
+			service_description  => "CPU usage",
+			checkcommand         => "check_cpu",
+			retry_check_interval => 5,
+			max_check_attempts   => 30,
+			nrpe                 => true;
 		"loadtrend_${fqdn}":
 			service_description => "Load trend",
 			checkcommand        => "check_loadtrend",
