@@ -95,7 +95,7 @@ class kbp_icinga::server {
 	gen_icinga::servercommand {
 		["check_ssh","check_smtp"]:
 			conf_dir => "generic";
-		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp"]:
+		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion"]:
 			conf_dir => "generic",
 			nrpe     => true;
 		"return-ok":
@@ -110,8 +110,8 @@ class kbp_icinga::server {
 			argument2   => "-c 5000,100%",
 			argument3   => "-p 1";
 		"check_http":
-			conf_dir    => "generic",
-			argument1   => '-I $HOSTADDRESS$';
+			conf_dir  => "generic",
+			argument1 => '-I $HOSTADDRESS$';
 		"check_http_vhost":
 			conf_dir      => "generic",
 			commandname   => "check_http",
@@ -131,8 +131,8 @@ class kbp_icinga::server {
 			argument2     => '-u $ARG2$',
 			argument3     => '-r $ARG3$';
 		"check_tcp":
-			conf_dir    => "generic",
-			argument1   => '-p $ARG1$';
+			conf_dir  => "generic",
+			argument1 => '-p $ARG1$';
 		"check_nfs":
 			conf_dir    => "generic",
 			commandname => "check_rpc",
@@ -141,6 +141,13 @@ class kbp_icinga::server {
 			conf_dir  => "generic",
 			argument1 => '$ARG1$',
 			nrpe      => true;
+		"check_ssl_cert":
+			conf_dir      => "generic",
+			commandname   => "check_http",
+			host_argument => '-I $HOSTADDRESS$',
+			argument1     => "-t 20",
+			argument2     => '-H $ARG1$',
+			argument3     => "-C 30";
 		"check_java_heap_usage":
 			conf_dir  => "generic",
 			argument1 => '$ARG1$',
