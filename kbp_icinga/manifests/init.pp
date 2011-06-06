@@ -310,6 +310,16 @@ class kbp_icinga::nfs {
 	}
 }
 
+define kbp_icinga::sslcert($path) {
+	gen_icinga::service { "ssl_cert_${name}_${fqdn}":
+		service_description => "SSL certificate in ${path}",
+		servicegroups       => "wh_services_critsms",
+		checkcommand        => "check_sslcert",
+		argument1           => $path,
+		nrpe                => true;
+	}
+}
+
 define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false) {
 	gen_icinga::configdir { "${conf_dir}/${name}":
 		sub => $conf_dir;
@@ -406,5 +416,13 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 			},
 			argument1           => $name;
 		}
+	}
+}
+
+define kbp_icinga::sslsite($conf_dir=false) {
+	gen_icinga::service { "ssl_site_${name}_${fqdn}":
+		service_description => "SSL validity ${name}",
+		checkcommand        => "check_ssl_cert",
+		argument1           => "${name}";
 	}
 }

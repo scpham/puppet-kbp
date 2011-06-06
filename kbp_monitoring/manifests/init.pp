@@ -71,6 +71,16 @@ class kbp_monitoring::nfs($package="icinga") {
 	}
 }
 
+define kbp_monitoring::sslcert($path, $package="icinga") {
+	case $package {
+		"icinga": {
+			kbp_icinga::sslcert { "${name}":
+				path => $path;
+			}
+		}
+	}
+}
+
 define kbp_monitoring::haproxy($address, $package="icinga") {
 	case $package {
 		"icinga": {

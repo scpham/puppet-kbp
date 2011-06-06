@@ -6,9 +6,15 @@ class kbp_puppetmaster {
 	include kbp_git
 	include kbp_git::listchanges
 	include kbp_git::gitg
-
 	class { "kbp_trending::puppetmaster":
 		method => "munin";
+	}
+
+	kbp_monitoring::sslcert {
+		"puppet_signed":
+			path => "/var/lib/puppet/ssl/ca/signed";
+		"puppet_certs":
+			path => "/var/lib/puppet/ssl/certs";
 	}
 
 	gen_ferm::rule { "Puppet connections":
@@ -39,12 +45,11 @@ class kbp_puppetmaster {
 		require   => Kpackage["puppetmaster"];
 	}
 
-	exec {
-		"Install the Stomp gem":
-			command => "/usr/bin/gem install stomp",
-			creates => "/var/lib/gems/1.8/gems/stomp-1.1.8",
-			require => Kpackage["rails"];
-		}
+	exec { "Install the Stomp gem":
+		command => "/usr/bin/gem install stomp",
+		creates => "/var/lib/gems/1.8/gems/stomp-1.1.8",
+		require => Kpackage["rails"];
+	}
 
 	kfile {
 		"/etc/puppet/puppet.conf":
