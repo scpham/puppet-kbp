@@ -1,7 +1,7 @@
 class kbp_avahi::daemon {
 	include avahi::daemon
 
-	ferm::rule {
+	gen_ferm::rule {
 		"MDNS traffic_v4":
 			proto     => "udp",
 			dport     => "5353",

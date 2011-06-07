@@ -1,7 +1,7 @@
 class kbp_drbd($otherhost) {
 	include kbp_drbd::monitoring::icinga
 
-	ferm::rule { "DRBD connections from ${otherhost}":
+	gen_ferm::rule { "DRBD connections from ${otherhost}":
 		saddr  => $otherhost,
 		proto  => "tcp",
 		dport  => 7789,

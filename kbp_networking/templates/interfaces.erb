@@ -1,0 +1,6 @@
+# <%= name %>
+auto <%= interface %>
+iface <%= interface %> inet static
+	address <%= address %>
+	netmask <%= netmask %>
+<% if gateway %>	gateway <%= gateway %><% end -%>

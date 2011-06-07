@@ -1,7 +1,7 @@
 class kbp_dhcp::server {
 	include dhcp::server
 
-	ferm::rule { "DHCP requests":
+	gen_ferm::rule { "DHCP requests":
 		proto  => "udp",
 		sport  => "bootpc",
 		dport  => "bootps",

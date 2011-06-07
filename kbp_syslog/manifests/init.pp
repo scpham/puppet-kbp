@@ -2,16 +2,16 @@ class kbp_syslog::server($environmentonly=false) {
 	include "kbp_syslog::server::$lsbdistcodename"
 
 	if ($environmentonly) {
-		Ferm::Rule <<| tag == "syslog_${environment}" |>>
+		Gen_ferm::Rule <<| tag == "syslog_${environment}" |>>
 	} else {
-		Ferm::Rule <<| tag == "syslog" |>>
+		Gen_ferm::Rule <<| tag == "syslog" |>>
 	}
 }
 
 class kbp_syslog::client {
 	include "kbp_syslog::client::$lsbdistcodename"
 
-	@@ferm::rule { "Syslog traffic from ${fqdn}_v4":
+	@@gen_ferm::rule { "Syslog traffic from ${fqdn}":
 		saddr  => $fqdn,
 		proto  => "udp",
 		dport  => 514,
@@ -37,7 +37,7 @@ class kbp_syslog::server::lenny inherits rsyslog::server {
 			"/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log",
 			"/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
 			"/var/log/messages"],
-		options => ["daily", "rotate 90", "missingok", "notifempty", "compress", "sharedscripts"],
+		options => ["daily", "rotate 90", "missingok", "notifempty", "compress", "delaycompress", "sharedscripts"],
 		postrotate => "invoke-rc.d rsyslog reload > /dev/null";
 	}
 }
@@ -53,7 +53,7 @@ class kbp_syslog::server::squeeze inherits rsyslog::server {
 			"/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log",
 			"/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
 			"/var/log/messages"],
-		options => ["daily", "rotate 90", "missingok", "notifempty", "compress", "sharedscripts"],
+		options => ["daily", "rotate 90", "missingok", "notifempty", "compress", "delaycompress", "sharedscripts"],
 		postrotate => "invoke-rc.d rsyslog reload > /dev/null";
 	}
 }

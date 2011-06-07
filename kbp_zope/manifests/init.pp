@@ -75,7 +75,7 @@ class kbp_zope inherits zope {
 				 }
 			}
 
-			apache::site { "$domain":
+			kbp_apache::site { "$domain":
 				ensure => present,
 			}
 		}

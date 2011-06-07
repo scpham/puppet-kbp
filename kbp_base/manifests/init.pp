@@ -126,7 +126,7 @@ class kbp_base {
 
 			kfile { "/home/$username/.gitconfig":
 				ensure => present,
-				content => "[user]\n\tname = $fullname\n\temail = $username@kumina.nl\n",
+				content => template("kbp_base/git/.gitconfig"),
 				group => "kumina";
 			}
 
@@ -188,7 +188,7 @@ class kbp_base {
 	kpackage {
 		["binutils","console-tools","realpath"]:
 			ensure => installed;
-		["hidesvn","bash-completion","bc","tcptraceroute","diffstat"]:
+		["hidesvn","bash-completion","bc","tcptraceroute","diffstat","host"]:
 			ensure => latest;
 	}
 

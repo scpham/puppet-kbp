@@ -40,7 +40,7 @@ class kbp_puppet::master {
 # probably most of the time), you just need to name it "default" and
 # most settings will be indeed default.
 #
-define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $debug = false,
+define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet/puppet.conf", $debug = false,
 				$dbname = false, $dbuser = false, $dbpasswd = false, $dbhost = false, $dbsocket = false,
 				$factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet", $pluginsync = true,
 				$port = "8140", $rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
@@ -83,6 +83,20 @@ define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $deb
 		template     => "apache/sites-available/simple-fqdn.erb",
 	}
 
+	# Open the port in Apache
+	line { "Make Apache listen to port ${port} for puppetmaster ${name}.":
+		content => "Listen ${port}",
+		file    => "/etc/apache2/ports.conf",
+		require => Kpackage["apache2"],
+	}
+
+	# Open the firewall for our puppetmaster
+	gen_ferm::rule { "Connections to puppetmaster ${name}.":
+		proto  => "tcp",
+		dport  => $port,
+		action => "ACCEPT",
+	}
+
 	# The vhost-addition should set the documentroot, the puppet directory,
 	# the additional apache permissions and debugging options.
 	kfile {
@@ -94,11 +108,12 @@ define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $deb
 			source  => "kbp_puppet/master/apache2/vhost-additions/rack.conf";
 		"/etc/apache2/vhost-additions/${pname}/ssl.conf":
 			notify  => Exec["reload-apache2"],
+			require => Kfile["${ssldir}/ca/ca_crt.pem","${ssldir}/ca/ca_crl.pem"],
 			content => template("kbp_puppet/master/apache2/vhost-additions/ssl.conf.erb");
 	}
 
 	# Enable the site
-	apache::site { "${pname}":; }
+	kbp_apache::site { "${pname}":; }
 
 	if $name == 'default' {
 		$real_dbname = 'puppet'
@@ -108,13 +123,13 @@ define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $deb
 		$real_dbpasswd = 'puppet'
 	} else {
 		$real_dbname = $dbname ? {
-			false   => $pname,
+			false   => regsubst($pname,'-','_','G'),
 			default => $dbname,
 		}
 		$real_dbuser = $dbuser ? {
-			# TODO We should make sure this is never longer than 16 chars
-			false   => "pm_${sanitized_name}",
-			default => $dbuser,
+			# We should make sure this is never longer than 16 chars
+			false   => regsubst("pm_${sanitized_name}",'(.{1,16}).*','\1'),
+			default => regsubst($dbuser,'(.{1,16}).*','\1'),
 		}
 		$real_dbpasswd = $dbpasswd ? {
 			false   => $pname,
@@ -131,6 +146,7 @@ define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $deb
 		mysql::server::grant { $real_dbname:
 			user     => $real_dbuser,
 			password => $real_dbpasswd,
+			db       => $real_dbname;
 		}
 	}
 
@@ -192,7 +208,7 @@ define kbp_puppet::master::config ($configfile = "/etc/puppet/puppet.conf", $deb
 		}
 	}
 
-	ferm::rule { "HTTP connections for ${pname}":
+	gen_ferm::rule { "HTTP connections for ${pname}":
 		proto  => "tcp",
 		dport  => $port,
 		action => "ACCEPT",

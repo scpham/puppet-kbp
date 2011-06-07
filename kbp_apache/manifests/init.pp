@@ -1,7 +1,7 @@
 class kbp_apache inherits apache {
 	include kbp_munin::client::apache
 
-	ferm::rule {
+	gen_ferm::rule {
 		"HTTP connections":
 			proto  => "tcp",
 			dport  => "80",
@@ -36,10 +36,30 @@ class kbp_apache inherits apache {
 
 class kbp_apache::passenger {
 	include kbp_apache
+	include kbp_apache::ssl
 
 	kpackage { "libapache2-mod-passenger":
 		ensure => latest;
 	}
 
-	apache::module { ["ssl","passenger"]:; }
+	apache::module { "passenger":
+		require => Kpackage["libapache2-mod-passenger"],
+	}
+}
+
+class kbp_apache::ssl {
+	apache::module { "ssl":; }
+}
+
+define kbp_apache::site($ensure="present", $priority="", auth=false) {
+	if $ensure == "present" {
+		kbp_monitoring::site { "${name}":
+			auth => $auth;
+		}
+	}
+
+	apache::site { "${name}":
+		ensure   => $ensure,
+		priority => $priority;
+	}
 }

@@ -2,8 +2,9 @@ class kbp_sphinxsearch::server {
 	include sphinxsearch::server
 	include kbp_sphinxsearch::monitoring::icinga::server
 
-	Ferm::Rule <<| tag == "sphinxsearch_${environment}" |>>
-	Ferm::Rule <<| tag == "sphinxsearch_monitoring" |>>
+	Gen_ferm::Rule <<| tag == "sphinxsearch_${environment}" |>>
+
+	Gen_ferm::Rule <<| tag == "sphinxsearch_monitoring" |>>
 }
 
 class kbp_sphinxsearch::monitoring::icinga::server {

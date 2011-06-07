@@ -1,23 +1,23 @@
 class kbp_samba::server inherits samba::server {
-	ferm::rule { "Samba traffic (netbios-ns)":
+	gen_ferm::rule { "Samba traffic (netbios-ns)":
 		proto     => "udp",
 		dport     => "137",
 		action    => "ACCEPT";
 	}
 
-	ferm::rule { "Samba traffic (netbios-dgm)":
+	gen_ferm::rule { "Samba traffic (netbios-dgm)":
 		proto     => "udp",
 		dport     => "138",
 		action    => "ACCEPT";
 	}
 
-	ferm::rule { "Samba traffic (netbios-ssn)":
+	gen_ferm::rule { "Samba traffic (netbios-ssn)":
 		proto     => "tcp",
 		dport     => "139",
 		action    => "ACCEPT";
 	}
 
-	ferm::rule { "Samba traffic (microsoft-ds)":
+	gen_ferm::rule { "Samba traffic (microsoft-ds)":
 		proto     => "tcp",
 		dport     => "445",
 		action    => "ACCEPT";

@@ -15,7 +15,7 @@ class kbp_monitoring::server($package="icinga") {
 		"nagios": { include kbp_nagios::server }
 	}
 
-	@@ferm::rule {
+	@@gen_ferm::rule {
 		"NRPE monitoring from ${fqdn}":
 			saddr  => $fqdn,
 			proto  => "tcp",
@@ -48,10 +48,36 @@ class kbp_monitoring::server($package="icinga") {
 			tag    => "glassfish_monitoring";
 		"NFS monitoring from ${fqdn}":
 			saddr  => $fqdn,
-			proto  => "tcp",
-			dport  => 2049,
+			proto  => "(tcp udp)",
+			dport  => "(111 2049)",
 			action => "ACCEPT",
 			tag    => "nfs_monitoring";
+	}
+}
+
+class kbp_monitoring::heartbeat($package="icinga") {
+	case $package {
+		"icinga": {
+			include kbp_icinga::heartbeat
+		}
+	}
+}
+
+class kbp_monitoring::nfs($package="icinga") {
+	case $package {
+		"icinga": {
+			include kbp_icinga::nfs
+		}
+	}
+}
+
+define kbp_monitoring::sslcert($path, $package="icinga") {
+	case $package {
+		"icinga": {
+			kbp_icinga::sslcert { "${name}":
+				path => $path;
+			}
+		}
 	}
 }
 
@@ -60,6 +86,39 @@ define kbp_monitoring::haproxy($address, $package="icinga") {
 		"icinga": {
 			kbp_icinga::haproxy { "${name}":
 				address => $address;
+			}
+		}
+	}
+}
+
+define kbp_monitoring::java($package="icinga", contact_groups=false, servicegroups=false) {
+	case $package {
+		"icinga": {
+			kbp_icinga::java { "${name}":
+				contact_groups => $contact_groups,
+				servicegroups  => $servicegroups;
+			}
+		}
+	}
+}
+
+define kbp_monitoring::site($package="icinga", $address=false, $conf_dir=$false, $parents=$false, $auth=false) {
+	case $package {
+		"icinga": {
+			kbp_icinga::site { "${name}":
+				address  => $address ? {
+					false   => undef,
+					default => $adddress,
+				},
+				conf_dir => $conf_dir ? {
+					false   => undef,
+					default => $conf_dir,
+				},
+				parents  => $parents ? {
+					false   => undef,
+					default => $parents,
+				},
+				auth     => $auth;
 			}
 		}
 	}

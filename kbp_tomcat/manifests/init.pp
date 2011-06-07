@@ -224,7 +224,7 @@ class kbp_tomcat inherits tomcat {
 			require => Apache::Module["proxy_ajp"],
 		}
 
-		apache::site { $name:
+		kbp_apache::site { $name:
 			ensure => $ensure,
 		}
 	}

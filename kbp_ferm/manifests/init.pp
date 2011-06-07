@@ -1,9 +1,9 @@
 class kbp_ferm {
-	include ferm::new
+	include gen_ferm
 
-	Ferm::Rule <<| tag == "general" |>>
+	Gen_ferm::Rule <<| tag == "general" |>>
 
-	@ferm::chain {
+	@gen_ferm::chain {
 		["PREROUTING_v4","PREROUTING_v6"]:
 			table => "nat";
 		["POSTROUTING_v4","POSTROUTING_v6"]:
@@ -13,7 +13,7 @@ class kbp_ferm {
 	}
 
 	# Basic rules
-	ferm::rule {
+	gen_ferm::rule {
 		"Respond to ICMP packets_v4":
 			proto    => "icmp",
 			icmptype => "echo-request",
@@ -22,9 +22,9 @@ class kbp_ferm {
 			prio  => "a0",
 			proto => "udp";
 		"Nicely reject tcp packets":
-			prio       => "a1",
-			proto      => "tcp",
-			action     => "REJECT reject-with tcp-reset";
+			prio   => "a1",
+			proto  => "tcp",
+			action => "REJECT reject-with tcp-reset";
 		"Reject everything else":
 			prio   => "a2",
 			action => "REJECT";
@@ -33,10 +33,10 @@ class kbp_ferm {
 			proto => "udp",
 			chain => "FORWARD";
 		"Nicely reject tcp packets (forward)":
-			prio       => "a1",
-			proto      => "tcp",
-			action     => "REJECT reject-with tcp-reset",
-			chain      => "FORWARD";
+			prio   => "a1",
+			proto  => "tcp",
+			action => "REJECT reject-with tcp-reset",
+			chain  => "FORWARD";
 		"Reject everything else (forward)":
 			prio   => "a2",
 			action => "REJECT",
@@ -54,7 +54,7 @@ class kbp_ferm {
 }
 
 define kbp_ferm::forward($inc, $proto, $port, $dest, $dport) {
-	ferm::rule {
+	gen_ferm::rule {
 		"Accept all ${proto} traffic from ${inc} to ${dest}:${port}_v4":
 			chain     => "FORWARD",
 			interface => "eth1",

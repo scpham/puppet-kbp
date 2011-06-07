@@ -2,7 +2,7 @@ class kbp_nfs::client {
 	include gen_nfs::client
 	include kbp_trending::nfs
 
-	@@ferm::rule { "NFS connections from ${fqdn}":
+	@@gen_ferm::rule { "NFS connections from ${fqdn}":
 		saddr  => $fqdn,
 		proto  => "(tcp udp)",
 		action => "ACCEPT",

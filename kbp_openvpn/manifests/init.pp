@@ -16,13 +16,13 @@ class kbp_openvpn::server inherits openvpn::server {
 		target => "/var/lib/openvpn/status.log",
 	}
 
-	ferm::rule { "OpenVPN connections":
+	gen_ferm::rule { "OpenVPN connections":
 		proto  => "udp",
 		dport  => 1194,
 		action => "ACCEPT";
 	}
 
-	ferm::mod {
+	gen_ferm::mod {
 		"INVALID (forward)_v4":
 			chain  => "FORWARD",
 			mod    => "state",

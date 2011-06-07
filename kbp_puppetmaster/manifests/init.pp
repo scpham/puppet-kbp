@@ -6,12 +6,18 @@ class kbp_puppetmaster {
 	include kbp_git
 	include kbp_git::listchanges
 	include kbp_git::gitg
-
 	class { "kbp_trending::puppetmaster":
 		method => "munin";
 	}
 
-	ferm::rule { "Puppet connections":
+	kbp_monitoring::sslcert {
+		"puppet_signed":
+			path => "/var/lib/puppet/ssl/ca/signed";
+		"puppet_certs":
+			path => "/var/lib/puppet/ssl/certs";
+	}
+
+	gen_ferm::rule { "Puppet connections":
 		proto  => "tcp",
 		dport  => "8140",
 		action => "ACCEPT";
@@ -39,12 +45,11 @@ class kbp_puppetmaster {
 		require   => Kpackage["puppetmaster"];
 	}
 
-	exec {
-		"Install the Stomp gem":
-			command => "/usr/bin/gem install stomp",
-			creates => "/var/lib/gems/1.8/gems/stomp-1.1.8",
-			require => Kpackage["rails"];
-		}
+	exec { "Install the Stomp gem":
+		command => "/usr/bin/gem install stomp",
+		creates => "/var/lib/gems/1.8/gems/stomp-1.1.8",
+		require => Kpackage["rails"];
+	}
 
 	kfile {
 		"/etc/puppet/puppet.conf":
@@ -85,7 +90,8 @@ class kbp_puppetmaster {
 
 	mysql::server::grant { "puppet":
 		user     => "puppet",
-		password => "ui6Nae9Xae4a";
+		password => "ui6Nae9Xae4a",
+		db       => "puppet";
 	}
 
 	# Enforce Puppet modules directory permissions.
@@ -116,7 +122,7 @@ class kbp_puppetmaster {
 		require => Kpackage["puppetstoredconfigcleanhenker"];
 	}
 
-	apache::site { "puppetmaster":; }
+	kbp_apache::site { "puppetmaster":; }
 }
 
 define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet/puppet.conf", $debug = false,
@@ -239,6 +245,12 @@ define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet
 			target  => "${rackdir}/config.ru",
 			content => "ARGV << \"--debug\"\n",
 		}
+	}
+
+	cron { "Remove orphaned resources":
+		command => "/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf -e \"delete from puppet.resources where host_id not in (select id from puppet.hosts);\"",
+		user    => "root",
+		minute  => [0,30];
 	}
 }
 
