@@ -27,7 +27,7 @@ class kbp_apache inherits apache {
 		ensure => present,
 	}
 
-	@package { "php5-gd":
+	@kpackage { "php5-gd":
 		ensure  => latest,
 		require => Package["apache2"],
 		notify  => Exec["reload-apache2"];
