@@ -123,11 +123,22 @@ class kbp_icinga::server {
 			host_argument => '-I $HOSTADDRESS$',
 			argument1     => '-H $ARG1$',
 			argument2     => "-e 401,403";
+		"check_http_vhost_and_url":
+			conf_dir      => "generic",
+			commandname   => "check_http",
+			host_argument => '-I $HOSTADDRESS$ -H $HOSTNAME$',
+			argument1     => '-u $ARG1$';
 		"check_http_vhost_url_and_response":
 			conf_dir      => "generic",
 			commandname   => "check_http",
-			host_argument => '-I $HOSTADDRESS$',
-			argument1     => '-H $ARG1$',
+			host_argument => '-I $HOSTADDRESS$ -H $HOSTNAME$',
+			argument1     => '-u $ARG1$',
+			argument2     => '-r $ARG2$';
+		"check_http_on_port_with_vhost_url_and_response":
+			conf_dir      => "generic",
+			commandname   => "check_http",
+			host_argument => '-I $HOSTADDRESS$ -H $HOSTNAME$',
+			argument1     => '-p $ARG1$',
 			argument2     => '-u $ARG2$',
 			argument3     => '-r $ARG3$';
 		"check_tcp":
