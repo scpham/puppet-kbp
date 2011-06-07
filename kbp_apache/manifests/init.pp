@@ -50,3 +50,16 @@ class kbp_apache::passenger {
 class kbp_apache::ssl {
 	apache::module { "ssl":; }
 }
+
+define kbp_apache::site($ensure="present", $priority="", auth=false) {
+	if $ensure == "present" {
+		kbp_monitoring::site { "${name}":
+			auth => $auth;
+		}
+	}
+
+	apache::site { "${name}":
+		ensure   => $ensure,
+		priority => $priority;
+	}
+}

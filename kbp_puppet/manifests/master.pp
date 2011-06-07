@@ -113,7 +113,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 	}
 
 	# Enable the site
-	apache::site { "${pname}":; }
+	kbp_apache::site { "${pname}":; }
 
 	if $name == 'default' {
 		$real_dbname = 'puppet'

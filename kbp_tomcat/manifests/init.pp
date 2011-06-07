@@ -160,16 +160,20 @@ class kbp_tomcat inherits tomcat {
 		file {
 			"/etc/munin/plugins/jmx_${name}_${jmx_port}_java_process_memory":
 				ensure => $ensure ? {
-					running => "/usr/local/share/munin/plugins/jmx_",
+					running => "/usr/bin/jmx_",
 					stopped => "absent",
 				},
 				notify => Service["munin-node"];
 			"/etc/munin/plugins/jmx_${name}_${jmx_port}_java_threads":
 				ensure => $ensure ? {
-					running => "/usr/local/share/munin/plugins/jmx_",
+					running => "/usr/bin/jmx_",
 					stopped => "absent",
 				},
 				notify => Service["munin-node"];
+		}
+
+		kpackage { "jmxquery":
+			ensure => latest;
 		}
 
 		# Keep the logfiles cleaned up
@@ -220,7 +224,7 @@ class kbp_tomcat inherits tomcat {
 			require => Apache::Module["proxy_ajp"],
 		}
 
-		apache::site { $name:
+		kbp_apache::site { $name:
 			ensure => $ensure,
 		}
 	}

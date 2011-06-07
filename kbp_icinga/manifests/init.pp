@@ -28,9 +28,11 @@ class kbp_icinga::client {
 			checkcommand        => "check_puppet_state_freshness",
 			nrpe                => true;
 		"cpu_${fqdn}":
-			service_description => "CPU usage",
-			checkcommand        => "check_cpu",
-			nrpe                => true;
+			service_description  => "CPU usage",
+			checkcommand         => "check_cpu",
+			retry_check_interval => 5,
+			max_check_attempts   => 30,
+			nrpe                 => true;
 		"loadtrend_${fqdn}":
 			service_description => "Load trend",
 			checkcommand        => "check_loadtrend",
@@ -38,6 +40,16 @@ class kbp_icinga::client {
 		"open_files_${fqdn}":
 			service_description => "Open files",
 			checkcommand        => "check_open_files",
+			nrpe                => true;
+		"ntp_offset_${fqdn}":
+			service_description => "NTP offset",
+			servicegroups       => "mail_services",
+			checkcommand        => "check_remote_ntp",
+			nrpe                => true;
+		"ntpd_${fqdn}":
+			service_description => "NTPD",
+			servicegroups       => "mail_services",
+			checkcommand        => "check_ntpd",
 			nrpe                => true;
 		"memory_${fqdn}":
 			service_description => "Memory usage",
@@ -83,7 +95,7 @@ class kbp_icinga::server {
 	gen_icinga::servercommand {
 		["check_ssh","check_smtp"]:
 			conf_dir => "generic";
-		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat"]:
+		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion"]:
 			conf_dir => "generic",
 			nrpe     => true;
 		"return-ok":
@@ -98,13 +110,19 @@ class kbp_icinga::server {
 			argument2   => "-c 5000,100%",
 			argument3   => "-p 1";
 		"check_http":
-			conf_dir    => "generic",
-			argument1   => '-I $HOSTADDRESS$';
+			conf_dir  => "generic",
+			argument1 => '-I $HOSTADDRESS$';
 		"check_http_vhost":
 			conf_dir      => "generic",
 			commandname   => "check_http",
 			host_argument => '-I $HOSTADDRESS$',
 			argument1     => '-H $ARG1$';
+		"check_http_vhost_auth":
+			conf_dir      => "generic",
+			commandname   => "check_http",
+			host_argument => '-I $HOSTADDRESS$',
+			argument1     => '-H $ARG1$',
+			argument2     => "-e 401,403";
 		"check_http_vhost_url_and_response":
 			conf_dir      => "generic",
 			commandname   => "check_http",
@@ -113,8 +131,8 @@ class kbp_icinga::server {
 			argument2     => '-u $ARG2$',
 			argument3     => '-r $ARG3$';
 		"check_tcp":
-			conf_dir    => "generic",
-			argument1   => '-p $ARG1$';
+			conf_dir  => "generic",
+			argument1 => '-p $ARG1$';
 		"check_nfs":
 			conf_dir    => "generic",
 			commandname => "check_rpc",
@@ -123,6 +141,13 @@ class kbp_icinga::server {
 			conf_dir  => "generic",
 			argument1 => '$ARG1$',
 			nrpe      => true;
+		"check_ssl_cert":
+			conf_dir      => "generic",
+			commandname   => "check_http",
+			host_argument => '-I $HOSTADDRESS$',
+			argument1     => "-t 20",
+			argument2     => '-H $ARG1$',
+			argument3     => "-C 30";
 		"check_java_heap_usage":
 			conf_dir  => "generic",
 			argument1 => '$ARG1$',
@@ -285,6 +310,16 @@ class kbp_icinga::nfs {
 	}
 }
 
+define kbp_icinga::sslcert($path) {
+	gen_icinga::service { "ssl_cert_${name}_${fqdn}":
+		service_description => "SSL certificate in ${path}",
+		servicegroups       => "wh_services_critsms",
+		checkcommand        => "check_sslcert",
+		argument1           => $path,
+		nrpe                => true;
+	}
+}
+
 define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false) {
 	gen_icinga::configdir { "${conf_dir}/${name}":
 		sub => $conf_dir;
@@ -338,5 +373,56 @@ define kbp_icinga::java($contact_groups=false, $servicegroups=false) {
 			default => $servicegroups,
 		},
 		nrpe                => true;
+	}
+}
+
+define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=false) {
+	if $address {
+		if $conf_dir {
+			$confdir = "${conf_dir}/${name}"
+
+			gen_icinga::configdir { $confdir:
+				sub => $conf_dir;
+			}
+		} else {
+			$confdir = "${environment}/${name}"
+
+			gen_icinga::configdir { $confdir:
+				sub => $environment;
+			}
+		}
+
+		gen_icinga::host { "${name}":
+			address => $address,
+			parents => $parents;
+		}
+
+		gen_icinga::service { "vhost_${name}":
+			conf_dir            => $confdir,
+			service_description => "Vhost ${name}",
+			hostname            => $name,
+			checkcommand        => $auth ? {
+				false   => "check_http_vhost",
+				default => "check_http_vhost_auth",
+			},
+			argument1           => $name;
+		}
+	} else {
+		gen_icinga::service { "vhost_${name}_${fqdn}":
+			service_description => "Vhost ${name}",
+			checkcommand        => $auth ? {
+				false   => "check_http_vhost",
+				default => "check_http_vhost_auth",
+			},
+			argument1           => $name;
+		}
+	}
+}
+
+define kbp_icinga::sslsite($conf_dir=false) {
+	gen_icinga::service { "ssl_site_${name}_${fqdn}":
+		service_description => "SSL validity ${name}",
+		checkcommand        => "check_ssl_cert",
+		argument1           => "${name}";
 	}
 }

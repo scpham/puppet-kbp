@@ -71,6 +71,16 @@ class kbp_monitoring::nfs($package="icinga") {
 	}
 }
 
+define kbp_monitoring::sslcert($path, $package="icinga") {
+	case $package {
+		"icinga": {
+			kbp_icinga::sslcert { "${name}":
+				path => $path;
+			}
+		}
+	}
+}
+
 define kbp_monitoring::haproxy($address, $package="icinga") {
 	case $package {
 		"icinga": {
@@ -87,6 +97,28 @@ define kbp_monitoring::java($package="icinga", contact_groups=false, servicegrou
 			kbp_icinga::java { "${name}":
 				contact_groups => $contact_groups,
 				servicegroups  => $servicegroups;
+			}
+		}
+	}
+}
+
+define kbp_monitoring::site($package="icinga", $address=false, $conf_dir=$false, $parents=$false, $auth=false) {
+	case $package {
+		"icinga": {
+			kbp_icinga::site { "${name}":
+				address  => $address ? {
+					false   => undef,
+					default => $adddress,
+				},
+				conf_dir => $conf_dir ? {
+					false   => undef,
+					default => $conf_dir,
+				},
+				parents  => $parents ? {
+					false   => undef,
+					default => $parents,
+				},
+				auth     => $auth;
 			}
 		}
 	}
