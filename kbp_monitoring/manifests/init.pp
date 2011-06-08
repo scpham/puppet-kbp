@@ -71,6 +71,14 @@ class kbp_monitoring::nfs($package="icinga") {
 	}
 }
 
+class kbp_monitoring::dhcp($package="icinga") {
+	case $package {
+		"icinga": {
+			include kbp_icinga::dhcp
+		}
+	}
+}
+
 define kbp_monitoring::sslcert($path, $package="icinga") {
 	case $package {
 		"icinga": {
