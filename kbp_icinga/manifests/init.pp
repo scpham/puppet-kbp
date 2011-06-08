@@ -337,7 +337,7 @@ define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false)
 	}
 
 	gen_icinga::host { "${name}":
-		conf_dir => "$conf_dir/${name}",
+		conf_dir => "${conf_dir}/${name}",
 		address  => $address,
 		parents  => $parents ? {
 			false   => undef,

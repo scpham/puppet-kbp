@@ -10,6 +10,9 @@ class kbp_base {
 	include kbp_time
 	include kbp_sudo
 	include kbp_icinga::client
+	if $is_virtual == "false" {
+		include kbp_physical
+	}
 
 	gen_sudo::rule {
 		"User root has total control":
