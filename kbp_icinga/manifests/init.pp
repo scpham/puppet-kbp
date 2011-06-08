@@ -172,13 +172,9 @@ class kbp_icinga::server {
 			argument2   => "-S";
 		"check_arpwatch":
 			conf_dir    => "generic",
-			commandname => "check_procs",
-			argument1   => "arpwatch",
 			nrpe        => true;
 		"check_dhcp":
 			conf_dir    => "generic",
-			commandname => "check_procs",
-			argument1   => "dhcpd3",
 			nrpe        => true;
 	}
 
