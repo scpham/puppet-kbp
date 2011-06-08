@@ -168,6 +168,9 @@ class kbp_icinga::server {
 			commandname => "check_imap",
 			argument1   => "-p 993",
 			argument2   => "-S";
+		"check_arpwatch":
+			conf_dir    => "generic",
+			nrpe        => true;
 	}
 
 	kfile {

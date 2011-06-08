@@ -12,4 +12,10 @@ class kbp_physical {
 			checkcommand        => "check_http";
 		}
 	}
+
+	gen_icinga::service { "arpwatch_${fqdn}":
+		service_description => "Arpwatch daemon",
+		checkcommand        => "check_arpwatch",
+		nrpe                => true;
+	}
 }
