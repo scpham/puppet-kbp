@@ -154,3 +154,19 @@ define kbp_monitoring::http($package="icinga", $customfqdn=false) {
 		}
 	}
 }
+
+define kbp_monitoring::proc_status($package="icinga") {
+	case $package {
+		"icinga": {
+			kbp_icinga::proc_status { "${name}":; }
+		}
+	}
+}
+
+define kbp_monitoring::sslsite($package="icinga") {
+	case $package {
+		"icinga": {
+			kbp_icinga::sslsite { "${name}":; }
+		}
+	}
+}

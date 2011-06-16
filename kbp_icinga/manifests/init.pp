@@ -154,6 +154,10 @@ class kbp_icinga::server {
 			conf_dir  => "generic",
 			argument1 => '$ARG1$',
 			nrpe      => true;
+		"check_proc_status":
+			conf_dir  => "generic",
+			argument1 => '$ARG1$',
+			nrpe      => true;
 		"check_ssl_cert":
 			conf_dir      => "generic",
 			commandname   => "check_http",
@@ -462,5 +466,14 @@ define kbp_icinga::http($customfqdn=$fqdn) {
 		service_description => "HTTP",
 		hostname            => $customfqdn,
 		checkcommand        => "check_http";
+	}
+}
+
+define kbp_icinga::proc_status {
+	gen_icinga::service { "proc_status_${name}_${fqdn}":
+		service_description => "Process status for ${name}",
+		checkcommand        => "check_proc_status",
+		argument1           => $name,
+		nrpe                => true;
 	}
 }

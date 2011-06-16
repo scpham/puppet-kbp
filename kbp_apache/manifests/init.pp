@@ -32,6 +32,8 @@ class kbp_apache inherits apache {
 		require => Package["apache2"],
 		notify  => Exec["reload-apache2"];
 	}
+
+	kbp_monitoring::http { "http_${fqdn}":; }
 }
 
 class kbp_apache::passenger {
