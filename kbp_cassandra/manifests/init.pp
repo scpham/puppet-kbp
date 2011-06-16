@@ -21,7 +21,7 @@ class kbp_cassandra::server($customtag="cassandra_${environment}", $java_monitor
 	Gen_ferm::Rule <<| tag == "cassandra_monitoring" |>>
 
 	if $java_monitoring {
-		kbp_monitoring::java { "${name}_${jmxport}":
+		kbp_monitoring::java { "cassandra_8080":
 			contact_groups => $contact_groups ? {
 				false   => undef,
 				default => $contact_groups,
