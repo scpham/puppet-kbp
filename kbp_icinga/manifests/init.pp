@@ -326,7 +326,8 @@ class kbp_icinga::nfs {
 class kbp_icinga::dhcp {
 	gen_icinga::service { "dhcp_daemon_${fqdn}":
 		service_description => "DHCP daemon",
-		checkcommand        => "check_dhcp";
+		checkcommand        => "check_dhcp",
+		nrpe                => true;
 	}
 }
 
