@@ -455,3 +455,12 @@ define kbp_icinga::raidcontroller($driver) {
 		nrpe                => true;
 	}
 }
+
+define kbp_icinga::http($customfqdn=$fqdn) {
+	gen_icinga::service { "http_${customfqdn}":
+		conf_dir            => "${environment}/${customfqdn}",
+		service_description => "HTTP",
+		hostname            => $customfqdn,
+		checkcommand        => "check_http";
+	}
+}

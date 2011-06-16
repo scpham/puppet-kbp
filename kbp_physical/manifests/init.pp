@@ -19,11 +19,8 @@ class kbp_physical {
 		}
 
 		if !$consoleipmi {
-			gen_icinga::service { "http_${consolefqdn}":
-				conf_dir            => "${environment}/${consolefqdn}",
-				service_description => "HTTP",
-				hostname            => $consolefqdn,
-				checkcommand        => "check_http";
+			kbp_monitoring::http { "http_${consolefqdn}":
+				customfqdn => $consolefqdn;
 			}
 		}
 	}
