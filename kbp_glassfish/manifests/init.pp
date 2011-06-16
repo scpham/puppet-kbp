@@ -23,8 +23,14 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false, java_monitori
 
 	if $java_monitoring {
 		kbp_monitoring::java { "${name}_${jmxport}":
-			contact_groups => $contact_groups,
-			servicegroups  => $servicegroups;
+			contact_groups => $contact_groups ? {
+				false   => undef,
+				default => $contact_groups;
+			},
+			servicegroups  => $servicegroups ? {
+				false   => undef,
+				default => $servicegroups;
+			};
 		}
 	}
 }
