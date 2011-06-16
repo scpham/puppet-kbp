@@ -97,7 +97,7 @@ class kbp_icinga::server {
 	gen_icinga::servercommand {
 		["check_ssh","check_smtp"]:
 			conf_dir => "generic";
-		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_arpwatch"]:
+		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_arpwatch","check_3ware","check_adaptec"]:
 			conf_dir => "generic",
 			nrpe     => true;
 		"return-ok":
@@ -445,5 +445,13 @@ define kbp_icinga::sslsite($conf_dir=false) {
 		service_description => "SSL validity ${name}",
 		checkcommand        => "check_ssl_cert",
 		argument1           => "${name}";
+	}
+}
+
+define kbp_icinga::raidcontroller($driver) {
+	gen_icinga::service { "${name}_${fqdn}":
+		service_description => "Raid ${name} ${driver}",
+		checkcommand        => "check_${driver}",
+		nrpe                => true;
 	}
 }

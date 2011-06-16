@@ -131,3 +131,13 @@ define kbp_monitoring::site($package="icinga", $address=false, $conf_dir=$false,
 		}
 	}
 }
+
+define kbp_monitoring::raidcontroller($package="icinga", $driver) {
+	case $package {
+		"icinga": {
+			kbp_icinga::raidcontroller { "${name}":
+				driver => $driver;
+			}
+		}
+	}
+}
