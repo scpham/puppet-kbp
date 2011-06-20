@@ -114,6 +114,11 @@ class kbp_icinga::server {
 		"check_http":
 			conf_dir  => "generic",
 			argument1 => '-I $HOSTADDRESS$';
+		"check_http_auth":
+			conf_dir    => "generic",
+			commandname => "check_http",
+			argument1   => '-I $HOSTADDRESS$',
+			argument2   => "-e 401,403";
 		"check_http_vhost":
 			conf_dir      => "generic",
 			commandname   => "check_http",
@@ -460,12 +465,15 @@ define kbp_icinga::raidcontroller($driver) {
 	}
 }
 
-define kbp_icinga::http($customfqdn=$fqdn) {
+define kbp_icinga::http($customfqdn=$fqdn, $auth=false) {
 	gen_icinga::service { "http_${customfqdn}":
 		conf_dir            => "${environment}/${customfqdn}",
 		service_description => "HTTP",
 		hostname            => $customfqdn,
-		checkcommand        => "check_http";
+		checkcommand        => $auth ? {
+			false   => "check_http",
+			default => "check_http_auth",
+		};
 	}
 }
 

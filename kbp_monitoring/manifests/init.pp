@@ -142,14 +142,15 @@ define kbp_monitoring::raidcontroller($package="icinga", $driver) {
 	}
 }
 
-define kbp_monitoring::http($package="icinga", $customfqdn=false) {
+define kbp_monitoring::http($package="icinga", $customfqdn=false, $auth=false) {
 	case $package {
 		"icinga": {
 			kbp_icinga::http { "${name}":
 				customfqdn => $customfqdn ? {
 					false   => undef,
 					default => $customfqdn,
-				};
+				},
+				auth       => $auth;
 			}
 		}
 	}
