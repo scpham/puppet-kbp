@@ -485,3 +485,16 @@ define kbp_icinga::proc_status {
 		nrpe                => true;
 	}
 }
+
+define kbp_icinga::glassfish($webport, $statuspath=false) {
+	gen_icinga::service { "glassfish_${name}_${fqdn}":
+		service_description => "Glassfish ${name} status",
+		checkcommand        => "check_http_on_port_with_vhost_url_and_response",
+		argument1           => $webport,
+		argument2           => $statuspath ? {
+			false   => "/${name}/status.jsp",
+			default => "$statuspath/status.jsp",
+		},
+		argument3           => "RUNNING";
+	}
+}

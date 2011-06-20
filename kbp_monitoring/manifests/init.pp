@@ -171,3 +171,17 @@ define kbp_monitoring::sslsite($package="icinga") {
 		}
 	}
 }
+
+define kbp_monitoring::glassfish($webport, $package="icinga", $statuspath=false) {
+	case $package {
+		"icinga": {
+			kbp_icinga::glassfish { "${name}":
+				statuspath     => $statuspath ? {
+					false   => undef,
+					default => $statuspath,
+				},
+				webport        => $webport;
+			}
+		}
+	}
+}

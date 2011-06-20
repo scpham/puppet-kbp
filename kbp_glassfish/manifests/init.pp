@@ -1,4 +1,4 @@
-define kbp_glassfish::domain($adminport, $jmxport, $webport=false, java_monitoring=false, contact_groups=false, servicegroups=false) {
+define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitoring=false, $java_contact_groups=false, $java_servicegroups=false, $statuspath=false) {
 	gen_ferm::rule {
 		"Glassfish admin panel for ${name}":
 			proto  => "tcp",
@@ -23,14 +23,24 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false, java_monitori
 
 	if $java_monitoring {
 		kbp_monitoring::java { "${name}_${jmxport}":
-			contact_groups => $contact_groups ? {
+			contact_groups => $java_contact_groups ? {
 				false   => undef,
-				default => $contact_groups,
+				default => $java_contact_groups,
 			},
-			servicegroups  => $servicegroups ? {
+			servicegroups  => $java_servicegroups ? {
 				false   => undef,
-				default => $servicegroups,
+				default => $java_servicegroups,
 			};
+		}
+	}
+
+	if $webport {
+		kbp_monitoring::glassfish { "${name}":
+			statuspath     => $statuspath ? {
+				false   => undef,
+				default => $statuspath,
+			},
+			webport        => $webport;
 		}
 	}
 }
