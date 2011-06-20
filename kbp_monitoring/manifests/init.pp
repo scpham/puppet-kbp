@@ -116,7 +116,7 @@ define kbp_monitoring::site($package="icinga", $address=false, $conf_dir=$false,
 			kbp_icinga::site { "${name}":
 				address  => $address ? {
 					false   => undef,
-					default => $adddress,
+					default => $address,
 				},
 				conf_dir => $conf_dir ? {
 					false   => undef,
