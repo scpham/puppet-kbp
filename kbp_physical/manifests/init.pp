@@ -1,4 +1,6 @@
 class kbp_physical {
+	include kbp_arpwatch
+
 	case $raidcontroller0_driver {
 		"3w-9xxx": {
 			kpackage { "3ware-cli-binary":; }
