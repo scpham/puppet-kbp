@@ -6,6 +6,8 @@ class kbp_physical {
 			}
 		}
 		"aacraid": {
+			kpackage { "arcconf":; }
+
 			kbp_monitoring::raidcontroller { "controller0":
 				driver => "adaptec";
 			}
