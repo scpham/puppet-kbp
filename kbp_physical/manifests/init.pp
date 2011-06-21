@@ -1,6 +1,8 @@
 class kbp_physical {
 	case $raidcontroller0_driver {
 		"3w-9xxx": {
+			kpackage { "3ware-cli-binary":; }
+
 			kbp_monitoring::raidcontroller { "controller0":
 				driver => "3ware";
 			}
