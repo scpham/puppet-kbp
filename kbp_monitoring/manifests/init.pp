@@ -52,6 +52,12 @@ class kbp_monitoring::server($package="icinga") {
 			dport  => "(111 2049)",
 			action => "ACCEPT",
 			tag    => "nfs_monitoring";
+		"DNS monitoring from ${fqdn}":
+			saddr  => $fqdn,
+			proto  => "udp",
+			dport  => 53,
+			action => "ACCEPT",
+			tag    => "dns_monitoring";
 	}
 }
 
@@ -116,7 +122,7 @@ define kbp_monitoring::site($package="icinga", $address=false, $conf_dir=$false,
 			kbp_icinga::site { "${name}":
 				address  => $address ? {
 					false   => undef,
-					default => $adddress,
+					default => $address,
 				},
 				conf_dir => $conf_dir ? {
 					false   => undef,
@@ -168,6 +174,30 @@ define kbp_monitoring::sslsite($package="icinga") {
 	case $package {
 		"icinga": {
 			kbp_icinga::sslsite { "${name}":; }
+		}
+	}
+}
+
+define kbp_monitoring::glassfish($webport, $package="icinga", $statuspath=false) {
+	case $package {
+		"icinga": {
+			kbp_icinga::glassfish { "${name}":
+				statuspath     => $statuspath ? {
+					false   => undef,
+					default => $statuspath,
+				},
+				webport        => $webport;
+			}
+		}
+	}
+}
+
+define kbp_monitoring::dnszone($master, $package="icinga") {
+	case $package {
+		"icinga": {
+			kbp_icinga::dnszone { "${name}":
+				master => $master;
+			}
 		}
 	}
 }

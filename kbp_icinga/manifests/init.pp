@@ -1,6 +1,13 @@
 class kbp_icinga::client {
 	include gen_icinga::client
 
+	gen_sudo::rule { "Icinga can run all plugins as root":
+		entity            => "nagios",
+		as_user           => "root",
+		password_required => false,
+		command           => ["/usr/lib/nagios/plugins/", "/usr/local/lib/nagios/plugins/"];
+	}
+
 	gen_icinga::configdir { "${environment}/${fqdn}":
 		sub => $environment;
 	}
@@ -92,6 +99,14 @@ class kbp_icinga::server {
 	include gen_icinga::server
 	include kbp_nsca::server
 
+	# Needed for the check_dnszone script
+	kpackage { ["python-ipaddr","python-argparse","python-dnspython"]:; }
+	kfile { "/usr/lib/nagios/plugins/check_dnszone":
+		source  => "gen_icinga/client/check_dnszone",
+		mode    => 755,
+		require => Package["nagios-plugins-kumina"];
+	}
+
 	gen_apt::preference { ["icinga","icinga-core","icinga-cgi","icinga-common","icinga-doc"]:; }
 
 	gen_icinga::servercommand {
@@ -179,6 +194,10 @@ class kbp_icinga::server {
 			commandname => "check_imap",
 			argument1   => "-p 993",
 			argument2   => "-S";
+		"check_dnszone":
+			conf_dir      => "generic",
+			argument1     => '$ARG1$',
+			argument2     => '$ARG2$';
 	}
 
 	kfile {
@@ -483,5 +502,27 @@ define kbp_icinga::proc_status {
 		checkcommand        => "check_proc_status",
 		argument1           => $name,
 		nrpe                => true;
+	}
+}
+
+define kbp_icinga::glassfish($webport, $statuspath=false) {
+	gen_icinga::service { "glassfish_${name}_${fqdn}":
+		service_description => "Glassfish ${name} status",
+		checkcommand        => "check_http_on_port_with_vhost_url_and_response",
+		argument1           => $webport,
+		argument2           => $statuspath ? {
+			false   => "/${name}/status.jsp",
+			default => "$statuspath/status.jsp",
+		},
+		argument3           => "RUNNING";
+	}
+}
+
+define kbp_icinga::dnszone($master) {
+	gen_icinga::service { "dnszone_${name}_${fqdn}":
+		service_description => "DNS zone ${name} from ${master}",
+		checkcommand        => "check_dnszone",
+		argument1           => $name,
+		argument2           => $master;
 	}
 }

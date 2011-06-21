@@ -1,11 +1,17 @@
 class kbp_physical {
+	include kbp_arpwatch
+
 	case $raidcontroller0_driver {
 		"3w-9xxx": {
+			kpackage { "3ware-cli-binary":; }
+
 			kbp_monitoring::raidcontroller { "controller0":
 				driver => "3ware";
 			}
 		}
 		"aacraid": {
+			kpackage { "arcconf":; }
+
 			kbp_monitoring::raidcontroller { "controller0":
 				driver => "adaptec";
 			}
