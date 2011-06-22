@@ -92,6 +92,10 @@ class kbp_icinga::client {
 			source  => "gen_icinga/client/check_heartbeat",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
+		"/usr/lib/nagios/plugins/check_dnszone":
+			source  => "gen_icinga/client/check_dnszone",
+			mode    => 755,
+			require => Package["nagios-plugins-kumina"];
 	}
 }
 
@@ -101,11 +105,6 @@ class kbp_icinga::server {
 
 	# Needed for the check_dnszone script
 	kpackage { ["python-ipaddr","python-argparse","python-dnspython"]:; }
-	kfile { "/usr/lib/nagios/plugins/check_dnszone":
-		source  => "gen_icinga/client/check_dnszone",
-		mode    => 755,
-		require => Package["nagios-plugins-kumina"];
-	}
 
 	gen_apt::preference { ["icinga","icinga-core","icinga-cgi","icinga-common","icinga-doc"]:; }
 
@@ -195,9 +194,10 @@ class kbp_icinga::server {
 			argument1   => "-p 993",
 			argument2   => "-S";
 		"check_dnszone":
-			conf_dir      => "generic",
-			argument1     => '$ARG1$',
-			argument2     => '$ARG2$';
+			conf_dir  => "generic",
+			argument1 => '$ARG1$',
+			argument2 => '$ARG2$',
+			nrpe      => true;
 	}
 
 	kfile {
@@ -523,6 +523,7 @@ define kbp_icinga::dnszone($master) {
 		service_description => "DNS zone ${name} from ${master}",
 		checkcommand        => "check_dnszone",
 		argument1           => $name,
-		argument2           => $master;
+		argument2           => $master,
+		nrpe                => true;
 	}
 }

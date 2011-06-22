@@ -1,4 +1,7 @@
 class kbp_bind inherits bind {
+	# Needed for the check_dnszone script
+	kpackage { ["python-ipaddr","python-argparse","python-dnspython"]:; }
+
 	class { "kbp_trending::bind9":
 		method => "munin"
 	}
