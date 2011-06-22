@@ -198,6 +198,6 @@ class kbp_debian inherits kbp_base {
 
 	# TODO: move to appropriate modules (ticket 588)
 	if $lsbdistcodename == "lenny" {
-		gen_apt::preference { ["libvirt-bin","virtinst","libvirt-doc","libvirt0","facter","virt-manager","libasound2","libbrlapi0.5","kvm","rake","python-django","varnish","linux-image-2.6-amd64","firmware-bnx2","drbd8-utils","heartbeat"]:; }
+		gen_apt::preference { ["libvirt-bin","virtinst","libvirt-doc","libvirt0","facter","virt-manager","libasound2","libbrlapi0.5","kvm","rake","python-django","varnish","linux-image-2.6-amd64","firmware-bnx2","drbd8-utils","heartbeat","python-support"]:; }
 	}
 }
