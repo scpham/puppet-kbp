@@ -95,11 +95,12 @@ define kbp_monitoring::sslcert($path, $package="icinga") {
 	}
 }
 
-define kbp_monitoring::haproxy($address, $package="icinga") {
+define kbp_monitoring::haproxy($address, $ha=false, $package="icinga") {
 	case $package {
 		"icinga": {
 			kbp_icinga::haproxy { "${name}":
-				address => $address;
+				address => $address,
+				ha      => $ha;
 			}
 		}
 	}

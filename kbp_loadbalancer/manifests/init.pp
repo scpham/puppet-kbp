@@ -1,8 +1,9 @@
-define kbp_loadbalancer::site ($listenaddress, $port=80, $sslport=false, $monitoring=true) {
+define kbp_loadbalancer::site ($listenaddress, $port=80, $sslport=false, $monitoring=true, $ha=false) {
 	kbp_haproxy::site { "${name}":
 		listenaddress => $listenaddress,
 		port          => $port,
-		monitoring    => $monitoring;
+		monitoring    => $monitoring,
+		ha            => $ha;
 	}
 
 	if $sslport {

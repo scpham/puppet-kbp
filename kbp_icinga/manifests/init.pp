@@ -395,7 +395,7 @@ define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false,
 	}
 }
 
-define kbp_icinga::haproxy($address) {
+define kbp_icinga::haproxy($address, $ha=false) {
 	$confdir = "${environment}/${name}"
 
 	gen_icinga::configdir { $confdir:
@@ -407,7 +407,11 @@ define kbp_icinga::haproxy($address) {
 		parents => $loadbalancer::otherhost ? {
 			undef   => $fqdn,
 			default => "${fqdn}, ${loadbalancer::otherhost}",
-		}
+		},
+		hostgroups => $ha ? {
+			false => undef,
+			true  => "ha_hosts",
+		};
 	}
 
 	gen_icinga::service { "virtual_host_${name}":
@@ -415,7 +419,11 @@ define kbp_icinga::haproxy($address) {
 		service_description => "Virtual host ${name}",
 		hostname            => $name,
 		checkcommand        => "check_http_vhost",
-		argument1           => $name;
+		argument1           => $name,
+		servicegroups       => $ha ? {
+			false => undef,
+			true  => "ha_services",
+		};
 	}
 }
 
