@@ -191,7 +191,7 @@ class kbp_base {
 	kpackage {
 		["binutils","console-tools","realpath"]:
 			ensure => installed;
-		["hidesvn","bash-completion","bc","tcptraceroute","diffstat","host"]:
+		["hidesvn","bash-completion","bc","tcptraceroute","diffstat","host","whois","pwgen"]:
 			ensure => latest;
 	}
 
