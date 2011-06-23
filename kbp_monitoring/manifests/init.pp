@@ -201,3 +201,29 @@ define kbp_monitoring::dnszone($master, $package="icinga") {
 		}
 	}
 }
+
+define kbp_monitoring::virtualhost($address, $conf_dir=false, $parents=false, $hostgroups=false, $contact_groups=false, $package="icinga") {
+	case $package {
+		"icinga": {
+			kbp_icinga::virtualhost { "${name}":
+				address => $address,
+				conf_dir => $conf_dir ? {
+					false   => undef,
+					default => $conf_dir,
+				},
+				parents => $parents ? {
+					false   => undef,
+					default => $parents,
+				},
+				hostgroups => $hostgroups ? {
+					false   => undef,
+					default => $hostgroups,
+				},
+				contact_groups => $contact_groups ? {
+					false   => undef,
+					default => $contact_groups,
+				};
+			}
+		}
+	}
+}

@@ -318,6 +318,9 @@ class kbp_icinga::server {
 		"wh_hosts":
 			conf_dir => "generic",
 			hg_alias => "Workhours availability servers";
+		"mail_hosts":
+			conf_dir => "generic",
+			hg_alias => "Mail only servers";
 	}
 
 	gen_icinga::servicegroup {
@@ -369,17 +372,25 @@ define kbp_icinga::sslcert($path) {
 	}
 }
 
-define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false) {
+define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false, $hostgroups=false, $contact_groups=false) {
 	gen_icinga::configdir { "${conf_dir}/${name}":
 		sub => $conf_dir;
 	}
 
 	gen_icinga::host { "${name}":
-		conf_dir => "${conf_dir}/${name}",
-		address  => $address,
-		parents  => $parents ? {
+		conf_dir       => "${conf_dir}/${name}",
+		address        => $address,
+		parents        => $parents ? {
 			false   => undef,
 			default => $parents,
+		},
+		hostgroups     => $hostgroups ? {
+			false   => undef,
+			default => $hostgroups,
+		},
+		contact_groups => $contact_groups ? {
+			false   => undef,
+			default => $contact_groups,
 		};
 	}
 }
