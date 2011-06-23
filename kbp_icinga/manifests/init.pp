@@ -395,7 +395,7 @@ define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false,
 	}
 }
 
-define kbp_icinga::haproxy($address, $ha=false) {
+define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false) {
 	$confdir = "${environment}/${name}"
 
 	gen_icinga::configdir { $confdir:
@@ -414,16 +414,31 @@ define kbp_icinga::haproxy($address, $ha=false) {
 		};
 	}
 
-	gen_icinga::service { "virtual_host_${name}":
-		conf_dir            => $confdir,
-		service_description => "Virtual host ${name}",
-		hostname            => $name,
-		checkcommand        => "check_http_vhost",
-		argument1           => $name,
-		servicegroups       => $ha ? {
-			false => undef,
-			true  => "ha_services",
-		};
+	if $url and $response {
+		gen_icinga::service { "virtual_host_${name}":
+			conf_dir            => $confdir,
+			service_description => "Virtual host ${name}",
+			hostname            => $name,
+			checkcommand        => "check_http_vhost_url_and_response",
+			argument1           => $url,
+			argument2           => $response,
+			servicegroups       => $ha ? {
+				false => undef,
+				true  => "ha_services",
+			};
+		}
+	} else {
+		gen_icinga::service { "virtual_host_${name}":
+			conf_dir            => $confdir,
+			service_description => "Virtual host ${name}",
+			hostname            => $name,
+			checkcommand        => "check_http_vhost",
+			argument1           => $name,
+			servicegroups       => $ha ? {
+				false => undef,
+				true  => "ha_services",
+			};
+		}
 	}
 }
 

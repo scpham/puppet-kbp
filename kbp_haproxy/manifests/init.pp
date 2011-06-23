@@ -1,4 +1,4 @@
-define kbp_haproxy::site ($listenaddress, $port=80, $monitoring=true, $ha=false) {
+define kbp_haproxy::site ($listenaddress, $port=80, $monitoring=true, $ha=false, $url=false, $response=false) {
 	gen_ferm::rule { "HAProxy forward for ${name}":
 		proto  => "tcp",
 		dport  => $port,
@@ -7,8 +7,16 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitoring=true, $ha=false)
 
 	if $monitoring {
 		kbp_monitoring::haproxy { "${name}":
-			address => $listenaddress,
-			ha      => $ha;
+			address  => $listenaddress,
+			ha       => $ha,
+			url      => $url ? {
+				false   => undef,
+				default => $url,
+			},
+			response => $response ? {
+				false   => undef,
+				default => $response,
+			};
 		}
 	}
 }
