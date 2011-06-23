@@ -564,10 +564,14 @@ define kbp_icinga::glassfish($webport, $statuspath=false) {
 	}
 }
 
-define kbp_icinga::dnszone($master) {
+define kbp_icinga::dnszone($master, $servicegroups=false) {
 	gen_icinga::service { "dnszone_${name}_${fqdn}":
 		service_description => "DNS zone ${name} from ${master}",
 		checkcommand        => "check_dnszone",
+		servicegroups       => $servicegroups ? {
+			false   => undef,
+			default => $servicegroups,
+		},
 		argument1           => $name,
 		argument2           => $master,
 		nrpe                => true;

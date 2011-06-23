@@ -209,11 +209,15 @@ define kbp_monitoring::glassfish($webport, $package="icinga", $statuspath=false)
 	}
 }
 
-define kbp_monitoring::dnszone($master, $package="icinga") {
+define kbp_monitoring::dnszone($master, $servicegroups=false, $package="icinga") {
 	case $package {
 		"icinga": {
 			kbp_icinga::dnszone { "${name}":
-				master => $master;
+				master => $master,
+				servicegroups => $servicegroups ? {
+					false   => undef,
+					default => $servicegroups,
+				};
 			}
 		}
 	}
