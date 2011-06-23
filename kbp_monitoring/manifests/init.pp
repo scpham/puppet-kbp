@@ -85,6 +85,14 @@ class kbp_monitoring::dhcp($package="icinga") {
 	}
 }
 
+class kbp_monitoring::cassandra($package="icinga") {
+	case $package {
+		"icinga": {
+			include kbp_icinga::cassandra
+		}
+	}
+}
+
 define kbp_monitoring::sslcert($path, $package="icinga") {
 	case $package {
 		"icinga": {

@@ -96,6 +96,10 @@ class kbp_icinga::client {
 			source  => "gen_icinga/client/check_dnszone",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
+		"/usr/lib/nagios/plugins/check_cassandra":
+			source  => "gen_icinga/client/check_cassandra",
+			mode    => 755,
+			require => Package["nagios-plugins-kumina"];
 	}
 }
 
@@ -111,7 +115,7 @@ class kbp_icinga::server {
 	gen_icinga::servercommand {
 		["check_ssh","check_smtp"]:
 			conf_dir => "generic";
-		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_arpwatch","check_3ware","check_adaptec"]:
+		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra"]:
 			conf_dir => "generic",
 			nrpe     => true;
 		"return-ok":
@@ -358,6 +362,14 @@ class kbp_icinga::dhcp {
 	gen_icinga::service { "dhcp_daemon_${fqdn}":
 		service_description => "DHCP daemon",
 		checkcommand        => "check_dhcp",
+		nrpe                => true;
+	}
+}
+
+class kbp_icinga::cassandra {
+	gen_icinga::service { "cassandra_${fqdn}":
+		service_description => "Cassandra status",
+		checkcommand        => "check_cassandra",
 		nrpe                => true;
 	}
 }

@@ -9,6 +9,8 @@ class kbp_cassandra::client($customtag="cassandra_${environment}") {
 }
 
 class kbp_cassandra::server($customtag="cassandra_${environment}", $java_monitoring=false, $contact_groups=false, servicegroups=false) {
+	include kbp_monitoring::cassandra
+
 	@@gen_ferm::rule { "Internal Cassandra connections from ${fqdn}":
 		saddr  => $fqdn,
 		proto  => "tcp",
