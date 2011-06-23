@@ -1,4 +1,5 @@
 class kbp_base {
+	include lvm
 	include gen_puppet::concat
 	include gen_base
 	include sysctl
