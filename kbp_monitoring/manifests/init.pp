@@ -61,6 +61,14 @@ class kbp_monitoring::server($package="icinga") {
 	}
 }
 
+class kbp_monitoring::environment($package="icinga") {
+	case $package {
+		"icinga": {
+			include kbp_icinga::environment
+		}
+	}
+}
+
 class kbp_monitoring::heartbeat($package="icinga") {
 	case $package {
 		"icinga": {

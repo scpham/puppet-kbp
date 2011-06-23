@@ -343,6 +343,17 @@ class kbp_icinga::server {
 	}
 }
 
+class kbp_icinga::environment {
+	gen_icinga::contact { "${environment}":
+		conf_dir                      => $environment,
+		c_alias                       => "Generic ${environment} contact",
+		host_notifications_enabled    => 0,
+		service_notifications_enabled => 0,
+		contact_data                  => false,
+		notification_type             => "no-notify";
+	}
+}
+
 class kbp_icinga::heartbeat {
 	gen_icinga::service { "heartbeat_${fqdn}":
 		service_description => "Heartbeat",

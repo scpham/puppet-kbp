@@ -218,3 +218,7 @@ class kbp_base {
 			subscribe => File["/etc/motd.tail"];
 	}
 }
+
+class kbp_base::environment {
+	include kbp_monitoring::environment
+}
