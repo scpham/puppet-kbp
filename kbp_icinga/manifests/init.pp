@@ -107,9 +107,6 @@ class kbp_icinga::server {
 	include gen_icinga::server
 	include kbp_nsca::server
 
-	# Needed for the check_dnszone script
-	kpackage { ["python-ipaddr","python-argparse","python-dnspython"]:; }
-
 	gen_apt::preference { ["icinga","icinga-core","icinga-cgi","icinga-common","icinga-doc"]:; }
 
 	gen_icinga::servercommand {
@@ -241,7 +238,7 @@ class kbp_icinga::server {
 			process_perf_data            => "1",
 			retain_status_information    => "1",
 			retain_nonstatus_information => "1",
-			notification_interval        => "0",
+			notification_interval        => "600",
 			is_volatile                  => "0",
 			check_period                 => "24x7",
 			normal_check_interval        => "300",
