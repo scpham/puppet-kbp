@@ -246,7 +246,7 @@ class kbp_icinga::server {
 			max_check_attempts           => "3",
 			notification_period          => "24x7",
 			notification_options         => "w,u,c,r",
-			contact_groups               => "kumina_email",
+			contacts                     => "kumina",
 			register                     => "0";
 		"generic_wh_service":
 			conf_dir            => "generic",
@@ -281,7 +281,7 @@ class kbp_icinga::server {
 			check_interval               => "120",
 			notification_period          => "24x7",
 			notification_interval        => "36000",
-			contact_groups               => "kumina_email",
+			contacts                     => "kumina",
 			max_check_attempts           => "3",
 			register                     => "0";
 		"generic_wh_host":
