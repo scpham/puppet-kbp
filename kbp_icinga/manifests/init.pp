@@ -401,7 +401,7 @@ class kbp_icinga::cassandra {
 	}
 }
 
-define kbp_icinga::service($service_description, $check_command, $host_name=false, $contact_groups=false, $argument1=false, $argument2=false, $argument3=false, $max_check_attempts=false, $retry_check_interval=false, $nrpe=false, $conf_dir=false, $passive=false, $ha=false, $warnsms=true, $sms=true) {
+define kbp_icinga::service($service_description, $check_command=false, $host_name=false, $contact_groups=false, $argument1=false, $argument2=false, $argument3=false, $max_check_attempts=false, $retry_check_interval=false, $nrpe=false, $conf_dir=false, $passive=false, $ha=false, $warnsms=true, $sms=true) {
 	$use = $passive ? {
 		true  => "passive_service",
 		false => $ha ? {
@@ -423,7 +423,10 @@ define kbp_icinga::service($service_description, $check_command, $host_name=fals
 		},
 		use                  => $use,
 		service_description  => $service_description,
-		checkcommand         => $check_command,
+		checkcommand         => $check_command ? {
+			false   => undef,
+			default => $check_command
+		},
 		hostname             => $host_name ? {
 			false   => undef,
 			default => $host_name,
