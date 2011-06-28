@@ -16,58 +16,58 @@ class kbp_icinga::client {
 		parents => $parent;
 	}
 
-	gen_icinga::service {
+	kbp_icinga::service {
 		"ssh_${fqdn}":
 			service_description => "SSH connectivity",
-			checkcommand        => "check_ssh";
+			check_command       => "check_ssh";
 		"disk_space_${fqdn}":
 			service_description => "Disk space",
-			servicegroups       => "wh_services_critsms",
-			checkcommand        => "check_disk_space",
-			nrpe                => true;
+			check_command       => "check_disk_space",
+			nrpe                => true,
+			warnsms             => false;
 		"ksplice_${fqdn}":
 			service_description => "Ksplice update status",
-			checkcommand        => "check_ksplice",
+			check_command       => "check_ksplice",
 			nrpe                => true;
 		"puppet_state_${fqdn}":
 			service_description => "Puppet state freshness",
-			servicegroups       => "mail_services",
-			checkcommand        => "check_puppet_state_freshness",
-			nrpe                => true;
+			check_command       => "check_puppet_state_freshness",
+			nrpe                => true,
+			sms                 => false;
 		"cpu_${fqdn}":
 			service_description  => "CPU usage",
-			checkcommand         => "check_cpu",
+			check_command        => "check_cpu",
 			retry_check_interval => 5,
 			max_check_attempts   => 30,
 			nrpe                 => true;
 		"loadtrend_${fqdn}":
 			service_description  => "Load trend",
-			checkcommand         => "check_loadtrend",
+			check_command        => "check_loadtrend",
 			retry_check_interval => 5,
 			max_check_attempts   => 30,
 			nrpe                 => true;
 		"open_files_${fqdn}":
 			service_description => "Open files",
-			checkcommand        => "check_open_files",
+			check_command       => "check_open_files",
 			nrpe                => true;
 		"ntp_offset_${fqdn}":
 			service_description => "NTP offset",
-			servicegroups       => "mail_services",
-			checkcommand        => "check_remote_ntp",
-			nrpe                => true;
+			check_command       => "check_remote_ntp",
+			nrpe                => true,
+			sms                 => false;
 		"ntpd_${fqdn}":
 			service_description => "NTPD",
-			servicegroups       => "mail_services",
-			checkcommand        => "check_ntpd",
-			nrpe                => true;
+			check_command       => "check_ntpd",
+			nrpe                => true,
+			sms                 => false;
 		"memory_${fqdn}":
 			service_description => "Memory usage",
-			servicegroups       => "wh_services_critsms",
-			checkcommand        => "check_memory",
-			nrpe                => true;
+			check_command       => "check_memory",
+			nrpe                => true,
+			warnsms             => false;
 		"zombie_processes_${fqdn}":
 			service_description => "Zombie processes",
-			checkcommand        => "check_zombie_processes",
+			check_command       => "check_zombie_processes",
 			nrpe                => true;
 	}
 
@@ -221,7 +221,7 @@ class kbp_icinga::server {
 	}
 
 	gen_icinga::service {
-		"generic_ha_service":
+		"ha_service":
 			conf_dir                     => "generic",
 			use                          => false,
 			servicegroups                => "ha_services",
@@ -246,15 +246,28 @@ class kbp_icinga::server {
 			max_check_attempts           => "3",
 			notification_period          => "24x7",
 			notification_options         => "w,u,c,r",
-			contacts                     => "kumina",
+			contact_groups               => "kumina_email",
 			register                     => "0";
-		"generic_wh_service":
+		"critsms_service":
+			conf_dir            => "generic",
+			use                 => "generic_ha_service",
+			servicegroups       => "wh_services_critsms",
+			notification_period => "workhours",
+			register            => "0";
+		"warnsms_service":
 			conf_dir            => "generic",
 			use                 => "generic_ha_service",
 			servicegroups       => "wh_services_warnsms",
 			notification_period => "workhours",
 			register            => "0";
-		"generic_passive_service":
+		"mail_service":
+			conf_dir              => "generic",
+			use                   => "generic_ha_service",
+			servicegroups         => "mail_services",
+			notification_period   => "workhours",
+			notification_interval => "0",
+			register              => "0";
+		"passive_service":
 			conf_dir               => "generic",
 			use                    => "generic_wh_service",
 			servicegroups          => "wh_services_warnsms",
@@ -280,8 +293,8 @@ class kbp_icinga::server {
 			check_command                => "check-host-alive",
 			check_interval               => "120",
 			notification_period          => "24x7",
-			notification_interval        => "36000",
-			contacts                     => "kumina",
+			notification_interval        => "600",
+			contact_groups               => "kumina_email",
 			max_check_attempts           => "3",
 			register                     => "0";
 		"generic_wh_host":
@@ -289,6 +302,12 @@ class kbp_icinga::server {
 			use        => "generic_ha_host",
 			hostgroups => "wh_hosts",
 			register   => "0";
+		"generic_mail_host":
+			conf_dir              => "generic",
+			use                   => "generic_ha_host",
+			hostgroups            => "mail_hosts",
+			notification_interval => "0",
+			register              => "0";
 	}
 
 	gen_icinga::timeperiod {
@@ -352,41 +371,95 @@ class kbp_icinga::environment {
 }
 
 class kbp_icinga::heartbeat {
-	gen_icinga::service { "heartbeat_${fqdn}":
+	kbp_icinga::service { "heartbeat_${fqdn}":
 		service_description => "Heartbeat",
-		checkcommand        => "check_heartbeat",
+		check_command       => "check_heartbeat",
 		nrpe                => true;
 	}
 }
 
 class kbp_icinga::nfs {
-	gen_icinga::service { "nfs_daemon_${fqdn}":
+	kbp_icinga::service { "nfs_daemon_${fqdn}":
 		service_description => "NFS daemon",
-		checkcommand        => "check_nfs";
+		check_command       => "check_nfs";
 	}
 }
 
 class kbp_icinga::dhcp {
-	gen_icinga::service { "dhcp_daemon_${fqdn}":
+	kbp_icinga::service { "dhcp_daemon_${fqdn}":
 		service_description => "DHCP daemon",
-		checkcommand        => "check_dhcp",
+		check_command       => "check_dhcp",
 		nrpe                => true;
 	}
 }
 
 class kbp_icinga::cassandra {
-	gen_icinga::service { "cassandra_${fqdn}":
+	kbp_icinga::service { "cassandra_${fqdn}":
 		service_description => "Cassandra status",
-		checkcommand        => "check_cassandra",
+		check_command       => "check_cassandra",
 		nrpe                => true;
 	}
 }
 
+define kbp_icinga::service($service_description, $check_command, $host_name=false, $contact_groups=false, $argument1=false, $argument2=false, $argument3=false, $max_check_attempts=false, $retry_check_interval=false, $nrpe=false, $conf_dir=false, $passive=false, $ha=false, $warnsms=true, $sms=true) {
+	$use = $passive ? {
+		true  => "passive_service",
+		false => $ha ? {
+			true  => "ha_service",
+			false => $sms ? {
+				false => "mail_service",
+				true  => $warnsms ? {
+					true  => "warnsms_service",
+					false => "critsms_service",
+				}
+			}
+		}
+	}
+
+	gen_icinga::service { "${name}":
+		conf_dir             => $conf_dir ? {
+			false   => undef,
+			default => $conf_dir,
+		},
+		use                  => $use,
+		service_description  => $service_description,
+		checkcommand         => $check_command,
+		hostname             => $host_name ? {
+			false   => undef,
+			default => $host_name,
+		},
+		contact_groups       => $contact_groups ? {
+			false   => undef,
+			default => $contact_groups,
+		},
+		argument1            => $argument1 ? {
+			false   => undef,
+			default => $argument1,
+		},
+		argument2            => $argument2 ? {
+			false   => undef,
+			default => $argument2,
+		},
+		argument3            => $argument3 ? {
+			false   => undef,
+			default => $argument3,
+		},
+		max_check_attempts   => $max_check_attempts ? {
+			false   => undef,
+			default => $max_check_attempts,
+		},
+		retry_check_interval => $retry_check_interval ? {
+			false   => undef,
+			default => $retry_check_interval,
+		},
+		nrpe                 => $nrpe;
+	}
+}
+
 define kbp_icinga::sslcert($path) {
-	gen_icinga::service { "ssl_cert_${name}_${fqdn}":
+	kbp_icinga::service { "ssl_cert_${name}_${fqdn}":
 		service_description => "SSL certificate in ${path}",
-		servicegroups       => "wh_services_critsms",
-		checkcommand        => "check_sslcert",
+		check_command       => "check_sslcert",
 		argument1           => $path,
 		nrpe                => true;
 	}
@@ -435,45 +508,35 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false) {
 	}
 
 	if $url and $response {
-		gen_icinga::service { "virtual_host_${name}":
+		kbp_icinga::service { "virtual_host_${name}":
 			conf_dir            => $confdir,
 			service_description => "Virtual host ${name}",
-			hostname            => $name,
-			checkcommand        => "check_http_vhost_url_and_response",
+			host_name           => $name,
+			check_command       => "check_http_vhost_url_and_response",
 			argument1           => $url,
 			argument2           => $response,
-			servicegroups       => $ha ? {
-				false => undef,
-				true  => "ha_services",
-			};
+			ha                  => $ha;
 		}
 	} else {
-		gen_icinga::service { "virtual_host_${name}":
+		kbp_icinga::service { "virtual_host_${name}":
 			conf_dir            => $confdir,
 			service_description => "Virtual host ${name}",
-			hostname            => $name,
-			checkcommand        => "check_http_vhost",
+			host_name           => $name,
+			check_command       => "check_http_vhost",
 			argument1           => $name,
-			servicegroups       => $ha ? {
-				false => undef,
-				true  => "ha_services",
-			};
+			ha                  => $ha;
 		}
 	}
 }
 
-define kbp_icinga::java($contact_groups=false, $servicegroups=false) {
-	gen_icinga::service { "java_heap_usage_${name}_${fqdn}":
+define kbp_icinga::java($contact_groups=false) {
+	kbp_icinga::service { "java_heap_usage_${name}_${fqdn}":
 		service_description => "Java heap usage ${name}",
-		checkcommand        => "check_java_heap_usage",
+		check_command       => "check_java_heap_usage",
 		argument1           => $name,
 		contact_groups      => $contact_groups ? {
 			false   => undef,
 			default => $contact_groups,
-		},
-		servicegroups       => $servicegroups ? {
-			false   => undef,
-			default => $servicegroups,
 		},
 		nrpe                => true;
 	}
@@ -500,20 +563,20 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 			parents => $parents;
 		}
 
-		gen_icinga::service { "vhost_${name}":
+		kbp_icinga::service { "vhost_${name}":
 			conf_dir            => $confdir,
 			service_description => "Vhost ${name}",
-			hostname            => $name,
-			checkcommand        => $auth ? {
+			host_name           => $name,
+			check_command       => $auth ? {
 				false   => "check_http_vhost",
 				default => "check_http_vhost_auth",
 			},
 			argument1           => $name;
 		}
 	} else {
-		gen_icinga::service { "vhost_${name}_${fqdn}":
+		kbp_icinga::service { "vhost_${name}_${fqdn}":
 			service_description => "Vhost ${name}",
-			checkcommand        => $auth ? {
+			check_command       => $auth ? {
 				false   => "check_http_vhost",
 				default => "check_http_vhost_auth",
 			},
@@ -522,28 +585,28 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 	}
 }
 
-define kbp_icinga::sslsite($conf_dir=false) {
-	gen_icinga::service { "ssl_site_${name}_${fqdn}":
+define kbp_icinga::sslsite {
+	kbp_icinga::service { "ssl_site_${name}_${fqdn}":
 		service_description => "SSL validity ${name}",
-		checkcommand        => "check_ssl_cert",
+		check_command       => "check_ssl_cert",
 		argument1           => "${name}";
 	}
 }
 
 define kbp_icinga::raidcontroller($driver) {
-	gen_icinga::service { "${name}_${fqdn}":
+	kbp_icinga::service { "${name}_${fqdn}":
 		service_description => "Raid ${name} ${driver}",
-		checkcommand        => "check_${driver}",
+		check_command       => "check_${driver}",
 		nrpe                => true;
 	}
 }
 
 define kbp_icinga::http($customfqdn=$fqdn, $auth=false) {
-	gen_icinga::service { "http_${customfqdn}":
+	kbp_icinga::service { "http_${customfqdn}":
 		conf_dir            => "${environment}/${customfqdn}",
 		service_description => "HTTP",
-		hostname            => $customfqdn,
-		checkcommand        => $auth ? {
+		host_name           => $customfqdn,
+		check_command       => $auth ? {
 			false   => "check_http",
 			default => "check_http_auth",
 		};
@@ -551,18 +614,18 @@ define kbp_icinga::http($customfqdn=$fqdn, $auth=false) {
 }
 
 define kbp_icinga::proc_status {
-	gen_icinga::service { "proc_status_${name}_${fqdn}":
+	kbp_icinga::service { "proc_status_${name}_${fqdn}":
 		service_description => "Process status for ${name}",
-		checkcommand        => "check_proc_status",
+		check_command       => "check_proc_status",
 		argument1           => $name,
 		nrpe                => true;
 	}
 }
 
 define kbp_icinga::glassfish($webport, $statuspath=false) {
-	gen_icinga::service { "glassfish_${name}_${fqdn}":
+	kbp_icinga::service { "glassfish_${name}_${fqdn}":
 		service_description => "Glassfish ${name} status",
-		checkcommand        => "check_http_on_port_with_vhost_url_and_response",
+		check_command       => "check_http_on_port_with_vhost_url_and_response",
 		argument1           => $webport,
 		argument2           => $statuspath ? {
 			false   => "/${name}/status.jsp",
@@ -572,14 +635,10 @@ define kbp_icinga::glassfish($webport, $statuspath=false) {
 	}
 }
 
-define kbp_icinga::dnszone($master, $servicegroups=false) {
-	gen_icinga::service { "dnszone_${name}_${fqdn}":
+define kbp_icinga::dnszone($master) {
+	kbp_icinga::service { "dnszone_${name}_${fqdn}":
 		service_description => "DNS zone ${name} from ${master}",
-		checkcommand        => "check_dnszone",
-		servicegroups       => $servicegroups ? {
-			false   => undef,
-			default => $servicegroups,
-		},
+		check_command       => "check_dnszone",
 		argument1           => $name,
 		argument2           => $master,
 		nrpe                => true;
