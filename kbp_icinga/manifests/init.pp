@@ -638,12 +638,13 @@ define kbp_icinga::glassfish($webport, $statuspath=false) {
 	}
 }
 
-define kbp_icinga::dnszone($master) {
+define kbp_icinga::dnszone($master, $sms=true) {
 	kbp_icinga::service { "dnszone_${name}_${fqdn}":
 		service_description => "DNS zone ${name} from ${master}",
 		check_command       => "check_dnszone",
 		argument1           => $name,
 		argument2           => $master,
-		nrpe                => true;
+		nrpe                => true,
+		sms                 => $sms;
 	}
 }
