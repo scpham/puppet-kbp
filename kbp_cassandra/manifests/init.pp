@@ -8,7 +8,7 @@ class kbp_cassandra::client($customtag="cassandra_${environment}") {
 	}
 }
 
-class kbp_cassandra::server($customtag="cassandra_${environment}", $java_monitoring=false, $contact_groups=false, servicegroups=false) {
+class kbp_cassandra::server($customtag="cassandra_${environment}", $java_monitoring=false, $contact_groups=false, $sms=true) {
 	include kbp_monitoring::cassandra
 
 	@@gen_ferm::rule { "Internal Cassandra connections from ${fqdn}":
@@ -28,10 +28,7 @@ class kbp_cassandra::server($customtag="cassandra_${environment}", $java_monitor
 				false   => undef,
 				default => $contact_groups,
 			},
-			servicegroups  => $servicegroups ? {
-				false   => undef,
-				default => $servicegroups,
-			};
+			sms            => $sms;
 		}
 	}
 }
