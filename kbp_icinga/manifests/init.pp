@@ -532,7 +532,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false) {
 	}
 }
 
-define kbp_icinga::java($contact_groups=false) {
+define kbp_icinga::java($contact_groups=false, $sms=true) {
 	kbp_icinga::service { "java_heap_usage_${name}_${fqdn}":
 		service_description => "Java heap usage ${name}",
 		check_command       => "check_java_heap_usage",
@@ -541,7 +541,8 @@ define kbp_icinga::java($contact_groups=false) {
 			false   => undef,
 			default => $contact_groups,
 		},
-		nrpe                => true;
+		nrpe                => true,
+		sms                 => $sms;
 	}
 }
 
