@@ -291,7 +291,7 @@ class kbp_icinga::server {
 			retain_status_information    => "1",
 			retain_nonstatus_information => "1",
 			check_command                => "check-host-alive",
-			check_interval               => "120",
+			check_interval               => "10",
 			notification_period          => "24x7",
 			notification_interval        => "600",
 			contact_groups               => "kumina_email",
