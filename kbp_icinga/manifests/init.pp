@@ -35,17 +35,17 @@ class kbp_icinga::client {
 			nrpe                => true,
 			sms                 => false;
 		"cpu_${fqdn}":
-			service_description  => "CPU usage",
-			check_command        => "check_cpu",
-			retry_check_interval => 5,
-			max_check_attempts   => 30,
-			nrpe                 => true;
+			service_description => "CPU usage",
+			check_command       => "check_cpu",
+			retry_interval      => 5,
+			max_check_attempts  => 30,
+			nrpe                => true;
 		"loadtrend_${fqdn}":
-			service_description  => "Load trend",
-			check_command        => "check_loadtrend",
-			retry_check_interval => 5,
-			max_check_attempts   => 30,
-			nrpe                 => true;
+			service_description => "Load trend",
+			check_command       => "check_loadtrend",
+			retry_interval => 5,
+			max_check_attempts  => 30,
+			nrpe                => true;
 		"open_files_${fqdn}":
 			service_description => "Open files",
 			check_command       => "check_open_files",
@@ -241,8 +241,8 @@ class kbp_icinga::server {
 			notification_interval        => "600",
 			is_volatile                  => "0",
 			check_period                 => "24x7",
-			normal_check_interval        => "300",
-			retry_check_interval         => "10",
+			check_interval               => "300",
+			retry_interval               => "10",
 			max_check_attempts           => "3",
 			notification_period          => "24x7",
 			notification_options         => "w,u,c,r",
@@ -401,7 +401,7 @@ class kbp_icinga::cassandra {
 	}
 }
 
-define kbp_icinga::service($service_description, $check_command=false, $host_name=false, $contact_groups=false, $argument1=false, $argument2=false, $argument3=false, $max_check_attempts=false, $retry_check_interval=false, $nrpe=false, $conf_dir=false, $passive=false, $ha=false, $warnsms=true, $sms=true) {
+define kbp_icinga::service($service_description, $check_command=false, $host_name=false, $contact_groups=false, $argument1=false, $argument2=false, $argument3=false, $max_check_attempts=false, $retry_interval=false, $nrpe=false, $conf_dir=false, $passive=false, $ha=false, $warnsms=true, $sms=true) {
 	$use = $passive ? {
 		true  => "passive_service",
 		false => $ha ? {
@@ -451,9 +451,9 @@ define kbp_icinga::service($service_description, $check_command=false, $host_nam
 			false   => undef,
 			default => $max_check_attempts,
 		},
-		retry_check_interval => $retry_check_interval ? {
+		retry_interval       => $retry_interval ? {
 			false   => undef,
-			default => $retry_check_interval,
+			default => $retry_interval,
 		},
 		nrpe                 => $nrpe;
 	}
