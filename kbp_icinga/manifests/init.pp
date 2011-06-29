@@ -241,7 +241,7 @@ class kbp_icinga::server {
 			notification_interval        => "600",
 			is_volatile                  => "0",
 			check_period                 => "24x7",
-			check_interval               => "300",
+			check_interval               => "10",
 			retry_interval               => "10",
 			max_check_attempts           => "3",
 			notification_period          => "24x7",
