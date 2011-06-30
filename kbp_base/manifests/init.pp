@@ -1,6 +1,5 @@
 class kbp_base {
 	include lvm
-	include gen_puppet::concat
 	include gen_base
 	include sysctl
 	include kbp_acpi
@@ -76,7 +75,7 @@ class kbp_base {
 				require => File["/home/$username"],
 			}
 
-			gen_puppet::concat::add_content { "Add $username to Kumina SSH keyring":
+			concat::add_content { "Add $username to Kumina SSH keyring":
 				target  => "/etc/ssh/kumina.keys",
 				content => "# $fullname <$username@kumina.nl>\n$sshkeys",
 			}
