@@ -18,6 +18,9 @@ class kbp_puppet::test_default_config {
 		"templatedir": value => '$confdir/templates';
 		"pluginsync":  value => 'true';
 		"environment": value => $environment;
+		"configtimeout":
+			value   => "300",
+			section => "agent";
 	}
 }
 
