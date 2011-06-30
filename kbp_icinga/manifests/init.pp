@@ -269,8 +269,8 @@ class kbp_icinga::server {
 			register              => "0";
 		"passive_service":
 			conf_dir               => "generic",
-			use                    => "generic_wh_service",
-			servicegroups          => "wh_services_warnsms",
+			use                    => "ha_service",
+			servicegroups          => "mail_services",
 			active_checks_enabled  => "0",
 			passive_checks_enabled => "1",
 			checkcommand           => "return-ok",
@@ -279,7 +279,7 @@ class kbp_icinga::server {
 	}
 
 	gen_icinga::host {
-		"generic_ha_host":
+		"ha_host":
 			conf_dir                     => "generic",
 			use                          => false,
 			hostgroups                   => "ha_hosts",
@@ -297,14 +297,14 @@ class kbp_icinga::server {
 			contact_groups               => "kumina_email",
 			max_check_attempts           => "3",
 			register                     => "0";
-		"generic_wh_host":
+		"wh_host":
 			conf_dir   => "generic",
-			use        => "generic_ha_host",
+			use        => "ha_host",
 			hostgroups => "wh_hosts",
 			register   => "0";
-		"generic_mail_host":
+		"mail_host":
 			conf_dir              => "generic",
-			use                   => "generic_ha_host",
+			use                   => "ha_host",
 			hostgroups            => "mail_hosts",
 			notification_interval => "0",
 			register              => "0";
