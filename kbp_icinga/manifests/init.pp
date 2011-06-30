@@ -250,19 +250,19 @@ class kbp_icinga::server {
 			register                     => "0";
 		"critsms_service":
 			conf_dir            => "generic",
-			use                 => "generic_ha_service",
+			use                 => "ha_service",
 			servicegroups       => "wh_services_critsms",
 			notification_period => "workhours",
 			register            => "0";
 		"warnsms_service":
 			conf_dir            => "generic",
-			use                 => "generic_ha_service",
+			use                 => "ha_service",
 			servicegroups       => "wh_services_warnsms",
 			notification_period => "workhours",
 			register            => "0";
 		"mail_service":
 			conf_dir              => "generic",
-			use                   => "generic_ha_service",
+			use                   => "ha_service",
 			servicegroups         => "mail_services",
 			notification_period   => "workhours",
 			notification_interval => "0",
@@ -413,6 +413,17 @@ define kbp_icinga::service($service_description, $check_command=false, $host_nam
 					false => "critsms_service",
 				}
 			}
+		}
+	}
+
+	if $ha {
+		$host = $hostname ? {
+			false   => $fqdn,
+			default => $hostname,
+		}
+
+		Gen_icinga::Host <| title == $host |> {
+			hostgroups => "ha_hosts",
 		}
 	}
 
