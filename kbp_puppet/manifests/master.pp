@@ -121,6 +121,8 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 		# Yes, we have a default password. That's not problem since MySQL
 		# only allows access from restricted hosts.
 		$real_dbpasswd = 'puppet'
+	} elsif $name == 'caserver' {
+		debug("No database settings needed.")
 	} else {
 		$real_dbname = $dbname ? {
 			false   => regsubst($pname,'-','_','G'),
@@ -140,7 +142,9 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 	# Setup the MySQL only if one of the following condition apply:
 	# - dbhost is false or localhost (false implies localhost)
 	# - dbhost is equal to local fqdn
-	if ((! $dbhost) or ($dbhost == 'localhost')) or ($dbhost == $fqdn) {
+	# And the following never applies:
+	# - name is not equal to caserver
+	if (((! $dbhost) or ($dbhost == 'localhost')) or ($dbhost == $fqdn)) and $name != 'caserver' {
 		mysql::server::db { $real_dbname:; }
 
 		mysql::server::grant { $real_dbname:
