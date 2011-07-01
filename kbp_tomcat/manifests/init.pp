@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_tomcat
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_tomcat inherits tomcat {
 	include apache
 	include kbp_java

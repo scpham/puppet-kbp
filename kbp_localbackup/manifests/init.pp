@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_localbackup
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_localbackup {
 	package { "rsnapshot":
 		ensure => installed,

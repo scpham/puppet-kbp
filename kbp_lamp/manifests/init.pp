@@ -1,12 +1,32 @@
+# Author: Kumina bv <support@kumina.nl>
+
 # Copyright (C) 2010 Kumina bv, Tim Stoop <tim@kumina.nl>
 # This works is published under the Creative Commons Attribution-Share
 # Alike 3.0 Unported license - http://creativecommons.org/licenses/by-sa/3.0/
 # See LICENSE for the full legal text.
 
+# Class: kbp_lamp::common
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_lamp::common {
 	include kbp_apache
 }
 
+# Class: kbp_lamp::cgi
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_lamp::cgi {
 	# Yes, this include is redundant
 	include kbp_apache
@@ -38,6 +58,15 @@ class kbp_lamp::cgi {
 	}
 }
 
+# Class: kbp_lamp::php-cgi
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_lamp::php-cgi {
 	include kbp_lamp::common
 	include kbp_lamp::cgi

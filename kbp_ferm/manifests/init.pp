@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_ferm
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_ferm {
 	include gen_ferm
 
@@ -53,6 +64,27 @@ class kbp_ferm {
 	}
 }
 
+# Define: kbp_ferm::forward
+#
+# Parameters:
+#	proto
+#		Undocumented
+#	port
+#		Undocumented
+#	dest
+#		Undocumented
+#	dport
+#		Undocumented
+#	inc
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_ferm::forward($inc, $proto, $port, $dest, $dport) {
 	gen_ferm::rule {
 		"Accept all ${proto} traffic from ${inc} to ${dest}:${port}_v4":

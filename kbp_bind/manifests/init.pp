@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_bind
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_bind inherits bind {
 	# Needed for the check_dnszone script
 	kpackage { ["python-ipaddr","python-argparse","python-dnspython"]:; }

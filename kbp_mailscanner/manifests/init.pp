@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_mailscanner
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_mailscanner {
 	include gen_amavisd-new
 	include munin::client
@@ -25,6 +36,15 @@ class kbp_mailscanner {
 	}
 }
 
+# Class: kbp_mailscanner::spamchecker
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_mailscanner::spamchecker inherits spamassassin {
 	kfile { "/etc/spamassassin/local.cf":
 		source => "kbp_mailscanner/spamassassin/local.cf",
@@ -38,6 +58,15 @@ class kbp_mailscanner::spamchecker inherits spamassassin {
 	kpackage { ["pyzor", "razor"]:; }
 }
 
+# Class: kbp_mailscanner::virusscanner
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_mailscanner::virusscanner inherits clamav {
 	user { "clamav":
 		require => Package["clamav-daemon","amavisd-new"],

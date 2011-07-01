@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_puppet::master
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_puppet::master {
 	include gen_puppet::master
 	include gen_puppet::queue
@@ -39,6 +50,23 @@ class kbp_puppet::master {
 # Keep in mind that if you want default puppetmaster (which is
 # probably most of the time), you just need to name it "default" and
 # most settings will be indeed default.
+#
+# Define: kbp_puppet::master::config
+#
+# Parameters:
+#	configfile
+#		Undocumented
+#	debug
+#		Undocumented
+#	caserver
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
 #
 define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet/puppet.conf", $debug = false,
 				$dbsetup = true, $dbname = false, $dbuser = false, $dbpasswd = false,

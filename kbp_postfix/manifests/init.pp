@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_postfix
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_postfix inherits postfix {
 	include munin::client
 	include openssl::common
@@ -18,6 +29,15 @@ class kbp_postfix inherits postfix {
 	}
 }
 
+# Class: kbp_postfix::secondary
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_postfix::secondary {
 	include kbp_postfix
 
@@ -28,6 +48,15 @@ class kbp_postfix::secondary {
 	}
 }
 
+# Class: kbp_postfix::primary
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_postfix::primary {
 	include kbp_postfix
 

@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_puppetmaster
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_puppetmaster {
 	include kbp_activemq
 	include kbp_apache::passenger
@@ -125,6 +136,23 @@ class kbp_puppetmaster {
 	kbp_apache::site { "puppetmaster":; }
 }
 
+# Define: kbp_puppetmaster::config
+#
+# Parameters:
+#	configfile
+#		Undocumented
+#	debug
+#		Undocumented
+#	address
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet/puppet.conf", $debug = false,
 				$factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet", $pluginsync = true,
 				$rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
@@ -253,6 +281,25 @@ define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet
 	}
 }
 
+# Define: kbp_puppetmaster::set_main
+#
+# Parameters:
+#	value
+#		Undocumented
+#	configfile
+#		Undocumented
+#	var
+#		Undocumented
+#	puppetmaster
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_puppetmaster::set_main ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
 	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
 	# resource you want to add this to.
@@ -273,6 +320,25 @@ define kbp_puppetmaster::set_main ($puppetmaster, $value, $configfile = "/etc/pu
 	}
 }
 
+# Define: kbp_puppetmaster::set_agent
+#
+# Parameters:
+#	value
+#		Undocumented
+#	configfile
+#		Undocumented
+#	var
+#		Undocumented
+#	puppetmaster
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_puppetmaster::set_agent ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
 	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
 	# resource you want to add this to.
@@ -293,6 +359,25 @@ define kbp_puppetmaster::set_agent ($puppetmaster, $value, $configfile = "/etc/p
 	}
 }
 
+# Define: kbp_puppetmaster::set_master
+#
+# Parameters:
+#	value
+#		Undocumented
+#	configfile
+#		Undocumented
+#	var
+#		Undocumented
+#	puppetmaster
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_puppetmaster::set_master ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
 	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
 	# resource you want to add this to.
@@ -313,6 +398,25 @@ define kbp_puppetmaster::set_master ($puppetmaster, $value, $configfile = "/etc/
 	}
 }
 
+# Define: kbp_puppetmaster::set_queue
+#
+# Parameters:
+#	value
+#		Undocumented
+#	configfile
+#		Undocumented
+#	var
+#		Undocumented
+#	puppetmaster
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_puppetmaster::set_queue ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
 	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
 	# resource you want to add this to.
@@ -333,6 +437,27 @@ define kbp_puppetmaster::set_queue ($puppetmaster, $value, $configfile = "/etc/p
 	}
 }
 
+# Define: kbp_puppetmaster::environment
+#
+# Parameters:
+#	manifestdir
+#		Undocumented
+#	modulepath
+#		Undocumented
+#	puppetmaster
+#		Undocumented
+#	configfile
+#		Undocumented
+#	manifest
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_puppetmaster::environment ($manifest, $manifestdir, $modulepath, $puppetmaster, $configfile = "/etc/puppet/puppet.conf") {
 	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
 	# resource you want to add this to.

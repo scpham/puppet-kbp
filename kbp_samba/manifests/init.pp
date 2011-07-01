@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_samba::server
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_samba::server inherits samba::server {
 	gen_ferm::rule { "Samba traffic (netbios-ns)":
 		proto     => "udp",

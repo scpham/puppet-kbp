@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_dell::poweredge
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_dell::poweredge {
 	include ipmi
 	include munin::client
@@ -40,6 +51,15 @@ class kbp_dell::poweredge {
 	}
 }
 
+# Class: kbp_dell::pe1955
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_dell::pe1955 inherits kbp_dell::poweredge {
 	# RAID controller utility
 	package { "mpt-status":
@@ -57,6 +77,15 @@ class kbp_dell::pe1955 inherits kbp_dell::poweredge {
 	}
 }
 
+# Class: kbp_dell::pe1950
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_dell::pe1950 inherits kbp_dell::poweredge {
 	include kbp_dell::perc
 
@@ -66,6 +95,15 @@ class kbp_dell::pe1950 inherits kbp_dell::poweredge {
 	}
 }
 
+# Class: kbp_dell::pe2950
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_dell::pe2950 inherits kbp_dell::poweredge {
 	include kbp_dell::perc
 
@@ -75,6 +113,15 @@ class kbp_dell::pe2950 inherits kbp_dell::poweredge {
 	}
 }
 
+# Class: kbp_dell::perc
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_dell::perc {
 	package { "megacli":
 		ensure => installed,

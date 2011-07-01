@@ -1,3 +1,18 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_syslog::server
+#
+# Parameters:
+#	environmentonly
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_syslog::server($environmentonly=false) {
 	include "kbp_syslog::server::$lsbdistcodename"
 
@@ -8,6 +23,15 @@ class kbp_syslog::server($environmentonly=false) {
 	}
 }
 
+# Class: kbp_syslog::client
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_syslog::client {
 	include "kbp_syslog::client::$lsbdistcodename"
 
@@ -20,15 +44,42 @@ class kbp_syslog::client {
 	}
 }
 
+# Class: kbp_syslog::server::etch
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_syslog::server::etch inherits syslog-ng::server {
 	kfile { "/etc/logrotate.d/syslog-ng":
 		source => "kbp_syslog/server/logrotate.d/syslog-ng";
 	}
 }
 
+# Class: kbp_syslog::client::etch
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_syslog::client::etch inherits sysklogd::client {
 }
 
+# Class: kbp_syslog::server::lenny
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_syslog::server::lenny inherits rsyslog::server {
 	include kbp_logrotate
 	gen_logrotate::rotate { "rsyslog":
@@ -42,9 +93,27 @@ class kbp_syslog::server::lenny inherits rsyslog::server {
 	}
 }
 
+# Class: kbp_syslog::client::lenny
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_syslog::client::lenny inherits rsyslog::client {
 }
 
+# Class: kbp_syslog::server::squeeze
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_syslog::server::squeeze inherits rsyslog::server {
 	include kbp_logrotate
 	gen_logrotate::rotate { "rsyslog":
@@ -58,18 +127,54 @@ class kbp_syslog::server::squeeze inherits rsyslog::server {
 	}
 }
 
+# Class: kbp_syslog::client::squeeze
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_syslog::client::squeeze inherits rsyslog::client {
 }
 
 # Additional options
+# Class: kbp_syslog::server::mysql
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_syslog::server::mysql {
 	include kbp_syslog::server
 	include "kbp_syslog::mysql::$lsbdistcodename"
 }
 
+# Class: kbp_syslog::mysql::etch
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_syslog::mysql::etch {
 	err ("This is not implemented for Etch or earlier!")
 }
 
+# Class: kbp_syslog::mysql::lenny
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_syslog::mysql::lenny inherits rsyslog::mysql {
 }

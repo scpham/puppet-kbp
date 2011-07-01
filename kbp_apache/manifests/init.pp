@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_apache
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_apache inherits apache {
 	include kbp_munin::client::apache
 
@@ -36,6 +47,15 @@ class kbp_apache inherits apache {
 	kbp_monitoring::http { "http_${fqdn}":; }
 }
 
+# Class: kbp_apache::passenger
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_apache::passenger {
 	include kbp_apache
 	include kbp_apache::ssl
@@ -49,10 +69,34 @@ class kbp_apache::passenger {
 	}
 }
 
+# Class: kbp_apache::ssl
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_apache::ssl {
 	apache::module { "ssl":; }
 }
 
+# Define: kbp_apache::site
+#
+# Parameters:
+#	priority
+#		Undocumented
+#	ensure
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_apache::site($ensure="present", $priority="", auth=false) {
 	if $ensure == "present" {
 		kbp_monitoring::site { "${name}":

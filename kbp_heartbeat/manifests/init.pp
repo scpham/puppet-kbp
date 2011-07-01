@@ -1,3 +1,18 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_heartbeat
+#
+# Parameters:
+#	otherhost
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_heartbeat($otherhost) {
 	include gen_heartbeat
 	include kbp_monitoring::heartbeat

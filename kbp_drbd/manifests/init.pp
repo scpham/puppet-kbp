@@ -1,3 +1,18 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_drbd
+#
+# Parameters:
+#	otherhost
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_drbd($otherhost) {
 	include kbp_drbd::monitoring::icinga
 
@@ -9,6 +24,15 @@ class kbp_drbd($otherhost) {
 	}
 }
 
+# Class: kbp_drbd::monitoring::icinga
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_drbd::monitoring::icinga {
 	gen_icinga::service { "check_drbd_${fqdn}":
 		service_description => "DRBD",

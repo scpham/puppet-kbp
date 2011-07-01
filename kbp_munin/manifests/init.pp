@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_munin::client
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_munin::client inherits munin::client {
 	kpackage { "libnet-snmp-perl":; }
 
@@ -7,6 +18,15 @@ class kbp_munin::client inherits munin::client {
 	}
 }
 
+# Class: kbp_munin::client::apache
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_munin::client::apache {
 	# This class is should be included in kbp_apache to collect apache data for munin
 	include kbp_munin::client
@@ -25,6 +45,15 @@ class kbp_munin::client::apache {
 	}
 }
 
+# Class: kbp_munin::client::puppetmaster
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_munin::client::puppetmaster {
 	include kbp_munin::client
 	munin::client::plugin {
@@ -42,6 +71,15 @@ class kbp_munin::client::puppetmaster {
 	}
 }
 
+# Class: kbp_munin::client::mysql
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_munin::client::mysql {
 	include kbp_munin::client
 	if versioncmp($lsbdistrelease, 6) >= 0 {
@@ -68,18 +106,45 @@ class kbp_munin::client::mysql {
 	}
 }
 
+# Class: kbp_munin::client::nfs
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_munin::client::nfs {
 	include kbp_munin::client
 
 	munin::client::plugin { "nfs_client":; }
 }
 
+# Class: kbp_munin::client::nfsd
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_munin::client::nfsd {
 	include kbp_munin::client
 
 	munin::client::plugin { "nfsd":; }
 }
 
+# Class: kbp_munin::client::bind9
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_munin::client::bind9 {
 	include kbp_munin::client
 
@@ -90,6 +155,15 @@ class kbp_munin::client::bind9 {
 	}
 }
 
+# Class: kbp_munin::server
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_munin::server inherits munin::server {
 	include kbp_nsca::client
 

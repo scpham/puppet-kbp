@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_monitoring::client::sslcert
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_monitoring::client::sslcert {
 	include kbp_sudo
 
@@ -9,6 +20,19 @@ class kbp_monitoring::client::sslcert {
 	}
 }
 
+# Class: kbp_monitoring::server
+#
+# Parameters:
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_monitoring::server($package="icinga") {
 	case $package {
 		"icinga": { include kbp_icinga::server }
@@ -61,6 +85,19 @@ class kbp_monitoring::server($package="icinga") {
 	}
 }
 
+# Class: kbp_monitoring::environment
+#
+# Parameters:
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_monitoring::environment($package="icinga") {
 	case $package {
 		"icinga": {
@@ -69,6 +106,19 @@ class kbp_monitoring::environment($package="icinga") {
 	}
 }
 
+# Class: kbp_monitoring::heartbeat
+#
+# Parameters:
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_monitoring::heartbeat($package="icinga") {
 	case $package {
 		"icinga": {
@@ -77,6 +127,19 @@ class kbp_monitoring::heartbeat($package="icinga") {
 	}
 }
 
+# Class: kbp_monitoring::nfs
+#
+# Parameters:
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_monitoring::nfs($package="icinga") {
 	case $package {
 		"icinga": {
@@ -85,6 +148,19 @@ class kbp_monitoring::nfs($package="icinga") {
 	}
 }
 
+# Class: kbp_monitoring::dhcp
+#
+# Parameters:
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_monitoring::dhcp($package="icinga") {
 	case $package {
 		"icinga": {
@@ -93,6 +169,19 @@ class kbp_monitoring::dhcp($package="icinga") {
 	}
 }
 
+# Class: kbp_monitoring::cassandra
+#
+# Parameters:
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_monitoring::cassandra($package="icinga") {
 	case $package {
 		"icinga": {
@@ -101,6 +190,21 @@ class kbp_monitoring::cassandra($package="icinga") {
 	}
 }
 
+# Define: kbp_monitoring::sslcert
+#
+# Parameters:
+#	package
+#		Undocumented
+#	path
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_monitoring::sslcert($path, $package="icinga") {
 	case $package {
 		"icinga": {
@@ -111,6 +215,27 @@ define kbp_monitoring::sslcert($path, $package="icinga") {
 	}
 }
 
+# Define: kbp_monitoring::haproxy
+#
+# Parameters:
+#	ha
+#		Undocumented
+#	url
+#		Undocumented
+#	response
+#		Undocumented
+#	package
+#		Undocumented
+#	address
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_monitoring::haproxy($address, $ha=false, $url=false, $response=false, $package="icinga") {
 	case $package {
 		"icinga": {
@@ -130,6 +255,23 @@ define kbp_monitoring::haproxy($address, $ha=false, $url=false, $response=false,
 	}
 }
 
+# Define: kbp_monitoring::java
+#
+# Parameters:
+#	contact_groups
+#		Undocumented
+#	sms
+#		Undocumented
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_monitoring::java($package="icinga", $contact_groups=false, $sms=true) {
 	case $package {
 		"icinga": {
@@ -141,6 +283,31 @@ define kbp_monitoring::java($package="icinga", $contact_groups=false, $sms=true)
 	}
 }
 
+# Define: kbp_monitoring::site
+#
+# Parameters:
+#	address
+#		Undocumented
+#	conf_dir
+#		Undocumented
+#	false
+#		Undocumented
+#	parents
+#		Undocumented
+#	false
+#		Undocumented
+#	auth
+#		Undocumented
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_monitoring::site($package="icinga", $address=false, $conf_dir=$false, $parents=$false, $auth=false) {
 	case $package {
 		"icinga": {
@@ -163,6 +330,21 @@ define kbp_monitoring::site($package="icinga", $address=false, $conf_dir=$false,
 	}
 }
 
+# Define: kbp_monitoring::raidcontroller
+#
+# Parameters:
+#	driver
+#		Undocumented
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_monitoring::raidcontroller($package="icinga", $driver) {
 	case $package {
 		"icinga": {
@@ -173,6 +355,23 @@ define kbp_monitoring::raidcontroller($package="icinga", $driver) {
 	}
 }
 
+# Define: kbp_monitoring::http
+#
+# Parameters:
+#	customfqdn
+#		Undocumented
+#	auth
+#		Undocumented
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_monitoring::http($package="icinga", $customfqdn=false, $auth=false) {
 	case $package {
 		"icinga": {
@@ -187,6 +386,19 @@ define kbp_monitoring::http($package="icinga", $customfqdn=false, $auth=false) {
 	}
 }
 
+# Define: kbp_monitoring::proc_status
+#
+# Parameters:
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_monitoring::proc_status($package="icinga") {
 	case $package {
 		"icinga": {
@@ -195,6 +407,19 @@ define kbp_monitoring::proc_status($package="icinga") {
 	}
 }
 
+# Define: kbp_monitoring::sslsite
+#
+# Parameters:
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_monitoring::sslsite($package="icinga") {
 	case $package {
 		"icinga": {
@@ -203,6 +428,23 @@ define kbp_monitoring::sslsite($package="icinga") {
 	}
 }
 
+# Define: kbp_monitoring::glassfish
+#
+# Parameters:
+#	package
+#		Undocumented
+#	statuspath
+#		Undocumented
+#	webport
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_monitoring::glassfish($webport, $package="icinga", $statuspath=false) {
 	case $package {
 		"icinga": {
@@ -217,6 +459,23 @@ define kbp_monitoring::glassfish($webport, $package="icinga", $statuspath=false)
 	}
 }
 
+# Define: kbp_monitoring::dnszone
+#
+# Parameters:
+#	sms
+#		Undocumented
+#	package
+#		Undocumented
+#	master
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_monitoring::dnszone($master, $sms=true, $package="icinga") {
 	case $package {
 		"icinga": {
@@ -228,6 +487,29 @@ define kbp_monitoring::dnszone($master, $sms=true, $package="icinga") {
 	}
 }
 
+# Define: kbp_monitoring::virtualhost
+#
+# Parameters:
+#	conf_dir
+#		Undocumented
+#	parents
+#		Undocumented
+#	hostgroups
+#		Undocumented
+#	contact_groups
+#		Undocumented
+#	package
+#		Undocumented
+#	address
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_monitoring::virtualhost($address, $conf_dir=false, $parents=false, $hostgroups=false, $contact_groups=false, $package="icinga") {
 	case $package {
 		"icinga": {

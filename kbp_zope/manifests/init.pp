@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_zope
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_zope inherits zope {
 	define site($path, $port, $serveralias=false, $template=false, $ssl=false) {
 		# Set up a virtual host configuration in Nginx or Apache

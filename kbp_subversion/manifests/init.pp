@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_subversion::etch
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_subversion::etch {
 	package { "db4.4-util":
 		ensure => installed,
@@ -9,6 +20,15 @@ class kbp_subversion::etch {
 	}
 }
 
+# Class: kbp_subversion::lenny
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_subversion::lenny {
 	apache::module { "python":
 		ensure => present,
@@ -16,6 +36,15 @@ class kbp_subversion::lenny {
 	}
 }
 
+# Class: kbp_subversion
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_subversion inherits trac {
 	include subversion
 	include apache

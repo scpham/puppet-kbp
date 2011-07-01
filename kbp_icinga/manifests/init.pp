@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_icinga::client
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_icinga::client {
 	include gen_icinga::client
 
@@ -103,6 +114,15 @@ class kbp_icinga::client {
 	}
 }
 
+# Class: kbp_icinga::server
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_icinga::server {
 	include gen_icinga::server
 	include kbp_nsca::server
@@ -359,6 +379,15 @@ class kbp_icinga::server {
 	}
 }
 
+# Class: kbp_icinga::environment
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_icinga::environment {
 	gen_icinga::contact { "${environment}":
 		conf_dir                      => $environment,
@@ -370,6 +399,15 @@ class kbp_icinga::environment {
 	}
 }
 
+# Class: kbp_icinga::heartbeat
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_icinga::heartbeat {
 	kbp_icinga::service { "heartbeat_${fqdn}":
 		service_description => "Heartbeat",
@@ -378,6 +416,15 @@ class kbp_icinga::heartbeat {
 	}
 }
 
+# Class: kbp_icinga::nfs
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_icinga::nfs {
 	kbp_icinga::service { "nfs_daemon_${fqdn}":
 		service_description => "NFS daemon",
@@ -385,6 +432,15 @@ class kbp_icinga::nfs {
 	}
 }
 
+# Class: kbp_icinga::dhcp
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_icinga::dhcp {
 	kbp_icinga::service { "dhcp_daemon_${fqdn}":
 		service_description => "DHCP daemon",
@@ -393,6 +449,15 @@ class kbp_icinga::dhcp {
 	}
 }
 
+# Class: kbp_icinga::cassandra
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_icinga::cassandra {
 	kbp_icinga::service { "cassandra_${fqdn}":
 		service_description => "Cassandra status",
@@ -401,6 +466,47 @@ class kbp_icinga::cassandra {
 	}
 }
 
+# Define: kbp_icinga::service
+#
+# Parameters:
+#	ha
+#		Undocumented
+#	check_command
+#		Undocumented
+#	retry_interval
+#		Undocumented
+#	warnsms
+#		Undocumented
+#	host_name
+#		Undocumented
+#	contact_groups
+#		Undocumented
+#	argument1
+#		Undocumented
+#	nrpe
+#		Undocumented
+#	sms
+#		Undocumented
+#	argument2
+#		Undocumented
+#	conf_dir
+#		Undocumented
+#	argument3
+#		Undocumented
+#	passive
+#		Undocumented
+#	max_check_attempts
+#		Undocumented
+#	service_description
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_icinga::service($service_description, $check_command=false, $host_name=false, $contact_groups=false, $argument1=false, $argument2=false, $argument3=false, $max_check_attempts=false, $retry_interval=false, $nrpe=false, $conf_dir=false, $passive=false, $ha=false, $warnsms=true, $sms=true) {
 	$use = $passive ? {
 		true  => "passive_service",
@@ -470,6 +576,19 @@ define kbp_icinga::service($service_description, $check_command=false, $host_nam
 	}
 }
 
+# Define: kbp_icinga::sslcert
+#
+# Parameters:
+#	path
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_icinga::sslcert($path) {
 	kbp_icinga::service { "ssl_cert_${name}_${fqdn}":
 		service_description => "SSL certificate in ${path}",
@@ -479,6 +598,29 @@ define kbp_icinga::sslcert($path) {
 	}
 }
 
+# Define: kbp_icinga::virtualhost
+#
+# Parameters:
+#	conf_dir
+#		Undocumented
+#	environment
+#		Undocumented
+#	parents
+#		Undocumented
+#	hostgroups
+#		Undocumented
+#	contact_groups
+#		Undocumented
+#	address
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false, $hostgroups=false, $contact_groups=false) {
 	gen_icinga::configdir { "${conf_dir}/${name}":
 		sub => $conf_dir;
@@ -502,6 +644,25 @@ define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false,
 	}
 }
 
+# Define: kbp_icinga::haproxy
+#
+# Parameters:
+#	ha
+#		Undocumented
+#	url
+#		Undocumented
+#	response
+#		Undocumented
+#	address
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false) {
 	$confdir = "${environment}/${name}"
 
@@ -543,6 +704,21 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false) {
 	}
 }
 
+# Define: kbp_icinga::java
+#
+# Parameters:
+#	sms
+#		Undocumented
+#	contact_groups
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_icinga::java($contact_groups=false, $sms=true) {
 	kbp_icinga::service { "java_heap_usage_${name}_${fqdn}":
 		service_description => "Java heap usage ${name}",
@@ -557,6 +733,27 @@ define kbp_icinga::java($contact_groups=false, $sms=true) {
 	}
 }
 
+# Define: kbp_icinga::site
+#
+# Parameters:
+#	conf_dir
+#		Undocumented
+#	parents
+#		Undocumented
+#	fqdn
+#		Undocumented
+#	auth
+#		Undocumented
+#	address
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=false) {
 	if $address {
 		if $conf_dir {
@@ -600,6 +797,15 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 	}
 }
 
+# Define: kbp_icinga::sslsite
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_icinga::sslsite {
 	kbp_icinga::service { "ssl_site_${name}_${fqdn}":
 		service_description => "SSL validity ${name}",
@@ -608,6 +814,19 @@ define kbp_icinga::sslsite {
 	}
 }
 
+# Define: kbp_icinga::raidcontroller
+#
+# Parameters:
+#	driver
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_icinga::raidcontroller($driver) {
 	kbp_icinga::service { "${name}_${fqdn}":
 		service_description => "Raid ${name} ${driver}",
@@ -616,6 +835,23 @@ define kbp_icinga::raidcontroller($driver) {
 	}
 }
 
+# Define: kbp_icinga::http
+#
+# Parameters:
+#	fqdn
+#		Undocumented
+#	auth
+#		Undocumented
+#	customfqdn
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_icinga::http($customfqdn=$fqdn, $auth=false) {
 	kbp_icinga::service { "http_${customfqdn}":
 		conf_dir            => "${environment}/${customfqdn}",
@@ -628,6 +864,15 @@ define kbp_icinga::http($customfqdn=$fqdn, $auth=false) {
 	}
 }
 
+# Define: kbp_icinga::proc_status
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_icinga::proc_status {
 	kbp_icinga::service { "proc_status_${name}_${fqdn}":
 		service_description => "Process status for ${name}",
@@ -637,6 +882,21 @@ define kbp_icinga::proc_status {
 	}
 }
 
+# Define: kbp_icinga::glassfish
+#
+# Parameters:
+#	statuspath
+#		Undocumented
+#	webport
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_icinga::glassfish($webport, $statuspath=false) {
 	kbp_icinga::service { "glassfish_${name}_${fqdn}":
 		service_description => "Glassfish ${name} status",
@@ -650,6 +910,21 @@ define kbp_icinga::glassfish($webport, $statuspath=false) {
 	}
 }
 
+# Define: kbp_icinga::dnszone
+#
+# Parameters:
+#	sms
+#		Undocumented
+#	master
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_icinga::dnszone($master, $sms=true) {
 	kbp_icinga::service { "dnszone_${name}_${fqdn}":
 		service_description => "DNS zone ${name} from ${master}",

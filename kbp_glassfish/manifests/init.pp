@@ -1,3 +1,30 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Define: kbp_glassfish::domain
+#
+# Parameters:
+#	jmxport
+#		Undocumented
+#	webport
+#		Undocumented
+#	java_monitoring
+#		Undocumented
+#	java_contact_groups
+#		Undocumented
+#	java_servicegroups
+#		Undocumented
+#	statuspath
+#		Undocumented
+#	adminport
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitoring=false, $java_contact_groups=false, $java_servicegroups=false, $statuspath=false) {
 	gen_ferm::rule {
 		"Glassfish admin panel for ${name}":
@@ -45,12 +72,44 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitor
 	}
 }
 
+# Define: kbp_glassfish::site
+#
+# Parameters:
+#	serveralias
+#		Undocumented
+#	with_ssl
+#		Undocumented
+#	port
+#		Undocumented
+#	sslport
+#		Undocumented
+#	redundant
+#		Undocumented
+#	domain
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_glassfish::site($domain = "domain1", $serveralias = [], $with_ssl = false, $port = "80", $sslport = "443", $redundant=true) {
 	if $domain != "domain1" and !$redundant {
 		kbp_glassfish::monitoring::icinga::site { "${name}":; }
 	}
 }
 
+# Define: kbp_glassfish::monitoring::icinga::site
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_glassfish::monitoring::icinga::site () {
 	gen_icinga::host { "${name}":; }
 

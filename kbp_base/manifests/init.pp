@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_base
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_base {
 	include lvm
 	include gen_base
@@ -218,6 +229,15 @@ class kbp_base {
 	}
 }
 
+# Class: kbp_base::environment
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_base::environment {
 	include kbp_monitoring::environment
 }

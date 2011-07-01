@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_nfs::client
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_nfs::client {
 	include gen_nfs::client
 	include kbp_trending::nfs
@@ -10,6 +21,19 @@ class kbp_nfs::client {
 	}
 }
 
+# Define: kbp_nfs::client::mount
+#
+# Parameters:
+#	source
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_nfs::client::mount ($source) {
 	include kbp_nfs::client
 

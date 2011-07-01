@@ -1,6 +1,26 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_nagios::server::plugins
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_nagios::server::plugins inherits nagios::server::plugins {
 }
 
+# Class: kbp_nagios::server
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_nagios::server inherits nagios::server {
 	include kbp_nagios::server::plugins
 	class { "kbp_nsca::server":

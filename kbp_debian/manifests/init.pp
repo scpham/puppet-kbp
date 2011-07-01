@@ -1,6 +1,26 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_debian::etch
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_debian::etch {
 }
 
+# Class: kbp_debian::lenny
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_debian::lenny {
 	# Don't pull in Recommends or Suggests dependencies when installing
 	# packages with apt.
@@ -31,6 +51,15 @@ class kbp_debian::lenny {
 	}
 }
 
+# Class: kbp_debian::squeeze
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_debian::squeeze {
 	# Don't pull in Recommends or Suggests dependencies when installing
 	# packages with apt.
@@ -55,6 +84,15 @@ class kbp_debian::squeeze {
 	}
 }
 
+# Class: kbp_debian
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_debian inherits kbp_base {
 	$aptproxy = "http://apt-proxy.sys.kumina.nl:9999"
 

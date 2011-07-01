@@ -1,3 +1,18 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_mysql::server
+#
+# Parameters:
+#	otherhost
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_mysql::server($otherhost=false) {
 	include mysql::server
 	include kbp_trending::mysql
@@ -9,6 +24,21 @@ class kbp_mysql::server($otherhost=false) {
 	Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
 }
 
+# Class: kbp_mysql::slave
+#
+# Parameters:
+#	customtag
+#		Undocumented
+#	otherhost
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}") {
 	class { "kbp_mysql::server":
 		otherhost => $otherhost,
@@ -47,6 +77,19 @@ class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}") {
 	}
 }
 
+# Class: kbp_mysql::client
+#
+# Parameters:
+#	customtag
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_mysql::client($customtag="mysql_${environment}") {
 	@@gen_ferm::rule { "MySQL connections from ${fqdn}":
 		saddr  => $fqdn,
@@ -57,6 +100,19 @@ class kbp_mysql::client($customtag="mysql_${environment}") {
 	}
 }
 
+# Class: kbp_mysql::monitoring::icinga::server
+#
+# Parameters:
+#	otherhost
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_mysql::monitoring::icinga::server($otherhost=false) {
 	gen_icinga::service { "mysql_${fqdn}":
 		service_description => "MySQL service",

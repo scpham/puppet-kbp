@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_openldap::server
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_openldap::server inherits openldap::server {
 	# Override openldap::server::database to allow using a custom template
 	# for database.conf, which adds configuration (access rules, indexes)

@@ -1,3 +1,18 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_nsca::server
+#
+# Parameters:
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_nsca::server($package="icinga") {
 	include gen_nsca::server
 
@@ -10,6 +25,19 @@ class kbp_nsca::server($package="icinga") {
 	Gen_ferm::Rule <<| tag == "nsca_${environment}" |>>
 }
 
+# Class: kbp_nsca::client
+#
+# Parameters:
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_nsca::client($package="munin") {
 	include gen_nsca::client
 

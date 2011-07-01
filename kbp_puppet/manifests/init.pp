@@ -1,9 +1,29 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_puppet
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_puppet {
 	include gen_puppet
 
 	gen_apt::preference { ["puppet","puppet-common"]:; }
 }
 
+# Class: kbp_puppet::test_default_config
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_puppet::test_default_config {
 	include gen_puppet::puppet_conf
 
@@ -24,6 +44,15 @@ class kbp_puppet::test_default_config {
 	}
 }
 
+# Class: kbp_puppet::vim
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_puppet::vim {
 	include kbp_vim::puppet
 }

@@ -1,3 +1,18 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_nfs::server
+#
+# Parameters:
+#	default_config
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_nfs::server ($default_config = true) {
 	include gen_nfs::server
 	include kbp_trending::nfsd
@@ -16,6 +31,23 @@ class kbp_nfs::server ($default_config = true) {
 	}
 }
 
+# Define: kbp_nfs::server::config
+#
+# Parameters:
+#	need_idmapd
+#		Undocumented
+#	need_statd
+#		Undocumented
+#	need_gssd
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_nfs::server::config ($need_gssd = "no", $need_idmapd = "no", $need_statd = "yes",
 				$need_svcgssd = "no", $mountd_port = false, $incoming_port = false,
 				$outgoing_port = false, $lock_port = false, $rpcnfsdcount = "8",

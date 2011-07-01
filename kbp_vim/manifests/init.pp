@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_vim
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_vim {
 	include gen_vim
 
@@ -18,6 +29,15 @@ class kbp_vim {
 	}
 }
 
+# Class: kbp_vim::puppet
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_vim::puppet {
 	include gen_vim
 

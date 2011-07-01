@@ -1,3 +1,14 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_webalizer
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_webalizer inherits webalizer {
 	File["/etc/cron.daily/webalizer"] {
 		source => "puppet://puppet/kbp_webalizer/cron.daily/webalizer",

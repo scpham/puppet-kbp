@@ -1,7 +1,27 @@
+# Author: Kumina bv <support@kumina.nl>
+
+# Class: kbp_xen::dom0
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_xen::dom0 inherits xen::dom0 {
 	include "kbp_xen::dom0::$lsbdistcodename"
 }
 
+# Class: kbp_xen::dom0::etch
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_xen::dom0::etch {
 	file {
 		"/etc/xen-tools/xen-tools.conf":
@@ -22,8 +42,26 @@ class kbp_xen::dom0::etch {
 	}
 }
 
+# Class: kbp_xen::dom0::lenny
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_xen::dom0::lenny {
 }
 
+# Class: kbp_xen::domu
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 class kbp_xen::domu inherits xen::domu {
 }
