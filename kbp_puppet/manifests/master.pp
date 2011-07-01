@@ -41,9 +41,10 @@ class kbp_puppet::master {
 # most settings will be indeed default.
 #
 define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet/puppet.conf", $debug = false,
-				$dbname = false, $dbuser = false, $dbpasswd = false, $dbhost = false, $dbsocket = false,
-				$factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet", $pluginsync = true,
-				$port = "8140", $rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
+				$dbsetup = true, $dbname = false, $dbuser = false, $dbpasswd = false,
+				$dbhost = false, $dbsocket = false, $factpath = '$vardir/lib/facter',
+				$logdir = "/var/log/puppet", $pluginsync = true, $port = "8140",
+				$rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
 				$ssldir = "/var/lib/puppet/ssl", $templatedir = '$confdir/templates',
 				$vardir = "/var/lib/puppet") {
 	# If the name is 'default', we want to change the puppetmaster name (pname)
@@ -54,6 +55,10 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 		$sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
 		$pname = "puppetmaster-${sanitized_name}"
 	}
+
+	# Check if we need a db or not
+	if $name == "caserver" { $real_dbsetup = false    }
+	else                   { $real_dbsetup = $dbsetup }
 
 	# The rackdir that is being used
 	$rackdir = "${rackroot}/${pname}"
@@ -113,100 +118,99 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 	# Enable the site
 	kbp_apache::site { "${pname}":; }
 
-	if $name == 'default' {
-		$real_dbname = 'puppet'
-		$real_dbuser = 'puppet'
-		# Yes, we have a default password. That's not problem since MySQL
-		# only allows access from restricted hosts.
-		$real_dbpasswd = 'puppet'
-	} elsif $name == 'caserver' {
-		debug("No database settings needed.")
-	} else {
-		$real_dbname = $dbname ? {
-			false   => regsubst($pname,'-','_','G'),
-			default => $dbname,
+	# Make sure we only setup database stuff when asked for
+	if $real_dbsetup {
+		if $name == 'default' {
+			$real_dbname = 'puppet'
+			$real_dbuser = 'puppet'
+			# Yes, we have a default password. That's not problem since MySQL
+			# only allows access from restricted hosts.
+			$real_dbpasswd = 'puppet'
+		} else {
+			$real_dbname = $dbname ? {
+				false   => regsubst($pname,'-','_','G'),
+				default => $dbname,
+			}
+			$real_dbuser = $dbuser ? {
+				# We should make sure this is never longer than 16 chars
+				false   => regsubst("pm_${sanitized_name}",'(.{1,16}).*','\1'),
+				default => regsubst($dbuser,'(.{1,16}).*','\1'),
+			}
+			$real_dbpasswd = $dbpasswd ? {
+				false   => $pname,
+				default => $dbpasswd,
+			}
 		}
-		$real_dbuser = $dbuser ? {
-			# We should make sure this is never longer than 16 chars
-			false   => regsubst("pm_${sanitized_name}",'(.{1,16}).*','\1'),
-			default => regsubst($dbuser,'(.{1,16}).*','\1'),
+
+		# Setup the MySQL only if one of the following condition apply:
+		# - dbhost is false or localhost (false implies localhost)
+		# - dbhost is equal to local fqdn
+		if ((! $dbhost) or ($dbhost == 'localhost')) or ($dbhost == $fqdn) {
+			mysql::server::db { $real_dbname:; }
+
+			mysql::server::grant { $real_dbname:
+				user     => $real_dbuser,
+				password => $real_dbpasswd,
+				db       => $real_dbname;
+			}
 		}
-		$real_dbpasswd = $dbpasswd ? {
-			false   => $pname,
-			default => $dbpasswd,
+
+		gen_puppet::set_config {
+			"Set database adapter for ${name}.":
+				configfile => $configfile,
+				var        => 'dbadapter',
+				value      => 'mysql',
+				section    => 'master';
+			"Set database user for ${name}.":
+				configfile => $configfile,
+				var        => 'dbuser',
+				value      => $real_dbuser,
+				section    => 'master';
+			"Set database name for ${name}.":
+				configfile => $configfile,
+				var        => 'dbname',
+				value      => $real_dbname,
+				section    => 'master';
+			"Set database password for ${name}.":
+				configfile => $configfile,
+				var        => 'dbpassword',
+				value      => $real_dbpasswd,
+				section    => 'master';
+			"Set storeconfig for ${name}.":
+				configfile => $configfile,
+				var        => 'storeconfigs',
+				value      => 'true',
+				section    => 'master';
+			"Set thin_storeconfigs for ${name}.":
+				configfile => $configfile,
+				var        => 'thin_storeconfigs',
+				value      => 'true',
+				section    => 'master';
+			"Set dbmigrate for ${name}.":
+				configfile => $configfile,
+				var        => 'dbmigrate',
+				value      => 'true',
+				section    => 'master';
 		}
-	}
 
-	# Setup the MySQL only if one of the following condition apply:
-	# - dbhost is false or localhost (false implies localhost)
-	# - dbhost is equal to local fqdn
-	# And the following never applies:
-	# - name is not equal to caserver
-	if (((! $dbhost) or ($dbhost == 'localhost')) or ($dbhost == $fqdn)) and $name != 'caserver' {
-		mysql::server::db { $real_dbname:; }
-
-		mysql::server::grant { $real_dbname:
-			user     => $real_dbuser,
-			password => $real_dbpasswd,
-			db       => $real_dbname;
+		# Only set the host if it's needed.
+		if $dbhost {
+			gen_puppet::set_config { "Set database host for $name.":
+				configfile => $configfile,
+				var        => 'dbhost',
+				value      => $dbhost,
+				section    => 'master',
+			}
 		}
-	}
 
-	gen_puppet::set_config {
-		"Set database adapter for ${name}.":
-			configfile => $configfile,
-			var        => 'dbadapter',
-			value      => 'mysql',
-			section    => 'master';
-		"Set database user for ${name}.":
-			configfile => $configfile,
-			var        => 'dbuser',
-			value      => $real_dbuser,
-			section    => 'master';
-		"Set database name for ${name}.":
-			configfile => $configfile,
-			var        => 'dbname',
-			value      => $real_dbname,
-			section    => 'master';
-		"Set database password for ${name}.":
-			configfile => $configfile,
-			var        => 'dbpassword',
-			value      => $real_dbpasswd,
-			section    => 'master';
-		"Set storeconfig for ${name}.":
-			configfile => $configfile,
-			var        => 'storeconfigs',
-			value      => 'true',
-			section    => 'master';
-		"Set thin_storeconfigs for ${name}.":
-			configfile => $configfile,
-			var        => 'thin_storeconfigs',
-			value      => 'true',
-			section    => 'master';
-		"Set dbmigrate for ${name}.":
-			configfile => $configfile,
-			var        => 'dbmigrate',
-			value      => 'true',
-			section    => 'master';
-	}
-
-	# Only set the host if it's needed.
-	if $dbhost {
-		gen_puppet::set_config { "Set database host for $name.":
-			configfile => $configfile,
-			var        => 'dbhost',
-			value      => $dbhost,
-			section    => 'master',
-		}
-	}
-
-	# Only set the socket if it's needed.
-	if $dbsocket {
-		gen_puppet::set_config { "Set database socket for $name.":
-			configfile => $configfile,
-			var        => 'dbsocket',
-			value      => $dbsocket,
-			section    => 'master',
+		# Only set the socket if it's needed.
+		if $dbsocket {
+			gen_puppet::set_config { "Set database socket for $name.":
+				configfile => $configfile,
+				var        => 'dbsocket',
+				value      => $dbsocket,
+				section    => 'master',
+			}
 		}
 	}
 
