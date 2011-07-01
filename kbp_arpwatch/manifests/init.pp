@@ -2,7 +2,7 @@ class kbp_arpwatch {
 	include arpwatch
 
 	Kfile <| title == "/etc/default/arpwatch" |> {
-		source => "kbp_arpwatch/arpwatch]",
+		source => "kbp_arpwatch/arpwatch",
 	}
 
 	gen_icinga::service { "arpwatch_${fqdn}":
