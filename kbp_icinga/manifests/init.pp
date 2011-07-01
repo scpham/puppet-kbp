@@ -48,7 +48,7 @@ class kbp_icinga::client {
 		"cpu_${fqdn}":
 			service_description => "CPU usage",
 			check_command       => "check_cpu",
-			retry_interval      => 5,
+			retry_interval      => 10,
 			max_check_attempts  => 30,
 			nrpe                => true;
 		"loadtrend_${fqdn}":
