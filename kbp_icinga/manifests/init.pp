@@ -377,6 +377,20 @@ class kbp_icinga::server {
 			conf_dir => "generic",
 			sg_alias => "Mail alert only services";
 	}
+
+	gen_icinga::contactgroup { "devnull":
+		conf_dir => "generic",
+		cg_alias => "No notify contacts";
+	}
+
+	gen_icinga::contact { "devnull":
+		conf_dir                      => "generic",
+		c_alias                       => "No notify contact",
+		host_notifications_enabled    => 0,
+		service_notifications_enabled => 0,
+		contact_data                  => false,
+		notification_type             => "no-notify";
+	}
 }
 
 # Class: kbp_icinga::environment
@@ -389,6 +403,11 @@ class kbp_icinga::server {
 #	gen_puppet
 #
 class kbp_icinga::environment {
+	gen_icinga::contactgroup { "${environment}":
+		conf_dir => $environment,
+		cg_alias => "${environment} contacts";
+	}
+
 	gen_icinga::contact { "${environment}":
 		conf_dir                      => $environment,
 		c_alias                       => "Generic ${environment} contact",
