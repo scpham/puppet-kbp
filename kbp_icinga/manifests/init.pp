@@ -54,8 +54,9 @@ class kbp_icinga::client {
 		"loadtrend_${fqdn}":
 			service_description => "Load trend",
 			check_command       => "check_loadtrend",
-			retry_interval      => 10,
-			max_check_attempts  => 30,
+			check_interval      => 300,
+			retry_interval      => 60,
+			max_check_attempts  => 5,
 			nrpe                => true;
 		"open_files_${fqdn}":
 			service_description => "Open files",
