@@ -11,7 +11,6 @@
 #
 class kbp_base {
 	include lvm
-	include gen_base
 	include sysctl
 	include kbp_acpi
 	include kbp_apt
