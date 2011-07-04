@@ -527,7 +527,7 @@ class kbp_icinga::cassandra {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::service($service_description, $check_command=false, $host_name=false, $contact_groups=false, $argument1=false, $argument2=false, $argument3=false, $max_check_attempts=false, $retry_interval=false, $nrpe=false, $conf_dir=false, $passive=false, $ha=false, $warnsms=true, $sms=true) {
+define kbp_icinga::service($service_description, $check_command=false, $host_name=false, $contact_groups=false, $argument1=false, $argument2=false, $argument3=false, $check_interval, $max_check_attempts=false, $retry_interval=false, $nrpe=false, $conf_dir=false, $passive=false, $ha=false, $warnsms=true, $sms=true) {
 	$use = $passive ? {
 		true  => "passive_service",
 		false => $ha ? {
@@ -583,6 +583,10 @@ define kbp_icinga::service($service_description, $check_command=false, $host_nam
 		argument3            => $argument3 ? {
 			false   => undef,
 			default => $argument3,
+		},
+		check_interval       => $check_interval ? {
+			false   => undef,
+			default => $check_interval,
 		},
 		max_check_attempts   => $max_check_attempts ? {
 			false   => undef,
