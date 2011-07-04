@@ -46,6 +46,7 @@ class kbp_icinga::client {
 			nrpe                => true,
 			sms                 => false;
 		"cpu_${fqdn}":
+			ensure              => absent,
 			service_description => "CPU usage",
 			check_command       => "check_cpu",
 			retry_interval      => 10,
@@ -519,6 +520,8 @@ class kbp_icinga::cassandra {
 #		Undocumented
 #	service_description
 #		Undocumented
+#	ensure
+#		Standard ensure
 #
 # Actions:
 #	Undocumented
@@ -527,7 +530,7 @@ class kbp_icinga::cassandra {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::service($service_description, $check_command=false, $host_name=false, $contact_groups=false, $argument1=false, $argument2=false, $argument3=false, $check_interval=false, $max_check_attempts=false, $retry_interval=false, $nrpe=false, $conf_dir=false, $passive=false, $ha=false, $warnsms=true, $sms=true) {
+define kbp_icinga::service($service_description, $check_command=false, $host_name=false, $contact_groups=false, $argument1=false, $argument2=false, $argument3=false, $check_interval=false, $max_check_attempts=false, $retry_interval=false, $nrpe=false, $conf_dir=false, $passive=false, $ha=false, $warnsms=true, $sms=true, $ensure=present) {
 	$use = $passive ? {
 		true  => "passive_service",
 		false => $ha ? {
@@ -596,7 +599,8 @@ define kbp_icinga::service($service_description, $check_command=false, $host_nam
 			false   => undef,
 			default => $retry_interval,
 		},
-		nrpe                 => $nrpe;
+		nrpe                 => $nrpe,
+		ensure               => $ensure;
 	}
 }
 
