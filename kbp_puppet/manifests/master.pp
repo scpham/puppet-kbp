@@ -21,6 +21,10 @@ class kbp_puppet::master {
 
 	gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
 
+	@kpackage { "puppetstoredconfigcleanhenker":
+		ensure => latest;
+	}
+
 	# Enforce Puppet modules directory permissions.
 	kfile {
 		"/srv/puppet":

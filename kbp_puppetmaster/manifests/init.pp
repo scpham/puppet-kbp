@@ -46,8 +46,12 @@ class kbp_puppetmaster {
 		"puppetmaster":
 			ensure  => present,
 			require => Kfile["/etc/default/puppetmaster","/etc/apt/preferences.d/puppetmaster"];
-		["rails","libmysql-ruby","puppetmaster-common","ipaddress-ruby","puppetstoredconfigcleanhenker"]:
+		["rails","libmysql-ruby","puppetmaster-common","ipaddress-ruby"]:
 			ensure  => latest;
+	}
+
+	@kpackage { "puppetstoredconfigcleanhenker":
+		ensure => latest;
 	}
 
 	service { "puppetqd":
@@ -124,13 +128,6 @@ class kbp_puppetmaster {
 			dir     => "/srv/puppet",
 			acl     => "default:user:puppet:r-x",
 			require => Kfile["/srv/puppet"];
-	}
-
-	# Automatically purge old hosts from the database
-	kfile { "/etc/cron.daily/puppetstoredconfigcleanhenker":
-		mode   => 755,
-		source => "kbp_puppetmaster/puppetstoredconfigcleanhenker.cron",
-		require => Kpackage["puppetstoredconfigcleanhenker"];
 	}
 
 	kbp_apache::site { "puppetmaster":; }
@@ -469,5 +466,28 @@ define kbp_puppetmaster::environment ($manifest, $manifestdir, $modulepath, $pup
 		target   => "${configfile}",
 		content  => "\n[${name}]\nmanifestdir = ${manifestdir}\nmodulepath = ${modulepath}\nmanifest = ${manifest}\n\n",
 		order    => 60,
+	}
+}
+
+# Define: kbp_puppetmaster::cleanconfig
+#
+# Parameters:
+#	name
+#		The database that needs to be cleaned
+#
+# Actions:
+#	Set up a cron that cleans old config out of the puppet database.
+#
+# Depends:
+#	gen_puppet
+#
+define kbp_puppetmaster::cleanconfig($configfile=false) {
+	realize Kpackage["puppetstoredconfigcleanhenker"]
+
+	# Automatically purge old hosts from the database
+	kfile { "/etc/cron.daily/puppetstoredconfigcleanhenker_${name}":
+		mode    => 755,
+		content => template("kbp_puppetmaster/puppetstoredconfigcleanhenker.cron"),
+		require => Kpackage["puppetstoredconfigcleanhenker"];
 	}
 }

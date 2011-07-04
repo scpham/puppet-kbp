@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec puppetstoredconfigcleanhenker /etc/mysql/debian.cnf <%= name %><% if configfile %> <%= configfile %><% end %>
