@@ -11,8 +11,8 @@
 #		Undocumented
 #	java_contact_groups
 #		Undocumented
-#	java_servicegroups
-#		Undocumented
+#	sms
+#		Define whether to send out monitoring sms
 #	statuspath
 #		Undocumented
 #	adminport
@@ -25,7 +25,7 @@
 #	Undocumented
 #	gen_puppet
 #
-define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitoring=false, $sms=true, $statuspath=false) {
+define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitoring=false, $java_contact_groups=false, $sms=true, $statuspath=false) {
 	gen_ferm::rule {
 		"Glassfish admin panel for ${name}":
 			proto  => "tcp",
