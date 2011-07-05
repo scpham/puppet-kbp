@@ -187,14 +187,6 @@ class kbp_debian inherits kbp_base {
 			source => "kbp_debian/locales.preseed";
 	}
 
-	# Mail on upgrades with cron-apt
-	kpackage { "cron-apt":; }
-
-	kfile { "/etc/cron-apt/config":
-		source => "kbp_debian/cron-apt/config",
-		require => Package["cron-apt"],
-	}
-
 	gen_apt::source {
 		"${lsbdistcodename}-base":
 			comment => "The main repository for the installed Debian release: $lsbdistdescription.",
