@@ -300,6 +300,8 @@ define kbp_monitoring::java($package="icinga", $contact_groups=false, $sms=true)
 #		Undocumented
 #	package
 #		Undocumented
+#	max_check_attempts
+#		For overriding the default max_check_attempts of the service.
 #
 # Actions:
 #	Undocumented
@@ -308,23 +310,24 @@ define kbp_monitoring::java($package="icinga", $contact_groups=false, $sms=true)
 #	Undocumented
 #	gen_puppet
 #
-define kbp_monitoring::site($package="icinga", $address=false, $conf_dir=$false, $parents=$false, $auth=false) {
+define kbp_monitoring::site($package="icinga", $address=false, $conf_dir=$false, $parents=$false, $auth=false, $max_check_attempts=false) {
 	case $package {
 		"icinga": {
 			kbp_icinga::site { "${name}":
-				address  => $address ? {
+				address            => $address ? {
 					false   => undef,
 					default => $address,
 				},
-				conf_dir => $conf_dir ? {
+				conf_dir           => $conf_dir ? {
 					false   => undef,
 					default => $conf_dir,
 				},
-				parents  => $parents ? {
+				parents            => $parents ? {
 					false   => undef,
 					default => $parents,
 				},
-				auth     => $auth;
+				max_check_attempts => $max_check_attempts,
+				auth               => $auth;
 			}
 		}
 	}

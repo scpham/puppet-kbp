@@ -89,6 +89,8 @@ class kbp_apache::ssl {
 #		Undocumented
 #	ensure
 #		Undocumented
+#	max_check_attempts
+#		For overriding the default max_check_attempts of the service.
 #
 # Actions:
 #	Undocumented
@@ -97,10 +99,11 @@ class kbp_apache::ssl {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_apache::site($ensure="present", $priority="", auth=false) {
+define kbp_apache::site($ensure="present", $priority="", auth=false, $max_check_attempts=false) {
 	if $ensure == "present" {
 		kbp_monitoring::site { "${name}":
-			auth => $auth;
+			max_check_attempts => $max_check_attempts,
+			auth               => $auth;
 		}
 	}
 

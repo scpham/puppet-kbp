@@ -774,6 +774,8 @@ define kbp_icinga::java($contact_groups=false, $sms=true) {
 #		Undocumented
 #	address
 #		Undocumented
+#	max_check_attempts
+#		For overriding the default max_check_attempts of the service.
 #
 # Actions:
 #	Undocumented
@@ -782,7 +784,7 @@ define kbp_icinga::java($contact_groups=false, $sms=true) {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=false) {
+define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=false, $max_check_attempts=false) {
 	if $address {
 		if $conf_dir {
 			$confdir = "${conf_dir}/${name}"
@@ -811,6 +813,7 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 				false   => "check_http_vhost",
 				default => "check_http_vhost_auth",
 			},
+			max_check_attempts  => $max_check_attempts,
 			argument1           => $name;
 		}
 	} else {
@@ -820,6 +823,7 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 				false   => "check_http_vhost",
 				default => "check_http_vhost_auth",
 			},
+			max_check_attempts  => $max_check_attempts,
 			argument1           => $name;
 		}
 	}
