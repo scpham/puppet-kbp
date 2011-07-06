@@ -683,6 +683,8 @@ define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false,
 #		Undocumented
 #	address
 #		Undocumented
+#	max_check_attempts
+#		Number of retries before the monitoring considers the site down.
 #
 # Actions:
 #	Undocumented
@@ -691,7 +693,7 @@ define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false,
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false) {
+define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false, $max_check_attempts=false) {
 	$confdir = "${environment}/${name}"
 
 	gen_icinga::configdir { $confdir:
@@ -716,6 +718,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false) {
 			service_description => "Virtual host ${name}",
 			host_name           => $name,
 			check_command       => "check_http_vhost_url_and_response",
+			max_check_attempts  => $max_check_attempts,
 			argument1           => $url,
 			argument2           => $response,
 			ha                  => $ha;
@@ -726,6 +729,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false) {
 			service_description => "Virtual host ${name}",
 			host_name           => $name,
 			check_command       => "check_http_vhost",
+			max_check_attempts  => $max_check_attempts,
 			argument1           => $name,
 			ha                  => $ha;
 		}
