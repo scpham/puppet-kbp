@@ -111,3 +111,28 @@ class kbp_trending::bind9 ($method="munin") {
 		default: { fail("No trending for ${method}.") }
 	}
 }
+
+# Define: kbp_trending::glassfish
+#
+# Parameters:
+#	method:
+#		The trending method to use
+#	jmxport:
+#		The JMX port where the metrics are retreived
+#
+# Actions:
+#	Pass name and jmxport to the trending system named in method
+#
+# Depends:
+#	gen_puppet
+#
+define kbp_trending::glassfish ($method="munin", $jmxport) {
+	case $method {
+		"munin": {
+			kbp_munin::client::glassfish { "${name}":
+				jmxport => $jmxport;
+			}
+		}
+		default: { fail("No trending for ${method}.") }
+	}
+}
