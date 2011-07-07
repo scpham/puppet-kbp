@@ -796,6 +796,7 @@ define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=fals
 			default => $max_check_attempts,
 		},
 		register                     => $register;
+	}
 }
 
 # Define: kbp_icinga::sslcert
