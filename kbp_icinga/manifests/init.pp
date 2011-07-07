@@ -13,7 +13,9 @@ class kbp_icinga::client {
 	include gen_icinga::client
 
 	clientcommand {
-		["check_3ware","check_cassandra","check_heartbeat"]:;
+		["check_cassandra","check_heartbeat"]:;
+		"check_3ware":
+			sudo => true;
 		"check_adaptec":
 			sudo => true;
 		"check_arpwatch":
@@ -182,6 +184,10 @@ class kbp_icinga::client {
 			require => Package["nagios-plugins-kumina"];
 		"/usr/lib/nagios/plugins/check_adaptec":
 			source  => "gen_icinga/client/check_adaptec",
+			mode    => 755,
+			require => Package["nagios-plugins-kumina"];
+		"/usr/lib/nagios/plugins/check_3ware":
+			source  => "gen_icinga/client/check_3ware",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
 	}
@@ -361,7 +367,7 @@ class kbp_icinga::server {
 			register               => "0";
 	}
 
-	gen_icinga::host {
+	kbp_icinga::host {
 		"ha_host":
 			conf_dir                     => "generic",
 			use                          => " ",
@@ -579,7 +585,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 				},
 			},
 		},
-		" "     => undef,
+		" "     => false,
 		default => $use,
 	}
 
@@ -720,7 +726,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 # Depends:
 #	gen_puppet
 define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=false, $hostgroups=false, $parents=false, $address=$ipaddress,
-		$initialstate=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
+		$initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
 		$retain_nonstatus_information=false, $check_command=false, $check_interval=false, $notification_period=false, $notification_interval=false, $contact_groups=false,
 		$contacts=false, $max_check_attempts=false, $register=1) {
 	$real_use = $use ? {
@@ -728,13 +734,12 @@ define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=fals
 			true  => "wh_host",
 			false => "mail_host",
 		},
-		" "     => undef,
+		" "     => false,
 		default => $use,
 	}
 
 	gen_icinga::host { "${name}":
-		config_dir                   => $config_dir,
-		sms                          => $sms,
+		conf_dir                     => $conf_dir,
 		use                          => $real_use,
 		hostgroups                   => $hostgroups ? {
 			false   => undef,
@@ -745,7 +750,7 @@ define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=fals
 			default => $parents,
 		},
 		address   => $address,
-		initialstate                 => $initialstate ? {
+		initial_state                => $initial_state ? {
 			false   => undef,
 			default => $initialstate,
 		},
