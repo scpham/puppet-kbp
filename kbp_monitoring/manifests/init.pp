@@ -228,6 +228,8 @@ define kbp_monitoring::sslcert($path, $package="icinga") {
 #		Undocumented
 #	address
 #		Undocumented
+#	max_check_attempts
+#		Number of retries before the monitoring considers the site down.
 #
 # Actions:
 #	Undocumented
@@ -236,17 +238,18 @@ define kbp_monitoring::sslcert($path, $package="icinga") {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_monitoring::haproxy($address, $ha=false, $url=false, $response=false, $package="icinga") {
+define kbp_monitoring::haproxy($address, $ha=false, $url=false, $response=false, $package="icinga", $max_check_attempts=false) {
 	case $package {
 		"icinga": {
 			kbp_icinga::haproxy { "${name}":
-				address  => $address,
-				ha       => $ha,
-				url      => $url ? {
+				address            => $address,
+				ha                 => $ha,
+				url                => $url ? {
 					false   => undef,
 					default => $url,
 				},
-				response => $response ? {
+				max_check_attempts => $max_check_attempts,
+				response           => $response ? {
 					false   => undef,
 					default => $response,
 				};

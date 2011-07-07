@@ -21,6 +21,8 @@
 #		Undocumented
 #	listenaddress
 #		Undocumented
+#	max_check_attempts
+#		The number of retries before the monitoring considers the site down.
 #
 # Actions:
 #	Undocumented
@@ -29,7 +31,7 @@
 #	Undocumented
 #	gen_puppet
 #
-define kbp_haproxy::site ($listenaddress, $port=80, $monitoring=true, $ha=false, $cookie=false, $url=false, $response=false, $server_options=false, $make_lbconfig=true) {
+define kbp_haproxy::site ($listenaddress, $port=80, $monitoring=true, $ha=false, $cookie=false, $url=false, $response=false, $server_options=false, $make_lbconfig=true, $max_check_attempts=false) {
 	gen_ferm::rule { "HAProxy forward for ${name}":
 		proto  => "tcp",
 		dport  => $port,
@@ -47,13 +49,14 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitoring=true, $ha=false,
 
 	if $monitoring {
 		kbp_monitoring::haproxy { "${name}":
-			address  => $listenaddress,
-			ha       => $ha,
-			url      => $url ? {
+			address            => $listenaddress,
+			ha                 => $ha,
+			url                => $url ? {
 				false   => undef,
 				default => $url,
 			},
-			response => $response ? {
+			max_check_attempts => $max_check_attempts,
+			response           => $response ? {
 				false   => undef,
 				default => $response,
 			};
