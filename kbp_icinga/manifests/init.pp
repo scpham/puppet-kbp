@@ -13,7 +13,9 @@ class kbp_icinga::client {
 	include gen_icinga::client
 
 	clientcommand {
-		["check_3ware","check_adaptec","check_cassandra","check_heartbeat"]:;
+		["check_3ware","check_cassandra","check_heartbeat"]:;
+		"check_adaptec":
+			sudo => true;
 		"check_arpwatch":
 			command   => "check_procs",
 			arguments => "-c 1: -C arpwatch";
@@ -176,6 +178,10 @@ class kbp_icinga::client {
 			require => Package["nagios-plugins-kumina"];
 		"/usr/lib/nagios/plugins/check_proc_status":
 			source  => "gen_icinga/client/check_proc_status",
+			mode    => 755,
+			require => Package["nagios-plugins-kumina"];
+		"/usr/lib/nagios/plugins/check_adaptec":
+			source  => "gen_icinga/client/check_adaptec",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
 	}
@@ -360,7 +366,7 @@ class kbp_icinga::server {
 			conf_dir                     => "generic",
 			use                          => " ",
 			hostgroups                   => "ha_hosts",
-			initialstate                 => "u",
+			initial_state                => "u",
 			notifications_enabled        => "1",
 			event_handler_enabled        => "0",
 			flap_detection_enabled       => "1",
