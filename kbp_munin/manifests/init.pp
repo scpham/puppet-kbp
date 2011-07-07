@@ -155,6 +155,44 @@ class kbp_munin::client::bind9 {
 	}
 }
 
+# Define: kbp_munin::client::glassfish
+#
+# Actions:
+#	Setup the munin trending for glassfish domains
+#
+# Depends:
+#	kbp_munin::client
+#	gen_puppet
+#
+define kbp_munin::client::glassfish ($jmxport) {
+	include kbp_munin::client
+
+
+	kbp_munin::client::jmxcheck {
+		"${name}_${jmxport}_java_threads":;
+		"${name}_${jmxport}_java_process_memory":;
+		"${name}_${jmxport}_java_cpu":;
+		"${name}_${jmxport}_gc_collectioncount":;
+		"${name}_${jmxport}_gc_collectiontime":;
+	}
+}
+
+# Define: kbp_munin::client::jmxcheck
+#
+# Actions:
+#	install the link with the right name in /etc/munin/plugins using munin::client::plugin { }
+#
+# Depends:
+#	gen_puppet
+#	munin::client
+#
+define kbp_munin::client::jmxcheck {
+	munin::client::plugin { "jmx_${name}":
+		script_path => "/usr/local/share/munin/plugins",
+		script      => "jmx_";
+	}
+}
+
 # Class: kbp_munin::server
 #
 # Actions:

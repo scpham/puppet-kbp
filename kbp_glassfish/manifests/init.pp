@@ -67,6 +67,12 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitor
 			webport        => $webport;
 		}
 	}
+
+	if $jmxport {
+		kbp_trending::glassfish { "${name}":
+			jmxport => $jmxport;
+		}
+	}
 }
 
 # Define: kbp_glassfish::site
