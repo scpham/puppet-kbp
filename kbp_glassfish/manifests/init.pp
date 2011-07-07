@@ -110,10 +110,10 @@ define kbp_glassfish::site($domain = "domain1", $serveralias = [], $with_ssl = f
 define kbp_glassfish::monitoring::icinga::site () {
 	gen_icinga::host { "${name}":; }
 
-	gen_icinga::service {
+	kbp_icinga::service {
 		"glassfish_domain_${name}":
 			service_description => "Glassfish domain ${name}",
 			check_command       => "check_http_vhost",
-			argument1           => $name;
+			arguments           => $name;
 	}
 }

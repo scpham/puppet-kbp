@@ -70,9 +70,9 @@ class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}") {
 		tag    => $otherhost;
 	}
 
-	gen_icinga::service { "mysql_slaving_${fqdn}":
+	kbp_icinga::service { "mysql_slaving_${fqdn}":
 		service_description => "MySQL slaving",
-		checkcommand        => "check_mysql_slave",
+		check_command       => "check_mysql_slave",
 		nrpe                => true;
 	}
 }
@@ -114,9 +114,9 @@ class kbp_mysql::client($customtag="mysql_${environment}") {
 #	gen_puppet
 #
 class kbp_mysql::monitoring::icinga::server($otherhost=false) {
-	gen_icinga::service { "mysql_${fqdn}":
+	kbp_icinga::service { "mysql_${fqdn}":
 		service_description => "MySQL service",
-		checkcommand        => "check_mysql",
+		check_command        => "check_mysql",
 		nrpe                => true;
 	}
 

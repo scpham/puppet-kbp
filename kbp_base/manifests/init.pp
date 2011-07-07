@@ -10,6 +10,8 @@
 #	gen_puppet
 #
 class kbp_base {
+	include gen_base::dnsutils
+	include gen_base::wget
 	include lvm
 	include sysctl
 	include kbp_acpi
@@ -184,7 +186,7 @@ class kbp_base {
 			fullname      => "Pieter Lexis",
 			uid           => 10005,
 			password_hash => "BOGUS",
-			sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCY+AGY7jg8z5DBdajz04kGz9yyDcmhDBqW1n3G6LfkxQ0neOWGqtQi7uBDGoamhc2y6uuFHaR5vUk0uvsxhch6DjJ4xlCZGjiSqWDaUD7QSj70PTYvy2Ol0nqDXWbA0g4gNovTE3dNH1TyAQEJ7Ox1qW5s+RgSwLGh+suIyjsbjgR/t+tMMqDSEBN4Hbqbvfr/RJMpK/yA+FFTFllVN0nb+EuX4L2pnzjpIBIShXdL+gfjghOpJ31dpgWxgUrTXGOLXtB97CjGZ4MIKvPLkOpZPILIkADcx1FNg9lwd/QiLeTnWg7fPMbc4BIfEWvVp7UoCU/VmjJlSuuOgKtDAq0J pieter@kumina.nl\n";
+			sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCitP9QOGYxCEqueFl/FC+K7o4hjA5zqG+oMirkqxE0EOX6VgwbigvIfzHnUI/LPkDCinhZGnFyfrTkvepcf6Bhtml3ex3lU2HvAiwVfrf/PWeNeg+MUYo7QGpqRUpC+qE82Epe8f0CLpwYo9Bzk4k4Toc1ZMvHUFzSOEBSe9tUetGmP7AGK/WDGJ5hc07XYV1/W3CAGO8XnhIS3/WdDS8D65iOXNQbwrndIfDn2Y3bWfd4qtx+KdY3+LU+6QKPS9Pdl5iYpWw3gln6NMoG8VDCaCNsr9qFNPOD26ninAGkzv31l59xIS94knutgCsov5KdxEWkd49m0ts5L+H9kZ+sznCr4I1Ng3CghABSU9gK7qnQbQR8PlM+eetyzrEFqHYApioyC2xAYJ+D6f65E7WadZBX5DZpqVEYZmw3d3rN49JI9DYlimUKA0Mu7KVfAURZ/3uir3HPZ0tBcyfqKEfT50Nqew92idjnoO191+lyvXXoiAc65EC/y5Ze8ZZ3pfU= pieter@kumina.nl\n";
 		"rutger":
 			fullname      => "Rutger Spiertz",
 			uid           => 10003,

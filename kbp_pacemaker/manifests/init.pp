@@ -85,9 +85,9 @@ class kbp_pacemaker {
 #	gen_puppet
 #
 class kbp_pacemaker::monitoring::icinga {
-	gen_icinga::service { "pacemaker_${fqdn}":
+	kbp_icinga::service { "pacemaker_${fqdn}":
 		service_description => "Pacemaker",
-		checkcommand        => "check_pacemaker",
+		check_command       => "check_pacemaker",
 		nrpe                => true;
 	}
 }

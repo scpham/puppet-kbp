@@ -34,9 +34,9 @@ class kbp_drbd($otherhost) {
 #	gen_puppet
 #
 class kbp_drbd::monitoring::icinga {
-	gen_icinga::service { "check_drbd_${fqdn}":
+	kbp_icinga::service { "check_drbd_${fqdn}":
 		service_description => "DRBD",
-		checkcommand        => "check_drbd",
+		check_command       => "check_drbd",
 		nrpe                => true;
 	}
 }
