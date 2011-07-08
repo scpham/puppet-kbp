@@ -167,7 +167,6 @@ class kbp_munin::client::bind9 {
 define kbp_munin::client::glassfish ($jmxport) {
 	include kbp_munin::client
 
-
 	kbp_munin::client::jmxcheck {
 		"${name}_${jmxport}_java_threads":;
 		"${name}_${jmxport}_java_process_memory":;
@@ -187,9 +186,12 @@ define kbp_munin::client::glassfish ($jmxport) {
 #	munin::client
 #
 define kbp_munin::client::jmxcheck {
+	include gen_base::jmxquery
+
 	munin::client::plugin { "jmx_${name}":
-		script_path => "/usr/local/share/munin/plugins",
-		script      => "jmx_";
+		script_path => "/usr/bin",
+		script      => "jmx_",
+		require     => Package["jmxquery"];
 	}
 }
 
