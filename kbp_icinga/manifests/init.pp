@@ -77,11 +77,9 @@ class kbp_icinga::client {
 			arguments => "-w 5 -c 10 -s Z";
 	}
 
-	gen_icinga::configdir { "${environment}/${fqdn}":
-		sub => $environment;
-	}
+	gen_icinga::configdir { "${environment}/${fqdn}":; }
 
-	gen_icinga::host { "${fqdn}":
+	kbp_icinga::host { "${fqdn}":
 		parents => $parent;
 	}
 
@@ -223,52 +221,52 @@ class kbp_icinga::server {
 			nrpe     => true;
 		"return-ok":
 			conf_dir      => "generic",
-			commandname   => "check_dummy",
+			command_name  => "check_dummy",
 			host_argument => false,
 			arguments     => "0";
 		"check-host-alive":
-			conf_dir    => "generic",
-			commandname => "check_ping",
-			arguments   => ["-w 5000,100%","-c 5000,100%","-p 1"];
+			conf_dir     => "generic",
+			command_name => "check_ping",
+			arguments    => ["-w 5000,100%","-c 5000,100%","-p 1"];
 		"check_http":
 			conf_dir  => "generic",
 			arguments => '-I $HOSTADDRESS$';
 		"check_http_auth":
-			conf_dir    => "generic",
-			commandname => "check_http",
-			arguments   => ['-I $HOSTADDRESS$',"-e 401,403"];
+			conf_dir     => "generic",
+			command_name => "check_http",
+			arguments    => ['-I $HOSTADDRESS$',"-e 401,403"];
 		"check_http_vhost":
 			conf_dir      => "generic",
-			commandname   => "check_http",
+			command_name  => "check_http",
 			host_argument => '-I $HOSTADDRESS$',
 			arguments     => '-H $ARG1$';
 		"check_http_vhost_auth":
 			conf_dir      => "generic",
-			commandname   => "check_http",
+			command_name  => "check_http",
 			host_argument => '-I $HOSTADDRESS$',
 			arguments     => ['-H $ARG1$',"-e 401,403"];
 		"check_http_vhost_and_url":
 			conf_dir      => "generic",
-			commandname   => "check_http",
+			command_name  => "check_http",
 			host_argument => '-I $HOSTADDRESS$ -H $HOSTNAME$',
 			arguments     => '-u $ARG1$';
 		"check_http_vhost_url_and_response":
 			conf_dir      => "generic",
-			commandname   => "check_http",
+			command_name  => "check_http",
 			host_argument => '-I $HOSTADDRESS$ -H $HOSTNAME$',
 			arguments     => ['-u $ARG1$','-r $ARG2$'];
 		"check_http_on_port_with_vhost_url_and_response":
 			conf_dir      => "generic",
-			commandname   => "check_http",
+			command_name  => "check_http",
 			host_argument => '-I $HOSTADDRESS$ -H $HOSTNAME$',
 			arguments     => ['-p $ARG1$','-u $ARG2$','-r $ARG3$'];
 		"check_tcp":
 			conf_dir  => "generic",
 			arguments => '-p $ARG1$';
 		"check_nfs":
-			conf_dir    => "generic",
-			commandname => "check_rpc",
-			arguments   => "-C nfs -c2,3";
+			conf_dir     => "generic",
+			command_name => "check_rpc",
+			arguments    => "-C nfs -c2,3";
 		"check_sslcert":
 			conf_dir  => "generic",
 			arguments => '$ARG1$',
@@ -279,7 +277,7 @@ class kbp_icinga::server {
 			nrpe      => true;
 		"check_ssl_cert":
 			conf_dir      => "generic",
-			commandname   => "check_http",
+			command_name  => "check_http",
 			host_argument => '-I $HOSTADDRESS$',
 			arguments     => ["-t 20",'-H $ARG1$',"-C 30"];
 		"check_java_heap_usage":
@@ -287,9 +285,9 @@ class kbp_icinga::server {
 			arguments => '$ARG1$',
 			nrpe      => true;
 		"check_imaps":
-			conf_dir    => "generic",
-			commandname => "check_imap",
-			arguments   => ["-p 993","-S"];
+			conf_dir     => "generic",
+			command_name => "check_imap",
+			arguments    => ["-p 993","-S"];
 		"check_dnszone":
 			conf_dir  => "generic",
 			arguments => ['$ARG1$','$ARG2$'],
@@ -725,7 +723,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 #
 # Depends:
 #	gen_puppet
-define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=false, $hostgroups=false, $parents=false, $address=$ipaddress,
+define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=false, $hostgroups="wh_hosts", $parents=false, $address=$ipaddress,
 		$initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
 		$retain_nonstatus_information=false, $check_command=false, $check_interval=false, $notification_period=false, $notification_interval=false, $contact_groups=false,
 		$contacts=false, $max_check_attempts=false, $register=1) {
@@ -856,12 +854,11 @@ define kbp_icinga::sslcert($path) {
 #	gen_puppet
 #
 define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false, $hostgroups=false, $contact_groups=false) {
-	gen_icinga::configdir { "${conf_dir}/${name}":
-		sub => $conf_dir;
-	}
+	$confdir = "${conf_dir}/${name}"
+	gen_icinga::configdir { "${confdir}":; }
 
-	gen_icinga::host { "${name}":
-		conf_dir       => "${conf_dir}/${name}",
+	kbp_icinga::host { "${name}":
+		conf_dir       => $confdir,
 		address        => $address,
 		parents        => $parents ? {
 			false   => undef,
@@ -902,13 +899,12 @@ define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false,
 define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false, $max_check_attempts=false) {
 	$confdir = "${environment}/${name}"
 
-	gen_icinga::configdir { $confdir:
-		sub => $environment;
-	}
+	gen_icinga::configdir { $confdir:; }
 
-	gen_icinga::host { "${name}":
-		address => $address,
-		parents => $loadbalancer::otherhost ? {
+	kbp_icinga::host { "${name}":
+		conf_dir   => $confdir,
+		address    => $address,
+		parents    => $loadbalancer::otherhost ? {
 			undef   => $fqdn,
 			default => "${fqdn}, ${loadbalancer::otherhost}",
 		},
@@ -998,20 +994,17 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 		if $conf_dir {
 			$confdir = "${conf_dir}/${name}"
 
-			gen_icinga::configdir { $confdir:
-				sub => $conf_dir;
-			}
+			gen_icinga::configdir { $confdir:; }
 		} else {
 			$confdir = "${environment}/${name}"
 
-			gen_icinga::configdir { $confdir:
-				sub => $environment;
-			}
+			gen_icinga::configdir { $confdir:; }
 		}
 
-		gen_icinga::host { "${name}":
-			address => $address,
-			parents => $parents;
+		kbp_icinga::host { "${name}":
+			conf_dir => $confdir,
+			address  => $address,
+			parents  => $parents;
 		}
 
 		kbp_icinga::service { "vhost_${name}":
