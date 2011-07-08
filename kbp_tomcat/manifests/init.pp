@@ -168,23 +168,9 @@ class kbp_tomcat inherits tomcat {
 
 		# This is needed to be able to create some pretty graphs of the
 		# Tomcat instance resource usage with Munin through JMX.
-		file {
-			"/etc/munin/plugins/jmx_${name}_${jmx_port}_java_process_memory":
-				ensure => $ensure ? {
-					running => "/usr/bin/jmx_",
-					stopped => "absent",
-				},
-				notify => Service["munin-node"];
-			"/etc/munin/plugins/jmx_${name}_${jmx_port}_java_threads":
-				ensure => $ensure ? {
-					running => "/usr/bin/jmx_",
-					stopped => "absent",
-				},
-				notify => Service["munin-node"];
-		}
-
-		kpackage { "jmxquery":
-			ensure => latest;
+		kbp_munin::client::jmxcheck {
+			"${name}_${port}_java_process_memory":;
+			"${name}_${port}_java_threads":;
 		}
 
 		# Keep the logfiles cleaned up

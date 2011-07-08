@@ -189,7 +189,7 @@ define kbp_munin::client::jmxcheck {
 	include gen_base::jmxquery
 
 	munin::client::plugin { "jmx_${name}":
-		script_path => "/usr/sbin",
+		script_path => "/usr/bin",
 		script      => "jmx_",
 		require     => Package["jmxquery"];
 	}
