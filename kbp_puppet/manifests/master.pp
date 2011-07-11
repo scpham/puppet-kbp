@@ -84,6 +84,13 @@ class kbp_puppet::master {
 			acl     => "default:user:puppet:r-x",
 			require => Kfile["/srv/puppet/kbp"];
 	}
+
+	kbp_git::repo {
+		"/srv/puppet/generic":
+			origin => "git@github.com:kumina/puppet-generic.git";
+		"/srv/puppet/kbp":
+			origin => "git@github.com:kumina/puppet-kbp.git";
+	}
 }
 
 # kbp_puppet::master::config
