@@ -516,7 +516,7 @@ define kbp_monitoring::dnszone($master, $sms=true, $package="icinga") {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_monitoring::virtualhost($address, $conf_dir=false, $parents=false, $hostgroups=false, $contact_groups=false, $package="icinga") {
+define kbp_monitoring::virtualhost($address, $conf_dir=false, $parents=false, $hostgroups=false, $contact_groups=false, $package="icinga", $sms=true) {
 	case $package {
 		"icinga": {
 			kbp_icinga::virtualhost { "${name}":
@@ -536,7 +536,8 @@ define kbp_monitoring::virtualhost($address, $conf_dir=false, $parents=false, $h
 				contact_groups => $contact_groups ? {
 					false   => undef,
 					default => $contact_groups,
-				};
+				},
+				sms            => $sms;
 			}
 		}
 	}

@@ -853,8 +853,9 @@ define kbp_icinga::sslcert($path) {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false, $hostgroups=false, $contact_groups=false) {
+define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false, $hostgroups=false, $contact_groups=false, $sms=true) {
 	$confdir = "${conf_dir}/${name}"
+
 	gen_icinga::configdir { "${confdir}":; }
 
 	kbp_icinga::host { "${name}":
@@ -871,7 +872,8 @@ define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false,
 		contact_groups => $contact_groups ? {
 			false   => undef,
 			default => $contact_groups,
-		};
+		},
+		sms            => $sms;
 	}
 }
 
