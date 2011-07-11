@@ -71,6 +71,7 @@ class kbp_icinga::client {
 			command   => "check_ntp_time",
 			arguments => "-H 0.debian.pool.ntp.org";
 		"check_sslcert":
+			sudo      => true,
 			arguments => '$ARG1$';
 		"check_zombie_processes":
 			command   => "check_procs",
@@ -114,7 +115,8 @@ class kbp_icinga::client {
 			check_interval      => 300,
 			retry_interval      => 60,
 			max_check_attempts  => 5,
-			nrpe                => true;
+			nrpe                => true,
+			sms                 => false;
 		"open_files_${fqdn}":
 			service_description => "Open files",
 			check_command       => "check_open_files",
