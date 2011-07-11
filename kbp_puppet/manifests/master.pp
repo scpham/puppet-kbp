@@ -32,6 +32,11 @@ class kbp_puppet::master {
 			owner   => "puppet",
 			mode    => 2770,
 			require => Kpackage["puppetmaster"];
+		"/srv/puppet/env":
+			ensure  => directory,
+			owner   => "puppet",
+			mode    => 2770,
+			require => Kpackage["puppetmaster"];
 	}
 
 	# Enforce ownership and permissions
@@ -44,6 +49,14 @@ class kbp_puppet::master {
 			dir     => "/srv/puppet",
 			acl     => "default:user:puppet:r-x",
 			require => Kfile["/srv/puppet"];
+		"Directory permissions in /srv/puppet/env for group root":
+			dir     => "/srv/puppet/env",
+			acl     => "default:group:root:rwx",
+			require => Kfile["/srv/puppet/env"];
+		"Directory permissions in /srv/puppet/env for user puppet":
+			dir     => "/srv/puppet/env",
+			acl     => "default:user:puppet:r-x",
+			require => Kfile["/srv/puppet/env"];
 	}
 }
 
@@ -246,9 +259,30 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 		}
 	}
 
+	# This uses the internal definition.
+	kbp_puppet::master::environment { $environments:; }
+
 	gen_ferm::rule { "HTTP connections for ${pname}":
 		proto  => "tcp",
 		dport  => $port,
 		action => "ACCEPT",
+	}
+
+}
+
+define kbp_puppet::master::environment {
+	include kbp_git
+
+	gen_puppet::master::environment { $name:; }
+
+	kbp_git::repo { "/srv/puppet/env/${name}":; }
+
+	kfile {
+		"/srv/puppet/env/${name}":
+			ensure  => directory;
+		"/srv/puppet/env/${name}/.git/hooks/post-update":
+			mode    => 755,
+			source  => "kbp_puppet/master/git/post-update",
+			require => Kbp_git::Repo["/srv/puppet/env/${name}"];
 	}
 }
