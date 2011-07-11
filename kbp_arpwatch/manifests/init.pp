@@ -16,7 +16,7 @@ class kbp_arpwatch {
 		source => "kbp_arpwatch/arpwatch",
 	}
 
-	kbp_icinga::service { "arpwatch_${fqdn}":
+	kbp_icinga::service { "arpwatch":
 		service_description => "Arpwatch daemon",
 		check_command       => "check_arpwatch",
 		nrpe                => true;

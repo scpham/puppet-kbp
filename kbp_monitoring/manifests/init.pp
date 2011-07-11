@@ -190,6 +190,26 @@ class kbp_monitoring::cassandra($package="icinga") {
 	}
 }
 
+# Class: kbp_monitoring::asterisk
+#
+# Parameters:
+#	package
+#		Defines the monitoring package to use
+#
+# Actions:
+#	Set up asterisk monitoring
+#
+# Depends:
+#	kbp_icinga
+#
+class kbp_monitoring::asterisk($package="icinga") {
+	case $package {
+		"icinga": {
+			include kbp_icinga::asterisk
+		}
+	}
+}
+
 # Define: kbp_monitoring::sslcert
 #
 # Parameters:

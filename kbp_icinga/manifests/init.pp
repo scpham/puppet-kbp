@@ -21,6 +21,10 @@ class kbp_icinga::client {
 		"check_arpwatch":
 			command   => "check_procs",
 			arguments => "-c 1: -C arpwatch";
+		"check_asterisk":
+			sudo      => true,
+			command   => "check_asterisk",
+			arguments => "signet.nl";
 		"check_cpu":
 			arguments => "-w 90 -c 95";
 		"check_dhcp":
@@ -85,31 +89,31 @@ class kbp_icinga::client {
 	}
 
 	kbp_icinga::service {
-		"ssh_${fqdn}":
+		"ssh":
 			service_description => "SSH connectivity",
 			check_command       => "check_ssh";
-		"disk_space_${fqdn}":
+		"disk_space":
 			service_description => "Disk space",
 			check_command       => "check_disk_space",
 			nrpe                => true,
 			warnsms             => false;
-		"ksplice_${fqdn}":
+		"ksplice":
 			service_description => "Ksplice update status",
 			check_command       => "check_ksplice",
 			nrpe                => true;
-		"puppet_state_${fqdn}":
+		"puppet_state":
 			service_description => "Puppet state freshness",
 			check_command       => "check_puppet_state_freshness",
 			nrpe                => true,
 			sms                 => false;
-		"cpu_${fqdn}":
+		"cpu":
 			ensure              => absent,
 			service_description => "CPU usage",
 			check_command       => "check_cpu",
 			retry_interval      => 10,
 			max_check_attempts  => 30,
 			nrpe                => true;
-		"loadtrend_${fqdn}":
+		"loadtrend":
 			service_description => "Load trend",
 			check_command       => "check_loadtrend",
 			check_interval      => 300,
@@ -117,26 +121,26 @@ class kbp_icinga::client {
 			max_check_attempts  => 5,
 			nrpe                => true,
 			sms                 => false;
-		"open_files_${fqdn}":
+		"open_files":
 			service_description => "Open files",
 			check_command       => "check_open_files",
 			nrpe                => true;
-		"ntp_offset_${fqdn}":
+		"ntp_offset":
 			service_description => "NTP offset",
 			check_command       => "check_remote_ntp",
 			nrpe                => true,
 			sms                 => false;
-		"ntpd_${fqdn}":
+		"ntpd":
 			service_description => "NTPD",
 			check_command       => "check_ntpd",
 			nrpe                => true,
 			sms                 => false;
-		"memory_${fqdn}":
+		"memory":
 			service_description => "Memory usage",
 			check_command       => "check_memory",
 			nrpe                => true,
 			warnsms             => false;
-		"zombie_processes_${fqdn}":
+		"zombie_processes":
 			service_description => "Zombie processes",
 			check_command       => "check_zombie_processes",
 			nrpe                => true;
@@ -190,6 +194,10 @@ class kbp_icinga::client {
 			source  => "gen_icinga/client/check_3ware",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
+		"/usr/lib/nagios/plugins/check_asterisk":
+			source  => "gen_icinga/client/check_asterisk",
+			mode    => 755,
+			require => Package["nagios-plugins-kumina"];
 	}
 
 	define clientcommand($sudo=false, $path=false, $command=false, $arguments=false) {
@@ -218,7 +226,7 @@ class kbp_icinga::server {
 	gen_icinga::servercommand {
 		["check_ssh","check_smtp"]:
 			conf_dir => "generic";
-		["check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra"]:
+		["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra"]:
 			conf_dir => "generic",
 			nrpe     => true;
 		"return-ok":
@@ -497,7 +505,7 @@ class kbp_icinga::environment {
 #	gen_puppet
 #
 class kbp_icinga::heartbeat {
-	kbp_icinga::service { "heartbeat_${fqdn}":
+	kbp_icinga::service { "heartbeat":
 		service_description => "Heartbeat",
 		check_command       => "check_heartbeat",
 		nrpe                => true;
@@ -514,7 +522,7 @@ class kbp_icinga::heartbeat {
 #	gen_puppet
 #
 class kbp_icinga::nfs {
-	kbp_icinga::service { "nfs_daemon_${fqdn}":
+	kbp_icinga::service { "nfs_daemon":
 		service_description => "NFS daemon",
 		check_command       => "check_nfs";
 	}
@@ -530,7 +538,7 @@ class kbp_icinga::nfs {
 #	gen_puppet
 #
 class kbp_icinga::dhcp {
-	kbp_icinga::service { "dhcp_daemon_${fqdn}":
+	kbp_icinga::service { "dhcp_daemon":
 		service_description => "DHCP daemon",
 		check_command       => "check_dhcp",
 		nrpe                => true;
@@ -547,9 +555,22 @@ class kbp_icinga::dhcp {
 #	gen_puppet
 #
 class kbp_icinga::cassandra {
-	kbp_icinga::service { "cassandra_${fqdn}":
+	kbp_icinga::service { "cassandra":
 		service_description => "Cassandra status",
 		check_command       => "check_cassandra",
+		nrpe                => true;
+	}
+}
+
+# Class: kbp_icinga::asterisk
+#
+# Actions:
+#	Set up asterisk monitoring
+#
+class kbp_icinga::asterisk {
+	kbp_icinga::service { "asterisk":
+		service_description => "Asterisk status",
+		check_command       => "check_asterisk",
 		nrpe                => true;
 	}
 }
@@ -824,7 +845,7 @@ define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=fals
 #	gen_puppet
 #
 define kbp_icinga::sslcert($path) {
-	kbp_icinga::service { "ssl_cert_${name}_${fqdn}":
+	kbp_icinga::service { "ssl_cert_${name}":
 		service_description => "SSL certificate in ${path}",
 		check_command       => "check_sslcert",
 		arguments           => $path,
@@ -957,7 +978,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false, $ma
 #	gen_puppet
 #
 define kbp_icinga::java($contact_groups=false, $sms=true) {
-	kbp_icinga::service { "java_heap_usage_${name}_${fqdn}":
+	kbp_icinga::service { "java_heap_usage_${name}":
 		service_description => "Java heap usage ${name}",
 		check_command       => "check_java_heap_usage",
 		arguments           => $name,
@@ -1023,7 +1044,7 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 			arguments           => $name;
 		}
 	} else {
-		kbp_icinga::service { "vhost_${name}_${fqdn}":
+		kbp_icinga::service { "vhost_${name}":
 			service_description => "Vhost ${name}",
 			check_command       => $auth ? {
 				false   => "check_http_vhost",
@@ -1045,7 +1066,7 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 #	gen_puppet
 #
 define kbp_icinga::sslsite {
-	kbp_icinga::service { "ssl_site_${name}_${fqdn}":
+	kbp_icinga::service { "ssl_site_${name}":
 		service_description => "SSL validity ${name}",
 		check_command       => "check_ssl_cert",
 		arguments           => $name;
@@ -1066,7 +1087,7 @@ define kbp_icinga::sslsite {
 #	gen_puppet
 #
 define kbp_icinga::raidcontroller($driver) {
-	kbp_icinga::service { "${name}_${fqdn}":
+	kbp_icinga::service { "${name}":
 		service_description => "Raid ${name} ${driver}",
 		check_command       => "check_${driver}",
 		nrpe                => true;
@@ -1112,7 +1133,7 @@ define kbp_icinga::http($customfqdn=$fqdn, $auth=false) {
 #	gen_puppet
 #
 define kbp_icinga::proc_status {
-	kbp_icinga::service { "proc_status_${name}_${fqdn}":
+	kbp_icinga::service { "proc_status_${name}":
 		service_description => "Process status for ${name}",
 		check_command       => "check_proc_status",
 		arguments           => $name,
@@ -1141,7 +1162,7 @@ define kbp_icinga::glassfish($webport, $statuspath=false) {
 		default => "${statuspath}/status.jsp",
 	}
 
-	kbp_icinga::service { "glassfish_${name}_${fqdn}":
+	kbp_icinga::service { "glassfish_${name}":
 		service_description => "Glassfish ${name} status",
 		check_command       => "check_http_on_port_with_vhost_url_and_response",
 		arguments           => [$webport,$realpath,"RUNNING"];
@@ -1164,7 +1185,7 @@ define kbp_icinga::glassfish($webport, $statuspath=false) {
 #	gen_puppet
 #
 define kbp_icinga::dnszone($master, $sms=true) {
-	kbp_icinga::service { "dnszone_${name}_${fqdn}":
+	kbp_icinga::service { "dnszone_${name}":
 		service_description => "DNS zone ${name} from ${master}",
 		check_command       => "check_dnszone",
 		arguments           => [$name,$master],

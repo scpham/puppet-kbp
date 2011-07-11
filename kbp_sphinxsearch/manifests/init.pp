@@ -28,7 +28,7 @@ class kbp_sphinxsearch::server {
 #	gen_puppet
 #
 class kbp_sphinxsearch::monitoring::icinga::server {
-	kbp_icinga::service { "spinxsearch_server_${fqdn}":
+	kbp_icinga::service { "spinxsearch_server":
 		service_description => "Sphinxsearch service",
 		check_command       => "check_tcp",
 		arguments           => 3312;

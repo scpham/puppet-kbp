@@ -11,6 +11,7 @@
 #
 class kbp_asterisk::server {
 	include asterisk::server
+	include kbp_monitoring::asterisk
 
 	gen_ferm::rule { "SIP connections":
 		proto  => "udp",
