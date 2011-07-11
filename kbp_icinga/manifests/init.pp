@@ -24,7 +24,7 @@ class kbp_icinga::client {
 		"check_asterisk":
 			sudo      => true,
 			command   => "check_asterisk",
-			arguments => "signet.nl";
+			arguments => "signet";
 		"check_cpu":
 			arguments => "-w 90 -c 95";
 		"check_dhcp":
@@ -609,6 +609,10 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 		" "     => false,
 		default => $use,
 	}
+	$real_name = $conf_dir ? {
+		"generic" => $name,
+		default   => "${name}_${fqdn}",
+	}
 
 	if $ha {
 		Gen_icinga::Host <| title == $host_name |> {
@@ -616,7 +620,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 		}
 	}
 
-	gen_icinga::service { "${name}":
+	gen_icinga::service { "${real_name}":
 		conf_dir                     => $conf_dir,
 		use                          => $real_use,
 		servicegroups                => $servicegroups ? {
@@ -762,10 +766,7 @@ define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=fals
 	gen_icinga::host { "${name}":
 		conf_dir                     => $conf_dir,
 		use                          => $real_use,
-		hostgroups                   => $hostgroups ? {
-			false   => undef,
-			default => $hostgroups,
-		},
+		hostgroups                   => $hostgroups,
 		parents                      => $parents ? {
 			false   => undef,
 			default => $parents,
