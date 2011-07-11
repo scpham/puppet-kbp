@@ -1091,7 +1091,8 @@ define kbp_icinga::raidcontroller($driver) {
 	kbp_icinga::service { "${name}":
 		service_description => "Raid ${name} ${driver}",
 		check_command       => "check_${driver}",
-		nrpe                => true;
+		nrpe                => true,
+		warnsms             => false;
 	}
 }
 
