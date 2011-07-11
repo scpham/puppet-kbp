@@ -74,11 +74,11 @@ class kbp_puppet::master {
 #
 define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet/puppet.conf", $debug = false,
 				$dbsetup = true, $dbname = false, $dbuser = false, $dbpasswd = false,
-				$dbhost = false, $dbsocket = false, $factpath = '$vardir/lib/facter',
-				$logdir = "/var/log/puppet", $pluginsync = true, $port = "8140",
-				$rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
-				$ssldir = "/var/lib/puppet/ssl", $templatedir = '$confdir/templates',
-				$vardir = "/var/lib/puppet") {
+				$dbhost = false, $dbsocket = false, $environments = [],
+				$factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet",
+				$pluginsync = true, $port = "8140", $rackroot = "/usr/local/share/puppet/rack",
+				$rundir = "/var/run/puppet", $ssldir = "/var/lib/puppet/ssl",
+				$templatedir = '$confdir/templates', $vardir = "/var/lib/puppet") {
 	# If the name is 'default', we want to change the puppetmaster name (pname)
 	# we're using for this instance to something without crud.
 	if $name == 'default' {
