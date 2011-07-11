@@ -114,7 +114,7 @@ define kbp_glassfish::site($domain = "domain1", $serveralias = [], $with_ssl = f
 #	gen_puppet
 #
 define kbp_glassfish::monitoring::icinga::site () {
-	gen_icinga::host { "${name}":; }
+	kbp_icinga::host { "${name}":; }
 
 	kbp_icinga::service {
 		"glassfish_domain_${name}":
