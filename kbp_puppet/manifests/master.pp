@@ -37,6 +37,16 @@ class kbp_puppet::master {
 			owner   => "puppet",
 			mode    => 2770,
 			require => Kpackage["puppetmaster"];
+		"/srv/puppet/generic":
+			ensure  => directory,
+			owner   => "puppet",
+			mode    => 2770,
+			require => Kpackage["puppetmaster"];
+		"/srv/puppet/kbp":
+			ensure  => directory,
+			owner   => "puppet",
+			mode    => 2770,
+			require => Kpackage["puppetmaster"];
 	}
 
 	# Enforce ownership and permissions
@@ -57,6 +67,22 @@ class kbp_puppet::master {
 			dir     => "/srv/puppet/env",
 			acl     => "default:user:puppet:r-x",
 			require => Kfile["/srv/puppet/env"];
+		"Directory permissions in /srv/puppet/generic for group root":
+			dir     => "/srv/puppet/generic",
+			acl     => "default:group:root:rwx",
+			require => Kfile["/srv/puppet/generic"];
+		"Directory permissions in /srv/puppet/generic for user puppet":
+			dir     => "/srv/puppet/generic",
+			acl     => "default:user:puppet:r-x",
+			require => Kfile["/srv/puppet/generic"];
+		"Directory permissions in /srv/puppet/kbp for group root":
+			dir     => "/srv/puppet/kbp",
+			acl     => "default:group:root:rwx",
+			require => Kfile["/srv/puppet/kbp"];
+		"Directory permissions in /srv/puppet/kbp for user puppet":
+			dir     => "/srv/puppet/kbp",
+			acl     => "default:user:puppet:r-x",
+			require => Kfile["/srv/puppet/kbp"];
 	}
 }
 
