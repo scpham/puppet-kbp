@@ -611,7 +611,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 	}
 	$real_name = $conf_dir ? {
 		"generic" => $name,
-		default   => "${name}_${fqdn}",
+		default   => "${name}_${host_name}",
 	}
 
 	if $ha {
