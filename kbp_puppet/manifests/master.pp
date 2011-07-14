@@ -93,14 +93,6 @@ class kbp_puppet::master {
 	}
 }
 
-# kbp_puppet::master::config
-#
-# Setup a puppetmaster in the Kumina way, using Apache and passenger.
-# Allows for multiple puppetmasters with (mostly) different configs.
-# Keep in mind that if you want default puppetmaster (which is
-# probably most of the time), you just need to name it "default" and
-# most settings will be indeed default.
-#
 # Define: kbp_puppet::master::config
 #
 # Parameters:
@@ -112,10 +104,14 @@ class kbp_puppet::master {
 #		Undocumented
 #
 # Actions:
-#	Undocumented
+#	Setup a puppetmaster in the Kumina way, using Apache and passenger.
+#	Allows for multiple puppetmasters with (mostly) different configs.
+#	Keep in mind that if you want default puppetmaster (which is
+#	probably most of the time), you just need to name it "default" and
+#	most settings will be indeed default.
 #
 # Depends:
-#	Undocumented
+#	kbp_puppet::master
 #	gen_puppet
 #
 define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet/puppet.conf", $debug = false,
@@ -303,6 +299,19 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 
 }
 
+# Define: kbp_puppet::master::environment
+#
+# Parameters:
+#	configfile
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
 define kbp_puppet::master::environment {
 	include kbp_git
 
