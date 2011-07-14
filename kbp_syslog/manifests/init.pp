@@ -81,14 +81,11 @@ class kbp_syslog::client::etch inherits sysklogd::client {
 #	gen_puppet
 #
 class kbp_syslog::server::lenny inherits rsyslog::server {
-	include kbp_logrotate
 	gen_logrotate::rotate { "rsyslog":
-		log => ["/var/log/syslog", "/var/log/mail.info", "/var/log/mail.warn",
-			"/var/log/mail.err", "/var/log/mail.log", "/var/log/daemon.log",
-			"/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log",
-			"/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
+		logs       => ["/var/log/syslog", "/var/log/mail.info", "/var/log/mail.warn", "/var/log/mail.err", "/var/log/mail.log", "/var/log/daemon.log",
+			"/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log", "/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
 			"/var/log/messages"],
-		options => ["daily", "rotate 90", "missingok", "notifempty", "compress", "delaycompress", "sharedscripts"],
+		options    => ["daily", "rotate 90", "missingok", "notifempty", "compress", "delaycompress", "sharedscripts"],
 		postrotate => "invoke-rc.d rsyslog reload > /dev/null";
 	}
 }
@@ -115,14 +112,11 @@ class kbp_syslog::client::lenny inherits rsyslog::client {
 #	gen_puppet
 #
 class kbp_syslog::server::squeeze inherits rsyslog::server {
-	include kbp_logrotate
 	gen_logrotate::rotate { "rsyslog":
-		log => ["/var/log/syslog", "/var/log/mail.info", "/var/log/mail.warn",
-			"/var/log/mail.err", "/var/log/mail.log", "/var/log/daemon.log",
-			"/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log",
-			"/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
+		logs       => ["/var/log/syslog", "/var/log/mail.info", "/var/log/mail.warn", "/var/log/mail.err", "/var/log/mail.log", "/var/log/daemon.log",
+			"/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log", "/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
 			"/var/log/messages"],
-		options => ["daily", "rotate 90", "missingok", "notifempty", "compress", "delaycompress", "sharedscripts"],
+		options    => ["daily", "rotate 90", "missingok", "notifempty", "compress", "delaycompress", "sharedscripts"],
 		postrotate => "invoke-rc.d rsyslog reload > /dev/null";
 	}
 }
