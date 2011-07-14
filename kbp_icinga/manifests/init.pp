@@ -635,7 +635,10 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 			false   => undef,
 			default => $check_command,
 		},
-		host_name                    => $host_name,
+		host_name                    => $register ? {
+			0       => undef,
+			default => $host_name,
+		},
 		initial_state                => $initial_state ? {
 			false   => undef,
 			default => $initial_state,
