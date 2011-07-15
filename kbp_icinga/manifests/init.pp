@@ -347,7 +347,7 @@ class kbp_icinga::server {
 			retry_interval               => "10",
 			max_check_attempts           => "3",
 			notification_options         => "w,u,c,r",
-			contact_groups               => "kumina_email",
+			contacts                     => "devnull",
 			register                     => "0";
 		"critsms_service":
 			conf_dir      => "generic",
@@ -360,11 +360,10 @@ class kbp_icinga::server {
 			servicegroups => "wh_services_warnsms",
 			register      => "0";
 		"mail_service":
-			conf_dir              => "generic",
-			use                   => "ha_service",
-			servicegroups         => "mail_services",
-			notification_interval => "0",
-			register              => "0";
+			conf_dir      => "generic",
+			use           => "ha_service",
+			servicegroups => "mail_services",
+			register      => "0";
 		"passive_service":
 			conf_dir               => "generic",
 			use                    => "ha_service",
@@ -391,7 +390,7 @@ class kbp_icinga::server {
 			check_interval               => "10",
 			notification_period          => "24x7",
 			notification_interval        => "600",
-			contact_groups               => "kumina_email",
+			contacts                     => "devnull",
 			max_check_attempts           => "3",
 			register                     => "0";
 		"wh_host":
@@ -400,11 +399,10 @@ class kbp_icinga::server {
 			hostgroups => "wh_hosts",
 			register   => "0";
 		"mail_host":
-			conf_dir              => "generic",
-			use                   => "ha_host",
-			hostgroups            => "mail_hosts",
-			notification_interval => "0",
-			register              => "0";
+			conf_dir   => "generic",
+			use        => "ha_host",
+			hostgroups => "mail_hosts",
+			register   => "0";
 	}
 
 	gen_icinga::timeperiod {
@@ -465,8 +463,7 @@ class kbp_icinga::server {
 		c_alias                       => "No notify contact",
 		host_notifications_enabled    => 0,
 		service_notifications_enabled => 0,
-		contact_data                  => false,
-		notification_type             => "no-notify";
+		contact_data                  => false;
 	}
 }
 
@@ -480,18 +477,48 @@ class kbp_icinga::server {
 #	gen_puppet
 #
 class kbp_icinga::environment {
-	gen_icinga::contactgroup { "${environment}":
-		conf_dir => $environment,
+	gen_icinga::configdir { ["${environment}","${environment}/generic"]:; }
+
+	gen_icinga::contactgroup { "${environment}_email":
+		conf_dir => "${environment}/generic",
 		cg_alias => "${environment} contacts";
 	}
 
-	gen_icinga::contact { "${environment}":
-		conf_dir                      => $environment,
-		c_alias                       => "Generic ${environment} contact",
-		host_notifications_enabled    => 0,
-		service_notifications_enabled => 0,
-		contact_data                  => false,
-		notification_type             => "no-notify";
+	gen_icinga::contact { "${environment}_email":
+		conf_dir      => "${environment}/generic",
+		c_alias       => "${environment} email",
+		contactgroups => "${environment}_email",
+		contact_data  => false;
+	}
+
+	gen_icinga::hostgroup { "${environment}_hosts":
+		conf_dir => "${environment}/generic",
+		hg_alias => "${environment} servers";
+	}
+
+	gen_icinga::hostescalation { "${environment}_mail":
+		conf_dir              => "${environment}/generic",
+		hostgroup_name        => "${environment}_hosts",
+		first_notification    => 1,
+		last_notification     => 1,
+		notification_interval => 600,
+		escalation_period     => "24x7",
+		contact_groups        => "${environment}_email";
+	}
+
+	gen_icinga::servicegroup { "${environment}_services":
+		conf_dir => "${environment}/generic",
+		sg_alias => "${environment} services";
+	}
+
+	gen_icinga::serviceescalation { "${environment}_mail":
+		conf_dir              => "${environment}/generic",
+		hostgroup_name        => "${environment}_hosts",
+		first_notification    => 1,
+		last_notification     => 1,
+		notification_interval => 600,
+		escalation_period     => "24x7",
+		contact_groups        => "${environment}_email";
 	}
 }
 
@@ -593,7 +620,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 		$notification_period=false, $notification_options=false, $contact_groups=false, $contacts=false, $max_check_attempts=false, $check_command=false,
 		$arguments=false, $register=false, $nrpe=false, $ensure=present) {
 	$real_use = $use ? {
-		false   => $passive ? {
+		false          => $passive ? {
 			true  => "passive_service",
 			false => $ha ? {
 				true  => "ha_service",
@@ -606,8 +633,12 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 				},
 			},
 		},
-		" "     => false,
-		default => $use,
+		$environment => $passive ? {
+			true  => "${environment}_passive_service",
+			false => "${environment}_service",
+		},
+		" "            => false,
+		default        => $use,
 	}
 	$real_name = $conf_dir ? {
 		"generic" => $name,
