@@ -496,7 +496,7 @@ class kbp_icinga::environment {
 		hg_alias => "${environment} servers";
 	}
 
-	gen_icinga::hostescalation { "${environment}_mail":
+	@gen_icinga::hostescalation { "${environment}_mail":
 		conf_dir              => "${environment}/generic",
 		hostgroup_name        => "${environment}_hosts",
 		first_notification    => 1,
@@ -511,7 +511,7 @@ class kbp_icinga::environment {
 		sg_alias => "${environment} services";
 	}
 
-	gen_icinga::serviceescalation { "${environment}_mail":
+	@gen_icinga::serviceescalation { "${environment}_mail":
 		conf_dir              => "${environment}/generic",
 		hostgroup_name        => "${environment}_hosts",
 		first_notification    => 1,
