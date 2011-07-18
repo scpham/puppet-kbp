@@ -92,6 +92,26 @@ class kbp_trending::nfsd ($method="munin") {
 	}
 }
 
+# Class: kbp_trending::ntpd
+#
+# Parameters:
+#	method
+#		The name of the trending engine used.
+#
+# Actions:
+#	Setup trending for ntpd.
+#
+# Depends:
+#	kbp_munin::ntpd
+#	gen_puppet
+#
+class kbp_trending::ntpd ($method="munin") {
+	case $method {
+		"munin": { include kbp_munin::client::ntpd }
+		default: { fail("No trending for ${method}.") }
+	}
+}
+
 # Class: kbp_trending::bind9
 #
 # Parameters:

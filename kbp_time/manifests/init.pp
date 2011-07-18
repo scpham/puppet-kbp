@@ -16,5 +16,6 @@ class kbp_time {
 	}
 	if (versioncmp($lsbdistrelease, "6.0") >= 0) { # This is squeeze or ewer
 		include ntp
+		include kbp_trending::ntpd
 	}
 }

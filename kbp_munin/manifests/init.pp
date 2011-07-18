@@ -136,6 +136,22 @@ class kbp_munin::client::nfsd {
 	munin::client::plugin { "nfsd":; }
 }
 
+# Class: kbp_munin::client::ntpd
+#
+# Actions:
+#	Setup trending for ntpd.
+#
+# Depends:
+#	kbp_munin::client
+#	munin::client::plugin
+#	gen_puppet
+#
+class kbp_munin::client::ntpd {
+	include kbp_munin::client
+
+	munin::client::plugin { ["ntp_kernel_err","ntp_kernel_pll_freq","ntp_kernel_pll_off","ntp_offset"]:; }
+}
+
 # Class: kbp_munin::client::bind9
 #
 # Actions:
