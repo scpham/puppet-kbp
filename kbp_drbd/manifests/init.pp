@@ -37,6 +37,7 @@ class kbp_drbd::monitoring::icinga {
 	kbp_icinga::service { "check_drbd":
 		service_description => "DRBD",
 		check_command       => "check_drbd",
-		nrpe                => true;
+		nrpe                => true,
+		warnsms             => false;
 	}
 }
