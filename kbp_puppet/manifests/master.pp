@@ -11,10 +11,8 @@
 #
 class kbp_puppet::master {
 	include gen_puppet::master
-	include gen_puppet::queue
 	include kbp_puppet::vim
 	include gen_rails
-	include kbp_activemq
 	include kbp_apache::passenger
 	include kbp_mysql::server
 	include kbp_trending::puppetmaster
@@ -118,7 +116,8 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 				$dbsetup = true, $dbname = false, $dbuser = false, $dbpasswd = false,
 				$dbhost = false, $dbsocket = false, $environments = [],
 				$factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet",
-				$pluginsync = true, $port = "8140", $rackroot = "/usr/local/share/puppet/rack",
+				$pluginsync = true, $port = "8140", $queue = false, $queue_host = "localhost",
+				$queue_port = "61613", $rackroot = "/usr/local/share/puppet/rack",
 				$rundir = "/var/run/puppet", $ssldir = "/var/lib/puppet/ssl",
 				$templatedir = '$confdir/templates', $vardir = "/var/lib/puppet") {
 	# If the name is 'default', we want to change the puppetmaster name (pname)
@@ -146,6 +145,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 		factpath    => $factpath,
 		logdir      => $logdir,
 		pluginsync  => $pluginsync,
+		queue       => $queue,
 		rackroot    => $rackroot,
 		rundir      => $rundir,
 		ssldir      => $ssldir,
@@ -194,6 +194,8 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 
 	# Make sure we only setup database stuff when asked for
 	if $real_dbsetup {
+		include gen_base::libactiverecord_ruby18
+
 		if $name == 'default' {
 			$real_dbname = 'puppet'
 			$real_dbuser = 'puppet'
@@ -234,69 +236,105 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 				configfile => $configfile,
 				var        => 'dbadapter',
 				value      => 'mysql',
-				section    => 'master';
+				section    => 'main';
 			"Set database user for ${name}.":
 				configfile => $configfile,
 				var        => 'dbuser',
 				value      => $real_dbuser,
-				section    => 'master';
+				section    => 'main';
 			"Set database name for ${name}.":
 				configfile => $configfile,
 				var        => 'dbname',
 				value      => $real_dbname,
-				section    => 'master';
+				section    => 'main';
 			"Set database password for ${name}.":
 				configfile => $configfile,
 				var        => 'dbpassword',
 				value      => $real_dbpasswd,
-				section    => 'master';
+				section    => 'main';
 			"Set storeconfig for ${name}.":
 				configfile => $configfile,
 				var        => 'storeconfigs',
 				value      => 'true',
-				section    => 'master';
+				section    => 'main',
+				require    => Kpackage["libactiverecord-ruby1.8"];
 			"Set thin_storeconfigs for ${name}.":
 				configfile => $configfile,
 				var        => 'thin_storeconfigs',
-				value      => 'true',
-				section    => 'master';
+				value      => $queue ? {
+					true    => 'false',
+					default => 'true'
+				},
+				section    => 'main';
 			"Set dbmigrate for ${name}.":
 				configfile => $configfile,
 				var        => 'dbmigrate',
 				value      => 'true',
-				section    => 'master';
+				section    => 'main';
 		}
 
 		# Only set the host if it's needed.
 		if $dbhost {
-			gen_puppet::set_config { "Set database host for $name.":
+			gen_puppet::set_config { "Set database host for ${name}.":
 				configfile => $configfile,
 				var        => 'dbhost',
 				value      => $dbhost,
-				section    => 'master',
+				section    => 'main',
 			}
 		}
 
 		# Only set the socket if it's needed.
 		if $dbsocket {
-			gen_puppet::set_config { "Set database socket for $name.":
+			gen_puppet::set_config { "Set database socket for ${name}.":
 				configfile => $configfile,
 				var        => 'dbsocket',
 				value      => $dbsocket,
-				section    => 'master',
+				section    => 'main',
+			}
+		}
+
+		# Setup queueing for this puppetmaster.
+		# We only setup queueing when we also setup db settings, otherwise
+		# queueing makes no sense...
+		if $queue {
+			if $queue_host == "localhost" {
+				include kbp_activemq
+			}
+
+			include gen_base::libstomp_ruby
+
+			gen_puppet::set_config {
+				"Set async storeconfigs for ${name}.":
+					configfile => $configfile,
+					var        => 'async_storeconfigs',
+					value      => 'true',
+					section    => 'master';
+				"Set queue type for ${name}.":
+					configfile => $configfile,
+					var        => 'queue_type',
+					value      => 'stomp',
+					section    => 'main',
+					require    => Kpackage["libstomp-ruby"];
+				"Set queue source for ${name}.":
+					configfile => $configfile,
+					var        => "queue_source",
+					value      => "stomp://${queue_host}:${queue_port}",
+					section    => 'main';
 			}
 		}
 	}
 
 	# This uses the internal definition.
-	kbp_puppet::master::environment { $environments:; }
+	kbp_puppet::master::environment { $environments:
+		configfile => $configfile,
+	}
 
+	# Open the firewall for all hosts, since we use SSL anyway.
 	gen_ferm::rule { "HTTP connections for ${pname}":
 		proto  => "tcp",
 		dport  => $port,
 		action => "ACCEPT",
 	}
-
 }
 
 # Define: kbp_puppet::master::environment
@@ -312,10 +350,12 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 #	Undocumented
 #	gen_puppet
 #
-define kbp_puppet::master::environment {
+define kbp_puppet::master::environment ($configfile = "/srv/puppet/puppet.conf") {
 	include kbp_git
 
-	gen_puppet::master::environment { $name:; }
+	gen_puppet::master::environment { $name:
+		configfile => $configfile,
+	}
 
 	kbp_git::repo { "/srv/puppet/env/${name}":; }
 
