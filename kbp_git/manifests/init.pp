@@ -16,23 +16,23 @@ class kbp_git {
 # Define: kbp_git::repo
 #
 # Actions:
-#»˙˙˙˙˙˙Set up git repository
+#	Set up git repository
 #
 # Parameters:
-#»˙˙˙˙˙˙name
-#»˙˙˙˙˙˙»˙˙˙˙˙˙˙The directory where to create the repository.
-#»˙˙˙˙˙˙»˙˙˙˙˙˙˙Needs to be a kfile already.
-#»˙˙˙˙˙˙branch
-#»˙˙˙˙˙˙»˙˙˙˙˙˙˙The remote branch of the origin. Defaults to
-#»˙˙˙˙˙˙»˙˙˙˙˙˙˙"master".
-#»˙˙˙˙˙˙origin
-#»˙˙˙˙˙˙»˙˙˙˙˙˙˙Add an origin to the repository. This does
-#»˙˙˙˙˙˙»˙˙˙˙˙˙˙not clone the remote repository.
+#	name
+#		The directory where to create the repository.
+#		Needs to be a kfile already.
+#	branch
+#		The remote branch of the origin. Defaults to
+#		"master".
+#	origin
+#		Add an origin to the repository. This does
+#		not clone the remote repository.
 #
 # Depends:
-#»˙˙˙˙˙˙kbp_git
+#	kbp_git
 #	kbp_git::repo
-#»˙˙˙˙˙˙gen_puppet
+#	gen_puppet
 #
 define kbp_git::repo ($branch = "master", $origin = false) {
 	include kbp_git
