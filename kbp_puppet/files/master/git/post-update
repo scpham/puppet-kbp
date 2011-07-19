@@ -1,5 +1,0 @@
-#!/bin/sh
-
-export GIT_DIR=.git
-cd ..
-umask 002 && git reset --hard

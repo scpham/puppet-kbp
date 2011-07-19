@@ -362,9 +362,5 @@ define kbp_puppet::master::environment ($configfile = "/srv/puppet/puppet.conf")
 	kfile {
 		"/srv/puppet/env/${name}":
 			ensure  => directory;
-		"/srv/puppet/env/${name}/.git/hooks/post-update":
-			mode    => 755,
-			source  => "kbp_puppet/master/git/post-update",
-			require => Kbp_git::Repo["/srv/puppet/env/${name}"];
 	}
 }
