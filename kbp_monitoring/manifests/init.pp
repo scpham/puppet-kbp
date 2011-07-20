@@ -510,9 +510,9 @@ define kbp_monitoring::mbean_value($jmxport, $objectname, $attributename, $expec
 				objectname    => $objectname,
 				attributename => $attributename,
 				expectedvalue => $expectedvalue,
-				attributekey  => $statuspath ? {
+				attributekey  => $attributekey ? {
 					false   => undef,
-					default => $statuspath,
+					default => $attributekey,
 				},
 				customname    => $customname;
 			}
