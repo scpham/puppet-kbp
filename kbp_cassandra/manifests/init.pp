@@ -42,7 +42,7 @@ class kbp_cassandra::client($customtag="cassandra_${environment}") {
 #	Undocumented
 #	gen_puppet
 #
-class kbp_cassandra::server($customtag="cassandra_${environment}", $java_monitoring=false, $contact_groups=false, $sms=true) {
+class kbp_cassandra::server($customtag="cassandra_${environment}", $java_monitoring=false, $servicegroups=false, $sms=true) {
 	include kbp_monitoring::cassandra
 
 	@@gen_ferm::rule { "Internal Cassandra connections from ${fqdn}":
@@ -58,9 +58,9 @@ class kbp_cassandra::server($customtag="cassandra_${environment}", $java_monitor
 
 	if $java_monitoring {
 		kbp_monitoring::java { "cassandra_8080":
-			contact_groups => $contact_groups ? {
+			servicegroups  => $servicegroups ? {
 				false   => undef,
-				default => $contact_groups,
+				default => $servicegroups,
 			},
 			sms            => $sms;
 		}

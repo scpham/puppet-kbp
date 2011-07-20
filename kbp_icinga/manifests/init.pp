@@ -1029,14 +1029,14 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false, $ma
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::java($contact_groups=false, $sms=true) {
+define kbp_icinga::java($servicegroups=false, $sms=true) {
 	kbp_icinga::service { "java_heap_usage_${name}":
 		service_description => "Java heap usage ${name}",
 		check_command       => "check_java_heap_usage",
 		arguments           => $name,
-		contact_groups      => $contact_groups ? {
+		servicegroups       => $servicegroups ? {
 			false   => undef,
-			default => $contact_groups,
+			default => $servicegroups,
 		},
 		nrpe                => true,
 		sms                 => $sms;

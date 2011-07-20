@@ -295,12 +295,12 @@ define kbp_monitoring::haproxy($address, $ha=false, $url=false, $response=false,
 #	Undocumented
 #	gen_puppet
 #
-define kbp_monitoring::java($package="icinga", $contact_groups=false, $sms=true) {
+define kbp_monitoring::java($package="icinga", $servicegroups=false, $sms=true) {
 	case $package {
 		"icinga": {
 			kbp_icinga::java { "${name}":
-				contact_groups => $contact_groups,
-				sms            => $sms;
+				servicegroups => $servicegroups,
+				sms           => $sms;
 			}
 		}
 	}
