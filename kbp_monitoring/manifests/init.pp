@@ -13,10 +13,10 @@ class kbp_monitoring::client::sslcert {
 	include kbp_sudo
 
 	gen_sudo::rule { "check_sslcert sudo rules":
-		entity => "nagios",
-		as_user => "root",
+		entity            => "nagios",
+		as_user           => "root",
 		password_required => false,
-		command =>"/usr/lib/nagios/plugins/check_sslcert";
+		command           => "/usr/lib/nagios/plugins/check_sslcert";
 	}
 }
 
@@ -475,11 +475,46 @@ define kbp_monitoring::glassfish($webport, $package="icinga", $statuspath=false)
 	case $package {
 		"icinga": {
 			kbp_icinga::glassfish { "${name}":
-				statuspath     => $statuspath ? {
+				webport    => $webport,
+				statuspath => $statuspath ? {
+					false   => undef,
+					default => $statuspath,
+				};
+			}
+		}
+	}
+}
+
+# Define: kbp_monitoring::mbean_value
+#
+# Parameters:
+#	package
+#		Undocumented
+#	statuspath
+#		Undocumented
+#	jmxport
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+define kbp_monitoring::mbean_value($jmxport, $objectname, $attributename, $expectedvalue, $attributekey=false, $customname=false, $package="icinga") {
+	case $package {
+		"icinga": {
+			kbp_icinga::mbean_value { "${name}":
+				jmxport       => $jmxport,
+				objectname    => $objectname,
+				attributename => $attributename,
+				expectedvalue => $expectedvalue,
+				attributekey  => $statuspath ? {
 					false   => undef,
 					default => $statuspath,
 				},
-				webport        => $webport;
+				customname    => $customname;
 			}
 		}
 	}

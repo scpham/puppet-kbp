@@ -46,8 +46,8 @@ class kbp_icinga::client {
 			arguments => "-w i -c o";
 		"check_loadtrend":
 			arguments => "-m 1.5 -c 5 -w 2.5";
-		"check_smtp":
-			arguments => "-H 127.0.0.1";
+		"check_mbean_value":
+			arguments => '$ARG1$ $ARG2$ $ARG3$ $ARG4$';
 		"check_memory":
 			arguments => "-w 10 -c 5";
 		"check_mysql":
@@ -74,6 +74,8 @@ class kbp_icinga::client {
 		"check_remote_ntp":
 			command   => "check_ntp_time",
 			arguments => "-H 0.debian.pool.ntp.org";
+		"check_smtp":
+			arguments => "-H 127.0.0.1";
 		"check_sslcert":
 			sudo      => true,
 			arguments => '$ARG1$';
@@ -190,6 +192,10 @@ class kbp_icinga::client {
 			source  => "gen_icinga/client/check_adaptec",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
+		"/usr/lib/nagios/plugins/check_mbean_value":
+			source  => "gen_icinga/client/check_mbean_value",
+			mode    => 755,
+			require => Package["nagios-plugins-kumina"];
 		"/usr/lib/nagios/plugins/check_3ware":
 			source  => "gen_icinga/client/check_3ware",
 			mode    => 755,
@@ -270,6 +276,10 @@ class kbp_icinga::server {
 			command_name  => "check_http",
 			host_argument => '-I $HOSTADDRESS$ -H $HOSTNAME$',
 			arguments     => ['-p $ARG1$','-u $ARG2$','-r $ARG3$'];
+		"check_mbean_value":
+			conf_dir  => "generic",
+			arguments => ['$ARG1$','$ARG2$','$ARG3$','$ARG4$'],
+			nrpe      => true;
 		"check_tcp":
 			conf_dir  => "generic",
 			arguments => '-p $ARG1$';
@@ -1202,6 +1212,47 @@ define kbp_icinga::glassfish($webport, $statuspath=false) {
 		service_description => "Glassfish ${name} status",
 		check_command       => "check_http_on_port_with_vhost_url_and_response",
 		arguments           => [$webport,$realpath,"RUNNING"];
+	}
+}
+
+# Define: kbp_icinga::mbean_value
+#
+# Parameters:
+#	statuspath
+#		Undocumented
+#	jmxport
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+define kbp_icinga::mbean_value($jmxport, $objectname, $attributename, $expectedvalue, $attributekey=false, $customname=false) {
+	kbp_icinga::service { "mbean_${name}":
+		service_description => $customname ? {
+			false   => "Mbean ${name} status",
+			default => $customname,
+		},
+		check_command       => "check_mbean_value",
+		arguments           => $attributekey ? {
+			false   => [$jmxport,$objectname,$attributename,$expectedvalue],
+			default => [$jmxport,$objectname,$attributename,$expectedvalue,$attributekey],
+		};
+	}
+
+	$real_objectname = regsubst($objectname, '[^a-zA-Z0-9\-_]', '_', 'G')
+
+	if $attributekey {
+		kfile { "/etc/nagios/nrpe.d/mbean_${jmxport}_${attributename}_${expectedvalue}_${attributekey}.conf":
+			content => template("kbp_icinga/mbean_value.conf");
+		}
+	} else {
+		kfile { "/etc/nagios/nrpe.d/mbean_${jmxport}_${attributename}_${expectedvalue}.conf":
+			content => template("kbp_icinga/mbean_value.conf");
+		}
 	}
 }
 

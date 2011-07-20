@@ -25,7 +25,8 @@
 #	Undocumented
 #	gen_puppet
 #
-define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitoring=false, $java_contact_groups=false, $sms=true, $statuspath=false) {
+define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitoring=false, $java_contact_groups=false, $sms=true,
+		$statuspath=false, $objectname=false, $attributename=false, $expectedvalue=false, $attributekey=false) {
 	gen_ferm::rule {
 		"Glassfish admin panel for ${name}":
 			proto  => "tcp",
@@ -58,13 +59,25 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitor
 		}
 	}
 
-	if $webport {
+	if $webport and !$objectname {
 		kbp_monitoring::glassfish { "${name}":
-			statuspath     => $statuspath ? {
+			statuspath => $statuspath ? {
 				false   => undef,
 				default => $statuspath,
 			},
-			webport        => $webport;
+			webport    => $webport;
+		}
+	} else {
+		kbp_monitoring::mbean_value { "${name}":
+			jmxport       => $jmxport,
+			objectname    => $objectname,
+			attributename => $attributename,
+			expectedvalue => $expectedvalue,
+			attributekey  => $attributekey ? {
+				false   => undef,
+				default => $attributekey,
+			},
+			customname    => "Glassfish ${name} status";
 		}
 	}
 
