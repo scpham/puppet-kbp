@@ -9,7 +9,7 @@
 #		Undocumented
 #	java_monitoring
 #		Undocumented
-#	java_contact_groups
+#	java_servicegroups
 #		Undocumented
 #	sms
 #		Define whether to send out monitoring sms

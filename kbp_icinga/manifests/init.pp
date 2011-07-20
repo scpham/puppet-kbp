@@ -636,6 +636,10 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 		$retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false, $check_interval=false, $retry_interval=false,
 		$notification_period=false, $notification_options=false, $contact_groups=false, $contacts=false, $max_check_attempts=false, $check_command=false,
 		$arguments=false, $register=false, $nrpe=false, $ensure=present) {
+	if $register==1 and $contact_groups {
+		fail("${name}: contact_groups should only be used in service templates")
+	}
+
 	$real_use = $use ? {
 		false          => $passive ? {
 			true  => "passive_service",
@@ -805,6 +809,9 @@ define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=fals
 		$initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
 		$retain_nonstatus_information=false, $check_command=false, $check_interval=false, $notification_period=false, $notification_interval=false, $contact_groups=false,
 		$contacts=false, $max_check_attempts=false, $register=1) {
+	if $register==1 and $contact_groups {
+		fail("${name}: contact_groups should only be used in host templates")
+	}
 	$real_use = $use ? {
 		false   => $sms ? {
 			true  => "wh_host",
@@ -916,8 +923,6 @@ define kbp_icinga::sslcert($path) {
 #		Undocumented
 #	hostgroups
 #		Undocumented
-#	contact_groups
-#		Undocumented
 #	address
 #		Undocumented
 #
@@ -928,7 +933,7 @@ define kbp_icinga::sslcert($path) {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false, $hostgroups=false, $contact_groups=false, $sms=true) {
+define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false, $hostgroups=false, $sms=true) {
 	$confdir = "${conf_dir}/${name}"
 
 	gen_icinga::configdir { "${confdir}":; }
@@ -943,10 +948,6 @@ define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false,
 		hostgroups     => $hostgroups ? {
 			false   => undef,
 			default => $hostgroups,
-		},
-		contact_groups => $contact_groups ? {
-			false   => undef,
-			default => $contact_groups,
 		},
 		sms            => $sms;
 	}
@@ -1019,7 +1020,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false, $ma
 # Parameters:
 #	sms
 #		Undocumented
-#	contact_groups
+#	servicegroups
 #		Undocumented
 #
 # Actions:

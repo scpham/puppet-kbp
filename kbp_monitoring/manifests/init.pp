@@ -281,7 +281,7 @@ define kbp_monitoring::haproxy($address, $ha=false, $url=false, $response=false,
 # Define: kbp_monitoring::java
 #
 # Parameters:
-#	contact_groups
+#	servicegroups
 #		Undocumented
 #	sms
 #		Undocumented
@@ -557,8 +557,6 @@ define kbp_monitoring::dnszone($master, $sms=true, $package="icinga") {
 #		Undocumented
 #	hostgroups
 #		Undocumented
-#	contact_groups
-#		Undocumented
 #	package
 #		Undocumented
 #	address
@@ -571,7 +569,7 @@ define kbp_monitoring::dnszone($master, $sms=true, $package="icinga") {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_monitoring::virtualhost($address, $conf_dir=false, $parents=false, $hostgroups=false, $contact_groups=false, $package="icinga", $sms=true) {
+define kbp_monitoring::virtualhost($address, $conf_dir=false, $parents=false, $hostgroups=false, $package="icinga", $sms=true) {
 	case $package {
 		"icinga": {
 			kbp_icinga::virtualhost { "${name}":
@@ -587,10 +585,6 @@ define kbp_monitoring::virtualhost($address, $conf_dir=false, $parents=false, $h
 				hostgroups => $hostgroups ? {
 					false   => undef,
 					default => $hostgroups,
-				},
-				contact_groups => $contact_groups ? {
-					false   => undef,
-					default => $contact_groups,
 				},
 				sms            => $sms;
 			}

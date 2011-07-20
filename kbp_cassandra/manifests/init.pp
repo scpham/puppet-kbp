@@ -28,7 +28,7 @@ class kbp_cassandra::client($customtag="cassandra_${environment}") {
 # Parameters:
 #	java_monitoring
 #		Undocumented
-#	contact_groups
+#	servicegroups
 #		Undocumented
 #	sms
 #		Undocumented
