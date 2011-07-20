@@ -67,7 +67,7 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitor
 			},
 			webport    => $webport;
 		}
-	} else {
+	} elsif $objectname {
 		kbp_monitoring::mbean_value { "${name}":
 			jmxport       => $jmxport,
 			objectname    => $objectname,
