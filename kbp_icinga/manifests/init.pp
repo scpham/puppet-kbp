@@ -494,6 +494,15 @@ class kbp_icinga::server {
 #	gen_puppet
 #
 class kbp_icinga::environment {
+	if ! $monitoring_sms {
+		Gen_icinga::Service <| |> {
+			sms => false,
+		}
+		Gen_icinga::Host <| |> {
+			sms => false,
+		}
+	}
+
 	gen_icinga::configdir { ["${environment}","${environment}/generic"]:; }
 
 	gen_icinga::contactgroup { "${environment}_email":
