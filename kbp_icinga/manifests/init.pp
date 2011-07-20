@@ -49,7 +49,7 @@ class kbp_icinga::client {
 		"check_mbean_value":
 			arguments => '$ARG1$ $ARG2$ $ARG3$ $ARG4$';
 		"check_memory":
-			arguments => "-w 10 -c 5";
+			arguments => "-w 6 -c 3";
 		"check_mysql":
 			arguments => "-u nagios";
 		"check_mysql_slave":
@@ -79,6 +79,8 @@ class kbp_icinga::client {
 		"check_sslcert":
 			sudo      => true,
 			arguments => '$ARG1$';
+		"check_swap":
+			arguments => "-w 10 -c 5";
 		"check_zombie_processes":
 			command   => "check_procs",
 			arguments => "-w 5 -c 10 -s Z";
@@ -140,6 +142,11 @@ class kbp_icinga::client {
 		"memory":
 			service_description => "Memory usage",
 			check_command       => "check_memory",
+			nrpe                => true,
+			warnsms             => false;
+		"swap":
+			service_description => "Swap usage",
+			check_command       => "check_swap",
 			nrpe                => true,
 			warnsms             => false;
 		"zombie_processes":
@@ -232,7 +239,7 @@ class kbp_icinga::server {
 	gen_icinga::servercommand {
 		["check_ssh","check_smtp"]:
 			conf_dir => "generic";
-		["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra"]:
+		["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap"]:
 			conf_dir => "generic",
 			nrpe     => true;
 		"return-ok":
@@ -1242,8 +1249,6 @@ define kbp_icinga::mbean_value($jmxport, $objectname, $attributename, $expectedv
 			default => [$jmxport,$objectname,$attributename,$expectedvalue,$attributekey],
 		};
 	}
-
-	$real_objectname = regsubst($objectname, '[^a-zA-Z0-9\-_]', '_', 'G')
 
 	if $attributekey {
 		kfile { "/etc/nagios/nrpe.d/mbean_${jmxport}_${attributename}_${expectedvalue}_${attributekey}.conf":
