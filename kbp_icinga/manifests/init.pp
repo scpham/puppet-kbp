@@ -643,12 +643,8 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 		$host_name=$fqdn, $initial_state=false, $active_checks_enabled=false, $passive_checks_enabled=false, $obsess_over_service=false, $check_freshness=false,
 		$freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
 		$retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false, $check_interval=false, $retry_interval=false,
-		$notification_period=false, $notification_options=false, $contact_groups=false, $contacts=false, $max_check_attempts=false, $check_command=false,
-		$arguments=false, $register=false, $nrpe=false, $ensure=present) {
-	if $register==1 and $contact_groups {
-		fail("${name}: contact_groups should only be used in service templates")
-	}
-
+		$notification_period=false, $notification_options=false, $contacts=false, $max_check_attempts=false, $check_command=false, $arguments=false,
+		$register=false, $nrpe=false, $ensure=present) {
 	$real_use = $use ? {
 		false          => $passive ? {
 			true  => "passive_service",
@@ -776,10 +772,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 			false   => undef,
 			default => $notification_options,
 		},
-		contact_groups               => $contact_groups ? {
-			false   => undef,
-			default => $contact_groups,
-		},
+		contact_groups               => false,
 		contacts                     => $contacts ? {
 			false   => undef,
 			default => $contacts,
@@ -816,11 +809,8 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 #	gen_puppet
 define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=false, $hostgroups="wh_hosts", $parents=false, $address=$ipaddress,
 		$initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
-		$retain_nonstatus_information=false, $check_command=false, $check_interval=false, $notification_period=false, $notification_interval=false, $contact_groups=false,
-		$contacts=false, $max_check_attempts=false, $register=1) {
-	if $register==1 and $contact_groups {
-		fail("${name}: contact_groups should only be used in host templates")
-	}
+		$retain_nonstatus_information=false, $check_command=false, $check_interval=false, $notification_period=false, $notification_interval=false, $contacts=false,
+		$max_check_attempts=false, $register=1) {
 	$real_use = $use ? {
 		false   => $sms ? {
 			true  => "wh_host",
@@ -883,10 +873,7 @@ define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=fals
 			false   => undef,
 			default => $notification_interval,
 		},
-		contact_groups               => $contact_groups ? {
-			false   => undef,
-			default => $contact_groups,
-		},
+		contact_groups               => false,
 		contacts                     => $contacts ? {
 			false   => undef,
 			default => $contacts,
