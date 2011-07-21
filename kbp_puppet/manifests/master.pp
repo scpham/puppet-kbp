@@ -232,22 +232,22 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 		}
 
 		gen_puppet::set_config {
-			"Set database adapter for ${name}.":
+			"Set database adapter for ${name} in main.":
 				configfile => $configfile,
 				var        => 'dbadapter',
 				value      => 'mysql',
 				section    => 'main';
-			"Set database user for ${name}.":
+			"Set database user for ${name} in main.":
 				configfile => $configfile,
 				var        => 'dbuser',
 				value      => $real_dbuser,
 				section    => 'main';
-			"Set database name for ${name}.":
+			"Set database name for ${name} in main.":
 				configfile => $configfile,
 				var        => 'dbname',
 				value      => $real_dbname,
 				section    => 'main';
-			"Set database password for ${name}.":
+			"Set database password for ${name} in main.":
 				configfile => $configfile,
 				var        => 'dbpassword',
 				value      => $real_dbpasswd,
@@ -271,6 +271,31 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 				var        => 'dbmigrate',
 				value      => 'true',
 				section    => 'main';
+		}
+
+		# TODO Only needed until puppetstoreconfigclean script also looks into
+		# the main section for the database credentials.
+		gen_puppet::set_config {
+			"Set database adapter for ${name} in master.":
+				configfile => $configfile,
+				var        => 'dbadapter',
+				value      => 'mysql',
+				section    => 'master';
+			"Set database user for ${name} in master.":
+				configfile => $configfile,
+				var        => 'dbuser',
+				value      => $real_dbuser,
+				section    => 'master';
+			"Set database name for ${name} in master.":
+				configfile => $configfile,
+				var        => 'dbname',
+				value      => $real_dbname,
+				section    => 'master';
+			"Set database password for ${name} in master.":
+				configfile => $configfile,
+				var        => 'dbpassword',
+				value      => $real_dbpasswd,
+				section    => 'master';
 		}
 
 		# Only set the host if it's needed.
