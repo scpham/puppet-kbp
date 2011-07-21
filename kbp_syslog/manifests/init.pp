@@ -81,13 +81,7 @@ class kbp_syslog::client::etch inherits sysklogd::client {
 #	gen_puppet
 #
 class kbp_syslog::server::lenny inherits rsyslog::server {
-	gen_logrotate::rotate { "rsyslog":
-		logs       => ["/var/log/syslog", "/var/log/mail.info", "/var/log/mail.warn", "/var/log/mail.err", "/var/log/mail.log", "/var/log/daemon.log",
-			"/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log", "/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
-			"/var/log/messages"],
-		options    => ["daily", "rotate 90", "missingok", "notifempty", "compress", "delaycompress", "sharedscripts"],
-		postrotate => "invoke-rc.d rsyslog reload > /dev/null";
-	}
+	include kbp_syslog::server::logrotate
 }
 
 # Class: kbp_syslog::client::lenny
@@ -112,13 +106,28 @@ class kbp_syslog::client::lenny inherits rsyslog::client {
 #	gen_puppet
 #
 class kbp_syslog::server::squeeze inherits rsyslog::server {
+	include kbp_syslog::server::logrotate
+}
+
+# Class: kbp_syslog::server::logrotate
+#
+# Action:
+#	Setup logrotation to our defaults for syslog and companions.
+#
+# Depends:
+#	gen_logrotate::rotate
+#	gen_puppet
+#
+class kbp_syslog::server::logrotate {
 	gen_logrotate::rotate { "rsyslog":
 		logs       => ["/var/log/syslog", "/var/log/mail.info", "/var/log/mail.warn", "/var/log/mail.err", "/var/log/mail.log", "/var/log/daemon.log",
 			"/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log", "/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
 			"/var/log/messages"],
-		options    => ["daily", "rotate 90", "missingok", "notifempty", "compress", "delaycompress", "sharedscripts"],
+		options    => ["daily", "rotate 90", "missingok", "notifempty", "compress", "delaycompress", "sharedscripts", "dateext"],
 		postrotate => "invoke-rc.d rsyslog reload > /dev/null";
 	}
+
+	include kbp_syslog::cleanup
 }
 
 # Class: kbp_syslog::client::squeeze
@@ -171,4 +180,33 @@ class kbp_syslog::mysql::etch {
 #	gen_puppet
 #
 class kbp_syslog::mysql::lenny inherits rsyslog::mysql {
+}
+
+# Class: kbp_syslog::cleanup
+#
+# Actions:
+#	Cleans up old syslog files. This class is a temporary workaround.
+#
+# Depends:
+#	gen_puppet
+#
+class kbp_syslog::cleanup {
+	$numbers = ["90"]
+
+	cleanup { $numbers:; }
+
+	define cleanup {
+		$files = ["syslog.${name}","mail.info.${name}","mail.warn.${name}","mail.err.${name}","mail.log.${name}",
+			  "daemon.log.${name}","kern.log.${name}","auth.log.${name}","user.log.${name}","lpr.log.${name}",
+			  "cron.log.${name}","debug.log.${name}","messages.${name}"]
+		
+		cleanup0 { $files:; }
+	}
+
+	define cleanup0 {
+		$base = "/var/log/"
+		file { ["${base}/${name}","${base}/${name}.gz"]:
+			ensure => absent,
+		}
+	}
 }
