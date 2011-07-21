@@ -364,7 +364,6 @@ class kbp_icinga::server {
 			retry_interval               => "10",
 			max_check_attempts           => "3",
 			notification_options         => "w,u,c,r",
-			contacts                     => "devnull",
 			register                     => "0";
 		"critsms_service":
 			conf_dir      => "generic",
@@ -407,7 +406,6 @@ class kbp_icinga::server {
 			check_interval               => "10",
 			notification_period          => "24x7",
 			notification_interval        => "600",
-			contacts                     => "devnull",
 			max_check_attempts           => "3",
 			register                     => "0";
 		"wh_host":
@@ -639,14 +637,18 @@ class kbp_icinga::asterisk {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::service($service_description=false, $use=false, $servicegroups=false, $passive=false, $ha=false, $sms=true, $warnsms=true, $conf_dir="${environment}/${fqdn}",
-		$host_name=$fqdn, $initial_state=false, $active_checks_enabled=false, $passive_checks_enabled=false, $obsess_over_service=false, $check_freshness=false,
-		$freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
-		$retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false, $check_interval=false, $retry_interval=false,
-		$notification_period=false, $notification_options=false, $contacts=false, $max_check_attempts=false, $check_command=false, $arguments=false,
-		$register=false, $nrpe=false, $ensure=present) {
+define kbp_icinga::service($service_description=false, $use=false, $servicegroups=false, $passive=false, $ha=false, $sms=true,
+		$warnsms=true, $conf_dir="${environment}/${fqdn}", $host_name=$fqdn, $initial_state=false, $active_checks_enabled=false, $passive_checks_enabled=false,
+		$obsess_over_service=false, $check_freshness=false, $freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false,
+		$process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false,
+		$check_interval=false, $retry_interval=false, $notification_period=false, $notification_options=false, $max_check_attempts=false, $check_command=false,
+		$arguments=false, $register=false, $nrpe=false, $ensure=present) {
+	$contacts = $register ? {
+		0       => "devnull",
+		default => false,
+	}
 	$real_use = $use ? {
-		false          => $passive ? {
+		false        => $passive ? {
 			true  => "passive_service",
 			false => $ha ? {
 				true  => "ha_service",
@@ -663,8 +665,8 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 			true  => "${environment}_passive_service",
 			false => "${environment}_service",
 		},
-		" "            => false,
-		default        => $use,
+		" "          => false,
+		default      => $use,
 	}
 	$real_name = $conf_dir ? {
 		"generic" => $name,
@@ -809,8 +811,12 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 #	gen_puppet
 define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=false, $hostgroups="wh_hosts", $parents=false, $address=$ipaddress,
 		$initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
-		$retain_nonstatus_information=false, $check_command=false, $check_interval=false, $notification_period=false, $notification_interval=false, $contacts=false,
-		$max_check_attempts=false, $register=1) {
+		$retain_nonstatus_information=false, $check_command=false, $check_interval=false, $notification_period=false, $notification_interval=false, $max_check_attempts=false,
+		$register=1) {
+	$contacts = $register ? {
+		0       => "devnull",
+		default => false,
+	}
 	$real_use = $use ? {
 		false   => $sms ? {
 			true  => "wh_host",
