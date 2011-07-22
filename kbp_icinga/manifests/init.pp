@@ -999,7 +999,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $respon
 			conf_dir            => $confdir,
 			service_description => "Virtual host ${name}",
 			host_name           => $name,
-			check_command       => "check_http_on_port_vhost_url_and_response",
+			check_command       => "check_http_on_port_with_vhost_url_and_response",
 			arguments           => [$url,$port,$response],
 			max_check_attempts  => $max_check_attempts,
 			ha                  => $ha;

@@ -9,5 +9,8 @@
 #	Undocumented
 #	gen_puppet
 #
-class kbp_rabbitmq inherits gen_rabbitmq {
+class kbp_rabbitmq($version) {
+	class { "gen_rabbitmq":
+		version => $version;
+	}
 }
