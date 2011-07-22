@@ -14,17 +14,17 @@
 #	gen_puppet
 #
 class kbp_nfs::server($need_gssd = "no", $need_idmapd = "no", $need_statd = "yes",
-		$need_svcgssd = "no", $mountd_port = false, $incoming_port = false,
-		$outgoing_port = false, $lock_port = false, $rpcnfsdcount = "8",
+		$need_svcgssd = "no", $mountd_port = 4002, $incoming_port = 4000,
+		$outgoing_port = 4001, $lock_port = 4003, $rpcnfsdcount = "8",
 		$rpcnfsdpriority = "0", $rpcmountdopts = "", $rpcsvcgssdopts = "",
 		$statdopts = "") {
 	include kbp_trending::nfsd
 	include kbp_monitoring::nfs
 	class { "gen_nfs::server":
-		incoming_port => "4000",
-		outgoing_port => "4001",
-		mountd_port   => "4002",
-		lock_port     => "4003",
+		incoming_port => $incoming_port,
+		outgoing_port => $outgoing_port,
+		mountd_port   => $mountd_port,
+		lock_port     => $lock_port,
 		rpcmountdopts => "--state-directory-path /srv/nfs",
 		statdopts     => "--state-directory-path /srv/nfs";
 	}
