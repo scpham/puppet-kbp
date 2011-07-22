@@ -32,7 +32,7 @@ class kbp_syslog::server($environmentonly=false) {
 #	Undocumented
 #	gen_puppet
 #
-class kbp_syslog::client {
+class kbp_syslog::client($environmentonly=false){
 	include "kbp_syslog::client::$lsbdistcodename"
 
 	@@gen_ferm::rule { "Syslog traffic from ${fqdn}":
@@ -40,7 +40,10 @@ class kbp_syslog::client {
 		proto  => "udp",
 		dport  => 514,
 		action => "ACCEPT",
-		tag    => ["syslog","syslog_${environment}"];
+		tag    => $environmentonly ? {
+			false   => ["syslog","syslog_${environment}"],
+			default => "syslog_${environment}",
+		};
 	}
 }
 

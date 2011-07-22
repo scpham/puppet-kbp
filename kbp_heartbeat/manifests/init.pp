@@ -2,9 +2,27 @@
 
 # Class: kbp_heartbeat
 #
-# Parameters:
-#	otherhost
-#		Undocumented
+# Parameters
+#	autojoin
+#		see man 5 ha.cf
+#	warntime
+#		see man 5 ha.cf
+#	deadtime
+#		see man 5 ha.cf
+#	initdead
+#		see man 5 ha.cf
+#	keepalive
+#		see man 5 ha.cf
+#	crm
+#		see man 5 ha.cf
+#	node_name
+#		The name of the node(this is used to build the node directives in ha.cf)
+#	node_dev
+#		The device used for heartbeat communication
+#	node_ip
+#		The IP used by the node communicate
+#	customtag
+#		Used when exporting and importing the configuration options. Change this when you have more than 1 heartbeat cluster.
 #
 # Actions:
 #	Undocumented
@@ -13,32 +31,30 @@
 #	Undocumented
 #	gen_puppet
 #
-class kbp_heartbeat($otherhost) {
+class kbp_heartbeat($autojoin="none", $warntime=5, $deadtime=15, $initdead=60, $keepalive=2, $crm="respawn", $node_name=$hostname, $node_dev="eth0", $node_ip=$ipaddress_eth0, $customtag="heartbeat_${environment}") {
 	include gen_heartbeat
 	include kbp_monitoring::heartbeat
 
-	# The ha.cf file for heartbeat defines the nodes, nics and ip addresses used for inter-node communication. Here we set some defaults options for the cluster.
-	# The only needed option is nodes in the following format:
-	# kbp_heartbeat::ha_cf {
-	# nodes => { "node1" => {"NIC" => "IPADDRESS"}, "node2" => {"NIC" => "IPADDRESS"} } ;
-	# }
-	define ha_cf ($autojoin="none", $warntime=5, $deadtime=15,
-		$initdead=60, $keepalive=2, $crm="respawn", nodes=false ) {
-		gen_heartbeat::ha_cf { "${name}":
-			autojoin  => $autojoin,
-			warntime  => $warntime,
-			deadtime  => $deadtime,
-			initdead  => $initdead,
-			keepalive => $keepalive,
-			crm       => $crm,
-			nodes     => $nodes;
-		}
+	gen_heartbeat::ha_cf { "heartbeatconfig_${fqdn}":
+		autojoin  => $autojoin,
+		warntime  => $warntime,
+		deadtime  => $deadtime,
+		initdead  => $initdead,
+		keepalive => $keepalive,
+		crm       => $crm,
+		node_name => $node_name,
+		node_ip   => $node_ip,
+		node_dev  => $node_dev,
+		customtag => $customtag;
 	}
 
-	gen_ferm::rule { "Heartbeat connections from ${otherhost}":
-		saddr  => $otherhost,
+	Gen_ferm::Rule <<| tag == $customtag |>>
+
+	@@gen_ferm::rule { "Heartbeat connections from ${fqdn}":
+		saddr  => $node_ip,
 		proto  => "udp",
 		dport  => 694,
-		action => "ACCEPT";
+		action => "ACCEPT",
+		tag    => $customtag;
 	}
 }

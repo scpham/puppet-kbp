@@ -976,7 +976,7 @@ define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false,
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false, $max_check_attempts=false) {
+define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $response=false, $max_check_attempts=false) {
 	$confdir = "${environment}/${name}"
 
 	gen_icinga::configdir { $confdir:; }
@@ -994,7 +994,17 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $response=false, $ma
 		};
 	}
 
-	if $url and $response {
+	if $url and $response and $port{
+		kbp_icinga::service { "virtual_host_${name}":
+			conf_dir            => $confdir,
+			service_description => "Virtual host ${name}",
+			host_name           => $name,
+			check_command       => "check_http_on_port_vhost_url_and_response",
+			arguments           => [$url,$port,$response],
+			max_check_attempts  => $max_check_attempts,
+			ha                  => $ha;
+		}
+	} elsif $url and $response {
 		kbp_icinga::service { "virtual_host_${name}":
 			conf_dir            => $confdir,
 			service_description => "Virtual host ${name}",

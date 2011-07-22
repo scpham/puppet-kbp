@@ -258,7 +258,7 @@ define kbp_monitoring::sslcert($path, $package="icinga") {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_monitoring::haproxy($address, $ha=false, $url=false, $response=false, $package="icinga", $max_check_attempts=false) {
+define kbp_monitoring::haproxy($address, $port=false, $ha=false, $url=false, $response=false, $package="icinga", $max_check_attempts=false) {
 	case $package {
 		"icinga": {
 			kbp_icinga::haproxy { "${name}":
@@ -267,6 +267,10 @@ define kbp_monitoring::haproxy($address, $ha=false, $url=false, $response=false,
 				url                => $url ? {
 					false   => undef,
 					default => $url,
+				},
+				port               => $port ? {
+					false   => undef,
+					default => $port,
 				},
 				max_check_attempts => $max_check_attempts,
 				response           => $response ? {

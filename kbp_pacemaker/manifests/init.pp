@@ -14,64 +14,68 @@
 #	Undocumented
 #	gen_puppet
 #
-class kbp_pacemaker {
-	include gen_pacemaker
+class kbp_pacemaker ($customtag="pacemaker_${environment}") {
+	class { "gen_pacemaker":
+		customtag => $customtag;
+	}
 	include kbp_pacemaker::monitoring::icinga
+}
 
-	define primitive ($provider, $location=false, $location_score="inf",
-		$location_name=false,
-		$start_interval=false, $start_timeout=false,
-		$monitor_interval=false, $monitor_timeout=false,
-		$stop_interval=false, $stop_timeout=false,
-		$params=false) {
-			gen_pacemaker::primitive { "${name}":
-				provider         => $provider,
-				location         => $location,
-				location_score   => $location_score,
-				location_name    => $location_name,
-				start_interval   => $start_interval,
-				start_timeout    => $start_timeout,
-				stop_interval    => $stop_interval,
-				stop_timeout     => $stop_timeout,
-				monitor_interval => $monitor_interval,
-				monitor_timeout  => $monitor_timeout,
-				params           => $params;
-			}
-	}
+define kbp_pacemaker::primitive ($provider, $location=false, $location_score="inf", $location_name=false, $start_timeout=false, $monitor_interval=false, $monitor_timeout=false, $stop_timeout=false, $params=false, $group=false, $customtag="pacemaker_${environment}") {
+		gen_pacemaker::primitive { "${name}":
+			provider         => $provider,
+			location         => $location,
+			location_score   => $location_score,
+			location_name    => $location_name,
+			start_timeout    => $start_timeout,
+			stop_timeout     => $stop_timeout,
+			monitor_interval => $monitor_interval,
+			monitor_timeout  => $monitor_timeout,
+			group            => $group,
+			params           => $params,
+			customtag        => $customtag;
+		}
+}
 
 
-	define master_slave ($primitive, $meta) {
-		gen_pacemaker::master_slave { "$name":
-			primitive => $primitive,
-			meta      => $meta;
-		}
+define kbp_pacemaker::master_slave ($primitive, $meta, $customtag="pacemaker_${environment}") {
+	gen_pacemaker::master_slave { "$name":
+		primitive => $primitive,
+		meta      => $meta,
+		customtag => $customtag;
 	}
-	define location ($primitive, $score="inf", $resnode) {
-		gen_pacemaker::location { "${name}":
-			primitive => $primitive,
-			score     => $score,
-			resnode   => $resnode;
-		}
-	}
+}
 
-	define colocation ($resource_1, $resource_2, $score="inf") {
-		gen_pacemaker::colocation { "${name}":
-			resource_1 => $resource_1,
-			resource_2 => $resource_2,
-			score      => $score;
-		}
+define kbp_pacemaker::location ($primitive, $score="inf", $resnode, $customtag="pacemaker_${environment}") {
+	gen_pacemaker::location { "${name}":
+		primitive => $primitive,
+		score     => $score,
+		resnode   => $resnode,
+		customtag => $customtag;
 	}
-	define order ($score="inf", $resource_1, $resource_2) {
-		gen_pacemaker::order { "${name}":
-			resource_1 => $resource_1,
-			resource_2 => $resource_2,
-			score      => $score;
-		}
+}
+
+define kbp_pacemaker::colocation ($resource_1, $resource_2, $score="inf", $customtag="pacemaker_${environment}") {
+	gen_pacemaker::colocation { "${name}":
+		resource_1 => $resource_1,
+		resource_2 => $resource_2,
+		score      => $score,
+		customtag  => $customtag;
 	}
-	define group ($resources) {
-		gen_pacemaker::group { "${name}":
-			resources => $resources;
-		}
+}
+
+define kbp_pacemaker::order ($score="inf", $resource_1, $resource_2, $customtag="pacemaker_${environment}") {
+	gen_pacemaker::order { "${name}":
+		resource_1 => $resource_1,
+		resource_2 => $resource_2,
+		score      => $score,
+		customtag  => $customtag;
+	}
+}
+
+define kbp_pacemaker::group ($customtag="pacemaker_${environment}") {
+	gen_pacemaker::group { "${name}":
+		customtag => $customtag;
 	}
 }
 
@@ -121,7 +125,7 @@ class kbp_pacemaker::hetzner {
 
 	define updatednsconfig($ipme, $ipother) {
 		kfile { "${name}":
-			content => template("gen_pacemaker/update-dns.erb");
+			content => template("kbp_pacemaker/update-dns.erb");
 		}
 	}
 }

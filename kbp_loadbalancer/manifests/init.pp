@@ -29,27 +29,42 @@
 #	Undocumented
 #	gen_puppet
 #
-define kbp_loadbalancer::site ($listenaddress, $port=80, $sslport=false, $monitoring=true, $ha=false, $url=false, $response=false, $make_lbconfig=true, $max_check_attempts=false) {
+define kbp_loadbalancer::site ($sslport=false, $listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $cookie=false, $monitoring_url=false, $monitoring_response=false, $make_lbconfig=true, $httpcheck_uri=false, $httpcheck_port=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $balance="static-rr", $max_check_attempts=false, $customtag=false) {
 	kbp_haproxy::site { "${name}":
-		listenaddress      => $listenaddress,
-		port               => $port,
-		monitoring         => $monitoring,
-		ha                 => $ha,
-		max_check_attempts => $max_check_attempts,
-		url                => $url ? {
+		listenaddress       => $listenaddress,
+		port                => $port,
+		monitor_site        => $monitoring_site,
+		monitoring_ha       => $monitoring_ha,
+		max_check_attempts  => $max_check_attempts,
+		monitoring_url      => $monitoring_url,
+		monitoring_response => $monitoring_response,
+		balance             => $balance,
+		servername          => $servername,
+		serverport          => $serverport,
+		serverip            => $serverip,
+		httpcheck_uri       => $httpcheck_uri,
+		httpcheck_port      => $httpcheck_port,
+		cookie              => $cookie,
+		make_lbconfig       => $make_lbconfig,
+		customtag           => $customtag ? {
 			false   => undef,
-			default => $url,
-		},
-		response           => $response ? {
-			false   => undef,
-			default => $response,
-		},
-		make_lbconfig      => $make_lbconfig;
+			default => $customtag,
+		};
 	}
 
 	if $sslport {
 		kbp_stunnel::site { "${name}":
 			port => $sslport;
 		}
+	}
+}
+
+class kbp_loadbalancer ($failover=false, $customtag=false) {
+	class { "kbp_haproxy":
+		failover  => $failover,
+		customtag => $customtag ? {
+			false   => undef,
+			default => $customtag,
+		};
 	}
 }
