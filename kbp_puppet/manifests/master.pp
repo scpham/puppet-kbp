@@ -12,7 +12,7 @@
 class kbp_puppet::master {
 	include gen_puppet::master
 	include kbp_puppet::vim
-	include gen_rails
+	include kbp_rails::mysql
 	include kbp_apache::passenger
 	include kbp_mysql::server
 	include kbp_trending::puppetmaster
