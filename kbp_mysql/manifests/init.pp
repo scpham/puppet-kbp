@@ -20,6 +20,16 @@ class kbp_mysql::server($otherhost=false) {
 		otherhost => $otherhost,
 	}
 
+	if $otherhost {
+		@@gen_ferm::rule { "MySQL connections from ${fqdn}":
+			tag    => "mysql_${environment}",
+			dport  => '3306',
+			proto  => 'tcp',
+			saddr  => $fqdn,
+			action => 'ACCEPT',
+		}
+	}
+
 	Gen_ferm::Rule <<| tag == "mysql_${environment}" |>>
 	Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
 }
