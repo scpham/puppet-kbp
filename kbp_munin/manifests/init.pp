@@ -101,6 +101,14 @@ class kbp_munin::client::mysql {
 			"qcache","qcache_mem","replication","select_types",
 			"slow","sorts","table_locks","tmp_tables"]:;
 		}
+
+		# Remove the old plugins, since they error for strange reasons
+		file { ["/etc/munin/plugins/mysql_bytes","/etc/munin/plugins/mysql_innodb",
+			"/etc/munin/plugins/mysql_queries","/etc/munin/plugins/mysql_threads",
+			"/etc/munin/plugins/mysql_slowqueries"]:
+			ensure => absent,
+			notify => Service["munin-node"],
+		}
 	} elsif versioncmp($lsbdistrelease, 6) < 0 {
 		munin::client::plugin { ["mysql_bytes","mysql_innodb","mysql_queries","mysql_slowqueries","mysql_threads"]:;  }
 	}
