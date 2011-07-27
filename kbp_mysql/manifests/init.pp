@@ -69,7 +69,7 @@ class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}") {
 			user        => "nagios",
 			db          => "*",
 			permissions => "super, replication client",
-			tag         => $otherhost;
+			tag         => "mysql_${otherhost}";
 	}
 
 	@@gen_ferm::rule { "MySQL slaving from ${fqdn}":
