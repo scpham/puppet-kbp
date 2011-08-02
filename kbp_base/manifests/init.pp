@@ -241,4 +241,9 @@ class kbp_base {
 #
 class kbp_base::environment {
 	include kbp_monitoring::environment
+	include kbp_user::environment
+
+	@@kbp_smokeping::environment { "${environment}":; }
+
+	kbp_smokeping::targetgroup { "${environment}":; }
 }

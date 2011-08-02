@@ -1,0 +1,17 @@
+<% if name == "smokeping" -%>
+ScriptAlias /smokeping /usr/share/smokeping/cgi-bin/smokeping.cgi
+<Location /smokeping>
+        AuthType Basic
+        AuthName "Smokeping"
+        AuthUserFile /etc/smokeping/htpasswd
+        Require valid-user
+</Location>
+<% else -%>
+ScriptAlias /<%= name %> /usr/share/smokeping/cgi-bin/smokeping_<%= name %>.cgi
+<Location /<%= name %>>
+        AuthType Basic
+        AuthName "Smokeping <%= name %>"
+        AuthUserFile /etc/smokeping/config.d/<%= name %>/.htpasswd
+        Require valid-user
+</Location>
+<% end -%>

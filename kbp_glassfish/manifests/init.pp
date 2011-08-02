@@ -114,6 +114,8 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitor
 define kbp_glassfish::site($domain = "domain1", $serveralias = [], $with_ssl = false, $port = "80", $sslport = "443", $redundant=true) {
 	if $domain != "domain1" and !$redundant {
 		kbp_glassfish::monitoring::icinga::site { "${name}":; }
+
+		kbp_smokeping::target { "${name}":; }
 	}
 }
 
