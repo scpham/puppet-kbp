@@ -18,13 +18,28 @@ class kbp_rabbitmq($version, $port = 5672, $ssl_cert = false, $ssl_key = false, 
 	}
 
 	Gen_ferm::Rule <<| tag == "rabbitmq_${environment}" |>> {
-		dport => $port,
+		dport => $ssl_cert ? {
+			false   => $port,
+			default => "(${port} ${ssl_port})",
+		},
 	}
+}
 
-	# Open the port for the clients
-	if $ssl_cert {
-		Gen_ferm::Rule <<| tag == "rabbitmq_ssl_${environment}" |>> {
-			dport => $ssl_port,
-		}
+# Class: kbp_rabbitmq::client
+#
+# Actions:
+#	Export the firewall rules we need so we can access the server.
+#
+# Depends:
+#	gen_ferm
+#	gen_puppet
+#
+class kbp_rabbitmq::client {
+	@@gen_ferm::rule {
+		"Connections to RabbitMQ for ${fqdn}":
+			saddr  => $fqdn,
+			proto  => "tcp",
+			action => "ACCEPT",
+			tag    => "rabbitmq_${environment}",
 	}
 }
