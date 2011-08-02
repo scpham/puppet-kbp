@@ -104,7 +104,8 @@ class kbp_icinga::client {
 		"ksplice":
 			service_description => "Ksplice update status",
 			check_command       => "check_ksplice",
-			nrpe                => true;
+			nrpe                => true,
+			sms                 => false;
 		"puppet_state":
 			service_description => "Puppet state freshness",
 			check_command       => "check_puppet_state_freshness",
