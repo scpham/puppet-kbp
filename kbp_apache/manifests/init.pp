@@ -69,6 +69,11 @@ class kbp_apache::passenger {
 	}
 }
 
+class kbp_apache::php {
+	include kbp_apache
+	include gen_base::libapache2-mod-php5
+}
+
 # Class: kbp_apache::ssl
 #
 # Actions:
