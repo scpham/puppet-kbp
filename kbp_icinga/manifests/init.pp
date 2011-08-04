@@ -69,6 +69,7 @@ class kbp_icinga::client {
 			sudo      => true,
 			arguments => '$ARG1$';
 		"check_puppet_state_freshness":
+			sudo      => true,
 			command   => "check_file_age",
 			arguments => "-f /var/lib/puppet/state/state.yaml -w 14400 -c 21600";
 		"check_remote_ntp":
