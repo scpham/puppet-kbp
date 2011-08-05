@@ -404,7 +404,6 @@ class kbp_icinga::server {
 			process_perf_data            => "1",
 			retain_status_information    => "1",
 			retain_nonstatus_information => "1",
-			check_command                => "check-host-alive",
 			check_interval               => "10",
 			notification_period          => "24x7",
 			notification_interval        => "600",
@@ -644,7 +643,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 		$obsess_over_service=false, $check_freshness=false, $freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false,
 		$process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false,
 		$check_interval=false, $retry_interval=false, $notification_period=false, $notification_options=false, $max_check_attempts=false, $check_command=false,
-		$arguments=false, $register=false, $nrpe=false, $ensure=present) {
+		$arguments=false, $register=false, $nrpe=false, $ensure=present, $proxy=false) {
 	$contacts = $register ? {
 		0       => "devnull",
 		default => false,
@@ -797,7 +796,11 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 			false   => undef,
 			default => $nrpe,
 		},
-		ensure                       => $ensure;
+		ensure                       => $ensure,
+		proxy                        => $proxy ? {
+			false   => undef,
+			default => $proxy,
+		};
 	}
 }
 
@@ -814,7 +817,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=false, $hostgroups="wh_hosts", $parents=false, $address=$ipaddress,
 		$initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
 		$retain_nonstatus_information=false, $check_command=false, $check_interval=false, $notification_period=false, $notification_interval=false, $max_check_attempts=false,
-		$register=1) {
+		$register=1, $proxy=false) {
 	$contacts = $register ? {
 		0       => "devnull",
 		default => false,
@@ -890,7 +893,11 @@ define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=fals
 			false   => undef,
 			default => $max_check_attempts,
 		},
-		register                     => $register;
+		register                     => $register,
+		proxy                        => $proxy ? {
+			false   => undef,
+			default => $proxy,
+		};
 	}
 }
 
