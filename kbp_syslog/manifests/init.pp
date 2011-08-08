@@ -194,7 +194,7 @@ class kbp_syslog::mysql::lenny inherits rsyslog::mysql {
 #	gen_puppet
 #
 class kbp_syslog::cleanup {
-	$numbers = ["90","89","88","87","86","85","84","83","82","81","80","79","78","77","76","75"]
+	$numbers = ["90","89","88","87","86","85","84","83","82","81","80","79","78","77","76","75","74","73","72"]
 
 	cleanup { $numbers:; }
 
