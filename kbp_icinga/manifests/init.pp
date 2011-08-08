@@ -12,6 +12,10 @@
 class kbp_icinga::client {
 	include gen_icinga::client
 
+	kfile { "/etc/nagios/nrpe.d/puppet_state_freshness.cfg":
+		ensure => absent;
+	}
+
 	clientcommand {
 		["check_cassandra","check_heartbeat"]:;
 		"check_3ware":
