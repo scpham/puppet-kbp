@@ -22,6 +22,8 @@ class kbp_rabbitmq($version, $port = 5672, $ssl_cert = false, $ssl_key = false, 
 			false   => $port,
 			default => "(${port} ${ssl_port})",
 		},
+		proto  => "tcp",
+		action => "ACCEPT",
 	}
 }
 
@@ -38,8 +40,6 @@ class kbp_rabbitmq::client {
 	@@gen_ferm::rule {
 		"Connections to RabbitMQ for ${fqdn}":
 			saddr  => $fqdn,
-			proto  => "tcp",
-			action => "ACCEPT",
 			tag    => "rabbitmq_${environment}",
 	}
 }
