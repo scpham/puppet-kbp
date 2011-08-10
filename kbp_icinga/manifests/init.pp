@@ -54,8 +54,8 @@ class kbp_icinga::client {
 			arguments => '$ARG1$ $ARG2$ $ARG3$ $ARG4$';
 		"check_memory":
 			arguments => $is_virtual ? {
-				true  => "-w 6 -c 3",
-				false => "-w 4 -c 2",
+				"true"  => "-w 6 -c 3",
+				"false" => "-w 4 -c 2",
 			};
 		"check_mysql":
 			arguments => "-u nagios";
