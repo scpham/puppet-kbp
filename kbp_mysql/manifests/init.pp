@@ -49,7 +49,7 @@ class kbp_mysql::server($otherhost=false) {
 #	Undocumented
 #	gen_puppet
 #
-class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}") {
+class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}", $monitoring_ha=false) {
 	class { "kbp_mysql::server":
 		otherhost => $otherhost,
 	}
@@ -83,7 +83,8 @@ class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}") {
 	kbp_icinga::service { "mysql_slaving":
 		service_description => "MySQL slaving",
 		check_command       => "check_mysql_slave",
-		nrpe                => true;
+		nrpe                => true,
+		ha                  => true;
 	}
 }
 

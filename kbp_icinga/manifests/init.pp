@@ -513,11 +513,16 @@ class kbp_icinga::environment {
 		cg_alias => "${environment} contacts";
 	}
 
-	gen_icinga::contact { "${environment}_email":
+	gen_icinga::contact { "${environment}":
 		conf_dir      => "${environment}/generic",
 		c_alias       => "${environment} email",
 		contactgroups => "${environment}_email",
 		contact_data  => false;
+	}
+
+	gen_icinga::contact { "${environment}_email":
+		c_alias       => "${environment} email",
+		ensure => absent;
 	}
 
 	gen_icinga::hostgroup { "${environment}_hosts":
