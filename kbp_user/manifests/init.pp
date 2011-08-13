@@ -5,6 +5,6 @@ class kbp_user::environment {
 define kbp_user::hashfragment($hash) {
 	@@concat::add_content { "${hash}_${environment}":
 		content => $hash,
-		tag     => "htpasswd_${environment}";
+		tag     => ["htpasswd","htpasswd_${environment}"];
 	}
 }

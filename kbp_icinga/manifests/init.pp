@@ -81,7 +81,7 @@ class kbp_icinga::client {
 			arguments => "-f /var/lib/puppet/state/state.yaml -w 14400 -c 21600";
 		"check_remote_ntp":
 			command   => "check_ntp_time",
-			arguments => "-H 0.debian.pool.ntp.org";
+			arguments => "-H 0.debian.pool.ntp.org -t 20";
 		"check_smtp":
 			arguments => "-H 127.0.0.1";
 		"check_sslcert":
@@ -476,17 +476,34 @@ class kbp_icinga::server {
 			sg_alias => "Mail alert only services";
 	}
 
-	gen_icinga::contactgroup { "devnull":
-		conf_dir => "generic",
-		cg_alias => "No notify contacts";
+	gen_icinga::contactgroup {
+		"devnull":
+			conf_dir => "generic",
+			cg_alias => "No notify contacts";
+		"generic_email":
+			conf_dir => "generic",
+			cg_alias => "Generic contacts";
 	}
 
-	gen_icinga::contact { "devnull":
-		conf_dir                      => "generic",
-		c_alias                       => "No notify contact",
-		host_notifications_enabled    => 0,
-		service_notifications_enabled => 0,
-		contact_data                  => false;
+	gen_icinga::contact {
+		"devnull":
+			conf_dir                      => "generic",
+			c_alias                       => "No notify contact",
+			contactgroups                 => "devnull",
+			host_notifications_enabled    => 0,
+			service_notifications_enabled => 0,
+			contact_data                  => false;
+		"generic_email":
+			conf_dir      => "generic",
+			c_alias       => "Generic email",
+			contactgroups => "generic_email",
+			contact_data  => false;
+	}
+
+	concat { "/etc/icinga/htpasswd.users":; }
+
+	Concat::Add_content <<| tag == "htpasswd" |>> {
+		target => "/etc/icinga/htpasswd.users",
 	}
 }
 
@@ -523,17 +540,12 @@ class kbp_icinga::environment {
 		contact_data  => false;
 	}
 
-	gen_icinga::contact { "${environment}_email":
-		c_alias       => "${environment} email",
-		ensure => absent;
-	}
-
 	gen_icinga::hostgroup { "${environment}_hosts":
 		conf_dir => "${environment}/generic",
 		hg_alias => "${environment} servers";
 	}
 
-	@gen_icinga::hostescalation { "${environment}_mail":
+	gen_icinga::hostescalation { "${environment}_mail":
 		conf_dir              => "${environment}/generic",
 		hostgroup_name        => "${environment}_hosts",
 		first_notification    => 1,
@@ -548,14 +560,91 @@ class kbp_icinga::environment {
 		sg_alias => "${environment} services";
 	}
 
-	@gen_icinga::serviceescalation { "${environment}_mail":
+	gen_icinga::serviceescalation { "${environment}_mail":
 		conf_dir              => "${environment}/generic",
-		hostgroup_name        => "${environment}_hosts",
+		servicegroup_name     => "${environment}_services",
 		first_notification    => 1,
 		last_notification     => 1,
 		notification_interval => 600,
 		escalation_period     => "24x7",
 		contact_groups        => "${environment}_email";
+	}
+
+	kbp_icinga::service {
+		"ha_service_${environment}":
+			conf_dir                     => "${environment}/generic",
+			servicegroups                => "ha_services,${environment}_services",
+			initial_state                => "u",
+			obsess_over_service          => "0",
+			check_freshness              => "0",
+			notifications_enabled        => "1",
+			event_handler_enabled        => "0",
+			retain_status_information    => "1",
+			retain_nonstatus_information => "1",
+			is_volatile                  => "0",
+			notification_period          => "24x7",
+			active_checks_enabled        => "1",
+			passive_checks_enabled       => "0",
+			flap_detection_enabled       => "1",
+			process_perf_data            => "1",
+			notification_interval        => "600",
+			check_period                 => "24x7",
+			check_interval               => "10",
+			retry_interval               => "10",
+			max_check_attempts           => "3",
+			notification_options         => "w,u,c,r",
+			register                     => "0";
+		"critsms_service_${environment}":
+			conf_dir      => "${environment}/generic",
+			use           => "ha_service",
+			servicegroups => "wh_services_critsms,${environment}_services",
+			register      => "0";
+		"warnsms_service_${environment}":
+			conf_dir      => "${environment}/generic",
+			use           => "ha_service",
+			servicegroups => "wh_services_warnsms,${environment}_services",
+			register      => "0";
+		"mail_service_${environment}":
+			conf_dir      => "${environment}/generic",
+			use           => "ha_service",
+			servicegroups => "mail_services,${environment}_services",
+			register      => "0";
+		"passive_service_${environment}":
+			conf_dir               => "${environment}/generic",
+			use                    => "ha_service",
+			servicegroups          => "mail_services,${environment}_services",
+			active_checks_enabled  => "0",
+			passive_checks_enabled => "1",
+			check_command          => "return-ok",
+			register               => "0";
+	}
+
+	kbp_icinga::host {
+		"ha_host_${environment}":
+			conf_dir                     => "${environment}/generic",
+			hostgroups                   => "ha_hosts,${environment}_hosts",
+			initial_state                => "u",
+			notifications_enabled        => "1",
+			event_handler_enabled        => "0",
+			flap_detection_enabled       => "1",
+			process_perf_data            => "1",
+			retain_status_information    => "1",
+			retain_nonstatus_information => "1",
+			check_interval               => "10",
+			notification_period          => "24x7",
+			notification_interval        => "600",
+			max_check_attempts           => "3",
+			register                     => "0";
+		"wh_host_${environment}":
+			conf_dir      => "${environment}/generic",
+			use           => "ha_host",
+			hostgroups    => "wh_hosts,${environment}_hosts",
+			register      => "0";
+		"mail_host_${environment}":
+			conf_dir      => "${environment}/generic",
+			use           => "ha_host",
+			hostgroups    => "mail_hosts,${environment}_hosts",
+			register      => "0";
 	}
 }
 
@@ -662,27 +751,27 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 	}
 	$real_use = $use ? {
 		false        => $passive ? {
-			true  => "passive_service",
+			true  => "passive_service_${environment}",
 			false => $ha ? {
-				true  => "ha_service",
+				true  => "ha_service_${environment}",
 				false => $sms ? {
-					false => "mail_service",
+					false => "mail_service_${environment}",
 					true  => $warnsms ? {
-						true  => "warnsms_service",
-						false => "critsms_service",
+						true  => "warnsms_service_${environment}",
+						false => "critsms_service_${environment}",
 					},
 				},
 			},
 		},
 		$environment => $passive ? {
-			true  => "${environment}_passive_service",
+			true  => "${environment}_passive_service_${environment}",
 			false => "${environment}_service",
 		},
 		" "          => false,
 		default      => $use,
 	}
 	$real_name = $conf_dir ? {
-		"generic" => $name,
+		/.*generic.*/ => $name,
 		default   => "${name}_${host_name}",
 	}
 
@@ -826,7 +915,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 #
 # Depends:
 #	gen_puppet
-define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=false, $hostgroups="wh_hosts", $parents=false, $address=$ipaddress,
+define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=false, $hostgroups=false, $parents=false, $address=$ipaddress,
 		$initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
 		$retain_nonstatus_information=false, $check_command=false, $check_interval=false, $notification_period=false, $notification_interval=false, $max_check_attempts=false,
 		$register=1, $proxy=false) {
@@ -836,8 +925,8 @@ define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=fals
 	}
 	$real_use = $use ? {
 		false   => $sms ? {
-			true  => "wh_host",
-			false => "mail_host",
+			true  => "wh_host_${environment}",
+			false => "mail_host_${environment}",
 		},
 		" "     => false,
 		default => $use,
@@ -846,7 +935,10 @@ define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=fals
 	gen_icinga::host { "${name}":
 		conf_dir                     => $conf_dir,
 		use                          => $real_use,
-		hostgroups                   => $hostgroups,
+		hostgroups                   => $hostgroups ? {
+			false   => undef,
+			default => $hostgroups,
+		},
 		parents                      => $parents ? {
 			false   => undef,
 			default => $parents,
