@@ -1,0 +1,17 @@
+#!/bin/sh
+
+HOSTNAME="`hostname --fqdn`"
+
+if ! /etc/init.d/icinga status > /dev/null
+then
+	MESSAGE="No sleep for you! Icinga on $HOSTNAME seems down!"
+	echo "$MESSAGE"
+	for number in `/etc/icinga/config/kumina/icinga.kumina.nl/contact_kumina_sms.cfg | sed -e 's/,/ /'`
+	do
+		case "$number" in
+		+*)
+			/usr/local/bin/send_sms -n "$number" -m "$MESSAGE" -s 'Grim Reaper'
+			;;
+		esac
+	done
+fi

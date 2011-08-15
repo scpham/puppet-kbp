@@ -505,6 +505,14 @@ class kbp_icinga::server {
 	Concat::Add_content <<| tag == "htpasswd" |>> {
 		target => "/etc/icinga/htpasswd.users",
 	}
+
+	kfile {
+		"/etc/cron.d/icinga-check-alive-cron":
+			source => "kbp_icinga/icinga-check-alive-cron";
+		"/usr/bin/icinga-check-alive":
+			source => "kbp_icinga/icinga-check-alive",
+			mode   => 755;
+	}
 }
 
 # Class: kbp_icinga::environment
