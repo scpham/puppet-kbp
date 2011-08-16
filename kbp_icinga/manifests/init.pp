@@ -508,9 +508,9 @@ class kbp_icinga::server {
 
 	kfile {
 		"/etc/cron.d/icinga-check-alive-cron":
-			source => "kbp_icinga/icinga-check-alive-cron";
+			source => "kbp_icinga/server/icinga-check-alive-cron";
 		"/usr/bin/icinga-check-alive":
-			source => "kbp_icinga/icinga-check-alive",
+			source => "kbp_icinga/server/icinga-check-alive",
 			mode   => 755;
 	}
 }
