@@ -195,7 +195,7 @@ class kbp_syslog::mysql::lenny inherits rsyslog::mysql {
 #
 class kbp_syslog::cleanup {
 	$numbers = ["90","89","88","87","86","85","84","83","82","81","80","79","78","77","76","75","74","73","72","71","70",
-	            "69","68","67","66","65"]
+	            "69","68","67","66","65","64"]
 
 	cleanup { $numbers:; }
 
