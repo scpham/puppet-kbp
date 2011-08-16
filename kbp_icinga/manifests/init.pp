@@ -37,7 +37,7 @@ class kbp_icinga::client {
 		"check_disk_space":
 			sudo      => true,
 			command   => "check_disk",
-			arguments => "-W 10% -K 5% -w 10% -c 5% -l --errors-only";
+			arguments => "-W 10% -K 5% -w 10% -c 5% -l --errors-only -t 20";
 		"check_dnszone":
 			arguments => '$ARG1$ $ARG2$';
 		"check_drbd":
