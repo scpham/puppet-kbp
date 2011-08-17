@@ -26,6 +26,10 @@ class kbp_base {
 		include kbp_physical
 	}
 
+	if versioncmp($lsbdistrelease, 6) >= 0 { # Squeeze
+		include gen_base::libfreetype6
+	}
+
 	gen_sudo::rule {
 		"User root has total control":
 			entity            => "root",
