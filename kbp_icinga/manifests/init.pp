@@ -12,10 +12,6 @@
 class kbp_icinga::client {
 	include gen_icinga::client
 
-	kfile { "/etc/nagios/nrpe.d/puppet_state_freshness.cfg":
-		ensure => absent;
-	}
-
 	clientcommand {
 		["check_cassandra","check_heartbeat"]:;
 		"check_3ware":
@@ -77,8 +73,12 @@ class kbp_icinga::client {
 			arguments => '$ARG1$';
 		"check_puppet_state_freshness":
 			sudo      => true,
-			command   => "check_file_age",
-			arguments => "-f /var/lib/puppet/state/state.yaml -w 14400 -c 21600";
+			command   => "check_puppet",
+			arguments => "-w 14400 -c 21600";
+		"check_puppet_failures":
+			sudo      => true,
+			command   => "check_puppet",
+			arguments => "-f -w 1 -c 1";
 		"check_remote_ntp":
 			command   => "check_ntp_time",
 			arguments => "-H 0.debian.pool.ntp.org -t 20";
@@ -117,6 +117,11 @@ class kbp_icinga::client {
 		"puppet_state":
 			service_description => "Puppet state freshness",
 			check_command       => "check_puppet_state_freshness",
+			nrpe                => true,
+			sms                 => false;
+		"puppet_failures":
+			service_description => "Puppet failures",
+			check_command       => "check_puppet_failures",
 			nrpe                => true,
 			sms                 => false;
 		"cpu":
@@ -220,6 +225,10 @@ class kbp_icinga::client {
 			source  => "gen_icinga/client/check_asterisk",
 			mode    => 755,
 			require => Package["nagios-plugins-kumina"];
+		"/usr/lib/nagios/plugins/check_puppet":
+			source  => "gen_icinga/client/check_puppet",
+			mode    => 755,
+			require => Package["nagios-plugins-kumina"];
 	}
 
 	define clientcommand($sudo=false, $path=false, $command=false, $arguments=false) {
@@ -248,7 +257,7 @@ class kbp_icinga::server {
 	gen_icinga::servercommand {
 		["check_ssh","check_smtp"]:
 			conf_dir => "generic";
-		["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap"]:
+		["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_freshness","check_puppet_failures"]:
 			conf_dir => "generic",
 			nrpe     => true;
 		"return-ok":
