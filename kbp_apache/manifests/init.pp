@@ -104,7 +104,7 @@ class kbp_apache::ssl {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_apache::site($ensure="present", $priority="", auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_probe=false) {
+define kbp_apache::site($ensure="present", $priority="", auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_probe=false, $smokeping=true) {
 	$dontmonitor = ["default","default-ssl","localhost"]
 
 	if $ensure == "present" and ! ($name in $dontmonitor) {
@@ -113,18 +113,20 @@ define kbp_apache::site($ensure="present", $priority="", auth=false, $max_check_
 			auth               => $auth;
 		}
 
-		kbp_smokeping::target { "${name}":
-			probe => $monitor_probe ? {
-				false   => $auth ? {
-					false => undef,
-					true  => "FPing",
+		if $smokeping {
+			kbp_smokeping::target { "${name}":
+				probe => $monitor_probe ? {
+					false   => $auth ? {
+						false => undef,
+						true  => "FPing",
+					},
+					default => $monitor_probe,
 				},
-				default => $monitor_probe,
-			},
-			path  => $monitor_path ? {
-				false   => undef,
-				default => $monitor_path,
-			};
+				path  => $monitor_path ? {
+					false   => undef,
+					default => $monitor_path,
+				};
+			}
 		}
 	}
 
