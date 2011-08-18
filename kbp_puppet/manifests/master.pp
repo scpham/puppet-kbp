@@ -229,6 +229,17 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 				password => $real_dbpasswd,
 				db       => $real_dbname;
 			}
+		} else {
+			@@mysql::server::db { $real_dbname:
+				tag => "mysql_puppet";
+			}
+
+			@@mysql::server::grant { $real_dbname:
+				user     => $real_dbuser,
+				password => $real_dbpasswd,
+				db       => $real_dbname,
+				tag      => "mysql_puppet";
+			}
 		}
 
 		gen_puppet::set_config {
