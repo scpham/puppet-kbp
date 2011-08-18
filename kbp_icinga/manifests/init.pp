@@ -122,6 +122,8 @@ class kbp_icinga::client {
 		"puppet_failures":
 			service_description => "Puppet failures",
 			check_command       => "check_puppet_failures",
+			check_interval      => 10800,
+			retry_interval      => 10800,
 			nrpe                => true,
 			sms                 => false;
 		"cpu":
