@@ -231,14 +231,21 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 			}
 		} else {
 			@@mysql::server::db { $real_dbname:
-				tag => "mysql_puppet";
+				tag => "mysql_puppetmaster";
 			}
 
 			@@mysql::server::grant { $real_dbname:
 				user     => $real_dbuser,
 				password => $real_dbpasswd,
 				db       => $real_dbname,
-				tag      => "mysql_puppet";
+				tag      => "mysql_puppetmaster";
+			}
+
+			@@gen_ferm::rule { "Connection from puppetmaster at ${fqdn}":
+				proto  => "tcp",
+				dport  => "3306",
+				action => "ACCEPT",
+				tag    => "mysql_puppetmaster",
 			}
 		}
 

@@ -27,7 +27,10 @@ class kbp_base {
 	}
 
 	if versioncmp($lsbdistrelease, 6) >= 0 { # Squeeze
+		# Needed by grub2
 		include gen_base::libfreetype6
+		# Needed by elinks
+		include gen_base::libmozjs2d
 	}
 
 	gen_sudo::rule {

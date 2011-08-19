@@ -88,29 +88,6 @@ class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}", $monitorin
 	}
 }
 
-# Class: kbp_mysql::client
-#
-# Parameters:
-#	customtag
-#		Undocumented
-#
-# Actions:
-#	Undocumented
-#
-# Depends:
-#	Undocumented
-#	gen_puppet
-#
-class kbp_mysql::client($customtag="mysql_${environment}") {
-	@@gen_ferm::rule { "MySQL connections from ${fqdn}":
-		saddr  => $fqdn,
-		proto  => "tcp",
-		dport  => 3306,
-		action => "ACCEPT",
-		tag    => $customtag;
-	}
-}
-
 # Class: kbp_mysql::monitoring::icinga::server
 #
 # Parameters:
@@ -154,6 +131,33 @@ class kbp_mysql::monitoring::icinga::server($otherhost=false) {
 #	kbp_mysql::server
 #
 class kbp_mysql::puppetmaster {
-	Mysql::Server::Db <<| tag == "mysql_puppet" |>>
-	Mysql::Server::Grant <<| tag == "mysql_puppet" |>>
+	Mysql::Server::Db <<| tag == "mysql_puppetmaster" |>>
+	Mysql::Server::Grant <<| tag == "mysql_puppetmaster" |>>
+	Gen_ferm::Rule <<| tag == "mysql_puppetmaster" |>>
 }
+
+# Define: kbp_mysql::client
+#
+# Parameters:
+#	customtag
+#		Use a different tag than the default "mysql_${environment}"
+#
+# Actions:
+#	Open the firewall on the server to allow access from this client.
+#	Make sure the title of the resource is something sane, since if you
+#	use "dummy" everywhere, it still clashes.
+#
+# Depends:
+#	gen_ferm
+#	gen_puppet
+#
+define kbp_mysql::client ($customtag="mysql_${environment}") {
+	@@gen_ferm::rule { "MySQL connections from ${fqdn} for ${name}":
+		saddr  => $fqdn,
+		proto  => "tcp",
+		dport  => 3306,
+		action => "ACCEPT",
+		tag    => $customtag;
+	}
+}
+
