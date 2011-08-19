@@ -28,7 +28,7 @@ class kbp_smokeping::server {
 		port             => 80,
 		priority         => 6,
 		revalidate_data  => "no",
-		timeout_value    => 1,
+		timeout_value    => 3,
 		tos              => "0xa0",
 		url              => "/",
 		waittime         => 1;
