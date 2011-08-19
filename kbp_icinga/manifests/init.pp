@@ -1211,7 +1211,7 @@ define kbp_icinga::java($servicegroups=false, $sms=true) {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=false, $max_check_attempts=false) {
+define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=false, $max_check_attempts=false, $path=false, $response=false) {
 	if $address {
 		if $conf_dir {
 			$confdir = "${conf_dir}/${name}"
@@ -1228,28 +1228,39 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 			address  => $address,
 			parents  => $parents;
 		}
+	}
 
-		kbp_icinga::service { "vhost_${name}":
-			conf_dir            => $confdir,
-			service_description => "Vhost ${name}",
-			host_name           => $name,
-			check_command       => $auth ? {
+	kbp_icinga::service { "vhost_${name}":
+		conf_dir            => $address ? {
+			false   => undef,
+			default => $confdir,
+		},
+		service_description => "Vhost ${name}",
+		host_name           => $address ? {
+			false   => undef,
+			default => $name,
+		},
+		check_command       => $auth ? {
+			false   => $path ? {
 				false   => "check_http_vhost",
-				default => "check_http_vhost_auth",
+				default => $response ? {
+					false   => "check_http_vhost_and_url",
+					default => "check_http_vhost_url_and_response",
+				},
 			},
-			max_check_attempts  => $max_check_attempts,
-			arguments           => $name;
-		}
-	} else {
-		kbp_icinga::service { "vhost_${name}":
-			service_description => "Vhost ${name}",
-			check_command       => $auth ? {
-				false   => "check_http_vhost",
-				default => "check_http_vhost_auth",
+			default => "check_http_vhost_auth",
+		},
+		max_check_attempts  => $max_check_attempts ? {
+			false   => undef,
+			default => $max_check_attempts,
+		},
+		arguments           => $path ? {
+			false   => $name,
+			default => $response ? {
+				false   => [$name,$path],
+				default => [$name,$path,$response],
 			},
-			max_check_attempts  => $max_check_attempts,
-			arguments           => $name;
-		}
+		};
 	}
 }
 

@@ -95,7 +95,7 @@ class kbp_apache::ssl {
 #	ensure
 #		Undocumented
 #	max_check_attempts
-#		For overriding the default max_check_attempts of the service.
+#		For overriding the default max_check_attempts of the service
 #
 # Actions:
 #	Undocumented
@@ -104,13 +104,28 @@ class kbp_apache::ssl {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_apache::site($ensure="present", $priority="", auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_probe=false, $smokeping=true) {
+define kbp_apache::site($ensure="present", $priority="", auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false,
+		$monitor_probe=false, $smokeping=true) {
 	$dontmonitor = ["default","default-ssl","localhost"]
 
 	if $ensure == "present" and ! ($name in $dontmonitor) {
 		kbp_monitoring::site { "${name}":
-			max_check_attempts => $max_check_attempts,
-			auth               => $auth;
+			max_check_attempts => $max_check_attempts ? {
+				false   => undef,
+				default => $max_check_attempts,
+			},
+			auth               => $auth ? {
+				false   => undef,
+				default => $auth,
+			},
+			path               => $monitor_path ? {
+				false   => undef,
+				default => $monitor_path,
+			},
+			response           => $monitor_response ? {
+				false   => undef,
+				default => $monitor_response,
+			};
 		}
 
 		if $smokeping {
