@@ -154,6 +154,6 @@ class kbp_mysql::monitoring::icinga::server($otherhost=false) {
 #	kbp_mysql::server
 #
 class kbp_mysql::puppetmaster {
-	Mysql::Server::Db <<| tag == "mysql_puppet" |>>
-	Mysql::Server::Grant <<| tag == "mysql_puppet" |>>
+	Mysql::Server::Db <<| tag == "mysql_puppetmaster" |>>
+	Mysql::Server::Grant <<| tag == "mysql_puppetmaster" |>>
 }
