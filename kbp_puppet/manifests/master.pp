@@ -240,6 +240,13 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 				db       => $real_dbname,
 				tag      => "mysql_puppetmaster";
 			}
+
+			@@gen_ferm::rule { "Connection from puppetmaster at ${fqdn}":
+				proto  => "tcp",
+				dport  => "3306",
+				action => "ACCEPT",
+				tag    => "mysql_puppetmaster",
+			}
 		}
 
 		gen_puppet::set_config {
