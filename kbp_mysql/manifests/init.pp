@@ -143,3 +143,17 @@ class kbp_mysql::monitoring::icinga::server($otherhost=false) {
 		user => "nagios";
 	}
 }
+
+# Class: kbp_mysql::puppetmaster
+#
+# Actions:
+#	Setup a database and user for the puppetmaster, as requested.
+#
+# Depends:
+#	gen_puppet
+#	kbp_mysql::server
+#
+class kbp_mysql::puppetmaster {
+	Mysql::Server::Db <<| tag == "mysql_puppet" |>>
+	Mysql::Server::Grant <<| tag == "mysql_puppet" |>>
+}
