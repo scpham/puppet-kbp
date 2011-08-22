@@ -298,6 +298,10 @@ class kbp_icinga::server {
 			command_name  => "check_http",
 			host_argument => '-I $HOSTADDRESS$',
 			arguments     => ['-H $ARG1$','-u $ARG2$','-r $ARG3$','-t 20'];
+		"check_http_on_port_with_url_and_response":
+			conf_dir      => "generic",
+			command_name  => "check_http",
+			arguments     => ['-p $ARG1$','-u $ARG2$','-r $ARG3$','-t 20'];
 		"check_http_on_port_with_vhost_url_and_response":
 			conf_dir      => "generic",
 			command_name  => "check_http",
