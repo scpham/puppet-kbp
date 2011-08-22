@@ -404,6 +404,7 @@ define kbp_puppet::master::environment ($configfile = "/srv/puppet/puppet.conf")
 
 	kfile {
 		"/srv/puppet/env/${name}":
+			mode    => 775,
 			ensure  => directory;
 	}
 }
