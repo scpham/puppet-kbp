@@ -274,35 +274,43 @@ class kbp_icinga::server {
 		"check_http":
 			conf_dir  => "generic",
 			arguments => ['-I $HOSTADDRESS$','-t 20'];
-		"check_http_auth":
-			conf_dir     => "generic",
-			command_name => "check_http",
-			arguments    => ['-I $HOSTADDRESS$',"-e 401,403",'-t 20'];
 		"check_http_vhost":
 			conf_dir      => "generic",
 			command_name  => "check_http",
 			host_argument => '-I $HOSTADDRESS$',
 			arguments     => ['-H $ARG1$','-t 20'];
+		"check_http_auth":
+			conf_dir     => "generic",
+			command_name => "check_http",
+			arguments    => ['-I $HOSTADDRESS$',"-e 401,403",'-t 20'];
 		"check_http_vhost_auth":
 			conf_dir      => "generic",
 			command_name  => "check_http",
 			host_argument => '-I $HOSTADDRESS$',
 			arguments     => ['-H $ARG1$',"-e 401,403",'-t 20'];
-		"check_http_vhost_and_url":
+		"check_http_url":
+			conf_dir      => "generic",
+			command_name  => "check_http",
+			arguments     => ['-u $ARG1$','-t 20'];
+		"check_http_vhost_url":
 			conf_dir      => "generic",
 			command_name  => "check_http",
 			host_argument => '-I $HOSTADDRESS$ -H $HOSTNAME$',
 			arguments     => ['-u $ARG1$','-t 20'];
-		"check_http_vhost_url_and_response":
+		"check_http_url_response":
+			conf_dir      => "generic",
+			command_name  => "check_http",
+			arguments     => ['-u $ARG1$','-r $ARG2$','-t 20'];
+		"check_http_vhost_url_response":
 			conf_dir      => "generic",
 			command_name  => "check_http",
 			host_argument => '-I $HOSTADDRESS$',
 			arguments     => ['-H $ARG1$','-u $ARG2$','-r $ARG3$','-t 20'];
-		"check_http_on_port_with_url_and_response":
+		"check_http_port_url_response":
 			conf_dir      => "generic",
 			command_name  => "check_http",
 			arguments     => ['-p $ARG1$','-u $ARG2$','-r $ARG3$','-t 20'];
-		"check_http_on_port_with_vhost_url_and_response":
+		"check_http_vhost_port_url_response":
 			conf_dir      => "generic",
 			command_name  => "check_http",
 			host_argument => '-I $HOSTADDRESS$',
