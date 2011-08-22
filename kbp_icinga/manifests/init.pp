@@ -296,13 +296,13 @@ class kbp_icinga::server {
 		"check_http_vhost_url_and_response":
 			conf_dir      => "generic",
 			command_name  => "check_http",
-			host_argument => '-I $HOSTADDRESS$ -H $HOSTNAME$',
-			arguments     => ['-u $ARG1$','-r $ARG2$','-t 20'];
+			host_argument => '-I $HOSTADDRESS$',
+			arguments     => ['-H $ARG1$','-u $ARG2$','-r $ARG3$','-t 20'];
 		"check_http_on_port_with_vhost_url_and_response":
 			conf_dir      => "generic",
 			command_name  => "check_http",
-			host_argument => '-I $HOSTADDRESS$ -H $HOSTNAME$',
-			arguments     => ['-p $ARG1$','-u $ARG2$','-r $ARG3$','-t 20'];
+			host_argument => '-I $HOSTADDRESS$',
+			arguments     => ['-H $ARG1$','-p $ARG2$','-u $ARG3$','-r $ARG4$','-t 20'];
 		"check_mbean_value":
 			conf_dir  => "generic",
 			arguments => ['$ARG1$','$ARG2$','$ARG3$','$ARG4$'],
@@ -1132,7 +1132,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $respon
 			service_description => "Virtual host ${name}",
 			host_name           => $name,
 			check_command       => "check_http_on_port_with_vhost_url_and_response",
-			arguments           => [$port,$url,$response],
+			arguments           => [$name,$port,$url,$response],
 			max_check_attempts  => $max_check_attempts,
 			ha                  => $ha;
 		}
@@ -1142,7 +1142,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $respon
 			service_description => "Virtual host ${name}",
 			host_name           => $name,
 			check_command       => "check_http_vhost_url_and_response",
-			arguments           => [$url,$response],
+			arguments           => [$name,$url,$response],
 			max_check_attempts  => $max_check_attempts,
 			ha                  => $ha;
 		}
@@ -1257,8 +1257,8 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 		arguments           => $path ? {
 			false   => $name,
 			default => $response ? {
-				false   => [$path],
-				default => [$path,$response],
+				false   => [$name,$path],
+				default => [$name,$path,$response],
 			},
 		};
 	}
