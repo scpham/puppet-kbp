@@ -290,6 +290,7 @@ class kbp_icinga::server {
 		"check_http_url":
 			conf_dir      => "generic",
 			command_name  => "check_http",
+			host_argument => '-I $HOSTADDRESS$',
 			arguments     => ['-u $ARG1$','-t 20'];
 		"check_http_vhost_url":
 			conf_dir      => "generic",
@@ -299,6 +300,7 @@ class kbp_icinga::server {
 		"check_http_url_response":
 			conf_dir      => "generic",
 			command_name  => "check_http",
+			host_argument => '-I $HOSTADDRESS$',
 			arguments     => ['-u $ARG1$','-r $ARG2$','-t 20'];
 		"check_http_vhost_url_response":
 			conf_dir      => "generic",
@@ -1142,7 +1144,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $respon
 			conf_dir            => $confdir,
 			service_description => "Virtual host ${name}",
 			host_name           => $name,
-			check_command       => "check_http_on_port_with_vhost_url_and_response",
+			check_command       => "check_http_vhost_port_url_response",
 			arguments           => [$name,$port,$url,$response],
 			max_check_attempts  => $max_check_attempts,
 			ha                  => $ha;
@@ -1152,7 +1154,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $respon
 			conf_dir            => $confdir,
 			service_description => "Virtual host ${name}",
 			host_name           => $name,
-			check_command       => "check_http_vhost_url_and_response",
+			check_command       => "check_http_vhost_url_response",
 			arguments           => [$name,$url,$response],
 			max_check_attempts  => $max_check_attempts,
 			ha                  => $ha;
