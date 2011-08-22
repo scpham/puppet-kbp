@@ -1178,6 +1178,7 @@ define kbp_icinga::java($servicegroups=false, $sms=true) {
 	kbp_icinga::service { "java_heap_usage_${name}":
 		service_description => "Java heap usage ${name}",
 		check_command       => "check_java_heap_usage",
+		max_check_attempts  => 12,
 		arguments           => $name,
 		servicegroups       => $servicegroups ? {
 			false   => undef,
