@@ -1257,8 +1257,8 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 		arguments           => $path ? {
 			false   => $name,
 			default => $response ? {
-				false   => [$name,$path],
-				default => [$name,$path,$response],
+				false   => [$path],
+				default => [$path,$response],
 			},
 		};
 	}
