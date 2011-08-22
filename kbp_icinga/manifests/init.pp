@@ -1258,8 +1258,8 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 			false   => $path ? {
 				false   => "check_http_vhost",
 				default => $response ? {
-					false   => "check_http_vhost_and_url",
-					default => "check_http_vhost_url_and_response",
+					false   => "check_http_vhost_url",
+					default => "check_http_vhost_url_response",
 				},
 			},
 			default => "check_http_vhost_auth",
@@ -1385,10 +1385,11 @@ define kbp_icinga::glassfish($webport, $statuspath=false) {
 		default => "${statuspath}/status.jsp",
 	}
 
-	kbp_icinga::service { "glassfish_${name}":
+	kbp_icinga::site { "glassfish_${name}":
 		service_description => "Glassfish ${name} status",
-		check_command       => "check_http_on_port_with_vhost_url_and_response",
-		arguments           => [$webport,$realpath,"RUNNING"];
+		port                => $webport,
+		path                => $realpath,
+		response            => "RUNNING";
 	}
 }
 
