@@ -10,6 +10,7 @@
 #	gen_puppet
 #
 class kbp_ferm {
+	include kbp_ferm::offenders
 	include gen_ferm
 
 	Gen_ferm::Rule <<| tag == "general" |>>
@@ -61,6 +62,52 @@ class kbp_ferm {
 			proto    => "icmpv6",
 			icmptype => "echo-request",
 			action   => "ACCEPT";
+	}
+}
+
+# Class: kbp_ferm::offenders
+#
+# Parameters:
+#	None
+#
+# Actions:
+#	Disable access from known bad IP addresses to all machines in our control.
+#	Use with care.
+#
+# Depends:
+#	kbp_ferm
+#	gen_puppet
+#
+class kbp_ferm::offenders {
+	# Please add a comment describing when the IP was added and what for.
+	kbp_ferm::block {
+		# 20110823 Ssh brute force attacks on IQNOMY for several days
+		"219.111.16.42":;
+	}
+}
+
+# Define: kbp_ferm::block
+#
+# Parameters:
+#	name
+#		IP address to block completely
+#
+# Actions:
+#	Drops all traffic from the IP address.
+#
+# Depends:
+#	kbp_ferm
+#	gen_puppet
+#
+define kbp_ferm::block {
+	gen_ferm::rule {
+		"Drop all traffic from ${name}.":
+			saddr  => $name,
+			action => "DROP";
+		"Drop all forwarded traffic from ${name}.":
+			saddr  => $name,
+			chain  => "FORWARD",
+			action => "DROP";
 	}
 }
 
