@@ -29,7 +29,7 @@
 #	Undocumented
 #	gen_puppet
 #
-define kbp_loadbalancer::site ($sslport=false, $listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $cookie=false, $monitoring_url=false, $monitoring_response=false, $make_lbconfig=true, $httpcheck_uri=false, $httpcheck_port=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $balance="static-rr", $max_check_attempts=false, $customtag=false) {
+define kbp_loadbalancer::site ($sslport=false, $listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $cookie=false, $monitoring_url=false, $monitoring_response=false, $make_lbconfig=true, $httpcheck_uri=false, $httpcheck_port=false, $servername=$::hostname, $serverip=$::ipaddress_eth0, $serverport=80, $balance="static-rr", $max_check_attempts=false, $customtag=false) {
 	kbp_haproxy::site { "${name}":
 		listenaddress       => $listenaddress,
 		port                => $port,
