@@ -120,6 +120,9 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 				$queue_port = "61613", $rackroot = "/usr/local/share/puppet/rack",
 				$rundir = "/var/run/puppet", $ssldir = "/var/lib/puppet/ssl",
 				$templatedir = '$confdir/templates', $vardir = "/var/lib/puppet") {
+
+	include apache
+
 	# If the name is 'default', we want to change the puppetmaster name (pname)
 	# we're using for this instance to something without crud.
 	if $name == 'default' {
