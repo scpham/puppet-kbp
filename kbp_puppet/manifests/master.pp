@@ -318,11 +318,17 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 
 		# Only set the host if it's needed.
 		if $dbhost {
-			gen_puppet::set_config { "Set database host for ${name}.":
-				configfile => $configfile,
-				var        => 'dbhost',
-				value      => $dbhost,
-				section    => 'main',
+			gen_puppet::set_config {
+				"Set database host for ${name}.":
+					configfile => $configfile,
+					var        => 'dbhost',
+					value      => $dbhost,
+					section    => 'main';
+				"Set database host for ${name} in master.":
+					configfile => $configfile,
+					var        => 'dbhost',
+					value      => $dbhost,
+					section    => 'master';
 			}
 		}
 
@@ -404,6 +410,7 @@ define kbp_puppet::master::environment ($configfile = "/srv/puppet/puppet.conf")
 
 	kfile {
 		"/srv/puppet/env/${name}":
+			mode    => 775,
 			ensure  => directory;
 	}
 }
