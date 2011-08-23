@@ -772,7 +772,7 @@ class kbp_icinga::asterisk {
 #	gen_puppet
 #
 define kbp_icinga::service($service_description=false, $use=false, $servicegroups=false, $passive=false, $ha=false, $sms=true,
-		$warnsms=true, $conf_dir="${environment}/${fqdn}", $host_name=$fqdn, $initial_state=false, $active_checks_enabled=false, $passive_checks_enabled=false,
+		$warnsms=true, $conf_dir="${::environment}/${::fqdn}", $host_name=$::fqdn, $initial_state=false, $active_checks_enabled=false, $passive_checks_enabled=false,
 		$obsess_over_service=false, $check_freshness=false, $freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false,
 		$process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false,
 		$check_interval=false, $retry_interval=false, $notification_period=false, $notification_options=false, $max_check_attempts=false, $check_command=false,
@@ -783,21 +783,21 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 	}
 	$real_use = $use ? {
 		false        => $passive ? {
-			true  => "passive_service_${environment}",
+			true  => "passive_service_${::environment}",
 			false => $ha ? {
-				true  => "ha_service_${environment}",
+				true  => "ha_service_${::environment}",
 				false => $sms ? {
-					false => "mail_service_${environment}",
+					false => "mail_service_${::environment}",
 					true  => $warnsms ? {
-						true  => "warnsms_service_${environment}",
-						false => "critsms_service_${environment}",
+						true  => "warnsms_service_${::environment}",
+						false => "critsms_service_${::environment}",
 					},
 				},
 			},
 		},
-		$environment => $passive ? {
-			true  => "${environment}_passive_service_${environment}",
-			false => "${environment}_service",
+		$::environment => $passive ? {
+			true  => "${::environment}_passive_service_${::environment}",
+			false => "${::environment}_service",
 		},
 		" "          => false,
 		default      => $use,
@@ -1080,7 +1080,7 @@ define kbp_icinga::sslcert($path) {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::virtualhost($address, $conf_dir=$environment, $parents=false, $hostgroups=false, $sms=true) {
+define kbp_icinga::virtualhost($address, $conf_dir=$::environment, $parents=false, $hostgroups=false, $sms=true) {
 	$confdir = "${conf_dir}/${name}"
 
 	gen_icinga::configdir { "${confdir}":; }
@@ -1225,7 +1225,7 @@ define kbp_icinga::java($servicegroups=false, $sms=true) {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $service_description=false, $auth=false, $max_check_attempts=false, $port=false, $path=false, $response=false, $vhost=true) {
+define kbp_icinga::site($address=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false, $max_check_attempts=false, $port=false, $path=false, $response=false, $vhost=true) {
 	if $address {
 		if $conf_dir {
 			$confdir = "${conf_dir}/${name}"
@@ -1362,9 +1362,9 @@ define kbp_icinga::raidcontroller($driver) {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::http($customfqdn=$fqdn, $auth=false) {
+define kbp_icinga::http($customfqdn=$::fqdn, $auth=false) {
 	kbp_icinga::service { "http_${customfqdn}":
-		conf_dir            => "${environment}/${customfqdn}",
+		conf_dir            => "${::environment}/${customfqdn}",
 		service_description => "HTTP",
 		host_name           => $customfqdn,
 		check_command       => $auth ? {
