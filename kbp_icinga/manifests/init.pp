@@ -290,7 +290,7 @@ class kbp_icinga::server {
 		"check_http_url":
 			conf_dir      => "generic",
 			command_name  => "check_http",
-			host_argument => '-I $HOSTADDRESS$',
+			host_argument => '-H $HOSTNAME$',
 			arguments     => ['-u $ARG1$','-t 20'];
 		"check_http_vhost_url":
 			conf_dir      => "generic",
