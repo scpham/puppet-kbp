@@ -83,6 +83,8 @@ class kbp_ferm::offenders {
 	kbp_ferm::block {
 		# 20110823 Ssh brute force attacks on IQNOMY for several days
 		"219.111.16.42":;
+		# 20110823 Ssh brute force attacks on IQNOMY
+		"180.168.201.47":;
 	}
 }
 
