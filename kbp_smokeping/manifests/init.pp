@@ -79,7 +79,7 @@ define kbp_smokeping::environment($owner="Kumina bv", $contact="support@kumina.n
 # Depends:
 #       gen_puppet
 #
-define kbp_smokeping::target($group=$environment, $probe="EchoPingHttp", $path=false, $host=false, $subdir=$environment) {
+define kbp_smokeping::target($group=$::environment, $probe="EchoPingHttp", $path=false, $host=false, $subdir=$::environment) {
 	gen_smokeping::target { "${name}":
 		group  => $group,
 		probe  => $probe,
@@ -103,7 +103,7 @@ define kbp_smokeping::target($group=$environment, $probe="EchoPingHttp", $path=f
 # Depends:
 #       gen_puppet
 #
-define kbp_smokeping::targetgroup($remark=false, $subdir=$environment) {
+define kbp_smokeping::targetgroup($remark=false, $subdir=$::environment) {
 	gen_smokeping::targetgroup { "${name}":
 		remark => $remark ? {
 			false   => undef,
