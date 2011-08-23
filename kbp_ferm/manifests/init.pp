@@ -82,7 +82,6 @@ class kbp_ferm::offenders {
 	# Please add a comment describing when the IP was added and what for.
 	kbp_ferm::block {
 		# 20110823 Ssh brute force attacks on IQNOMY for several days
-		"219.111.16.42":;
 		"180.168.201.47":;
 		"114.205.1.193":;
 		"115.249.181.70":;
