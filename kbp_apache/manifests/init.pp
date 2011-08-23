@@ -105,7 +105,7 @@ class kbp_apache::ssl {
 #	gen_puppet
 #
 define kbp_apache::site($ensure="present", $priority="", auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false,
-		$monitor_probe=false, $smokeping=true) {
+		$monitor_probe=false, $monitor_vhost=true, $smokeping=true) {
 	$dontmonitor = ["default","default-ssl","localhost"]
 
 	if $ensure == "present" and ! ($name in $dontmonitor) {
@@ -125,6 +125,10 @@ define kbp_apache::site($ensure="present", $priority="", auth=false, $max_check_
 			response           => $monitor_response ? {
 				false   => undef,
 				default => $monitor_response,
+			},
+			vhost              => $monitor_vhost ? {
+				true    => undef,
+				default => false,
 			};
 		}
 
