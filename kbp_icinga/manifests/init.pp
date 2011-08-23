@@ -300,7 +300,7 @@ class kbp_icinga::server {
 		"check_http_url_response":
 			conf_dir      => "generic",
 			command_name  => "check_http",
-			host_argument => '-I $HOSTADDRESS$',
+			host_argument => '-H $HOSTNAME$',
 			arguments     => ['-u $ARG1$','-r $ARG2$','-t 20'];
 		"check_http_vhost_url_response":
 			conf_dir      => "generic",
@@ -1225,7 +1225,7 @@ define kbp_icinga::java($servicegroups=false, $sms=true) {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=false, $max_check_attempts=false, $path=false, $response=false) {
+define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $service_description=false, $auth=false, $max_check_attempts=false, $port=false, $path=false, $response=false, $vhost=true) {
 	if $address {
 		if $conf_dir {
 			$confdir = "${conf_dir}/${name}"
@@ -1244,37 +1244,65 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$fqdn, $auth=f
 		}
 	}
 
+	if $vhost {
+		if $auth {
+			$check_command = "check_http_vhost_auth"
+			$arguments     = $name
+		} elsif $port and $port != 80 {
+			if $path {
+				if $response {
+					$check_command = "check_http_vhost_port_url_response"
+					$arguments     = [$name,$port,$path,$response]
+				} else {
+					$check_command = "check_http_vhost_port_url"
+					$arguments     = [$name,$port,$path]
+				}
+			} else {
+				$check_command = "check_http_vhost_port"
+				$arguments     = [$name,$port]
+			}
+		} elsif $path {
+			if $response {
+				$check_command = "check_http_vhost_url_response"
+				$arguments     = [$name,$path,$response]
+			} else {
+				$check_command = "check_http_vhost_url"
+				$arguments     = [$name,$path]
+			}
+		} else {
+			$check_command = "check_http_vhost"
+			$arguments     = $name
+		}
+	} else {
+		if $port {
+			if $path {
+				if $response {
+					$check_command = "check_http_port_url_response"
+					$arguments     = [$port,$path,$response]
+				}
+			}
+		}
+	}
+
 	kbp_icinga::service { "vhost_${name}":
 		conf_dir            => $address ? {
 			false   => undef,
 			default => $confdir,
 		},
-		service_description => "Vhost ${name}",
+		service_description => $service_description ? {
+			false   => "Vhost ${name}",
+			default => $service_description,
+		},
 		host_name           => $address ? {
 			false   => undef,
 			default => $name,
 		},
-		check_command       => $auth ? {
-			false   => $path ? {
-				false   => "check_http_vhost",
-				default => $response ? {
-					false   => "check_http_vhost_url",
-					default => "check_http_vhost_url_response",
-				},
-			},
-			default => "check_http_vhost_auth",
-		},
+		check_command       => $check_command,
 		max_check_attempts  => $max_check_attempts ? {
 			false   => undef,
 			default => $max_check_attempts,
 		},
-		arguments           => $path ? {
-			false   => $name,
-			default => $response ? {
-				false   => [$name,$path],
-				default => [$name,$path,$response],
-			},
-		};
+		arguments           => $arguments;
 	}
 }
 
@@ -1385,10 +1413,11 @@ define kbp_icinga::glassfish($webport, $statuspath=false) {
 		default => "${statuspath}/status.jsp",
 	}
 
-	kbp_icinga::site { "glassfish_${name}":
+	kbp_icinga::site { $name:
 		service_description => "Glassfish ${name} status",
 		port                => $webport,
 		path                => $realpath,
+		vhost               => false,
 		response            => "RUNNING";
 	}
 }
