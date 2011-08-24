@@ -114,7 +114,7 @@ class kbp_puppet::master {
 #
 define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet/puppet.conf", $debug = false,
 				$dbsetup = true, $dbname = false, $dbuser = false, $dbpasswd = false,
-				$dbhost = false, $dbsocket = false, $environments = [],
+				$dbhost = false, $dbserver = false, $dbsocket = false, $environments = [],
 				$factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet",
 				$pluginsync = true, $port = "8140", $queue = false, $queue_host = "localhost",
 				$queue_port = "61613", $rackroot = "/usr/local/share/puppet/rack",
@@ -122,6 +122,11 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 				$templatedir = '$confdir/templates', $vardir = "/var/lib/puppet") {
 
 	include apache
+
+	# The dbhost config option changed into dbserver somewhere in 2.6-2.7, we
+	# accept both for now. Maybe give a message at some point.
+	if $dbserver { $set_dbserver = $dbserver }
+	else         { $set_dbserver = $dbhost   }
 
 	# If the name is 'default', we want to change the puppetmaster name (pname)
 	# we're using for this instance to something without crud.
@@ -222,12 +227,14 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 		}
 
 		# Setup the MySQL only if one of the following condition apply:
-		# - dbhost is false or localhost (false implies localhost)
-		# - dbhost is equal to local fqdn
-		if ((! $dbhost) or ($dbhost == 'localhost')) or ($dbhost == $fqdn) {
+		# - dbserver is false or localhost (false implies localhost)
+		# - dbserver is equal to local fqdn
+
+		if ((! $set_dbserver) or ($dbserver == 'localhost')) or ($dbserver == $fqdn) {
 			mysql::server::db { $real_dbname:; }
 
 			mysql::server::grant { $real_dbname:
+				hostname => $fqdn,
 				user     => $real_dbuser,
 				password => $real_dbpasswd,
 				db       => $real_dbname;
@@ -244,12 +251,16 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 				tag      => "mysql_puppetmaster";
 			}
 
-			@@gen_ferm::rule { "Connection from puppetmaster at ${fqdn}":
-				proto  => "tcp",
-				dport  => "3306",
-				action => "ACCEPT",
-				tag    => "mysql_puppetmaster",
+			kbp_mysql::client { "puppetmaster":
+				customtag => "mysql_puppetmaster",
 			}
+
+#			@@gen_ferm::rule { "Connection from puppetmaster at ${fqdn}":
+#				proto  => "tcp",
+#				dport  => "3306",
+#				action => "ACCEPT",
+#				tag    => "mysql_puppetmaster",
+#			}
 		}
 
 		gen_puppet::set_config {
@@ -320,17 +331,17 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 		}
 
 		# Only set the host if it's needed.
-		if $dbhost {
+		if $set_dbserver {
 			gen_puppet::set_config {
 				"Set database host for ${name}.":
 					configfile => $configfile,
-					var        => 'dbhost',
-					value      => $dbhost,
+					var        => 'dbserver',
+					value      => $set_dbserver,
 					section    => 'main';
 				"Set database host for ${name} in master.":
 					configfile => $configfile,
-					var        => 'dbhost',
-					value      => $dbhost,
+					var        => 'dbserver',
+					value      => $set_dbserver,
 					section    => 'master';
 			}
 		}
