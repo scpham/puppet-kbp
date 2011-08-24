@@ -34,11 +34,12 @@ class kbp_git {
 #	kbp_git::repo
 #	gen_puppet
 #
-define kbp_git::repo ($branch = "master", $origin = false) {
+define kbp_git::repo ($branch = "master", $origin = false, $bare = false) {
 	include kbp_git
 
 	gen_git::repo { $name:
 		branch => $branch,
 		origin => $origin,
+		bare   => $bare;
 	}
 }
