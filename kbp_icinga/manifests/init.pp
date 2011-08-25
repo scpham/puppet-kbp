@@ -1080,23 +1080,27 @@ define kbp_icinga::sslcert($path) {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::virtualhost($address, $conf_dir=$::environment, $parents=false, $hostgroups=false, $sms=true) {
+define kbp_icinga::virtualhost($address, $conf_dir=$::environment, $parents=false, $hostgroups=false, $sms=true, $notification_period=false) {
 	$confdir = "${conf_dir}/${name}"
 
 	gen_icinga::configdir { "${confdir}":; }
 
 	kbp_icinga::host { "${name}":
-		conf_dir       => $confdir,
-		address        => $address,
-		parents        => $parents ? {
+		conf_dir              => $confdir,
+		address               => $address,
+		parents               => $parents ? {
 			false   => undef,
 			default => $parents,
 		},
-		hostgroups     => $hostgroups ? {
+		hostgroups            => $hostgroups ? {
 			false   => undef,
 			default => $hostgroups,
 		},
-		sms            => $sms;
+		sms                   => $sms,
+		notification_period   => $notification_period ? {
+			false   => undef,
+			default => $notification_period,
+		};
 	}
 }
 

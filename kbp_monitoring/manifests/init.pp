@@ -591,24 +591,28 @@ define kbp_monitoring::dnszone($master, $sms=true, $package="icinga") {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_monitoring::virtualhost($address, $conf_dir=false, $parents=false, $hostgroups=false, $package="icinga", $sms=true) {
+define kbp_monitoring::virtualhost($address, $conf_dir=false, $parents=false, $hostgroups=false, $package="icinga", $sms=true, $notification_period=false) {
 	case $package {
 		"icinga": {
 			kbp_icinga::virtualhost { "${name}":
-				address => $address,
-				conf_dir => $conf_dir ? {
+				address               => $address,
+				conf_dir              => $conf_dir ? {
 					false   => undef,
 					default => $conf_dir,
 				},
-				parents => $parents ? {
+				parents               => $parents ? {
 					false   => undef,
 					default => $parents,
 				},
-				hostgroups => $hostgroups ? {
+				hostgroups            => $hostgroups ? {
 					false   => undef,
 					default => $hostgroups,
 				},
-				sms            => $sms;
+				sms                   => $sms,
+				notification_period   => $notification_period ? {
+					false   => undef,
+					default => $notification_period,
+				};
 			}
 		}
 	}
