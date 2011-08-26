@@ -121,6 +121,10 @@ class kbp_mysql::monitoring::icinga::server($otherhost=false) {
 	}
 }
 
+class kbp_mysql::client::java {
+	include mysql::java
+}
+
 # Class: kbp_mysql::puppetmaster
 #
 # Actions:
@@ -162,4 +166,3 @@ define kbp_mysql::client ($customtag="mysql_${environment}") {
 		tag    => $customtag;
 	}
 }
-
