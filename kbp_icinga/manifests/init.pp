@@ -303,8 +303,8 @@ class kbp_icinga::server {
 		"check_http_vhost_url":
 			conf_dir      => "generic",
 			command_name  => "check_http",
-			host_argument => '-I $HOSTADDRESS$ -H $HOSTNAME$',
-			arguments     => ['-u $ARG1$','-t 20'];
+			host_argument => '-I $HOSTADDRESS$',
+			arguments     => ['-H $ARG1$ -u $ARG2$','-t 20'];
 		"check_http_url_response":
 			conf_dir      => "generic",
 			command_name  => "check_http",
