@@ -12,6 +12,17 @@
 class kbp_puppet {
 	include gen_puppet
 
+#	exec { "Mount /var with acl":
+#		command => '/usr/bin/awk \'/var/ { if($4 !~ /acl/) $4 = $4",acl" } ; { print }\' /etc/fstab > /etc/fstab.net && mv /etc/fstab{.net,} && /bin/mount -o remount /var';
+#	}
+
+#	setfacl { "/var/lib/puppet_group":
+#		dir          => "/var/lib/puppet",
+#		acl          => "group:kumina:rwx",
+#		make_default => true,
+#		require      => Exec["Mount /var with acl"];
+#	}
+
 	gen_apt::preference { ["puppet","puppet-common"]:; }
 }
 

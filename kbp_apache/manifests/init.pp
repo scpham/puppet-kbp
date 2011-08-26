@@ -125,10 +125,6 @@ define kbp_apache::site($ensure="present", $priority="", $auth=false, $max_check
 			response           => $monitor_response ? {
 				false   => undef,
 				default => $monitor_response,
-			},
-			vhost              => $monitor_vhost ? {
-				true    => undef,
-				default => false,
 			};
 		}
 
