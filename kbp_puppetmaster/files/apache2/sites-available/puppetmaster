@@ -1,6 +1,7 @@
 # Based on http://projects.puppetlabs.com/projects/1/wiki/Using_Passenger
 
 Listen 8140
+PassengerMaxPoolSize 14
 
 <VirtualHost *:8140>
 	SSLEngine on
@@ -24,7 +25,6 @@ Listen 8140
 
 	# Passenger options that can be set in a virtual host
 	# configuration block.
-	PassengerMaxPoolSize 14
 	PassengerHighPerformance on
 	PassengerStatThrottleRate 120
 	PassengerUseGlobalQueue on
