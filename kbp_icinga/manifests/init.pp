@@ -100,6 +100,19 @@ class kbp_icinga::client {
 		parents => $parent;
 	}
 
+	if $is_virtual {
+		kbp_icinga::service { "memory":
+			service_description => "Memory usage",
+			check_command       => "check_memory",
+			nrpe                => true,
+			warnsms             => false;
+		}
+	} else {
+		kbp_icinga::service { "memory":
+			ensure => absent,
+		}
+	}
+
 	kbp_icinga::service {
 		"ssh":
 			service_description => "SSH connectivity",
@@ -154,11 +167,6 @@ class kbp_icinga::client {
 			check_command       => "check_ntpd",
 			nrpe                => true,
 			sms                 => false;
-		"memory":
-			service_description => "Memory usage",
-			check_command       => "check_memory",
-			nrpe                => true,
-			warnsms             => false;
 		"swap":
 			service_description => "Swap usage",
 			check_command       => "check_swap",
