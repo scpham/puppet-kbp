@@ -24,6 +24,7 @@ Listen 8140
 
 	# Passenger options that can be set in a virtual host
 	# configuration block.
+	PassengerMaxPoolSize 14
 	PassengerHighPerformance on
 	PassengerStatThrottleRate 120
 	PassengerUseGlobalQueue on
