@@ -3,6 +3,9 @@
 
 class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_password, $db_server="localhost", $domain=$fqdn) {
 	$root="/srv/jira"
+	class { "kbp_tomcat":
+		domain => $domain;
+	}
 	include kbp_tomcat::mysql
 	include gen_base::ant
 	include gen_base::unzip

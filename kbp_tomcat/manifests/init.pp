@@ -39,8 +39,6 @@ class kbp_tomcat::mysql {
 }
 
 define kbp_tomcat::webapp($war="", $urlpath="/", $context_xml_content=false, $root_app=false) {
-	include kbp_tomcat
-
 	gen_tomcat::context { $name:
 		war                 => $war,
 		urlpath             => $urlpath,
