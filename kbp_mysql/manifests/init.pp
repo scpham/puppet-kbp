@@ -32,6 +32,13 @@ class kbp_mysql::server($otherhost=false) {
 
 	Gen_ferm::Rule <<| tag == "mysql_${environment}" |>>
 	Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
+
+	# Setup backup for MySQL
+	kfile { "/etc/backup/prepare.d/mysql":
+		ensure  => link,
+		target  => "/usr/share/backup-scripts/prepare/mysql",
+		require => Package["offsite-backup"],
+	}
 }
 
 # Class: kbp_mysql::slave
@@ -135,11 +142,11 @@ class kbp_mysql::client::java {
 #	kbp_mysql::server
 #
 class kbp_mysql::puppetmaster {
-	include kbp_mysql
+	include kbp_mysql::server
 
+	Gen_ferm::Rule <<| tag == "mysql_puppetmaster" |>>
 	Mysql::Server::Db <<| tag == "mysql_puppetmaster" |>>
 	Mysql::Server::Grant <<| tag == "mysql_puppetmaster" |>>
-	Gen_ferm::Rule <<| tag == "mysql_puppetmaster" |>>
 }
 
 # Define: kbp_mysql::client
