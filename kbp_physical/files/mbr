@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Save the current master boot records
+logfile="/var/backups/dd.log"
+touch $logfile
+
+/bin/dd if=/dev/sda of=/var/backups/MBR.bin bs=512 count=1 2> $logfile
+exit=$?
+
+if [ $exit -eq 0 ]; then
+	rm $logfile
+	exit 0
+else
+	echo "`cat $logfile`" >&2
+	rm #logfile
+	exit $exit
+fi

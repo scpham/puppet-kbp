@@ -41,4 +41,10 @@ class kbp_physical {
 			}
 		}
 	}
+
+	# Backup the MBR
+	kfile { "/etc/backup/prepare.d/mbr":
+		source => "kbp_physical/mbr",
+		mode   => 700;
+	}
 }
