@@ -49,10 +49,7 @@ class kbp_icinga::client {
 		"check_mbean_value":
 			arguments => '$ARG1$ $ARG2$ $ARG3$ $ARG4$';
 		"check_memory":
-			arguments => $is_virtual ? {
-				"true"  => "-w 6 -c 3",
-				"false" => "-w 4 -c 2",
-			};
+			arguments => "-w 6 -c 3";
 		"check_mysql":
 			arguments => "-u nagios";
 		"check_mysql_slave":
@@ -109,7 +106,7 @@ class kbp_icinga::client {
 		}
 	} else {
 		kbp_icinga::service { "memory":
-			ensure => absent,
+			ensure => absent;
 		}
 	}
 
@@ -135,14 +132,13 @@ class kbp_icinga::client {
 		"puppet_failures":
 			service_description => "Puppet failures",
 			check_command       => "check_puppet_failures",
-			retry_interval      => 3600,
+			max_check_attempts  => 720,
 			nrpe                => true,
 			sms                 => false;
 		"cpu":
 			ensure              => absent,
 			service_description => "CPU usage",
 			check_command       => "check_cpu",
-			retry_interval      => 10,
 			max_check_attempts  => 30,
 			nrpe                => true;
 		"loadtrend":
