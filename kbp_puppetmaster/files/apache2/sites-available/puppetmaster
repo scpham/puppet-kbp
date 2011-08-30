@@ -1,7 +1,7 @@
 # Based on http://projects.puppetlabs.com/projects/1/wiki/Using_Passenger
 
 Listen 8140
-PassengerMaxPoolSize 6
+PassengerMaxPoolSize 14
 
 <VirtualHost *:8140>
 	SSLEngine on
