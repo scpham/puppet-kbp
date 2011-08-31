@@ -97,7 +97,7 @@ class kbp_icinga::client {
 		parents => $parent;
 	}
 
-	if $is_virtual == "false" {
+	if $is_virtual == "true" {
 		kbp_icinga::service { "memory":
 			service_description => "Memory usage",
 			check_command       => "check_memory",
