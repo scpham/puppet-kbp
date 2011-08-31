@@ -160,6 +160,8 @@ class kbp_icinga::client {
 			service_description => "NTP offset",
 			check_command       => "check_remote_ntp",
 			nrpe                => true,
+			check_interval      => 14400,
+			retry_interval      => 1800,
 			sms                 => false;
 		"ntpd":
 			service_description => "NTPD",
