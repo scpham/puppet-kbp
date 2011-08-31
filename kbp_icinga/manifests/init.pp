@@ -135,7 +135,7 @@ class kbp_icinga::client {
 		"puppet_failures":
 			service_description => "Puppet failures",
 			check_command       => "check_puppet_failures",
-			max_check_attempts  => 720,
+			max_check_attempts  => 1440,
 			nrpe                => true,
 			sms                 => false;
 		"cpu":
