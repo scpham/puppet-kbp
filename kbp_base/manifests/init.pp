@@ -25,6 +25,9 @@ class kbp_base {
 	if $is_virtual == "false" {
 		include kbp_physical
 	}
+	if $fqdn != "puppetmaster.kumina.nl" {
+		include kbp_puppet::default_config
+	}
 
 	if versioncmp($lsbdistrelease, 6) >= 0 { # Squeeze
 		# Needed by grub2

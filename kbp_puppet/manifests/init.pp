@@ -35,7 +35,7 @@ class kbp_puppet {
 #	Undocumented
 #	gen_puppet
 #
-class kbp_puppet::test_default_config {
+class kbp_puppet::default_config {
 	include gen_puppet::puppet_conf
 
 	# Default config for all our puppet clients
@@ -51,6 +51,9 @@ class kbp_puppet::test_default_config {
 		"environment": value => $environment;
 		"configtimeout":
 			value   => "300",
+			section => "agent";
+		"runinterval":
+			value   => 10800,
 			section => "agent";
 	}
 }
