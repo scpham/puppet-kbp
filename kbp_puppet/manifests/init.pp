@@ -50,7 +50,7 @@ class kbp_puppet::default_config {
 		"pluginsync":  value => 'true';
 		"environment": value => $environment;
 		"configtimeout":
-			value   => "300",
+			value   => "900",
 			section => "agent";
 		"runinterval":
 			value   => 10800,
