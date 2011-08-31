@@ -76,6 +76,9 @@ class kbp_icinga::client {
 			sudo      => true,
 			command   => "check_puppet",
 			arguments => "-f -w 1 -c 1";
+		"check_rabbitmqctl":
+			sudo      => true,
+			arguments => '-p $ARG1$';
 		"check_remote_ntp":
 			command   => "check_ntp_time",
 			arguments => "-H 0.debian.pool.ntp.org -t 20";
@@ -355,6 +358,10 @@ class kbp_icinga::server {
 		"check_dnszone":
 			conf_dir  => "generic",
 			arguments => ['$ARG1$','$ARG2$'],
+			nrpe      => true;
+		"check_rabbitmqctl":
+			conf_dir  => "generic",
+			arguments => '$ARG1$',
 			nrpe      => true;
 	}
 
@@ -1059,6 +1066,28 @@ define kbp_icinga::sslcert($path) {
 		service_description => "SSL certificate in ${path}",
 		check_command       => "check_sslcert",
 		arguments           => $path,
+		nrpe                => true;
+	}
+}
+
+# Class: kbp_icinga::rabbitmqctl
+#
+# Parameters:
+#	namespace
+#		Namespace of the queues to check
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+class kbp_icinga::rabbitmqctl($namespace) {
+	kbp_icinga::service { "rabbitmqctl_${name}":
+		service_description => "Stale messages in RabbitMQ in ${namespace}",
+		check_command       => "check_rabbitmqctl",
+		arguments           => $namespace,
 		nrpe                => true;
 	}
 }
