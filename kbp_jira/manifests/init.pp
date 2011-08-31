@@ -4,7 +4,8 @@
 class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_password, $db_server="localhost", $domain=$fqdn) {
 	$root="/srv/jira"
 	class { "kbp_tomcat":
-		domain => $domain;
+		domain    => $domain,
+		java_opts => "-Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dmail.mime.decodeparameters=true";
 	}
 	include kbp_tomcat::mysql
 	include gen_base::ant
