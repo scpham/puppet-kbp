@@ -248,6 +248,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 				user     => $real_dbuser,
 				password => $real_dbpasswd,
 				db       => $real_dbname,
+				hostname => "%",
 				tag      => "mysql_puppetmaster";
 			}
 
