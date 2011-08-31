@@ -9,11 +9,12 @@
 #	Undocumented
 #	gen_puppet
 #
-class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $domain=$fqdn, $serveralias=false, $documentroot=false, $ssl=false, $ajp13_connector_port = "8009", $java_opts=""){
+class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $domain=$fqdn, $serveralias=false, $documentroot=false, $ssl=false, $ajp13_connector_port = "8009", $java_opts="", $jvm_max_mem=false){
 	include kbp_apache
 	class { "gen_tomcat":
 		ajp13_connector_port => $ajp13_connector_port,
-		java_opts            => $java_opts;
+		java_opts            => $java_opts,
+		jvm_max_mem          => $jvm_max_mem;
 	}
 
 	apache_proxy_ajp_site { "${domain}":
