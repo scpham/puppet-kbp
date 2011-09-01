@@ -10,8 +10,6 @@
 #	gen_puppet
 #
 class kbp_vim {
-	include gen_vim
-
 	gen_vim::global_setting {
 		"syntax on":;
 		"set ai":;
@@ -21,11 +19,9 @@ class kbp_vim {
 		"set listchars=tab:»˙,trail:•":;
 		"set hlsearch":;
 		"set ruler":;
-		"set backupdir=~/.tmp/":
-			require => Gen_vim::Global_setting['silent execute "!mkdir -p ~/.tmp"'];
-		"set directory=~/.tmp/":
-			require => Gen_vim::Global_setting['silent execute "!mkdir -p ~/.tmp"'];
 		'silent execute "!mkdir -p ~/.tmp"':;
+		["set backupdir=~/.tmp/","set directory=~/.tmp/"]:
+			require => Gen_vim::Global_setting['silent execute "!mkdir -p ~/.tmp"'];
 	}
 }
 
@@ -39,9 +35,7 @@ class kbp_vim {
 #	gen_puppet
 #
 class kbp_vim::puppet {
-	include gen_vim
-
 	gen_vim::addon { "puppet":
-		package => "vim-puppet",
+		package => "vim-puppet";
 	}
 }
