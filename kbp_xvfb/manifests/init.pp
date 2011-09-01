@@ -10,7 +10,7 @@
 #	gen_puppet
 #
 class kbp_xvfb {
-	include gen_xvfb
+	include gen_base::xvfb
 
 	kfile { "/usr/local/bin/xvfb-run-patched":
 		source => "kbp_xvfb/xvfb-run-patched.sh",
