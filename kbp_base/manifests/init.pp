@@ -20,7 +20,6 @@ class kbp_base {
 	include kbp_ssh
 	include kbp_vim
 	include kbp_time
-	include kbp_sudo
 	include kbp_icinga::client
 	if $is_virtual == "false" {
 		include kbp_physical
@@ -41,14 +40,12 @@ class kbp_base {
 			entity            => "root",
 			as_user           => "ALL",
 			command           => "ALL",
-			password_required => true,
-			order             => 10; # legacy, only used on lenny systems
+			password_required => true;
 		"Kumina default rule":
 			entity            => "%root",
 			as_user           => "ALL",
 			command           => "ALL",
-			password_required => true,
-			order             => 10; # legacy, only used on lenny systems
+			password_required => true;
 	}
 
 	concat { "/etc/ssh/kumina.keys":

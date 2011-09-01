@@ -10,8 +10,6 @@
 #	gen_puppet
 #
 class kbp_monitoring::client::sslcert {
-	include kbp_sudo
-
 	gen_sudo::rule { "check_sslcert sudo rules":
 		entity            => "nagios",
 		as_user           => "root",
