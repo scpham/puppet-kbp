@@ -55,6 +55,9 @@ class kbp_puppet::default_config {
 		"runinterval":
 			value   => 10800,
 			section => "agent";
+		"splay":
+			value   => 'true',
+			section => "agent";
 	}
 }
 
