@@ -114,7 +114,7 @@ class kbp_debian inherits kbp_base {
 	}
 
 	package { "ca-certificates":
-		ensure => installed;
+		ensure => latest;
 	}
 
 	# Packages we do not need, thank you very much!
