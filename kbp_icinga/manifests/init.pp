@@ -131,13 +131,15 @@ class kbp_icinga::client {
 			service_description => "Puppet state freshness",
 			check_command       => "check_puppet_state_freshness",
 			nrpe                => true,
-			sms                 => false;
+			sms                 => false,
+			customer_notify     => false;
 		"puppet_failures":
 			service_description => "Puppet failures",
 			check_command       => "check_puppet_failures",
 			max_check_attempts  => 1440,
 			nrpe                => true,
-			sms                 => false;
+			sms                 => false,
+			customer_notify     => false;
 		"cpu":
 			ensure              => absent,
 			service_description => "CPU usage",
@@ -789,31 +791,31 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 		$obsess_over_service=false, $check_freshness=false, $freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false,
 		$process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false,
 		$check_interval=false, $retry_interval=false, $notification_period=false, $notification_options=false, $max_check_attempts=false, $check_command=false,
-		$arguments=false, $register=false, $nrpe=false, $ensure=present, $proxy=false) {
+		$arguments=false, $register=false, $nrpe=false, $ensure=present, $proxy=false, $customer_notify=true) {
 	$contacts = $register ? {
 		0       => "devnull",
 		default => false,
 	}
-	$real_use = $use ? {
-		false        => $passive ? {
-			true  => "passive_service_${::environment}",
+	$temp_use = $use ? {
+		false          => $passive ? {
+			true  => "passive_service",
 			false => $ha ? {
-				true  => "ha_service_${::environment}",
+				true  => "ha_service",
 				false => $sms ? {
-					false => "mail_service_${::environment}",
+					false => "mail_service",
 					true  => $warnsms ? {
-						true  => "warnsms_service_${::environment}",
-						false => "critsms_service_${::environment}",
+						true  => "warnsms_service",
+						false => "critsms_service",
 					},
 				},
 			},
 		},
-		$::environment => $passive ? {
-			true  => "${::environment}_passive_service_${::environment}",
-			false => "${::environment}_service",
-		},
-		" "          => false,
-		default      => $use,
+		" "            => false,
+		default        => $use,
+	}
+	$real_use = $customer_notify ? {
+		true  => "${temp_use}_${::environment}",
+		false => $temp_use,
 	}
 	$real_name = $conf_dir ? {
 		/.*generic.*/ => $name,
