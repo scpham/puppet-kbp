@@ -40,7 +40,7 @@ class kbp_icinga::client {
 			arguments => "-d All";
 		"check_java_heap_usage":
 			command   => "check_javaheapusage",
-			arguments => '/etc/munin/plugins/jmx_$ARG1$_java_process_memory 90 80';
+			arguments => '/etc/munin/plugins/jmx_$ARG1$_java_process_memory 96 93';
 		"check_ksplice":
 			command   => "check_uptrack_local",
 			arguments => "-w i -c o";
