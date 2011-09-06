@@ -178,7 +178,8 @@ class kbp_icinga::client {
 		"zombie_processes":
 			service_description => "Zombie processes",
 			check_command       => "check_zombie_processes",
-			nrpe                => true;
+			nrpe                => true,
+			sms                 => false;
 	}
 
 	gen_sudo::rule { "Icinga can run all plugins as root":
