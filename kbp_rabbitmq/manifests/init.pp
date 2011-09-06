@@ -9,7 +9,7 @@
 #	gen_rabbitmq
 #	gen_puppet
 #
-class kbp_rabbitmq($version, $port = 5672, $ssl_cert = false, $ssl_key = false, $ssl_port = 5671, $namespace = '/') {
+class kbp_rabbitmq($version=false, $port = 5672, $ssl_cert = false, $ssl_key = false, $ssl_port = 5671, $namespace = '/') {
 	class { "gen_rabbitmq":
 		ssl_cert => $ssl_cert,
 		ssl_key  => $ssl_key,
