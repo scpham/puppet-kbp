@@ -22,6 +22,9 @@ class kbp_vim {
 		'silent execute "!mkdir -p ~/.tmp"':;
 		["set backupdir=~/.tmp/","set directory=~/.tmp/"]:
 			require => Gen_vim::Global_setting['silent execute "!mkdir -p ~/.tmp"'];
+		"autocmd FileType python set tabstop=4":;
+		"autocmd FileType python set shiftwidth=4":;
+		"autocmd FileType python set expandtab":;
 	}
 }
 
