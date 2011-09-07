@@ -125,7 +125,7 @@ class kbp_monitoring::heartbeat($package="icinga") {
 	}
 }
 
-# Class: kbp_monitoring::nfs
+# Class: kbp_monitoring::nfs::server
 #
 # Parameters:
 #	package
@@ -138,10 +138,10 @@ class kbp_monitoring::heartbeat($package="icinga") {
 #	Undocumented
 #	gen_puppet
 #
-class kbp_monitoring::nfs($package="icinga") {
+class kbp_monitoring::nfs::server($package="icinga") {
 	case $package {
 		"icinga": {
-			include kbp_icinga::nfs
+			include kbp_icinga::nfs::server
 		}
 	}
 }

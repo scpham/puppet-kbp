@@ -335,7 +335,7 @@ class kbp_icinga::server {
 		"check_tcp":
 			conf_dir  => "generic",
 			arguments => '-p $ARG1$';
-		"check_nfs":
+		"check_nfs_server":
 			conf_dir     => "generic",
 			command_name => "check_rpc",
 			arguments    => "-C nfs -c2,3";
@@ -713,7 +713,7 @@ class kbp_icinga::heartbeat {
 	}
 }
 
-# Class: kbp_icinga::nfs
+# Class: kbp_icinga::nfs::server
 #
 # Actions:
 #	Undocumented
@@ -722,10 +722,10 @@ class kbp_icinga::heartbeat {
 #	Undocumented
 #	gen_puppet
 #
-class kbp_icinga::nfs {
+class kbp_icinga::nfs::server {
 	kbp_icinga::service { "nfs_daemon":
 		service_description => "NFS daemon",
-		check_command       => "check_nfs";
+		check_command       => "check_nfs_server";
 	}
 }
 

@@ -19,7 +19,7 @@ class kbp_nfs::server($need_gssd = "no", $need_idmapd = "no", $need_statd = "yes
 		$rpcnfsdpriority = "0", $rpcmountdopts = "", $rpcsvcgssdopts = "",
 		$statdopts = "") {
 	include kbp_trending::nfsd
-	include kbp_monitoring::nfs
+	include kbp_monitoring::nfs::server
 	class { "gen_nfs::server":
 		incoming_port => $incoming_port,
 		outgoing_port => $outgoing_port,
