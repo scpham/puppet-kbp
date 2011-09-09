@@ -214,6 +214,11 @@ class kbp_base {
 			ensure => latest;
 	}
 
+	# We run Ksplice, so always install the latest debian kernel
+	include gen_base::linux-base
+	$sanitized_kernelrelease = regsubst($kernelrelease, '\.', '_', 'G')
+	class { "gen_base::linux-image-${sanitized_kernelrelease}":; }
+
 	if versioncmp($lsbdistrelease, 6.0) < 0 {
 		kpackage { "tcptrack":
 			ensure => latest,
