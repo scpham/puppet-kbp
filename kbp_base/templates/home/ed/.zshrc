@@ -36,3 +36,9 @@ alias open='xdg-open'
 
 export EDITOR='vim'
 export PATH="$PATH:/sbin:/usr/sbin:/usr/local/sbin"
+
+# Add local aliases
+if test -f ~/.bash_aliases
+then
+	. ~/.bash_aliases
+fi
