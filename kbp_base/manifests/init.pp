@@ -54,7 +54,7 @@ class kbp_base {
 		mode  => 0644,
 	}
 
-	define staff_user($ensure = "present", $fullname, $uid, $password_hash, $sshkeys = "") {
+	define staff_user($ensure = "present", $fullname, $uid, $password_hash, $sshkeys = "", $shell = "bash") {
 		$username = $name
 		user { "$username":
 			comment 	=> $fullname,
@@ -63,9 +63,9 @@ class kbp_base {
 			uid 		=> $uid,
 			groups 		=> ["adm", "staff", "root"],
 			membership 	=> minimum,
-			shell	 	=> "/bin/bash",
+			shell	 	=> "/bin/$shell",
 			home 		=> "/home/$username",
-			require 	=> File["/etc/skel/.bash_profile"],
+			require 	=> [File["/etc/skel/.bash_profile"], Package[$shell]],
 			password 	=> $password_hash,
 		}
 
@@ -99,9 +99,9 @@ class kbp_base {
 				content => "# $fullname <$username@kumina.nl>\n$sshkeys",
 			}
 
-			kfile { "/home/$username/.bashrc":
+			kfile { "/home/$username/.${shell}rc":
 				ensure 	=> present,
-				content => template("kbp_base/home/$username/.bashrc"),
+				content => template("kbp_base/home/$username/.${shell}rc"),
 				owner 	=> "$username",
 				group 	=> "kumina",
 				require => File["/home/$username"],
@@ -203,12 +203,13 @@ class kbp_base {
 			fullname      => "Ed Schouten",
 			uid           => 10004,
 			password_hash => "BOGUS",
+			shell         => "zsh",
 			sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCXah/YknMvN7CCOAK642FZfnXYVZ2uYZsy532v8pOISzH9W8mJ4FqBi0g1oAFhTZs0VNc9ouNfMDG178LSITL+ui/6T9exOEd4a0pCXuArVFmc5EVEUl3F+/qZPcOnWs7e3KaiV1dGLYDI0LhdG9ataHHR3sSPI/YAhroDLDTSVqFURXL7eyqR/aEv7nPEkY4zhQQzTECSQdadwEtGnovjNNL2aEj8rVVle5lVjbSk4N7x0ixyb4eTPB1z5FnwAlVkxHhTnsxTK28ulkrVCgKE30KS97dRG/EjA81pOzajRYTyLztqSkJnpKpL/lPfUCG7VkNfQKF+0O/KRhUfr2zb cardno:00050000057D\n";
 	}
 
 	# Packages we like and want :)
 	kpackage {
-		["binutils","console-tools","realpath"]:
+		["bash","binutils","console-tools","realpath","zsh"]:
 			ensure => installed;
 		["hidesvn","bash-completion","bc","tcptraceroute","diffstat","host","whois","pwgen"]:
 			ensure => latest;
