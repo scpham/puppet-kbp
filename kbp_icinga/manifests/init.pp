@@ -55,6 +55,10 @@ class kbp_icinga::client {
 		"check_mysql_slave":
 			command   => "check_mysql",
 			arguments => "-u nagios -S";
+		"check_nfs_client":
+			sudo      => true,
+			command   => "check_file",
+			arguments => '-f $ARG1$ -c "$ARG2$"';
 		"check_ntpd":
 			command   => "check_procs",
 			arguments => "-c 1: -C ntpd";
@@ -189,61 +193,6 @@ class kbp_icinga::client {
 		command           => ["/usr/lib/nagios/plugins/", "/usr/local/lib/nagios/plugins/"];
 	}
 
-	kfile {
-		"/usr/lib/nagios/plugins/check_cpu":
-			source  => "gen_icinga/client/check_cpu",
-			mode    => 755,
-			require => Package["nagios-plugins-kumina"];
-		"/usr/lib/nagios/plugins/check_open_files":
-			source  => "gen_icinga/client/check_open_files",
-			mode    => 755,
-			require => Package["nagios-plugins-kumina"];
-		"/usr/lib/nagios/plugins/check_memory":
-			source  => "gen_icinga/client/check_memory",
-			mode    => 755,
-			require => Package["nagios-plugins-kumina"];
-		"/usr/lib/nagios/plugins/check_drbd":
-			source  => "gen_icinga/client/check_drbd",
-			mode    => 755,
-			require => Package["nagios-plugins-kumina"];
-		"/usr/lib/nagios/plugins/check_heartbeat":
-			source  => "gen_icinga/client/check_heartbeat",
-			mode    => 755,
-			require => Package["nagios-plugins-kumina"];
-		"/usr/lib/nagios/plugins/check_dnszone":
-			source  => "gen_icinga/client/check_dnszone",
-			mode    => 755,
-			require => Package["nagios-plugins-kumina"];
-		"/usr/lib/nagios/plugins/check_cassandra":
-			source  => "gen_icinga/client/check_cassandra",
-			mode    => 755,
-			require => Package["nagios-plugins-kumina"];
-		"/usr/lib/nagios/plugins/check_proc_status":
-			source  => "gen_icinga/client/check_proc_status",
-			mode    => 755,
-			require => Package["nagios-plugins-kumina"];
-		"/usr/lib/nagios/plugins/check_adaptec":
-			source  => "gen_icinga/client/check_adaptec",
-			mode    => 755,
-			require => Package["nagios-plugins-kumina"];
-		"/usr/lib/nagios/plugins/check_mbean_value":
-			source  => "gen_icinga/client/check_mbean_value",
-			mode    => 755,
-			require => Package["nagios-plugins-kumina"];
-		"/usr/lib/nagios/plugins/check_3ware":
-			source  => "gen_icinga/client/check_3ware",
-			mode    => 755,
-			require => Package["nagios-plugins-kumina"];
-		"/usr/lib/nagios/plugins/check_asterisk":
-			source  => "gen_icinga/client/check_asterisk",
-			mode    => 755,
-			require => Package["nagios-plugins-kumina"];
-		"/usr/lib/nagios/plugins/check_puppet":
-			source  => "gen_icinga/client/check_puppet",
-			mode    => 755,
-			require => Package["nagios-plugins-kumina"];
-	}
-
 	define clientcommand($sudo=false, $path=false, $command=false, $arguments=false) {
 		kfile { "/etc/nagios/nrpe.d/${name}.cfg":
 			content => template("kbp_icinga/clientcommand"),
@@ -335,6 +284,11 @@ class kbp_icinga::server {
 		"check_tcp":
 			conf_dir  => "generic",
 			arguments => '-p $ARG1$';
+		"check_nfs_client":
+			conf_dir     => "generic",
+			command_name => "check_nfs_client",
+			arguments    => ['$ARG1$','"$ARG2$"'],
+			nrpe         => true;
 		"check_nfs_server":
 			conf_dir     => "generic",
 			command_name => "check_rpc",
@@ -1050,6 +1004,28 @@ define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=fals
 			false   => undef,
 			default => $proxy,
 		};
+	}
+}
+
+# Define: kbp_icinga::nfs::client
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+define kbp_icinga::nfs::client {
+	include gen_base::python-argparse
+
+	$sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
+
+	kbp_icinga::service { "nfs_mount_${sanitized_name}":
+		service_description => "NFS mount ${name}",
+		check_command       => "check_nfs_client",
+		arguments           => ["${name}/.monitoring","NFS mount ok"],
+		nrpe                => true;
 	}
 }
 

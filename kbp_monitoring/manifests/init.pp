@@ -208,6 +208,27 @@ class kbp_monitoring::asterisk($package="icinga") {
 	}
 }
 
+# Define: kbp_monitoring::nfs::client
+#
+# Parameters:
+#	name
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+define kbp_monitoring::nfs::client($package="icinga") {
+	case $package {
+		"icinga": {
+			kbp_icinga::nfs::client { $name:; }
+		}
+	}
+}
+
 # Define: kbp_monitoring::sslcert
 #
 # Parameters:
