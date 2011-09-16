@@ -13,11 +13,10 @@ class kbp_icinga::client {
 	include gen_icinga::client
 
 	clientcommand {
-		["check_cassandra","check_heartbeat"]:;
 		"check_3ware":
-			sudo => true;
+			sudo      => true;
 		"check_adaptec":
-			sudo => true;
+			sudo      => true;
 		"check_arpwatch":
 			command   => "check_procs",
 			arguments => "-c 1: -C arpwatch";
@@ -25,6 +24,7 @@ class kbp_icinga::client {
 			sudo      => true,
 			command   => "check_asterisk",
 			arguments => "signet";
+		"check_cassandra":;
 		"check_cpu":
 			arguments => "-w 90 -c 95";
 		"check_dhcp":
@@ -38,6 +38,7 @@ class kbp_icinga::client {
 			arguments => '$ARG1$ $ARG2$';
 		"check_drbd":
 			arguments => "-d All";
+		"check_heartbeat":;
 		"check_java_heap_usage":
 			command   => "check_javaheapusage",
 			arguments => '/etc/munin/plugins/jmx_$ARG1$_java_process_memory 96 93';
@@ -62,6 +63,8 @@ class kbp_icinga::client {
 		"check_ntpd":
 			command   => "check_procs",
 			arguments => "-c 1: -C ntpd";
+		"check_nullmailer":
+			sudo      => true;
 		"check_open_files":
 			arguments => "-w 90 -c 95";
 		"check_pacemaker":
@@ -219,7 +222,7 @@ class kbp_icinga::server {
 	gen_icinga::servercommand {
 		["check_ssh","check_smtp"]:
 			conf_dir => "generic";
-		["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_freshness","check_puppet_failures"]:
+		["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_freshness","check_puppet_failures","check_nullmailer"]:
 			conf_dir => "generic",
 			nrpe     => true;
 		"return-ok":
@@ -341,6 +344,12 @@ class kbp_icinga::server {
 		"/etc/icinga/config/generic/notify_commands.cfg":
 			source  => "kbp_icinga/server/config/generic/notify_commands.cfg",
 			notify  => Exec["reload-icinga"];
+	}
+
+	setfacl { "Allow www-data to read the command file":
+		dir          => "/var/lib/icinga/rw",
+		acl          => "group:www-data:rw-",
+		make_default => true;
 	}
 
 	kbp_icinga::service {
@@ -680,6 +689,26 @@ class kbp_icinga::nfs::server {
 	kbp_icinga::service { "nfs_daemon":
 		service_description => "NFS daemon",
 		check_command       => "check_nfs_server";
+	}
+}
+
+# Class: kbp_icinga::nullmailer
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+class kbp_icinga::nullmailer {
+	include gen_base::python-argparse
+
+	kbp_icinga::service { "nullmailer":
+		service_description => "Nullmailer queue",
+		check_command       => "check_nullmailer",
+		nrpe                => true,
+		sms                 => false;
 	}
 }
 
