@@ -45,6 +45,28 @@ class kbp_munin::client::apache {
 	}
 }
 
+# Class: kbp_munin::client::haproxy
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+class kbp_munin::client::haproxy {
+	include kbp_munin::client
+
+	munin::client::plugin { ["haproxy_check_duration","haproxy_errors","haproxy_sessions","haproxy_volume"]:
+		script_path => "/usr/local/share/munin/plugins",
+	}
+
+	munin::client::plugin::config { "haproxy_":
+		section => "haproxy_*",
+		content => "user root\nenv.socket /var/run/haproxy.sock";
+	}
+}
+
 # Class: kbp_munin::client::puppetmaster
 #
 # Actions:
@@ -219,6 +241,8 @@ define kbp_munin::client::jmxcheck {
 		require     => Package["jmxquery"];
 	}
 }
+
+
 
 # Class: kbp_munin::server
 #

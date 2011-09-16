@@ -2,6 +2,8 @@
 
 
 class kbp_haproxy ($failover = false, $customtag="haproxy_${environment}", $loglevel="warning") {
+	include kbp_trending::haproxy
+
 	class { "gen_haproxy":
 		failover  => $failover,
 		loglevel  => $loglevel,
