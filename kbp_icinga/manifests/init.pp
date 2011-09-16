@@ -1495,6 +1495,10 @@ define kbp_icinga::mbean_value($jmxport, $objectname, $attributename, $expectedv
 #	gen_puppet
 #
 define kbp_icinga::dnszone($master, $sms=true) {
+	include gen_base::python-argparse
+	include gen_base::python-ipaddr
+	include gen_base::python-dnspython
+
 	kbp_icinga::service { "dnszone_${name}":
 		service_description => "DNS zone ${name} from ${master}",
 		check_command       => "check_dnszone",
