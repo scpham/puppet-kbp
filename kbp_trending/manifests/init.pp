@@ -52,6 +52,26 @@ class kbp_trending::mysql ($method="munin") {
 	}
 }
 
+# Class: kbp_trending::haproxy
+#
+# Parameters:
+#	method
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+class kbp_trending::haproxy ($method="munin") {
+	case $method {
+		"munin": { include kbp_munin::client::haproxy }
+		default: { fail("No trending for ${method}.") }
+	}
+}
+
 # Class: kbp_trending::nfs
 #
 # Parameters:
