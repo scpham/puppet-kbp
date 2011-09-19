@@ -59,7 +59,7 @@ class kbp_icinga::client {
 		"check_nfs_client":
 			sudo      => true,
 			command   => "check_file",
-			arguments => '-f $ARG1$ -c "$ARG2$"';
+			arguments => '-f $ARG1$ -c $ARG2$';
 		"check_ntpd":
 			command   => "check_procs",
 			arguments => "-c 1: -C ntpd";
@@ -290,7 +290,7 @@ class kbp_icinga::server {
 		"check_nfs_client":
 			conf_dir     => "generic",
 			command_name => "check_nfs_client",
-			arguments    => ['$ARG1$','"$ARG2$"'],
+			arguments    => ['$ARG1$','$ARG2$'],
 			nrpe         => true;
 		"check_nfs_server":
 			conf_dir     => "generic",
@@ -1053,7 +1053,7 @@ define kbp_icinga::nfs::client {
 	kbp_icinga::service { "nfs_mount_${sanitized_name}":
 		service_description => "NFS mount ${name}",
 		check_command       => "check_nfs_client",
-		arguments           => ["${name}/.monitoring","NFS mount ok"],
+		arguments           => ["${name}/.monitoring","NFS_mount_ok"],
 		nrpe                => true;
 	}
 }
