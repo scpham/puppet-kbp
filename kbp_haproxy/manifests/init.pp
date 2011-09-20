@@ -1,15 +1,15 @@
 # Author: Kumina bv <support@kumina.nl>
 
 
-class kbp_haproxy ($failover = false, $customtag="haproxy_${environment}", $loglevel="warning") {
+class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $loglevel="warning") {
 	include kbp_trending::haproxy
 
 	class { "gen_haproxy":
 		failover  => $failover,
 		loglevel  => $loglevel,
-		customtag => $customtag;
+		haproxy_tag => $haproxy_tag;
 	}
-	Gen_ferm::Rule <<| tag == $customtag |>>
+	Gen_ferm::Rule <<| tag == $haproxy_tag |>>
 }
 
 # Define: kbp_haproxy::site
@@ -41,7 +41,13 @@ class kbp_haproxy ($failover = false, $customtag="haproxy_${environment}", $logl
 #		The IP of the backend server
 #	balance
 #		The balancing-method to use
-#	customtag="haproxy_${environment}"
+#	timeout_connect
+#		TCP connection timeout between proxy and server
+#	timeout_server_client
+#		TCP connection timeout between client and proxy and Maximum time for the server to respond to the proxy
+#	timeout_http_request
+#		Maximum time for HTTP request between client and proxy
+#	haproxy_tag="haproxy_${environment}"
 #		Change this when there are multiple loadbalancers in one environment
 #
 # Actions:
@@ -51,28 +57,31 @@ class kbp_haproxy ($failover = false, $customtag="haproxy_${environment}", $logl
 #	Undocumented
 #	gen_puppet
 #
-define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_url=false, $monitoring_response=false, $cookie=false, $make_lbconfig, $httpcheck_uri=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $customtag="haproxy_${environment}") {
+define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_url=false, $monitoring_response=false, $cookie=false, $make_lbconfig, $httpcheck_uri=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s", $timeout_http_request="10s", $haproxy_tag="haproxy_${environment}") {
 	gen_ferm::rule { "HAProxy forward for ${name}":
 		proto     => "tcp",
 		daddr     => $listenaddress,
 		dport     => $port,
 		action    => "ACCEPT",
 		exported  => true,
-		customtag => $customtag;
+		customtag => $haproxy_tag;
 	}
 
 	if $make_lbconfig {
 		gen_haproxy::site { "${name}":
-			listenaddress  => $listenaddress,
-			port           => $port,
-			cookie         => $cookie,
-			httpcheck_uri  => $httpcheck_uri,
-			httpcheck_port => $httpcheck_port,
-			balance        => $balance,
-			servername     => $servername,
-			serverip       => $serverip,
-			serverport     => $serverport,
-			customtag      => $customtag;
+			listenaddress         => $listenaddress,
+			port                  => $port,
+			cookie                => $cookie,
+			httpcheck_uri         => $httpcheck_uri,
+			httpcheck_port        => $httpcheck_port,
+			balance               => $balance,
+			servername            => $servername,
+			serverip              => $serverip,
+			serverport            => $serverport,
+			timeout_connect       => $timeout_connect,
+			timeout_server_client => $timeout_server_client,
+			timeout_http_request  => $timeout_http_request,
+			haproxy_tag           => $haproxy_tag;
 		}
 	}
 
@@ -84,6 +93,6 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
 			port               => $serverport,
 			max_check_attempts => $max_check_attempts,
 			response           => $monitoring_response;
-			}
+		}
 	}
 }

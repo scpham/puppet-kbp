@@ -29,24 +29,27 @@
 #	Undocumented
 #	gen_puppet
 #
-define kbp_loadbalancer::site ($sslport=false, $listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $cookie=false, $monitoring_url=false, $monitoring_response=false, $make_lbconfig=true, $httpcheck_uri=false, $httpcheck_port=false, $servername=$::hostname, $serverip=$::ipaddress_eth0, $serverport=80, $balance="static-rr", $max_check_attempts=false, $customtag=false) {
+define kbp_loadbalancer::site ($sslport=false, $listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $cookie=false, $monitoring_url=false, $monitoring_response=false, $make_lbconfig=true, $httpcheck_uri=false, $httpcheck_port=false, $servername=$::hostname, $serverip=$::ipaddress_eth0, $serverport=80, $balance="static-rr", $max_check_attempts=false, $lb_timeout_connect="15s", $lb_timeout_server_client="20s", $lb_timeout_http_request="10s", $customtag=false) {
 	kbp_haproxy::site { "${name}":
-		listenaddress       => $listenaddress,
-		port                => $port,
-		monitor_site        => $monitoring_site,
-		monitoring_ha       => $monitoring_ha,
-		max_check_attempts  => $max_check_attempts,
-		monitoring_url      => $monitoring_url,
-		monitoring_response => $monitoring_response,
-		balance             => $balance,
-		servername          => $servername,
-		serverport          => $serverport,
-		serverip            => $serverip,
-		httpcheck_uri       => $httpcheck_uri,
-		httpcheck_port      => $httpcheck_port,
-		cookie              => $cookie,
-		make_lbconfig       => $make_lbconfig,
-		customtag           => $customtag ? {
+		listenaddress         => $listenaddress,
+		port                  => $port,
+		monitor_site          => $monitoring_site,
+		monitoring_ha         => $monitoring_ha,
+		max_check_attempts    => $max_check_attempts,
+		monitoring_url        => $monitoring_url,
+		monitoring_response   => $monitoring_response,
+		balance               => $balance,
+		servername            => $servername,
+		serverport            => $serverport,
+		serverip              => $serverip,
+		httpcheck_uri         => $httpcheck_uri,
+		httpcheck_port        => $httpcheck_port,
+		cookie                => $cookie,
+		timeout_connect       => $lb_timeout_connect,
+		timeout_server_client => $lb_timeout_server_client,
+		timeout_http_request  => $lb_timeout_http_request,
+		make_lbconfig         => $make_lbconfig,
+		haproxy_tag           => $customtag ? {
 			false   => undef,
 			default => $customtag,
 		};
@@ -62,7 +65,7 @@ define kbp_loadbalancer::site ($sslport=false, $listenaddress, $port=80, $monito
 class kbp_loadbalancer ($failover=false, $customtag=false) {
 	class { "kbp_haproxy":
 		failover  => $failover,
-		customtag => $customtag ? {
+		haproxy_tag => $customtag ? {
 			false   => undef,
 			default => $customtag,
 		};
