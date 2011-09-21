@@ -40,13 +40,13 @@ class kbp_debian::lenny {
 			components => "main";
 	}
 
-	package { "mailx":
+	kpackage { "mailx":
 		ensure => installed
 	}
 
 	# Package which makes sure the installed Backports.org repository key is
 	# up-to-date.
-	package { "debian-backports-keyring":
+	kpackage { "debian-backports-keyring":
 		ensure => installed,
 	}
 }
@@ -113,7 +113,7 @@ class kbp_debian inherits kbp_base {
 		ensure => installed;
 	}
 
-	package { "ca-certificates":
+	kpackage { "ca-certificates":
 		ensure => latest;
 	}
 
@@ -127,7 +127,7 @@ class kbp_debian inherits kbp_base {
 	}
 
 	# Local timezone
-	package { "tzdata":
+	kpackage { "tzdata":
 		ensure => latest,
 	}
 
@@ -164,7 +164,7 @@ class kbp_debian inherits kbp_base {
 		source => "kbp_debian/skel/bash_profile";
 	}
 
-	package { "adduser":
+	kpackage { "adduser":
 		ensure => installed,
 	}
 
@@ -173,11 +173,11 @@ class kbp_debian inherits kbp_base {
 		require => Package["adduser"],
 	}
 
-	package {
+	kpackage {
 		"locales":
-			require => File["/var/cache/debconf/locales.preseed"],
+			require      => File["/var/cache/debconf/locales.preseed"],
 			responsefile => "/var/cache/debconf/locales.preseed",
-			ensure => installed;
+			ensure       => installed;
 	}
 
 	kfile {
