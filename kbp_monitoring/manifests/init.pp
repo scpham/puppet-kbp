@@ -146,6 +146,27 @@ class kbp_monitoring::nfs::server($package="icinga") {
 	}
 }
 
+# Class: kbp_monitoring::nullmailer
+#
+# Parameters:
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+class kbp_monitoring::nullmailer($package="icinga") {
+	case $package {
+		"icinga": {
+			include kbp_icinga::nullmailer
+		}
+	}
+}
+
 # Class: kbp_monitoring::dhcp
 #
 # Parameters:
@@ -204,6 +225,27 @@ class kbp_monitoring::asterisk($package="icinga") {
 	case $package {
 		"icinga": {
 			include kbp_icinga::asterisk
+		}
+	}
+}
+
+# Define: kbp_monitoring::nfs::client
+#
+# Parameters:
+#	name
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+define kbp_monitoring::nfs::client($package="icinga") {
+	case $package {
+		"icinga": {
+			kbp_icinga::nfs::client { $name:; }
 		}
 	}
 }

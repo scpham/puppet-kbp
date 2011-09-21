@@ -1,9 +1,12 @@
 # Author: Kumina bv <support@kumina.nl>
 
 
-class kbp_haproxy ($failover = false, $customtag="haproxy_${environment}") {
+class kbp_haproxy ($failover = false, $customtag="haproxy_${environment}", $loglevel="warning") {
+	include kbp_trending::haproxy
+
 	class { "gen_haproxy":
 		failover  => $failover,
+		loglevel  => $loglevel,
 		customtag => $customtag;
 	}
 	Gen_ferm::Rule <<| tag == $customtag |>>

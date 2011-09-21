@@ -28,6 +28,11 @@ class kbp_mysql::server($otherhost=false) {
 			saddr  => $fqdn,
 			action => 'ACCEPT',
 		}
+
+		kfile { "/etc/mysql/conf.d/expire_logs.cnf":
+			content => "[mysqld]\nexpire_logs_days = 7\n",
+			notify  => Exec["reload-mysql"];
+		}
 	}
 
 	Gen_ferm::Rule <<| tag == "mysql_${environment}" |>>
