@@ -18,7 +18,6 @@ class kbp_sysctl {
 		"/bin/echo 'kernel.panic_on_oops = 1' >> '/etc/sysctl.conf'":
 			unless => "/bin/grep -Fx 'kernel.panic_on_oops = 1' /etc/sysctl.conf";
 		# XXX: I still need this? generic/sysctl is broken?
-		'sysctl kernel.panic=30':;
-		'sysctl kernel.panic_on_oops=1':;
+		'sysctl -p /etc/sysctl.conf':;
 	}
 }
