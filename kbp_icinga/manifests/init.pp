@@ -946,7 +946,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 #
 # Depends:
 #	gen_puppet
-define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=false, $hostgroups=false, $parents=false, $address=$ipaddress,
+define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=false, $hostgroups=false, $parents=false, $address=$ipaddress, ensure=present,
 		$initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
 		$retain_nonstatus_information=false, $check_command=false, $check_interval=false, $notification_period=false, $notification_interval=false, $max_check_attempts=false,
 		$register=1, $proxy=false) {
@@ -964,6 +964,7 @@ define kbp_icinga::host($conf_dir="${environment}/${name}", $sms=true, $use=fals
 	}
 
 	gen_icinga::host { "${name}":
+		ensure                       => $ensure,
 		conf_dir                     => $conf_dir,
 		use                          => $real_use,
 		hostgroups                   => $hostgroups ? {
@@ -1123,12 +1124,15 @@ class kbp_icinga::rabbitmqctl($namespace) {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::virtualhost($address, $conf_dir=$::environment, $parents=false, $hostgroups=false, $sms=true, $notification_period=false) {
+define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environment, $parents=false, $hostgroups=false, $sms=true, $notification_period=false) {
 	$confdir = "${conf_dir}/${name}"
 
-	gen_icinga::configdir { "${confdir}":; }
+	gen_icinga::configdir { "${confdir}":
+		ensure => $ensure;
+	}
 
 	kbp_icinga::host { "${name}":
+		ensure                => $ensure,
 		conf_dir              => $confdir,
 		address               => $address,
 		parents               => $parents ? {

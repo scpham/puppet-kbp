@@ -631,11 +631,12 @@ define kbp_monitoring::dnszone($master, $sms=true, $package="icinga") {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_monitoring::virtualhost($address, $conf_dir=false, $parents=false, $hostgroups=false, $package="icinga", $sms=true, $notification_period=false) {
+define kbp_monitoring::virtualhost($address, $ensure=present, $conf_dir=false, $parents=false, $hostgroups=false, $package="icinga", $sms=true, $notification_period=false) {
 	case $package {
 		"icinga": {
 			kbp_icinga::virtualhost { "${name}":
 				address               => $address,
+				ensure                => $ensure,
 				conf_dir              => $conf_dir ? {
 					false   => undef,
 					default => $conf_dir,
