@@ -17,3 +17,6 @@ fi
 
 EMAIL=pieter@kumina.nl
 export EMAIL
+
+[ "$TERM" = "xterm" ] && export TERM=xterm-256color
+[ "$TERM" = "screen" ] && export TERM=screen-256colo
