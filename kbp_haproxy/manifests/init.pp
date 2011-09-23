@@ -99,6 +99,15 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
 			timeout_http_request  => $timeout_http_request,
 			haproxy_tag           => $haproxy_tag;
 			}
+
+			gen_ferm::rule { "HAProxy forward for ${name}_ssl":
+				proto     => "tcp",
+				daddr     => $listenaddress,
+				dport     => "443",
+				action    => "ACCEPT",
+				exported  => true,
+				customtag => $haproxy_tag;
+			}
 		}
 	}
 
