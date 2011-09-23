@@ -245,6 +245,7 @@ class kbp_icinga::server {
 		"check_http_auth":
 			conf_dir     => "generic",
 			command_name => "check_http",
+			host_argument => '-H $HOSTNAME$',
 			arguments    => ['-I $HOSTADDRESS$',"-e 401,403",'-t 20'];
 		"check_http_vhost_auth":
 			conf_dir      => "generic",
@@ -797,9 +798,12 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 		" "            => false,
 		default        => $use,
 	}
-	$real_use = $customer_notify ? {
-		true  => "${temp_use}_${::environment}",
-		false => $temp_use,
+	$real_use = $temp_use ? {
+		false   => false,
+		default => $customer_notify ? {
+			true  => "${temp_use}_${::environment}",
+			false => $temp_use,
+		},
 	}
 	$real_name = $conf_dir ? {
 		/.*generic.*/ => $name,
