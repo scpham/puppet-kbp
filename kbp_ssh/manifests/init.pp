@@ -16,4 +16,14 @@ class kbp_ssh {
 		action => "ACCEPT",
 		tag    => "ferm";
 	}
+
+	# Disable password logins and root logins
+	augeas { "sshd_config":
+		context => "/files/etc/ssh/sshd_config",
+		changes => [
+			"set PermitRootLogin no",
+			"set PasswordAuthentication no"
+		],
+		notify  => Service["ssh"];
+	}
 }
