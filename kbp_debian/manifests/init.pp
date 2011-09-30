@@ -113,8 +113,7 @@ class kbp_debian inherits kbp_base {
 		ensure => installed;
 	}
 
-	# libmozjs2d is a dependency of elinks and is updated (too) frequently
-	kpackage { ["ca-certificates", "libmozjs2d"]:
+	kpackage { "ca-certificates":
 		ensure => latest;
 	}
 
