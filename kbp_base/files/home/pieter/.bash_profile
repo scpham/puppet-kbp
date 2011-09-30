@@ -15,8 +15,8 @@ if [ -d ~/bin ] ; then
     PATH=~/bin:"${PATH}"
 fi
 
+[ "$TERM" = "xterm" ] && export TERM=xterm-256color
+[ "$TERM" = "screen" ] && export TERM=screen-256color
+
 EMAIL=pieter@kumina.nl
 export EMAIL
-
-[ "$TERM" = "xterm" ] && export TERM=xterm-256color
-[ "$TERM" = "screen" ] && export TERM=screen-256colo
