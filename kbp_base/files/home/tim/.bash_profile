@@ -20,3 +20,10 @@ export EMAIL
 
 [ "$TERM" = "xterm" ] && export TERM=xterm-256color
 [ "$TERM" = "screen" ] && export TERM=screen-256color
+
+if [ $hostname == "puppetmaster" ]; then
+	export JAVA_HOME=/usr
+	export AWS_RDS_HOME=/home/tim/RDSCli-1.4.007/
+	export JAVA_HOME=/usr/lib/jvm/java-6-openjdk/
+	export AWS_CREDENTIAL_FILE=$AWS_RDS_HOME/credential-file-path.template
+fi
