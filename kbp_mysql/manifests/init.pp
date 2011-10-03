@@ -171,9 +171,9 @@ class kbp_mysql::puppetmaster {
 #	gen_ferm
 #	gen_puppet
 #
-define kbp_mysql::client ($customtag="mysql_${environment}") {
+define kbp_mysql::client ($customtag="mysql_${environment}", $address = "${fqdn}") {
 	@@gen_ferm::rule { "MySQL connections from ${fqdn} for ${name}":
-		saddr  => $fqdn,
+		saddr  => $address,
 		proto  => "tcp",
 		dport  => 3306,
 		action => "ACCEPT",
