@@ -13,7 +13,7 @@
 #	Undocumented
 #	gen_puppet
 #
-class kbp_mysql::server($otherhost=false) {
+class kbp_mysql::server($otherhost=false,$setup_backup=true) {
 	include mysql::server
 	include kbp_trending::mysql
 	class { "kbp_mysql::monitoring::icinga::server":
@@ -38,11 +38,13 @@ class kbp_mysql::server($otherhost=false) {
 	Gen_ferm::Rule <<| tag == "mysql_${environment}" |>>
 	Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
 
-	# Setup backup for MySQL
-	kfile { "/etc/backup/prepare.d/mysql":
-		ensure  => link,
-		target  => "/usr/share/backup-scripts/prepare/mysql",
-		require => Package["offsite-backup"],
+	# Setup backup for MySQL, if we want that
+	if $setup_backup {
+		kfile { "/etc/backup/prepare.d/mysql":
+			ensure  => link,
+			target  => "/usr/share/backup-scripts/prepare/mysql",
+			require => Package["offsite-backup"],
+		}
 	}
 }
 
