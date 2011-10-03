@@ -206,6 +206,11 @@ class kbp_base {
 			password_hash => "BOGUS",
 			shell         => "zsh",
 			sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCXah/YknMvN7CCOAK642FZfnXYVZ2uYZsy532v8pOISzH9W8mJ4FqBi0g1oAFhTZs0VNc9ouNfMDG178LSITL+ui/6T9exOEd4a0pCXuArVFmc5EVEUl3F+/qZPcOnWs7e3KaiV1dGLYDI0LhdG9ataHHR3sSPI/YAhroDLDTSVqFURXL7eyqR/aEv7nPEkY4zhQQzTECSQdadwEtGnovjNNL2aEj8rVVle5lVjbSk4N7x0ixyb4eTPB1z5FnwAlVkxHhTnsxTK28ulkrVCgKE30KS97dRG/EjA81pOzajRYTyLztqSkJnpKpL/lPfUCG7VkNfQKF+0O/KRhUfr2zb cardno:00050000057D\n";
+		"thomas":
+			fullname      => "Thomas Ronner",
+			uid           => 10006,
+			password_hash => "BOGUS",
+			sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCSqpjh3qeW8bXvyy1eej+2ief63+4Vr6I7D+cz9UHFXwSA+/q4Aiz5PxVmsTBWvYqo8QQJAlQy4c861WSnMU73Vg9srjBbryGJNHt4DNfnEK2XnOsA246ifwSMXoW2W/cE1gfq6HRR9uL3+ysM9jRYfBvuKuGYb8+3WOdjia6W0CHsHcnhOVVBzfvhekbya9xsROT2cN1/c57JjM+9L3VTiYhLzRBNHKyAkazlpBM6d6A2u+Tq99ovEI2gqrPxsnLqaubGWz1/OdeNCM50pvwi3XCjPJU2jRPUOqpZa0NodOXcpRw44vHAdzwCk3qINWuXhDg0NiXMZ2SU/VDBF4DcjEQiwERyagYStWPuvwcHYw6Yy0GTvESTjZ8eQQg9MrwClo18zcnsirgZSP31Untt5SpvwnVcwZyRrw0i3VVW9nmlxfzbNPXid2VO4SDQ4+8D4zf6ozlumWb1RlafHtKNcI55r3lGoJwKB1NAfTE/cKm1pU1Y5gBBtI85yPCv30k= cardno:000500000C24\n";
 	}
 
 	# Packages we like and want :)
