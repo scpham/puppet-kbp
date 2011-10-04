@@ -18,13 +18,15 @@ class kbp_ssh {
 		tag    => "ferm";
 	}
 
+
+# DISABLED SO LENNY BOXES CAN KICK
 	# Disable password logins and root logins
-	augeas { "sshd_config":
-		context => "/files/etc/ssh/sshd_config",
-		changes => [
-			"set PermitRootLogin no",
-			"set PasswordAuthentication no"
-		],
-		notify  => Service["ssh"];
-	}
+#	augeas { "sshd_config":
+#		context => "/files/etc/ssh/sshd_config",
+#		changes => [
+#			"set PermitRootLogin no",
+#			"set PasswordAuthentication no"
+#		],
+#		notify  => Service["ssh"];
+#	}
 }
