@@ -6,7 +6,7 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
 	class { "kbp_tomcat":
 		domain      => $domain,
 		java_opts   => "-Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dmail.mime.decodeparameters=true",
-		jvm_max_mem => "650";
+		jvm_max_mem => "512";
 	}
 	include kbp_tomcat::mysql
 	include gen_base::ant
