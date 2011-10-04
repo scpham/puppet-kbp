@@ -31,6 +31,11 @@ class kbp_puppet {
 			default   => $lsbdistcodename,
 		};
 	}
+
+	# Pin augeas to lenny-backports for lenny
+	if $lsbdistcodename == "lenny" {
+		gen_apt::preference { ["libaugeas-ruby", "libaugeas-ruby1.8", "augeas-lenses"]:;}
+	}
 }
 
 # Class: kbp_puppet::test_default_config
