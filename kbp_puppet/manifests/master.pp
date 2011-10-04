@@ -234,7 +234,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 			mysql::server::db { $real_dbname:; }
 
 			mysql::server::grant { $real_dbname:
-				hostname => $fqdn,
+				hostname => "localhost",
 				user     => $real_dbuser,
 				password => $real_dbpasswd,
 				db       => $real_dbname;
