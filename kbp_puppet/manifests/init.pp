@@ -23,7 +23,14 @@ class kbp_puppet {
 #		require      => Exec["Mount /var with acl"];
 #	}
 
-	gen_apt::preference { ["puppet","puppet-common"]:; }
+	# We backport the squeeze-backports versions to lenny-kumina
+	gen_apt::preference { ["puppet","puppet-common","facter"]:
+		repo => $lsbdistcodename ? {
+			"lenny"   => "lenny-kumina",
+			"squeeze" => "squeeze-backports",
+			default   => $lsbdistcodename,
+		};
+	}
 }
 
 # Class: kbp_puppet::test_default_config
