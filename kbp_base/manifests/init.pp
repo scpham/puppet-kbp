@@ -16,11 +16,12 @@ class kbp_base {
 	include sysctl
 	include kbp_acpi
 	include kbp_apt
+	include kbp_icinga::client
 	include kbp_puppet
 	include kbp_ssh
-	include kbp_vim
+	include kbp_sysctl
 	include kbp_time
-	include kbp_icinga::client
+	include kbp_vim
 	if $is_virtual == "false" {
 		include kbp_physical
 	}
