@@ -118,7 +118,7 @@ class kbp_apache_new::ssl {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_apache_new::site($ensure="present", $priority="", $address="*", $serveralias=false, $scriptalias=false, $documentroot="/srv/www",
+define kbp_apache_new::site($ensure="present", $priority="", $address="*", $serveralias=false, $scriptalias=false, $documentroot="/srv/www/${name}",
 		$tomcatinstance="", $proxy_port="", $djangoproject="", $djangoprojectpath="", $ssl_ipaddress="*", $ssl_ip6address="",
 		$ssl=false, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false,
 		$monitor=true, $smokeping=true, $make_default=false) {
