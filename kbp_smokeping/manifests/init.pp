@@ -59,9 +59,8 @@ define kbp_smokeping::environment($owner="Kumina bv", $contact="support@kumina.n
 		syslogfacility => $syslogfacility;
 	}
 
-	kfile { "/etc/apache2/vhost-additions/${url}/smokeping_${name}.conf":
-		content => template("kbp_smokeping/apache"),
-		notify  => Exec["reload-apache2"];
+	kbp_apache_new::vhost-addition { "${url}_80/smokeping_${name}.conf":
+		content => template("kbp_smokeping/apache");
 	}
 
 	concat { "/etc/smokeping/config.d/${name}/.htpasswd":; }
