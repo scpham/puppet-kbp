@@ -181,10 +181,8 @@ define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=
 	}
 }
 
-define kbp_apache_new::vhost-addition($site=$fqdn, $port=80, $content=false, $source=false) {
+define kbp_apache_new::vhost-addition($content=false, $source=false) {
 	gen_apache::vhost_addition { $name:
-		site    => $site,
-		port    => $port,
 		content => $content,
 		source  => $source;
 	}
