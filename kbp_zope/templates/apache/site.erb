@@ -3,7 +3,7 @@
   ServerAdmin	support@kumina.nl
   ServerName	<%= domain %>
   RewriteEngine	on
-  RewriteRule	^(.*)?$ https://<%= domain %>$1 [L,R]
+  RewriteRule	^(.*)?$ https://<%= domain %>/$1 [L,R]
 </VirtualHost>
 <% end
 
