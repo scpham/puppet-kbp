@@ -56,6 +56,12 @@ class kbp_base {
 		mode  => 0644,
 	}
 
+	# Force fsck on boot to repair the file system if it is inconstistent, so we don't have to open the console and run fsck by hand
+	augeas { "/etc/default/rcS":
+		context => "/files/etc/default/rcS",
+		changes => "set FSCKFIX yes";
+	}
+
 	# Add the Kumina group and users
 	# XXX Needs to do a groupmod when a group with gid already exists.
 	group { "kumina":
