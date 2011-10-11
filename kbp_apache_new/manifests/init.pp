@@ -118,15 +118,16 @@ class kbp_apache_new::ssl {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_apache_new::site($ensure="present", $priority="", $address="*", $serveralias=false, $scriptalias=false, $documentroot="/srv/www/${name}",
-		$tomcatinstance="", $proxy_port="", $djangoproject="", $djangoprojectpath="", $ssl_ipaddress="*", $ssl_ip6address="",
-		$ssl=false, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false,
-		$monitor=true, $smokeping=true, $make_default=false) {
+define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot="/srv/www/${name}", $address=false, $address6=false, $port=false,
+		$make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false, $redirect_non_ssl=true,
+		$auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor=true,
+		$smokeping=true) {
 	include kbp_apache_new
 	if $ssl {
 		include kbp_apache_new::ssl
 	}
 
+	$real_name   = regsubst($name,'^(.*)_(.*)$','\1')
 	$dontmonitor = ["default","default-ssl","localhost"]
 
 	if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
@@ -152,19 +153,24 @@ define kbp_apache_new::site($ensure="present", $priority="", $address="*", $serv
 	}
 
 	gen_apache::site { $name:
-		ensure            => $ensure,
-		address           => $address,
-		serveralias       => $serveralias,
-		scriptalias       => $scriptalias,
-		documentroot      => $documentroot,
-		tomcatinstance    => $tomcatinstance,
-		proxy_port        => $proxy_port,
-		djangoproject     => $djangoproject,
-		djangoprojectpath => $djangoprojectpath,
-		ssl_ipaddress     => $ssl_ipaddress,
-		ssl_ip6address    => $ssl_ip6address,
-		ssl               => $ssl,
-		make_default      => $make_default;
+		ensure           => $ensure,
+		serveralias      => $serveralias,
+		documentroot     => $documentroot,
+		address          => $address,
+		address6         => $address6,
+		port             => $port,
+		make_default     => $make_default,
+		ssl              => $ssl,
+		key              => $key,
+		cert             => $cert,
+		intermediate     => $intermediate,
+		redirect_non_ssl => $redirect_non_ssl;
+	}
+
+	if $ssl or $key or $cert or $intermediate {
+		kbp_monitoring::sslcert { $real_name:
+			path => "/etc/ssl/certs/${real_name}.pem";
+		}
 	}
 }
 
@@ -181,8 +187,9 @@ define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=
 	}
 }
 
-define kbp_apache_new::vhost-addition($content=false, $source=false) {
+define kbp_apache_new::vhost_addition($ensure="present", $content=false, $source=false) {
 	gen_apache::vhost_addition { $name:
+		ensure  => $ensure,
 		content => $content,
 		source  => $source;
 	}
