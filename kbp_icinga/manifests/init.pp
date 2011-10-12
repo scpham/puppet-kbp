@@ -78,7 +78,7 @@ class kbp_icinga::client {
 		"check_puppet_state_freshness":
 			sudo      => true,
 			command   => "check_puppet",
-			arguments => "-w 14400 -c 21600";
+			arguments => "-w 25000 -c 50000";
 		"check_puppet_failures":
 			sudo      => true,
 			command   => "check_puppet",
