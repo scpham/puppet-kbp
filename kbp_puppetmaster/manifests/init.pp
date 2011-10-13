@@ -12,8 +12,6 @@
 class kbp_puppetmaster {
 	include kbp_activemq
 	include kbp_apache::passenger
-	# TODO The next line should be removed once this class uses the new Apache modules.
-	include kbp_monitoring::passenger::queue
 	include kbp_mysql::server
 	include kbp_vim::puppet
 	include kbp_git

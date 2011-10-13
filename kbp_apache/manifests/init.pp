@@ -66,6 +66,7 @@ class kbp_apache inherits apache {
 class kbp_apache::passenger {
 	include kbp_apache
 	include kbp_apache::ssl
+	include kbp_monitoring::passenger::queue
 
 	kpackage { "libapache2-mod-passenger":
 		ensure => latest;

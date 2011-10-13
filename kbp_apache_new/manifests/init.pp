@@ -9,7 +9,7 @@
 #	Undocumented
 #	gen_puppet
 #
-class kbp_apache_new($monitoring_auth=false) {
+class kbp_apache_new {
 	include gen_apache
 	include kbp_munin::client::apache
 
@@ -47,9 +47,7 @@ class kbp_apache_new($monitoring_auth=false) {
 		notify  => Exec["reload-apache2"];
 	}
 
-	kbp_monitoring::http { "http_${fqdn}":
-		auth => $monitoring_auth;
-	}
+	kbp_monitoring::http { "http_${fqdn}":; }
 }
 
 # Class: kbp_apache::passenger
@@ -62,6 +60,7 @@ class kbp_apache_new($monitoring_auth=false) {
 #	gen_puppet
 #
 class kbp_apache_new::passenger {
+	include kbp_apache_new
 	include gen_base::libapache2-mod-passenger
 	include kbp_apache_new::module::passenger
 	include kbp_monitoring::passenger::queue
