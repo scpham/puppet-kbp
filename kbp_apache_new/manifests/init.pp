@@ -13,12 +13,6 @@ class kbp_apache_new {
 	include gen_apache
 	include kbp_munin::client::apache
 
-	gen_ferm::rule { "HTTP connections":
-		proto  => "tcp",
-		dport  => "80",
-		action => "ACCEPT";
-	}
-
 	kfile {
 		"/etc/apache2/mods-available/deflate.conf":
 			source  => "kbp_apache/mods-available/deflate.conf",
@@ -135,7 +129,17 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 		include kbp_apache_new::ssl
 	}
 
-	$real_name   = regsubst($name,'^(.*)_(.*)$','\1')
+	$temp_name   = $port ? {
+		false   => $name,
+		default => "${name}_${port}",
+	}
+	if $key or $cert or $intermediate or $ssl {
+		$full_name = regsubst($temp_name,'^([^_]*)$','\1_443')
+	} else {
+		$full_name = regsubst($temp_name,'^([^_]*)$','\1_80')
+	}
+	$real_name   = regsubst($full_name,'^(.*)_(.*)$','\1')
+	$real_port   = regsubst($full_name,'^(.*)_(.*)$','\2')
 	$dontmonitor = ["default","default-ssl","localhost"]
 
 	if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
@@ -178,6 +182,14 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 	if $ssl or $key or $cert or $intermediate {
 		kbp_monitoring::sslcert { $real_name:
 			path => "/etc/ssl/certs/${real_name}.pem";
+		}
+	}
+
+	if not defined(Gen_ferm::Rule["HTTP connections on ${real_port}"]) {
+		gen_ferm::rule { "HTTP connections on ${real_port}":
+			proto  => "tcp",
+			dport  => $real_port,
+			action => "ACCEPT";
 		}
 	}
 }
