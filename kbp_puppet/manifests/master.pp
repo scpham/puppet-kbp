@@ -16,6 +16,8 @@ class kbp_puppet::master {
 	include kbp_apache::passenger
 	include kbp_mysql::server
 	include kbp_trending::puppetmaster
+	# TODO once this uses the new apache modules this can be removed
+	include kbp_monitoring::passenger::queue
 
 	gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
 
