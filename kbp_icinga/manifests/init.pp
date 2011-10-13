@@ -1398,7 +1398,8 @@ define kbp_icinga::sslsite {
 	kbp_icinga::service { "ssl_site_${name}":
 		service_description => "SSL validity ${name}",
 		check_command       => "check_ssl_cert",
-		arguments           => $name;
+		arguments           => $name,
+		warnsms             => false;
 	}
 }
 
