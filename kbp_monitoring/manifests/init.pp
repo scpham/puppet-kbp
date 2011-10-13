@@ -167,6 +167,27 @@ class kbp_monitoring::nullmailer($package="icinga") {
 	}
 }
 
+# Class: kbp_monitoring::passenger::queue
+#
+# Parameters:
+#	package
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+class kbp_monitoring::passenger::queue($package="icinga") {
+	case $package {
+		"icinga": {
+			include kbp_icinga::passenger::queue
+		}
+	}
+}
+
 # Class: kbp_monitoring::dhcp
 #
 # Parameters:

@@ -9,7 +9,7 @@
 #	Undocumented
 #	gen_puppet
 #
-class kbp_apache_new {
+class kbp_apache_new($monitoring_auth=false) {
 	include gen_apache
 	include kbp_munin::client::apache
 
@@ -47,7 +47,9 @@ class kbp_apache_new {
 		notify  => Exec["reload-apache2"];
 	}
 
-	kbp_monitoring::http { "http_${fqdn}":; }
+	kbp_monitoring::http { "http_${fqdn}":
+		auth => $monitoring_auth;
+	}
 }
 
 # Class: kbp_apache::passenger
@@ -60,20 +62,12 @@ class kbp_apache_new {
 #	gen_puppet
 #
 class kbp_apache_new::passenger {
-	include kbp_apache_new
-	include kbp_apache_new::ssl
-
-	kpackage { "libapache2-mod-passenger":
-		ensure => latest;
-	}
-
-	kbp_apache_new::module { "passenger":
-		require => Kpackage["libapache2-mod-passenger"];
-	}
+	include gen_base::libapache2-mod-passenger
+	include kbp_apache_new::module::passenger
+	include kbp_monitoring::passenger::queue
 }
 
 class kbp_apache_new::php {
-	include kbp_apache_new
 	include gen_base::libapache2-mod-php5
 }
 
@@ -101,6 +95,21 @@ class kbp_apache_new::ssl {
 	kbp_apache_new::module { "ssl":; }
 }
 
+# Class: kbp_apache::module::passenger
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+class kbp_apache_new::module::passenger {
+	kbp_apache_new::module { "passenger":
+		require => Kpackage["libapache2-mod-passenger"];
+	}
+}
+
 # Define: kbp_apache::site
 #
 # Parameters:
@@ -122,7 +131,11 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 		$make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false, $redirect_non_ssl=true,
 		$auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor=true,
 		$smokeping=true) {
-	include kbp_apache_new
+	if $make_default {
+		class { "kbp_apache_new":
+			monitoring_auth => $auth;
+		}
+	}
 	if $ssl or $key or $cert or $intermediate {
 		include kbp_apache_new::ssl
 	}

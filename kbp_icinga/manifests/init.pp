@@ -72,6 +72,8 @@ class kbp_icinga::client {
 			path      => "/usr/sbin/",
 			command   => "crm_mon",
 			arguments => "-s";
+		"check_passenger_queue":
+			sudo      => true;
 		"check_proc_status":
 			sudo      => true,
 			arguments => '$ARG1$';
@@ -222,7 +224,11 @@ class kbp_icinga::server {
 	gen_icinga::servercommand {
 		["check_ssh","check_smtp"]:
 			conf_dir => "generic";
-		["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_freshness","check_puppet_failures","check_nullmailer"]:
+		["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory",
+				"check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql",
+				"check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion",
+				"check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap",
+				"check_puppet_freshness","check_puppet_failures","check_nullmailer","check_passenger_queue"]:
 			conf_dir => "generic",
 			nrpe     => true;
 		"return-ok":
@@ -710,6 +716,24 @@ class kbp_icinga::nullmailer {
 		check_command       => "check_nullmailer",
 		nrpe                => true,
 		sms                 => false;
+	}
+}
+
+# Class: kbp_icinga::passenger::queue
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+class kbp_icinga::passenger::queue {
+	kbp_icinga::service { "passenger_queue":
+		service_description => "Passenger queue",
+		check_command       => "check_passenger_queue",
+		nrpe                => true,
+		warnsms             => false;
 	}
 }
 
