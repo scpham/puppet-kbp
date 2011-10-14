@@ -47,6 +47,9 @@ class kbp_icinga::client {
 			arguments => "-w i -c o";
 		"check_loadtrend":
 			arguments => "-m 1.5 -c 5 -w 2.5";
+		"check_local_smtp":
+			command   => "check_smtp",
+			arguments => "-H 127.0.0.1";
 		"check_mbean_value":
 			arguments => '$ARG1$ $ARG2$ $ARG3$ $ARG4$';
 		"check_memory":
