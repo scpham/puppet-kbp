@@ -195,7 +195,7 @@ class kbp_icinga::client {
 		entity            => "nagios",
 		as_user           => "root",
 		password_required => false,
-		command           => ["/usr/lib/nagios/plugins/", "/usr/local/lib/nagios/plugins/"];
+		command           => "/usr/lib/nagios/plugins/";
 	}
 
 	define clientcommand($sudo=false, $path=false, $command=false, $arguments=false) {
