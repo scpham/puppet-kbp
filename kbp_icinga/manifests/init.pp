@@ -116,6 +116,7 @@ class kbp_icinga::client {
 		kbp_icinga::service { "memory":
 			service_description => "Memory usage",
 			check_command       => "check_memory",
+			max_check_attempts  => 30,
 			nrpe                => true,
 			warnsms             => false;
 		}
