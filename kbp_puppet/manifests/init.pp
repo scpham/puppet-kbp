@@ -36,6 +36,10 @@ class kbp_puppet {
 	if $lsbdistcodename == "lenny" {
 		gen_apt::preference { ["libaugeas-ruby", "libaugeas-ruby1.8", "augeas-lenses", "libaugeas0"]:;}
 	}
+
+	Concat <| |> {
+#		testpms => ["testpuppetmaster.kumina.nl"],
+	}
 }
 
 # Class: kbp_puppet::test_default_config
