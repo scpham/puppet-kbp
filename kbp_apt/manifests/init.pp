@@ -21,7 +21,7 @@ class kbp_apt {
 		"update":
 			mailon      => "", # Don't send mail
 			mailto      => "reports",
-			crontime    => "0 1 * * *", # 1 in the morning
+			crontime    => "0 20 * * *", # 8 in the evening
 			configfile  => "/etc/cron-apt/config";
 		# Now mail if we need to upgrade packages by hand
 		"mail for manual upgrade":
