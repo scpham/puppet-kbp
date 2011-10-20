@@ -185,6 +185,18 @@ class kbp_syslog::mysql::etch {
 class kbp_syslog::mysql::lenny inherits rsyslog::mysql {
 }
 
+# Class: kbp_syslog::mysql::squeeze
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+class kbp_syslog::mysql::squeeze inherits rsyslog::mysql {
+}
+
 # Class: kbp_syslog::cleanup
 #
 # Actions:
