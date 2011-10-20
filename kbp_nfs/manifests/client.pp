@@ -47,10 +47,18 @@ define kbp_nfs::client::mount($server, $options, $serverpath=false) {
 		source => "${server}:${real_serverpath}";
 	}
 
-	line { "Exclude NFS mount ${name} from backups.":
-		file    => "/etc/backup/excludes",
-		content => $name,
-		require => Kpackage["offsite-backup"];
+	if defined(Package["offsite-backup"]) {
+		line { "Exclude NFS mount ${name} from backups.":
+			file    => "/etc/backup/excludes",
+			content => $name,
+			require => Package["offsite-backup"];
+		}
+	} elsif defined(Package["local-backup"]) {
+		line { "Exclude NFS mount ${name} from backups.":
+			file    => "/etc/backup/excludes",
+			content => $name,
+			require => Package["local-backup"];
+		}
 	}
 
 	exec { "/bin/mount -o remount ${name}":
