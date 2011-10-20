@@ -34,6 +34,7 @@ class kbp_nfs::server($need_gssd = "no", $need_idmapd = "no", $need_statd = "yes
 	}
 
 	concat { "/etc/exports":
+		force  => true,
 		notify => Service["nfs-kernel-server"];
 	}
 
