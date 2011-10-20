@@ -33,7 +33,7 @@ class kbp_nfs::client {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_nfs::client::mount($server, $options, $serverpath=false) {
+define kbp_nfs::client::mount($server, $options, $serverpath=false, $nfs_tag = "nfs_${environment}") {
 	include kbp_nfs::client
 
 	$real_serverpath = $serverpath ? {
@@ -70,7 +70,7 @@ define kbp_nfs::client::mount($server, $options, $serverpath=false) {
 		location => $real_serverpath,
 		options  => $options,
 		client   => $fqdn,
-		tag      => "nfs_${environment}";
+		tag      => $nfs_tag;
 	}
 }
 
