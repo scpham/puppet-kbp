@@ -1,25 +1,5 @@
 # Author: Kumina bv <support@kumina.nl>
 
-# Class: kbp_nfs::client
-#
-# Actions:
-#	Undocumented
-#
-# Depends:
-#	Undocumented
-#	gen_puppet
-#
-class kbp_nfs::client {
-	include kbp_trending::nfs
-
-	@@gen_ferm::rule { "NFS connections from ${fqdn}":
-		saddr  => $fqdn,
-		proto  => "(tcp udp)",
-		action => "ACCEPT",
-		tag    => "nfs_${environment}";
-	}
-}
-
 # Define: kbp_nfs::client::mount
 #
 # Parameters:
@@ -33,12 +13,21 @@ class kbp_nfs::client {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_nfs::client::mount($server, $options, $serverpath=false, $nfs_tag = "nfs_${environment}") {
-	include kbp_nfs::client
+define kbp_nfs::client::mount($server, $options, $serverpath=false, $nfs_tag = "nfs_${environment}", $ferm_saddr = $fqdn, $nfs_client = $fqdn) {
+	include kbp_trending::nfs
 
 	$real_serverpath = $serverpath ? {
 		false   => $name,
 		default => $serverpath,
+	}
+
+	# This will probably end up opening the same ports for the same hosts multiple times on the
+	# server if you have several mounts, but that's not a problem.
+	@@gen_ferm::rule { "NFS connections from ${fqdn} for ${real_serverpath}":
+		saddr  => $ferm_saddr,
+		proto  => "(tcp udp)",
+		action => "ACCEPT",
+		tag    => $nfs_tag;
 	}
 
 	kbp_monitoring::nfs::client { $name:; }
@@ -69,7 +58,7 @@ define kbp_nfs::client::mount($server, $options, $serverpath=false, $nfs_tag = "
 	@@kbp_nfs::client::mount_opts { "${name} mount options for ${fqdn}":
 		location => $real_serverpath,
 		options  => $options,
-		client   => $fqdn,
+		client   => $nfs_client,
 		tag      => $nfs_tag;
 	}
 }
