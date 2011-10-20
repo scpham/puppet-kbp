@@ -86,7 +86,7 @@ define kbp_nfs::client::mount_opts($location, $options, client) {
 		}
 
 		kfile { "$location/.monitoring":
-			content => "NFS_mount_ok";
+			content => "NFS_mount_ok\n";
 		}
 	}
 
