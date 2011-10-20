@@ -1,5 +1,15 @@
 # Author: Kumina bv <support@kumina.nl>
 
+class kbp_monitoring::client($package="icinga") {
+	Gen_ferm::Rule <<| tag == "general_monitoring" |>>
+	Gen_ferm::Rule <<| tag == "general_monitoring_${environment}" |>>
+
+	case $package {
+		"icinga": { include kbp_icinga::client }
+		"nagios": { include kbp_nagios::client }
+	}
+}
+
 # Class: kbp_monitoring::client::sslcert
 #
 # Actions:
@@ -43,7 +53,7 @@ class kbp_monitoring::server($package="icinga") {
 			proto  => "tcp",
 			dport  => 5666,
 			action => "ACCEPT",
-			tag    => "general";
+			tag    => "general_monitoring";
 		"MySQL monitoring from ${fqdn}":
 			saddr  => $fqdn,
 			proto  => "tcp",

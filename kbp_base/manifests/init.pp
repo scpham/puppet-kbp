@@ -16,7 +16,7 @@ class kbp_base {
 	include sysctl
 	include kbp_acpi
 	include kbp_apt
-	include kbp_icinga::client
+	include kbp_monitoring::client
 	include kbp_puppet
 	include kbp_ssh
 	include kbp_sysctl

@@ -540,10 +540,10 @@ class kbp_icinga::server {
 #
 class kbp_icinga::environment {
 	if ! $monitoring_sms {
-		Gen_icinga::Service <| |> {
+		Kbp_icinga::Service <| |> {
 			sms => false,
 		}
-		Gen_icinga::Host <| |> {
+		Kbp_icinga::Host <| |> {
 			sms => false,
 		}
 	}
@@ -1156,7 +1156,7 @@ class kbp_icinga::rabbitmqctl($namespace) {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environment, $parents=false, $hostgroups=false, $sms=true, $notification_period=false) {
+define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environment, $parents=false, $hostgroups=false, $sms=true, $notification_period=false, $proxy=false) {
 	$confdir = "${conf_dir}/${name}"
 
 	gen_icinga::configdir { "${confdir}":
@@ -1179,7 +1179,8 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
 		notification_period   => $notification_period ? {
 			false   => undef,
 			default => $notification_period,
-		};
+		},
+		proxy                 => $proxy;
 	}
 }
 

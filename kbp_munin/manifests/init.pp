@@ -16,6 +16,8 @@ class kbp_munin::client inherits munin::client {
 		section => "files_user_*",
 		content => "user root";
 	}
+
+	Gen_ferm::Rule <<| tag == "general_trending" |>>
 }
 
 # Class: kbp_munin::client::apache
@@ -261,7 +263,7 @@ class kbp_munin::server inherits munin::server {
 		proto  => "tcp",
 		dport  => "4949",
 		action => "ACCEPT",
-		tag    => "general";
+		tag    => "general_trending";
 	}
 
 	Kfile["/etc/munin/munin.conf"] {

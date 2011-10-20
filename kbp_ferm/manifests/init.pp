@@ -13,8 +13,6 @@ class kbp_ferm {
 	include kbp_ferm::offenders
 	include gen_ferm
 
-	Gen_ferm::Rule <<| tag == "general" |>>
-
 	@gen_ferm::chain {
 		["PREROUTING_v4","PREROUTING_v6"]:
 			table => "nat";

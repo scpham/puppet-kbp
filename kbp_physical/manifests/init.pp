@@ -32,7 +32,8 @@ class kbp_physical {
 	if $consolefqdn != -1 {
 		kbp_icinga::virtualhost { "${consolefqdn}":
 			address => $consoleaddress,
-			parents => $consoleparent;
+			parents => $consoleparent,
+			proxy   => $consoleproxy;
 		}
 
 		if !$consoleipmi {
