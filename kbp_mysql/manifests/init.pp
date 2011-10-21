@@ -98,7 +98,7 @@ class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}", $monitorin
 		service_description => "MySQL slaving",
 		check_command       => "check_mysql_slave",
 		nrpe                => true,
-		ha                  => true;
+		ha                  => $monitoring_ha;
 	}
 }
 
