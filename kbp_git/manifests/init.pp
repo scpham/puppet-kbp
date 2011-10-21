@@ -28,18 +28,23 @@ class kbp_git {
 #	origin
 #		Add an origin to the repository. This does
 #		not clone the remote repository.
+#	bare
+#		Should the repository be 'bare'
+#	post_update_src
+#		The source for a post_update hook script
 #
 # Depends:
 #	kbp_git
-#	kbp_git::repo
+#	gen_git::repo
 #	gen_puppet
 #
-define kbp_git::repo ($branch = "master", $origin = false, $bare = false) {
+define kbp_git::repo ($branch = "master", $origin = false, $bare = false, $post_update_src = false) {
 	include kbp_git
 
 	gen_git::repo { $name:
-		branch => $branch,
-		origin => $origin,
-		bare   => $bare;
+		branch          => $branch,
+		origin          => $origin,
+		bare            => $bare,
+		post_update_src => $post_update_src;
 	}
 }
