@@ -77,7 +77,9 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
 	}
 
 	# TODO Allow the DB to reside on another machine.
-	include kbp_mysql::server
+	class { "kbp_mysql::standalone":
+		mysql_name => "jira";
+	}
 
 	mysql::server::db { "${db_name}":
 		use_utf8 => true;

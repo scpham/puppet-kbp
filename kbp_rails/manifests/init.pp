@@ -10,5 +10,7 @@
 class kbp_rails::mysql {
 	include gen_base::rails
 	include gen_base::libmysql-ruby
-	include kbp_mysql::server
+	class { "kbp_mysql::standalone":
+		mysql_name => "rails";
+	}
 }
