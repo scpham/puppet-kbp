@@ -202,8 +202,7 @@ define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=
 	gen_apache::forward_vhost { $name:
 		forward      => $forward,
 		ensure       => $ensure,
-		serveralias  => $serveralias,
-		documentroot => "/srv/www/";
+		serveralias  => $serveralias;
 	}
 }
 
