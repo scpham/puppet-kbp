@@ -28,10 +28,11 @@ class kbp_mysql::master($mysql_name, $setup_backup=true) {
 		@@kbp_mysql::monitoring_dependency { "mysql_${environment}_${mysql_name}_${fqdn}":; }
 	}
 
-	if ! $setup_backup {
-		Kfile <| title == "/etc/mysql/conf.d/expire_logs.cnf" |> {
-			ensure => absent,
-		}
+	Kfile <| title == "/etc/mysql/conf.d/expire_logs.cnf" |> {
+		ensure => $setup_backup ? {
+			true  => "present",
+			false => "absent",
+		},
 	}
 }
 
@@ -83,20 +84,22 @@ class kbp_mysql::slave($mysql_name, $setup_backup=true, $monitoring_ha=false) {
 		ha                  => $monitoring_ha;
 	}
 
-	if ! $setup_backup {
-		Kfile <| title == "/etc/mysql/conf.d/expire_logs.cnf" |> {
-			ensure => absent,
-		}
+	Kfile <| title == "/etc/mysql/conf.d/expire_logs.cnf" |> {
+		ensure => $setup_backup ? {
+			true  => "present",
+			false => "absent",
+		},
 	}
 }
 
 class kbp_mysql::standalone($mysql_name, $setup_backup=false) {
 	include kbp_mysql::server
 
-	if ! $setup_backup {
-		Kfile <| title == "/etc/mysql/conf.d/expire_logs.cnf" |> {
-			ensure => absent,
-		}
+	Kfile <| title == "/etc/mysql/conf.d/expire_logs.cnf" |> {
+		ensure => $setup_backup ? {
+			true  => "present",
+			false => "absent",
+		},
 	}
 }
 
@@ -140,7 +143,6 @@ class kbp_mysql::server {
 	}
 
 	Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
-
 }
 
 # Class: kbp_mysql::monitoring::icinga::server
