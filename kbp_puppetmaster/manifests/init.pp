@@ -12,9 +12,11 @@
 class kbp_puppetmaster {
 	include kbp_activemq
 	include kbp_apache::passenger
-	include kbp_mysql::server
 	include kbp_vim::puppet
 	include kbp_git
+	class { "kbp_mysql::standalone":
+		mysql_name => "puppetmaster";
+	}
 	class { "kbp_trending::puppetmaster":
 		method => "munin";
 	}
