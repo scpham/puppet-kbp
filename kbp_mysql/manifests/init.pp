@@ -1,49 +1,36 @@
 # Author: Kumina bv <support@kumina.nl>
 
-# Class: kbp_mysql::server
-#
-# Parameters:
-#	otherhost
-#		Undocumented
-#
-# Actions:
-#	Undocumented
-#
-# Depends:
-#	Undocumented
-#	gen_puppet
-#
-class kbp_mysql::server($otherhost=false,$setup_backup=true) {
-	include mysql::server
-	include kbp_trending::mysql
-	class { "kbp_mysql::monitoring::icinga::server":
-		otherhost => $otherhost,
+class kbp_mysql::mastermaster($mysql_name, $setup_backup=true, $monitoring_ha_slaving=false) {
+	class { "kbp_mysql::master":
+		mysql_name   => $mysql_name,
+		setup_backup => $setup_backup;
+	}
+	class { "kbp_mysql::slave":
+		mysql_name    => $mysql_name,
+		setup_backup  => $setup_backup,
+		monitoring_ha => $monitoring_ha_slaving;
 	}
 
-	if $otherhost {
-		@@gen_ferm::rule { "MySQL connections from ${fqdn}":
-			tag    => "mysql_${environment}",
-			dport  => '3306',
-			proto  => 'tcp',
-			saddr  => $fqdn,
-			action => 'ACCEPT',
-		}
+	Kbp_mysql::Monitoring_dependency <<| tag == "mysql_${environment}_${mysql_name}" |>>
 
-		kfile { "/etc/mysql/conf.d/expire_logs.cnf":
-			content => "[mysqld]\nexpire_logs_days = 7\n",
-			notify  => Exec["reload-mysql"];
-		}
+	if ! defined(Kbp_mysql::Monitoring_dependency["mysql_${environment}_${mysql_name}_${fqdn}"]) {
+		@@kbp_mysql::monitoring_dependency { "mysql_${environment}_${mysql_name}_${fqdn}":; }
+	}
+}
+
+class kbp_mysql::master($mysql_name, $setup_backup=true) {
+	include kbp_mysql::server
+
+	Mysql::Server::Grant <<| tag == "mysql_${environment}_${mysql_name}" |>>
+	Kbp_mysql::Monitoring_dependency <<| tag == "mysql_${environment}_${mysql_name}" |>>
+
+	if ! defined(Kbp_mysql::Monitoring_dependency["mysql_${environment}_${mysql_name}_${fqdn}"]) {
+		@@kbp_mysql::monitoring_dependency { "mysql_${environment}_${mysql_name}_${fqdn}":; }
 	}
 
-	Gen_ferm::Rule <<| tag == "mysql_${environment}" |>>
-	Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
-
-	# Setup backup for MySQL, if we want that
-	if $setup_backup {
-		kfile { "/etc/backup/prepare.d/mysql":
-			ensure  => link,
-			target  => "/usr/share/backup-scripts/prepare/mysql",
-			require => Package["offsite-backup"],
+	if ! $setup_backup {
+		Kfile <| title == "/etc/mysql/conf.d/expire_logs.cnf" |> {
+			ensure => absent,
 		}
 	}
 }
@@ -63,21 +50,16 @@ class kbp_mysql::server($otherhost=false,$setup_backup=true) {
 #	Undocumented
 #	gen_puppet
 #
-class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}", $monitoring_ha=false) {
-	class { "kbp_mysql::server":
-		otherhost => $otherhost,
-	}
+class kbp_mysql::slave($mysql_name, $setup_backup=true, $monitoring_ha=false) {
+	include kbp_mysql::server
 
-	Gen_ferm::Rule <<| tag == "mysql_${fqdn}" |>>
-	Mysql::Server::Grant <<| tag == "mysql_${fqdn}" |>>
-
-	@@mysql::server::grant { "repl":
+	@@mysql::server::grant { "repl_${fqdn}":
 		user        => "repl",
 		password    => "etohsh8xahNu",
 		hostname    => $fqdn,
 		db          => "*",
 		permissions => "replication slave",
-		tag         => $otherhost;
+		tag         => "mysql_${environment}_${mysql_name}";
 	}
 
 	mysql::server::grant { "nagios_slavecheck":
@@ -91,7 +73,7 @@ class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}", $monitorin
 		proto  => "tcp",
 		dport  => 3306,
 		action => "ACCEPT",
-		tag    => $otherhost;
+		tag    => "mysql_${environment}_${mysql_name}";
 	}
 
 	kbp_icinga::service { "mysql_slaving":
@@ -100,6 +82,56 @@ class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}", $monitorin
 		nrpe                => true,
 		ha                  => $monitoring_ha;
 	}
+
+	if ! $setup_backup {
+		Kfile <| title == "/etc/mysql/conf.d/expire_logs.cnf" |> {
+			ensure => absent,
+		}
+	}
+}
+
+class kbp_mysql::standalone($mysql_name, $setup_backup=false) {
+	include kbp_mysql::server
+
+	if ! $setup_backup {
+		Kfile <| title == "/etc/mysql/conf.d/expire_logs.cnf" |> {
+			ensure => absent,
+		}
+	}
+}
+
+# Class: kbp_mysql::server
+#
+# Parameters:
+#	otherhost
+#		Undocumented
+#
+# Actions:
+#	Undocumented
+#
+# Depends:
+#	Undocumented
+#	gen_puppet
+#
+class kbp_mysql::server {
+	include mysql::server
+	include kbp_trending::mysql
+	include kbp_mysql::monitoring::icinga::server
+
+	Gen_ferm::Rule <<| tag == "mysql_${environment}_${name}" |>>
+
+	kfile {
+		"/etc/mysql/conf.d/expire_logs.cnf":
+			content => "[mysqld]\nexpire_logs_days = 7\n",
+			notify  => Exec["reload-mysql"];
+		"/etc/backup/prepare.d/mysql":
+			ensure  => link,
+			target  => "/usr/share/backup-scripts/prepare/mysql",
+			require => Package["offsite-backup"];
+	}
+
+	Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
+
 }
 
 # Class: kbp_mysql::monitoring::icinga::server
@@ -118,16 +150,8 @@ class kbp_mysql::slave($otherhost, $customtag="mysql_${environment}", $monitorin
 class kbp_mysql::monitoring::icinga::server($otherhost=false) {
 	kbp_icinga::service { "mysql":
 		service_description => "MySQL service",
-		check_command        => "check_mysql",
+		check_command       => "check_mysql",
 		nrpe                => true;
-	}
-
-	if $otherhost {
-		gen_icinga::servicedependency { "mysql_dependency_${fqdn}":
-			dependent_service_description => "MySQL service",
-			host_name                     => $otherhost,
-			service_description           => "MySQL service";
-		}
 	}
 
 	mysql::user { "monitoring":
@@ -149,7 +173,9 @@ class kbp_mysql::client::java {
 #	kbp_mysql::server
 #
 class kbp_mysql::puppetmaster {
-	include kbp_mysql::server
+	class { "kbp_mysql::standalone":
+		mysql_name => "puppetmaster";
+	}
 
 	Gen_ferm::Rule <<| tag == "mysql_puppetmaster" |>>
 	Mysql::Server::Db <<| tag == "mysql_puppetmaster" |>>
@@ -171,12 +197,23 @@ class kbp_mysql::puppetmaster {
 #	gen_ferm
 #	gen_puppet
 #
-define kbp_mysql::client ($customtag="mysql_${environment}", $address = "${fqdn}") {
+define kbp_mysql::client ($mysql_name=false, $address = "${fqdn}") {
 	@@gen_ferm::rule { "MySQL connections from ${fqdn} for ${name}":
 		saddr  => $address,
 		proto  => "tcp",
 		dport  => 3306,
 		action => "ACCEPT",
-		tag    => $customtag;
+		tag    => "mysql_${environment}_${mysql_name}";
+	}
+}
+
+define kbp_mysql::monitoring_dependency($this_fqdn=$fqdn) {
+	if $this_fqdn != $fqdn {
+		gen_icinga::servicedependency { "mysql_dependency_${fqdn}":
+			dependent_service_description => "MySQL service",
+			host_name                     => $this_fqdn,
+			service_description           => "MySQL service",
+			tag                           => "mysql_${environment}_${mysql_name}";
+		}
 	}
 }
