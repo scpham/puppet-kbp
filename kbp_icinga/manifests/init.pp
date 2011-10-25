@@ -29,7 +29,10 @@ class kbp_icinga::client {
 			arguments => "-w 90 -c 95";
 		"check_dhcp":
 			command   => "check_procs",
-			arguments => "-c 1: -C dhcpd3";
+			arguments => $lsbdistcodename ? {
+				"lenny" => "-c 1: -C dhcpd3",
+				default => "-c 1: -C dhcpd",
+			};
 		"check_disk_space":
 			sudo      => true,
 			command   => "check_disk",
