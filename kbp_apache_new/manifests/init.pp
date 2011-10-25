@@ -120,10 +120,10 @@ class kbp_apache_new::module::passenger {
 #	Undocumented
 #	gen_puppet
 #
-define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot="/srv/www/${name}", $address=false, $address6=false, $port=false,
-		$make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false, $redirect_non_ssl=true,
-		$auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor=true,
-		$smokeping=true) {
+define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot="/srv/www/${name}", $create_documentroot=true, $address=false, $address6=false,
+		$port=false, $make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false,
+		$redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false,
+		$monitor=true, $smokeping=true) {
 	include kbp_apache_new
 	if $ssl or $key or $cert or $intermediate {
 		include kbp_apache_new::ssl
