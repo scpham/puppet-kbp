@@ -16,6 +16,11 @@
 define kbp_drbd($mastermaster=true, $time_out=false, $connect_int=false, $ping_int=false, $ping_timeout=false, $after_sb_0pri="discard-younger-primary",
 		$after_sb_1pri="discard-secondary", $after_sb_2pri="call-pri-lost-after-sb", $rate="5M") {
 	include kbp_drbd::monitoring::icinga
+	if $mastermaster {
+		class { "kbp_ocfs2":
+			ocfs2_tag => $name;
+		}
+	}
 
 	gen_drbd { $name:
 		mastermaster  => $mastermaster,
