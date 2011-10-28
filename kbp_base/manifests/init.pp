@@ -10,6 +10,7 @@
 #	gen_puppet
 #
 class kbp_base {
+	include kbp_base::wanted_packages
 	include gen_base::dnsutils
 	include gen_base::wget
 	include lvm
@@ -155,6 +156,11 @@ class kbp_base::environment {
 	kbp_smokeping::targetgroup { "${environment}":; }
 }
 
+class kbp_base::wanted_packages {
+	include gen_base::libpam-modules
+	include gen_base::libpam-runtime
+	include gen_base::libpam0g
+}
 
 define kbp_base::staff_user($ensure = "present", $fullname, $uid, $password_hash, $sshkeys = "", $shell = "bash") {
 		$username = $name
