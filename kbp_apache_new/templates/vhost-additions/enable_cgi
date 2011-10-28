@@ -1,0 +1,17 @@
+<Directory <%= documentroot %>>
+  AddHandler fcgid-script .php
+  FCGIWrapper /usr/lib/cgi-bin/php5 .php
+  Options ExecCGI Indexes FollowSymLinks MultiViews
+  AllowOverride All
+  Order allow,deny
+  Allow from all
+</Directory>
+
+ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+
+<Directory \"/usr/lib/cgi-bin\">
+  AllowOverride None
+  Options ExecCGI -MultiViews +SymLinksIfOwnerMatch
+  Order allow,deny
+  Allow from all
+</Directory>
