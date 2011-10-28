@@ -103,6 +103,37 @@ class kbp_apache_new::module::passenger {
 	}
 }
 
+class kbp_apache_new::module::dav {
+	kbp_apache_new::module { "dav":; }
+}
+
+class kbp_apache_new::module::dav_fs {
+	kbp_apache_new::module { "dav_fs":; }
+}
+
+define kbp_apache_new::cgi($documentroot) {
+	include gen_base::libapache2-mod-fcgid
+
+	kfile { "/etc/apache2/vhost-additions/${name}/enable-cgi":
+		content => template("kbp_apache_new/vhost-additions/enable_cgi"),
+		notify  => Exec["reload-apache2"];
+	}
+}
+
+define kbp_apache_new::php_cgi($documentroot) {
+	include gen_base::php5-cgi
+	include gen_base::php-apc
+
+	kbp_apache_new::cgi { $name:
+		documentroot => $documentroot;
+	}
+
+	Package <| title == "gen_base::libapache2-mod-php5" |> {
+		ensure => purged,
+		notify => Exec["reload-apache2"];
+	}
+}
+
 # Define: kbp_apache::site
 #
 # Parameters:
@@ -123,7 +154,7 @@ class kbp_apache_new::module::passenger {
 define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot="/srv/www/${name}", $create_documentroot=true, $address=false, $address6=false,
 		$port=false, $make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false,
 		$redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false,
-		$monitor=true, $smokeping=true) {
+		$monitor=true, $smokeping=true, $php=false) {
 	include kbp_apache_new
 	if $ssl or $key or $cert or $intermediate {
 		include kbp_apache_new::ssl
@@ -141,6 +172,27 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 	$real_name   = regsubst($full_name,'^(.*)_(.*)$','\1')
 	$real_port   = regsubst($full_name,'^(.*)_(.*)$','\2')
 	$dontmonitor = ["default","default-ssl","localhost"]
+
+	gen_apache::site { $name:
+		ensure           => $ensure,
+		serveralias      => $serveralias,
+		documentroot     => $documentroot,
+		address          => $address,
+		address6         => $address6,
+		port             => $port,
+		make_default     => $make_default,
+		ssl              => $ssl,
+		key              => $key,
+		cert             => $cert,
+		intermediate     => $intermediate,
+		redirect_non_ssl => $redirect_non_ssl;
+	}
+
+	if $php {
+		kbp_apache_new::php_cgi { $full_name:
+			documentroot => $documentroot;
+		}
+	}
 
 	if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
 		kbp_monitoring::site { $name:
@@ -162,21 +214,6 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 				path  => $monitor_path;
 			}
 		}
-	}
-
-	gen_apache::site { $name:
-		ensure           => $ensure,
-		serveralias      => $serveralias,
-		documentroot     => $documentroot,
-		address          => $address,
-		address6         => $address6,
-		port             => $port,
-		make_default     => $make_default,
-		ssl              => $ssl,
-		key              => $key,
-		cert             => $cert,
-		intermediate     => $intermediate,
-		redirect_non_ssl => $redirect_non_ssl;
 	}
 
 	if $ssl or $key or $cert or $intermediate {
