@@ -130,7 +130,7 @@ define kbp_apache_new::php_cgi($documentroot) {
 
 	Package <| title == "gen_base::libapache2-mod-php5" |> {
 		ensure => purged,
-		notify => Exec["reload-apache2"];
+		notify => Exec["reload-apache2"],
 	}
 }
 
