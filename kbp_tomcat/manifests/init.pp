@@ -1,6 +1,6 @@
 # Author: Kumina bv <support@kumina.nl>
 
-# Class: kbp_tomcat
+# Define: kbp_tomcat
 #
 # Actions:
 #	Undocumented
@@ -9,9 +9,11 @@
 #	Undocumented
 #	gen_puppet
 #
-class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $domain=$fqdn, $serveralias=false, $documentroot=false, $ssl=false, $ajp13_connector_port = "8009", $java_opts="", $jvm_max_mem=false){
+define kbp_tomcat ($tomcat_tag="tomcat_${environment}", $domain=$fqdn, $serveralias=false, $documentroot=false, $ssl=false,
+                   $ajp13_connector_port = "8009", $java_opts="", $jvm_max_mem=false){
 	include kbp_apache
-	class { "gen_tomcat":
+
+	gen_tomcat { "gen_tomcat":
 		ajp13_connector_port => $ajp13_connector_port,
 		java_opts            => $java_opts,
 		jvm_max_mem          => $jvm_max_mem;
@@ -78,7 +80,8 @@ define kbp_tomcat::webapp($war="", $urlpath="/", $context_xml_content=false, $ro
 #	Undocumented
 #	gen_puppet
 #
-define kbp_tomcat::apache_proxy_ajp_site($port, $ssl=false, $serveralias=false, $documentroot=false, $ensure="present", $tomcat_tag="tomcat_${environment}") {
+define kbp_tomcat::apache_proxy_ajp_site($port, $ssl=false, $serveralias=false, $documentroot=false, $ensure="present",
+                                         $tomcat_tag="tomcat_${environment}") {
 	apache::site_config { "${name}":
 		serveralias  => $serveralias,
 		documentroot => $documentroot,
