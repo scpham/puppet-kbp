@@ -1,5 +1,9 @@
 # Author: Kumina bv <support@kumina.nl>
 
+class kbp_subversion::client {
+	include subversion::client
+}
+
 # Class: kbp_subversion::etch
 #
 # Actions:

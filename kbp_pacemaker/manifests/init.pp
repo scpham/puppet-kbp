@@ -21,20 +21,21 @@ class kbp_pacemaker ($customtag="pacemaker_${environment}") {
 	include kbp_pacemaker::monitoring::icinga
 }
 
-define kbp_pacemaker::primitive ($provider, $location=false, $location_score="inf", $location_name=false, $start_timeout=false, $monitor_interval=false, $monitor_timeout=false, $stop_timeout=false, $params=false, $group=false, $customtag="pacemaker_${environment}") {
-		gen_pacemaker::primitive { "${name}":
-			provider         => $provider,
-			location         => $location,
-			location_score   => $location_score,
-			location_name    => $location_name,
-			start_timeout    => $start_timeout,
-			stop_timeout     => $stop_timeout,
-			monitor_interval => $monitor_interval,
-			monitor_timeout  => $monitor_timeout,
-			group            => $group,
-			params           => $params,
-			customtag        => $customtag;
-		}
+define kbp_pacemaker::primitive ($provider, $location=false, $location_score="inf", $location_name=false, $start_timeout=false, $monitor_interval=false,
+		$monitor_timeout=false, $stop_timeout=false, $params=false, $group=false, $customtag="pacemaker_${environment}") {
+	gen_pacemaker::primitive { "${name}":
+		provider         => $provider,
+		location         => $location,
+		location_score   => $location_score,
+		location_name    => $location_name,
+		start_timeout    => $start_timeout,
+		stop_timeout     => $stop_timeout,
+		monitor_interval => $monitor_interval,
+		monitor_timeout  => $monitor_timeout,
+		group            => $group,
+		params           => $params,
+		customtag        => $customtag;
+	}
 }
 
 

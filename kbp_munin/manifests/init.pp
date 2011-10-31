@@ -32,11 +32,11 @@ class kbp_munin::client inherits munin::client {
 class kbp_munin::client::apache {
 	# This class is should be included in kbp_apache to collect apache data for munin
 	include kbp_munin::client
-
-	kpackage { "libwww-perl":; }
+	include gen_base::libwww-perl
 
 	kfile { "/etc/apache2/conf.d/server-status":
 		content => template("kbp_munin/server-status"),
+		require => Package["apache2"],
 		notify  => Exec["reload-apache2"];
 	}
 
