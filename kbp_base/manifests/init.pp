@@ -57,7 +57,8 @@ class kbp_base {
 		mode  => 0644,
 	}
 
-	# Force fsck on boot to repair the file system if it is inconstistent, so we don't have to open the console and run fsck by hand
+	# Force fsck on boot to repair the file system if it is inconsistent,
+	# so we don't have to open the console and run fsck by hand
 	augeas { "/etc/default/rcS":
 		context => "/files/etc/default/rcS",
 		changes => "set FSCKFIX yes";
@@ -68,6 +69,14 @@ class kbp_base {
 	group { "kumina":
 		ensure => present,
 		gid => 10000,
+	}
+
+	# Set the LAST_UID in /etc/adduser.conf to 9999, so automatically created users will have a UID below 10k
+	augeas { "/etc/adduser.conf":
+		lens    => "Shellvars.lns",
+		incl    => "/etc/adduser.conf",
+		force   => true,
+		changes => 'set LAST_UID 9999';
 	}
 
 	kbp_base::staff_user {
