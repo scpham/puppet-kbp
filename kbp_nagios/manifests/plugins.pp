@@ -3,11 +3,11 @@
 # Class: kbp_nagios::plugins
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_nagios::plugins inherits nagios::plugins {
 }

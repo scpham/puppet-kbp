@@ -3,37 +3,37 @@
 # Class: kbp_localbackup
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_localbackup {
-	package { "rsnapshot":
-		ensure => installed,
-	}
+  package { "rsnapshot":
+    ensure => installed,
+  }
 
-	file { "/etc/rsnapshot.conf":
-		owner => "root",
-		group => "root",
-		mode => 644,
-		content => template("kbp_localbackup/rsnapshot/rsnapshot.conf"),
-		require => Package["rsnapshot"],
-	}
+  file { "/etc/rsnapshot.conf":
+    owner => "root",
+    group => "root",
+    mode => 644,
+    content => template("kbp_localbackup/rsnapshot/rsnapshot.conf"),
+    require => Package["rsnapshot"],
+  }
 
-	file { "/usr/local/bin/rsnapshot_symlinks":
-		source => "puppet://puppet/kbp_localbackup/rsnapshot_symlinks",
-		owner => "root",
-		group => "staff",
-		mode => 755,
-	}
+  file { "/usr/local/bin/rsnapshot_symlinks":
+    source => "puppet://puppet/kbp_localbackup/rsnapshot_symlinks",
+    owner => "root",
+    group => "staff",
+    mode => 755,
+  }
 
-	file { "/etc/cron.d/rsnapshot":
-		source => "puppet://puppet/kbp_localbackup/rsnapshot/cron.d/rsnapshot",
-		owner => "root",
-		group => "root",
-		mode => 644,
-		require => File["/etc/rsnapshot.conf"],
-	}
+  file { "/etc/cron.d/rsnapshot":
+    source => "puppet://puppet/kbp_localbackup/rsnapshot/cron.d/rsnapshot",
+    owner => "root",
+    group => "root",
+    mode => 644,
+    require => File["/etc/rsnapshot.conf"],
+  }
 }

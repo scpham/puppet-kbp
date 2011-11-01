@@ -3,16 +3,16 @@
 # Class: kbp_twenty-five_mail::monitoring::icinga
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_twenty-five_mail::monitoring::icinga {
-	kbp_icinga::service { "smtp_gateway":
-		service_description => "SMTP gateway",
-		check_command       => "check_local_smtp",
-		nrpe                => true;
-	}
+  kbp_icinga::service { "smtp_gateway":
+    service_description => "SMTP gateway",
+    check_command       => "check_local_smtp",
+    nrpe                => true;
+  }
 }

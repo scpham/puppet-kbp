@@ -3,11 +3,11 @@
 # Class: kbp_phpldapadmin
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_phpldapadmin inherits phpldapadmin {
 }

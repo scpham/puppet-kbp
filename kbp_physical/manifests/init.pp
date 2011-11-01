@@ -3,50 +3,50 @@
 # Class: kbp_physical
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_physical {
-	include kbp_arpwatch
+  include kbp_arpwatch
 
-	case $raidcontroller0_driver {
-		"3w-9xxx": {
-			kpackage { "3ware-cli-binary":; }
+  case $raidcontroller0_driver {
+    "3w-9xxx": {
+      kpackage { "3ware-cli-binary":; }
 
-			kbp_monitoring::raidcontroller { "controller0":
-				driver => "3ware";
-			}
-		}
-		"aacraid": {
-			kpackage { "arcconf":; }
+      kbp_monitoring::raidcontroller { "controller0":
+        driver => "3ware";
+      }
+    }
+    "aacraid": {
+      kpackage { "arcconf":; }
 
-			kbp_monitoring::raidcontroller { "controller0":
-				driver => "adaptec";
-			}
-		}
-	}
+      kbp_monitoring::raidcontroller { "controller0":
+        driver => "adaptec";
+      }
+    }
+  }
 
-	if $consolefqdn != -1 {
-		kbp_icinga::virtualhost { "${consolefqdn}":
-			address => $consoleaddress,
-			parents => $consoleparent,
-			proxy   => $consoleproxy;
-		}
+  if $consolefqdn != -1 {
+    kbp_icinga::virtualhost { "${consolefqdn}":
+      address => $consoleaddress,
+      parents => $consoleparent,
+      proxy   => $consoleproxy;
+    }
 
-		if !$consoleipmi {
-			kbp_monitoring::http { "http_${consolefqdn}":
-				customfqdn => $consolefqdn;
-			}
-		}
-	}
+    if !$consoleipmi {
+      kbp_monitoring::http { "http_${consolefqdn}":
+        customfqdn => $consolefqdn;
+      }
+    }
+  }
 
-	# Backup the MBR
-	kfile { "/etc/backup/prepare.d/mbr":
-		source  => "kbp_physical/mbr",
-		mode    => 700,
-		require => Package["backup-scripts"];
-	}
+  # Backup the MBR
+  kfile { "/etc/backup/prepare.d/mbr":
+    source  => "kbp_physical/mbr",
+    mode    => 700,
+    require => Package["backup-scripts"];
+  }
 }

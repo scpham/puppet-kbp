@@ -3,11 +3,11 @@
 # Class: kbp_nagios::nsca
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_nagios::nsca inherits nagios::nsca {
 }

@@ -3,12 +3,12 @@
 # Class: kbp_acpi
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_acpi {
-	include gen_acpi
+  include gen_acpi
 }

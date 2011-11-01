@@ -3,18 +3,18 @@
 # Class: kbp_powerdns::master
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_powerdns::master {
-	include powerdns::master
+  include powerdns::master
 
-	Gen_ferm::Rule <<| tag == "bind_${environment}" |>>
+  Gen_ferm::Rule <<| tag == "bind_${environment}" |>>
 
-	Gen_ferm::Rule <<| tag == "poweradmin_${environment}" |>>
+  Gen_ferm::Rule <<| tag == "poweradmin_${environment}" |>>
 
-	Gen_ferm::Rule <<| tag == "dns_monitoring" |>>
+  Gen_ferm::Rule <<| tag == "dns_monitoring" |>>
 }

@@ -3,22 +3,22 @@
 # Class: kbp_arpwatch
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_arpwatch {
-	include arpwatch
+  include arpwatch
 
-	Kfile <| title == "/etc/default/arpwatch" |> {
-		source => "kbp_arpwatch/arpwatch",
-	}
+  Kfile <| title == "/etc/default/arpwatch" |> {
+    source => "kbp_arpwatch/arpwatch",
+  }
 
-	kbp_icinga::service { "arpwatch":
-		service_description => "Arpwatch daemon",
-		check_command       => "check_arpwatch",
-		nrpe                => true;
-	}
+  kbp_icinga::service { "arpwatch":
+    service_description => "Arpwatch daemon",
+    check_command       => "check_arpwatch",
+    nrpe                => true;
+  }
 }

@@ -3,45 +3,45 @@
 # Class: kbp_hetzner
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_hetzner inherits hetzner {
-	include munin::client
+  include munin::client
 
-	package { "lm-sensors":
-		ensure => "latest";
-	}
+  package { "lm-sensors":
+    ensure => "latest";
+  }
 
-	munin::client::plugin { "sensors_temp":
-		require => Package["lm-sensors"],
-		script  => "sensors_",
-		notify  => Exec["/sbin/modprobe f71882fg"];
-	}
+  munin::client::plugin { "sensors_temp":
+    require => Package["lm-sensors"],
+    script  => "sensors_",
+    notify  => Exec["/sbin/modprobe f71882fg"];
+  }
 
-	exec { "/sbin/modprobe f71882fg":
-		refreshonly => true;
-	}
+  exec { "/sbin/modprobe f71882fg":
+    refreshonly => true;
+  }
 
-	line { "f71882fg": # Load the module on boot
-		file    => "/etc/modules",
-		ensure  => "present",
-		content => "f71882fg";
-	}
+  line { "f71882fg": # Load the module on boot
+    file    => "/etc/modules",
+    ensure  => "present",
+    content => "f71882fg";
+  }
 
-	gen_ferm::rule {
-		"Allow guests to connect to the internet":
-			chain     => "FORWARD",
-			interface => "ubr1",
-			outerface => "ubr0",
-			action    => "ACCEPT";
-		"Allow the internet to connect to guests":
-			chain     => "FORWARD",
-			interface => "ubr0",
-			outerface => "ubr1",
-			action    => "ACCEPT";
-	}
+  gen_ferm::rule {
+    "Allow guests to connect to the internet":
+      chain     => "FORWARD",
+      interface => "ubr1",
+      outerface => "ubr0",
+      action    => "ACCEPT";
+    "Allow the internet to connect to guests":
+      chain     => "FORWARD",
+      interface => "ubr0",
+      outerface => "ubr1",
+      action    => "ACCEPT";
+  }
 }

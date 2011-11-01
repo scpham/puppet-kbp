@@ -3,491 +3,491 @@
 # Class: kbp_puppetmaster
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_puppetmaster {
-	include kbp_activemq
-	include kbp_apache::passenger
-	include kbp_vim::puppet
-	include kbp_git
-	class { "kbp_mysql::standalone":
-		mysql_name => "puppetmaster";
-	}
-	class { "kbp_trending::puppetmaster":
-		method => "munin";
-	}
+  include kbp_activemq
+  include kbp_apache::passenger
+  include kbp_vim::puppet
+  include kbp_git
+  class { "kbp_mysql::standalone":
+    mysql_name => "puppetmaster";
+  }
+  class { "kbp_trending::puppetmaster":
+    method => "munin";
+  }
 
-	kbp_monitoring::sslcert {
-		"puppet_signed":
-			path => "/var/lib/puppet/ssl/ca/signed";
-		"puppet_certs":
-			path => "/var/lib/puppet/ssl/certs";
-	}
+  kbp_monitoring::sslcert {
+    "puppet_signed":
+      path => "/var/lib/puppet/ssl/ca/signed";
+    "puppet_certs":
+      path => "/var/lib/puppet/ssl/certs";
+  }
 
-	gen_ferm::rule { "Puppet connections":
-		proto  => "tcp",
-		dport  => "8140",
-		action => "ACCEPT";
-	}
+  gen_ferm::rule { "Puppet connections":
+    proto  => "tcp",
+    dport  => "8140",
+    action => "ACCEPT";
+  }
 
-	gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
+  gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
 
-	gen_apt::source { "rabbitmq":
-		uri          => "http://www.rabbitmq.com/debian",
-		distribution => "testing",
-		components   => ["main"];
-	}
+  gen_apt::source { "rabbitmq":
+    uri          => "http://www.rabbitmq.com/debian",
+    distribution => "testing",
+    components   => ["main"];
+  }
 
-	kpackage {
-		"puppetmaster":
-			ensure  => present,
-			require => Kfile["/etc/default/puppetmaster","/etc/apt/preferences.d/puppetmaster"];
-		["rails","libmysql-ruby","puppetmaster-common","ipaddress-ruby"]:
-			ensure  => latest;
-	}
+  kpackage {
+    "puppetmaster":
+      ensure  => present,
+      require => Kfile["/etc/default/puppetmaster","/etc/apt/preferences.d/puppetmaster"];
+    ["rails","libmysql-ruby","puppetmaster-common","ipaddress-ruby"]:
+      ensure  => latest;
+  }
 
-	@kpackage { "puppetstoredconfigcleanhenker":
-		ensure => latest;
-	}
+  @kpackage { "puppetstoredconfigcleanhenker":
+    ensure => latest;
+  }
 
-	service { "puppetqd":
-		hasstatus => true,
-		ensure    => running,
-		require   => Kpackage["puppetmaster"];
-	}
+  service { "puppetqd":
+    hasstatus => true,
+    ensure    => running,
+    require   => Kpackage["puppetmaster"];
+  }
 
-	exec { "Install the Stomp gem":
-		command => "/usr/bin/gem install stomp",
-		creates => "/var/lib/gems/1.8/gems/stomp-1.1.8",
-		require => Kpackage["rails"];
-	}
+  exec { "Install the Stomp gem":
+    command => "/usr/bin/gem install stomp",
+    creates => "/var/lib/gems/1.8/gems/stomp-1.1.8",
+    require => Kpackage["rails"];
+  }
 
-	kfile {
-		"/etc/puppet/puppet.conf":
-			source  => "kbp_puppetmaster/puppet.conf",
-			require => Kpackage["puppetmaster"];
-		"/etc/default/puppetmaster":
-			source => "kbp_puppetmaster/default/puppetmaster";
-		"/etc/default/puppetqd":
-			source => "kbp_puppetmaster/default/puppetqd";
-		"/etc/apache2/sites-available/puppetmaster":
-			source  => "kbp_puppetmaster/apache2/sites-available/puppetmaster",
-			notify  => Exec["reload-apache2"],
-			require => Kpackage["apache2"];
-		# These are needed for the custom configuration
-		"/usr/local/share/puppet":
-			ensure  => directory;
-		"/usr/local/share/puppet/rack":
-			ensure  => directory;
-		# TODO Delete until end, once custom config is working
-		"/usr/share/puppet":
-			ensure  => directory;
-		"/usr/share/puppet/rack":
-			ensure  => directory;
-		"/usr/share/puppet/rack/puppetmasterd":
-			ensure  => directory;
-		"/usr/share/puppet/rack/puppetmasterd/public":
-			ensure  => directory;
-		"/usr/share/puppet/rack/puppetmasterd/tmp":
-			ensure  => directory;
-		"/usr/share/puppet/rack/puppetmasterd/config.ru":
-			source  => "kbp_puppetmaster/config.ru",
-			owner   => "puppet",
-			group   => "puppet";
-		# TODO End of deletion
-	}
+  kfile {
+    "/etc/puppet/puppet.conf":
+      source  => "kbp_puppetmaster/puppet.conf",
+      require => Kpackage["puppetmaster"];
+    "/etc/default/puppetmaster":
+      source => "kbp_puppetmaster/default/puppetmaster";
+    "/etc/default/puppetqd":
+      source => "kbp_puppetmaster/default/puppetqd";
+    "/etc/apache2/sites-available/puppetmaster":
+      source  => "kbp_puppetmaster/apache2/sites-available/puppetmaster",
+      notify  => Exec["reload-apache2"],
+      require => Kpackage["apache2"];
+    # These are needed for the custom configuration
+    "/usr/local/share/puppet":
+      ensure  => directory;
+    "/usr/local/share/puppet/rack":
+      ensure  => directory;
+    # TODO Delete until end, once custom config is working
+    "/usr/share/puppet":
+      ensure  => directory;
+    "/usr/share/puppet/rack":
+      ensure  => directory;
+    "/usr/share/puppet/rack/puppetmasterd":
+      ensure  => directory;
+    "/usr/share/puppet/rack/puppetmasterd/public":
+      ensure  => directory;
+    "/usr/share/puppet/rack/puppetmasterd/tmp":
+      ensure  => directory;
+    "/usr/share/puppet/rack/puppetmasterd/config.ru":
+      source  => "kbp_puppetmaster/config.ru",
+      owner   => "puppet",
+      group   => "puppet";
+    # TODO End of deletion
+  }
 
-	mysql::server::db { "puppet":; }
+  mysql::server::db { "puppet":; }
 
-	mysql::server::grant { "puppet":
-		user     => "puppet",
-		password => "ui6Nae9Xae4a",
-		db       => "puppet";
-	}
+  mysql::server::grant { "puppet":
+    user     => "puppet",
+    password => "ui6Nae9Xae4a",
+    db       => "puppet";
+  }
 
-	# Enforce Puppet modules directory permissions.
-	kfile {
-		"/srv/puppet":
-			ensure  => directory,
-			owner   => "puppet",
-			mode    => 2770,
-			require => Kpackage["puppetmaster"];
-	}
+  # Enforce Puppet modules directory permissions.
+  kfile {
+    "/srv/puppet":
+      ensure  => directory,
+      owner   => "puppet",
+      mode    => 2770,
+      require => Kpackage["puppetmaster"];
+  }
 
-	# Enforce ownership and permissions
-	setfacl {
-		"Directory permissions in /srv/puppet for group root":
-			dir     => "/srv/puppet",
-			acl     => "default:group:root:rwx",
-			require => Kfile["/srv/puppet"];
-		"Directory permissions in /srv/puppet for user puppet":
-			dir     => "/srv/puppet",
-			acl     => "default:user:puppet:r-x",
-			require => Kfile["/srv/puppet"];
-	}
+  # Enforce ownership and permissions
+  setfacl {
+    "Directory permissions in /srv/puppet for group root":
+      dir     => "/srv/puppet",
+      acl     => "default:group:root:rwx",
+      require => Kfile["/srv/puppet"];
+    "Directory permissions in /srv/puppet for user puppet":
+      dir     => "/srv/puppet",
+      acl     => "default:user:puppet:r-x",
+      require => Kfile["/srv/puppet"];
+  }
 
-	kbp_apache::site { "puppetmaster":; }
+  kbp_apache::site { "puppetmaster":; }
 }
 
 # Define: kbp_puppetmaster::config
 #
 # Parameters:
-#	configfile
-#		Undocumented
-#	debug
-#		Undocumented
-#	address
-#		Undocumented
+#  configfile
+#    Undocumented
+#  debug
+#    Undocumented
+#  address
+#    Undocumented
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 define kbp_puppetmaster::config ($address = "*:8140", $configfile = "/etc/puppet/puppet.conf", $debug = false,
-				$factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet", $pluginsync = true,
-				$rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
-				$ssldir = "/var/lib/puppet/ssl", $vardir = "/var/lib/puppet") {
-	# This needs to be created within this define
-	$rackdir = "${rackroot}/puppetmaster-${name}"
+        $factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet", $pluginsync = true,
+        $rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet",
+        $ssldir = "/var/lib/puppet/ssl", $vardir = "/var/lib/puppet") {
+  # This needs to be created within this define
+  $rackdir = "${rackroot}/puppetmaster-${name}"
 
-	# TODO Files that need to be customized
-	# fileserver.conf
-	# auth.conf
+  # TODO Files that need to be customized
+  # fileserver.conf
+  # auth.conf
 
-	# Create the rack directory tree.
-	kfile { ["${rackdir}","${rackdir}/public","${rackdir}/tmp"]:
-		ensure => directory,
-	}
+  # Create the rack directory tree.
+  kfile { ["${rackdir}","${rackdir}/public","${rackdir}/tmp"]:
+    ensure => directory,
+  }
 
-	# The apache config should determine where to listen on
-	apache::site_config { "${name}":
-		address      => $address,
-		documentroot => "${rackdir}/public",
-	}
+  # The apache config should determine where to listen on
+  apache::site_config { "${name}":
+    address      => $address,
+    documentroot => "${rackdir}/public",
+  }
 
-	# The vhost-addition should set the documentroot, the puppet directory,
-	# the additional apache permissions and debugging options.
-	kfile {
-		"/etc/apache2/vhost-additions/${name}/permissions.conf":
-			notify  => Exec["reload-apache2"],
-			source  => "kbp_puppetmaster/apache2/vhost-additions/permissions.conf";
-		"/etc/apache2/vhost-additions/${name}/rack.conf":
-			notify  => Exec["reload-apache2"],
-			source  => "kbp_puppetmaster/apache2/vhost-additions/rack.conf";
-		"/etc/apache2/vhost-additions/${name}/ssl.conf":
-			notify  => Exec["reload-apache2"],
-			content => template("kbp_puppetmaster/apache2/vhost-additions/ssl.conf.erb");
-	}
+  # The vhost-addition should set the documentroot, the puppet directory,
+  # the additional apache permissions and debugging options.
+  kfile {
+    "/etc/apache2/vhost-additions/${name}/permissions.conf":
+      notify  => Exec["reload-apache2"],
+      source  => "kbp_puppetmaster/apache2/vhost-additions/permissions.conf";
+    "/etc/apache2/vhost-additions/${name}/rack.conf":
+      notify  => Exec["reload-apache2"],
+      source  => "kbp_puppetmaster/apache2/vhost-additions/rack.conf";
+    "/etc/apache2/vhost-additions/${name}/ssl.conf":
+      notify  => Exec["reload-apache2"],
+      content => template("kbp_puppetmaster/apache2/vhost-additions/ssl.conf.erb");
+  }
 
-	concat { $configfile:
-		owner => "root",
-		group => "root",
-		mode  => 0640,
-	}
+  concat { $configfile:
+    owner => "root",
+    group => "root",
+    mode  => 0640,
+  }
 
-	concat::add_content { "Set header for main section in puppet.conf":
-		target   => $configfile,
-		content  => "[main]",
-		order    => 10,
-	}
+  concat::add_content { "Set header for main section in puppet.conf":
+    target   => $configfile,
+    content  => "[main]",
+    order    => 10,
+  }
 
-	# Set the defaults for this resource
-	kbp_puppetmaster::set_main {
-		"vardir":
-			puppetmaster => $name,
-			configfile   => $configfile,
-			value        => $vardir;
-		"ssldir":
-			puppetmaster => $name,
-			configfile   => $configfile,
-			value        => $ssldir;
-		"rundir":
-			puppetmaster => $name,
-			configfile   => $configfile,
-			value        => $rundir;
-		"logdir":
-			puppetmaster => $name,
-			configfile   => $configfile,
-			value        => $logdir;
-		"factpath":
-			puppetmaster => $name,
-			configfile   => $configfile,
-			value        => $factpath;
-		"pluginsync":
-			puppetmaster => $name,
-			configfile   => $configfile,
-			value        => $pluginsync;
-	}
+  # Set the defaults for this resource
+  kbp_puppetmaster::set_main {
+    "vardir":
+      puppetmaster => $name,
+      configfile   => $configfile,
+      value        => $vardir;
+    "ssldir":
+      puppetmaster => $name,
+      configfile   => $configfile,
+      value        => $ssldir;
+    "rundir":
+      puppetmaster => $name,
+      configfile   => $configfile,
+      value        => $rundir;
+    "logdir":
+      puppetmaster => $name,
+      configfile   => $configfile,
+      value        => $logdir;
+    "factpath":
+      puppetmaster => $name,
+      configfile   => $configfile,
+      value        => $factpath;
+    "pluginsync":
+      puppetmaster => $name,
+      configfile   => $configfile,
+      value        => $pluginsync;
+  }
 
-	concat::add_content { "Set header for agent section in puppet.conf":
-		target   => $configfile,
-		content  => "\n[agent]",
-		order    => 20,
-	}
+  concat::add_content { "Set header for agent section in puppet.conf":
+    target   => $configfile,
+    content  => "\n[agent]",
+    order    => 20,
+  }
 
-	concat::add_content { "Set header for master section in puppet.conf":
-		target   => $configfile,
-		content  => "\n[master]",
-		order    => 30,
-	}
+  concat::add_content { "Set header for master section in puppet.conf":
+    target   => $configfile,
+    content  => "\n[master]",
+    order    => 30,
+  }
 
-	concat::add_content { "Set header for queue section in puppet.conf":
-		target   => $configfile,
-		content  => "\n[queue]",
-		order    => 40,
-	}
+  concat::add_content { "Set header for queue section in puppet.conf":
+    target   => $configfile,
+    content  => "\n[queue]",
+    order    => 40,
+  }
 
-	# TODO Set the other headers and the defaults that are part of the defined type
+  # TODO Set the other headers and the defaults that are part of the defined type
 
-	concat { "${rackdir}/config.ru":
-		owner => "puppet",
-		group => "puppet",
-		mode  => 0640,
-	}
+  concat { "${rackdir}/config.ru":
+    owner => "puppet",
+    group => "puppet",
+    mode  => 0640,
+  }
 
-	concat::add_content { "Add header for config.ru":
-		target   => "${rackdir}/config.ru",
-		content  => '$0 = "master"',
-		order    => 10,
-	}
+  concat::add_content { "Add header for config.ru":
+    target   => "${rackdir}/config.ru",
+    content  => '$0 = "master"',
+    order    => 10,
+  }
 
-	concat::add_content { "Add footer for config.ru":
-		target   => "${rackdir}/config.ru",
-		content  => "ARGV << \"--rack\"\nrequire 'puppet/application/master'\nrun Puppet::Application[:master].run\n",
-		order    => 20,
-	}
+  concat::add_content { "Add footer for config.ru":
+    target   => "${rackdir}/config.ru",
+    content  => "ARGV << \"--rack\"\nrequire 'puppet/application/master'\nrun Puppet::Application[:master].run\n",
+    order    => 20,
+  }
 
-	if $debug {
-		concat::add_content { "Enable debug mode in config.ru":
-			target  => "${rackdir}/config.ru",
-			content => "ARGV << \"--debug\"\n",
-		}
-	}
+  if $debug {
+    concat::add_content { "Enable debug mode in config.ru":
+      target  => "${rackdir}/config.ru",
+      content => "ARGV << \"--debug\"\n",
+    }
+  }
 
-	cron { "Remove orphaned resources":
-		command => "/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf -e \"delete from puppet.resources where host_id not in (select id from puppet.hosts);\"",
-		user    => "root",
-		minute  => [0,30];
-	}
+  cron { "Remove orphaned resources":
+    command => "/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf -e \"delete from puppet.resources where host_id not in (select id from puppet.hosts);\"",
+    user    => "root",
+    minute  => [0,30];
+  }
 }
 
 # Define: kbp_puppetmaster::set_main
 #
 # Parameters:
-#	value
-#		Undocumented
-#	configfile
-#		Undocumented
-#	var
-#		Undocumented
-#	puppetmaster
-#		Undocumented
+#  value
+#    Undocumented
+#  configfile
+#    Undocumented
+#  var
+#    Undocumented
+#  puppetmaster
+#    Undocumented
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 define kbp_puppetmaster::set_main ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
-	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
-	# resource you want to add this to.
-	if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
-		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
-	}
+  # $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
+  # resource you want to add this to.
+  if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
+    fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
+  }
 
-	if $var {
-		$real_var = $var
-	} else {
-		$real_var = $name
-	}
+  if $var {
+    $real_var = $var
+  } else {
+    $real_var = $name
+  }
 
-	concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'main'":
-		target   => "${configfile}",
-		content  => "${real_var} = ${value}",
-		order    => 15,
-	}
+  concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'main'":
+    target   => "${configfile}",
+    content  => "${real_var} = ${value}",
+    order    => 15,
+  }
 }
 
 # Define: kbp_puppetmaster::set_agent
 #
 # Parameters:
-#	value
-#		Undocumented
-#	configfile
-#		Undocumented
-#	var
-#		Undocumented
-#	puppetmaster
-#		Undocumented
+#  value
+#    Undocumented
+#  configfile
+#    Undocumented
+#  var
+#    Undocumented
+#  puppetmaster
+#    Undocumented
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 define kbp_puppetmaster::set_agent ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
-	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
-	# resource you want to add this to.
-	if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
-		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
-	}
+  # $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
+  # resource you want to add this to.
+  if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
+    fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
+  }
 
-	if $var {
-		$real_var = $var
-	} else {
-		$real_var = $name
-	}
+  if $var {
+    $real_var = $var
+  } else {
+    $real_var = $name
+  }
 
-	concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'agent'":
-		target   => "${configfile}",
-		content  => "${real_var} = ${value}",
-		order    => 25,
-	}
+  concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'agent'":
+    target   => "${configfile}",
+    content  => "${real_var} = ${value}",
+    order    => 25,
+  }
 }
 
 # Define: kbp_puppetmaster::set_master
 #
 # Parameters:
-#	value
-#		Undocumented
-#	configfile
-#		Undocumented
-#	var
-#		Undocumented
-#	puppetmaster
-#		Undocumented
+#  value
+#    Undocumented
+#  configfile
+#    Undocumented
+#  var
+#    Undocumented
+#  puppetmaster
+#    Undocumented
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 define kbp_puppetmaster::set_master ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
-	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
-	# resource you want to add this to.
-	if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
-		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
-	}
+  # $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
+  # resource you want to add this to.
+  if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
+    fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
+  }
 
-	if $var {
-		$real_var = $var
-	} else {
-		$real_var = $name
-	}
+  if $var {
+    $real_var = $var
+  } else {
+    $real_var = $name
+  }
 
-	concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'master'":
-		target   => "${configfile}",
-		content  => "${real_var} = ${value}",
-		order    => 35,
-	}
+  concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'master'":
+    target   => "${configfile}",
+    content  => "${real_var} = ${value}",
+    order    => 35,
+  }
 }
 
 # Define: kbp_puppetmaster::set_queue
 #
 # Parameters:
-#	value
-#		Undocumented
-#	configfile
-#		Undocumented
-#	var
-#		Undocumented
-#	puppetmaster
-#		Undocumented
+#  value
+#    Undocumented
+#  configfile
+#    Undocumented
+#  var
+#    Undocumented
+#  puppetmaster
+#    Undocumented
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 define kbp_puppetmaster::set_queue ($puppetmaster, $value, $configfile = "/etc/puppet/puppet.conf", $var = false) {
-	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
-	# resource you want to add this to.
-	if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
-		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
-	}
+  # $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
+  # resource you want to add this to.
+  if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
+    fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
+  }
 
-	if $var {
-		$real_var = $var
-	} else {
-		$real_var = $name
-	}
+  if $var {
+    $real_var = $var
+  } else {
+    $real_var = $name
+  }
 
-	concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'queue'":
-		target   => "${configfile}",
-		content  => "${real_var} = ${value}",
-		order    => 45,
-	}
+  concat::add_content { "Set '$real_var' to '$value' for puppetmaster ${puppetmaster} in file ${configfile} in section 'queue'":
+    target   => "${configfile}",
+    content  => "${real_var} = ${value}",
+    order    => 45,
+  }
 }
 
 # Define: kbp_puppetmaster::environment
 #
 # Parameters:
-#	manifestdir
-#		Undocumented
-#	modulepath
-#		Undocumented
-#	puppetmaster
-#		Undocumented
-#	configfile
-#		Undocumented
-#	manifest
-#		Undocumented
+#  manifestdir
+#    Undocumented
+#  modulepath
+#    Undocumented
+#  puppetmaster
+#    Undocumented
+#  configfile
+#    Undocumented
+#  manifest
+#    Undocumented
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 define kbp_puppetmaster::environment ($manifest, $manifestdir, $modulepath, $puppetmaster, $configfile = "/etc/puppet/puppet.conf") {
-	# $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
-	# resource you want to add this to.
-	if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
-		fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
-	}
+  # $puppetmaster should be the same as the $name from the kbp_puppetmaster::config
+  # resource you want to add this to.
+  if ! defined(Kbp_puppetmaster::Config[$puppetmaster]) {
+    fail("There's no kbp_puppetmaster::config { \"${puppetmaster}\" }!")
+  }
 
-	concat::add_content { "Add environment ${name} to puppetmaster ${puppetmaster} in file ${configfile}":
-		target   => "${configfile}",
-		content  => "\n[${name}]\nmanifestdir = ${manifestdir}\nmodulepath = ${modulepath}\nmanifest = ${manifest}\n\n",
-		order    => 60,
-	}
+  concat::add_content { "Add environment ${name} to puppetmaster ${puppetmaster} in file ${configfile}":
+    target   => "${configfile}",
+    content  => "\n[${name}]\nmanifestdir = ${manifestdir}\nmodulepath = ${modulepath}\nmanifest = ${manifest}\n\n",
+    order    => 60,
+  }
 }
 
 # Define: kbp_puppetmaster::cleanconfig
 #
 # Parameters:
-#	name
-#		The database that needs to be cleaned
+#  name
+#    The database that needs to be cleaned
 #
 # Actions:
-#	Set up a cron that cleans old config out of the puppet database.
+#  Set up a cron that cleans old config out of the puppet database.
 #
 # Depends:
-#	gen_puppet
+#  gen_puppet
 #
 define kbp_puppetmaster::cleanconfig($configfile=false) {
-	realize Kpackage["puppetstoredconfigcleanhenker"]
+  realize Kpackage["puppetstoredconfigcleanhenker"]
 
-	# Automatically purge old hosts from the database
-	kfile { "/etc/cron.daily/puppetstoredconfigcleanhenker_${name}":
-		mode    => 755,
-		content => template("kbp_puppetmaster/puppetstoredconfigcleanhenker.cron"),
-		require => Kpackage["puppetstoredconfigcleanhenker"];
-	}
+  # Automatically purge old hosts from the database
+  kfile { "/etc/cron.daily/puppetstoredconfigcleanhenker_${name}":
+    mode    => 755,
+    content => template("kbp_puppetmaster/puppetstoredconfigcleanhenker.cron"),
+    require => Kpackage["puppetstoredconfigcleanhenker"];
+  }
 }

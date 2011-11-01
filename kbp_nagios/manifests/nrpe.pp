@@ -3,11 +3,11 @@
 # Class: kbp_nagios::nrpe
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_nagios::nrpe inherits nagios::nrpe {
 }
@@ -15,11 +15,11 @@ class kbp_nagios::nrpe inherits nagios::nrpe {
 # Class: kbp_nagios::nrpe::plugins
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_nagios::nrpe::plugins inherits nagios::nrpe::plugins {
 }

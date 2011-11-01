@@ -3,18 +3,18 @@
 # Class: kbp_xvfb
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_xvfb {
-	include gen_base::xvfb
+  include gen_base::xvfb
 
-	kfile { "/usr/local/bin/xvfb-run-patched":
-		source => "kbp_xvfb/xvfb-run-patched.sh",
-		mode => 755,
-		require => Package["xvfb"];
-	}
+  kfile { "/usr/local/bin/xvfb-run-patched":
+    source => "kbp_xvfb/xvfb-run-patched.sh",
+    mode => 755,
+    require => Package["xvfb"];
+  }
 }

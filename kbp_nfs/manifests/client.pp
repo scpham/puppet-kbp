@@ -3,80 +3,80 @@
 # Define: kbp_nfs::client::mount
 #
 # Parameters:
-#	source
-#		Undocumented
+#  source
+#    Undocumented
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024", $export_options="rw,sync,no_subtree_check", $serverpath=false, $nfs_tag = "nfs_${environment}", $ferm_saddr = $fqdn, $nfs_client = $fqdn) {
-	include kbp_trending::nfs
+  include kbp_trending::nfs
 
-	$real_serverpath = $serverpath ? {
-		false   => $name,
-		default => $serverpath,
-	}
+  $real_serverpath = $serverpath ? {
+    false   => $name,
+    default => $serverpath,
+  }
 
-	# This will probably end up opening the same ports for the same hosts multiple times on the
-	# server if you have several mounts, but that's not a problem.
-	@@gen_ferm::rule { "NFS connections from ${fqdn} for ${real_serverpath}":
-		saddr  => $ferm_saddr,
-		proto  => "(tcp udp)",
-		action => "ACCEPT",
-		tag    => $nfs_tag;
-	}
+  # This will probably end up opening the same ports for the same hosts multiple times on the
+  # server if you have several mounts, but that's not a problem.
+  @@gen_ferm::rule { "NFS connections from ${fqdn} for ${real_serverpath}":
+    saddr  => $ferm_saddr,
+    proto  => "(tcp udp)",
+    action => "ACCEPT",
+    tag    => $nfs_tag;
+  }
 
-	kbp_monitoring::nfs::client { $name:; }
+  kbp_monitoring::nfs::client { $name:; }
 
-	gen_nfs::mount { $name:
-		source  => "${server}:${real_serverpath}",
-		options => $mount_options;
-	}
+  gen_nfs::mount { $name:
+    source  => "${server}:${real_serverpath}",
+    options => $mount_options;
+  }
 
-	if defined(Package["offsite-backup"]) {
-		line { "Exclude NFS mount ${name} from backups.":
-			file    => "/etc/backup/excludes",
-			content => $name,
-			require => Package["offsite-backup"];
-		}
-	} elsif defined(Package["local-backup"]) {
-		line { "Exclude NFS mount ${name} from backups.":
-			file    => "/etc/backup/excludes",
-			content => $name,
-			require => Package["local-backup"];
-		}
-	}
+  if defined(Package["offsite-backup"]) {
+    line { "Exclude NFS mount ${name} from backups.":
+      file    => "/etc/backup/excludes",
+      content => $name,
+      require => Package["offsite-backup"];
+    }
+  } elsif defined(Package["local-backup"]) {
+    line { "Exclude NFS mount ${name} from backups.":
+      file    => "/etc/backup/excludes",
+      content => $name,
+      require => Package["local-backup"];
+    }
+  }
 
-	@@kbp_nfs::client::export_opts { "${name} mount options for ${fqdn}":
-		location => $real_serverpath,
-		options  => $export_options,
-		client   => $nfs_client,
-		tag      => $nfs_tag;
-	}
+  @@kbp_nfs::client::export_opts { "${name} mount options for ${fqdn}":
+    location => $real_serverpath,
+    options  => $export_options,
+    client   => $nfs_client,
+    tag      => $nfs_tag;
+  }
 }
 
 define kbp_nfs::client::export_opts($location, $options, client) {
-	if !defined(Concat::Add_content[$location]) {
-		concat::add_content {
-			$location:
-				content => "${location} \\",
-				target  => "/etc/exports";
-			"${location}zzz":
-				content => "",
-				target  => "/etc/exports";
-		}
+  if !defined(Concat::Add_content[$location]) {
+    concat::add_content {
+      $location:
+        content => "${location} \\",
+        target  => "/etc/exports";
+      "${location}zzz":
+        content => "",
+        target  => "/etc/exports";
+    }
 
-		kfile { "$location/.monitoring":
-			content => "NFS_mount_ok\n";
-		}
-	}
+    kfile { "$location/.monitoring":
+      content => "NFS_mount_ok\n";
+    }
+  }
 
-	concat::add_content { "${location}_${client}":
-		content => "${client}($options) \\",
-		target  => "/etc/exports";
-	}
+  concat::add_content { "${location}_${client}":
+    content => "${client}($options) \\",
+    target  => "/etc/exports";
+  }
 }

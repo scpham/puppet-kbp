@@ -3,12 +3,12 @@
 # Class: kbp_logrotate
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_logrotate {
-	include gen_logrotate
+  include gen_logrotate
 }

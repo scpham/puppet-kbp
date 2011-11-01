@@ -3,16 +3,16 @@
 # Class: kbp_bip
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_bip {
-	gen_ferm::rule { "IRC/Bip connections":
-		proto  => "tcp",
-		dport  => "(6667 7000 7778)",
-		action => "ACCEPT";
-	}
+  gen_ferm::rule { "IRC/Bip connections":
+    proto  => "tcp",
+    dport  => "(6667 7000 7778)",
+    action => "ACCEPT";
+  }
 }

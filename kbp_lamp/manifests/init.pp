@@ -8,76 +8,76 @@
 # Class: kbp_lamp::common
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_lamp::common {
-	include kbp_apache
+  include kbp_apache
 }
 
 # Class: kbp_lamp::cgi
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_lamp::cgi {
-	# Yes, this include is redundant
-	include kbp_apache
+  # Yes, this include is redundant
+  include kbp_apache
 
-	package { "libapache2-mod-fcgid":
-		ensure => latest,
-		notify => Service["apache2"],
-	}
+  package { "libapache2-mod-fcgid":
+    ensure => latest,
+    notify => Service["apache2"],
+  }
 
-	define enable_for ($documentroot = false) {
-		file { "/etc/apache2/vhost-additions/$name/enable-cgi":
-			content => $documentroot ? {
-				false   => "<Directory /srv/www/${name}>\n AddHandler fcgid-script .php\n FCGIWrapper /usr/lib/cgi-bin/php5 .php\n Options ExecCGI Indexes FollowSymLinks MultiViews\n AllowOverride All\n Order allow,deny\n allow from all\n</Directory>\n",
-				default => "<Directory ${documentroot}>\n AddHandler fcgid-script .php\n FCGIWrapper /usr/lib/cgi-bin/php5 .php\n Options ExecCGI Indexes FollowSymLinks MultiViews\n AllowOverride All\n Order allow,deny\n allow from all\n</Directory>\n",
-			},
-			owner   => "root",
-			group   => "root",
-			mode    => 644,
-			notify  => Exec["reload-apache2"],
-		}
+  define enable_for ($documentroot = false) {
+    file { "/etc/apache2/vhost-additions/$name/enable-cgi":
+      content => $documentroot ? {
+        false   => "<Directory /srv/www/${name}>\n AddHandler fcgid-script .php\n FCGIWrapper /usr/lib/cgi-bin/php5 .php\n Options ExecCGI Indexes FollowSymLinks MultiViews\n AllowOverride All\n Order allow,deny\n allow from all\n</Directory>\n",
+        default => "<Directory ${documentroot}>\n AddHandler fcgid-script .php\n FCGIWrapper /usr/lib/cgi-bin/php5 .php\n Options ExecCGI Indexes FollowSymLinks MultiViews\n AllowOverride All\n Order allow,deny\n allow from all\n</Directory>\n",
+      },
+      owner   => "root",
+      group   => "root",
+      mode    => 644,
+      notify  => Exec["reload-apache2"],
+    }
 
-		file { "/etc/apache2/vhost-additions/$name/enable-cgi-scriptalias":
-			content => "ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/\n<Directory \"/usr/lib/cgi-bin\">\n AllowOverride None\n Options ExecCGI -MultiViews +SymLinksIfOwnerMatch\n Order allow,deny\n Allow from all\n</Directory>\n",
-			owner   => "root",
-			group   => "root",
-			mode    => 644,
-			notify  => Exec["reload-apache2"],
-		}
-	}
+    file { "/etc/apache2/vhost-additions/$name/enable-cgi-scriptalias":
+      content => "ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/\n<Directory \"/usr/lib/cgi-bin\">\n AllowOverride None\n Options ExecCGI -MultiViews +SymLinksIfOwnerMatch\n Order allow,deny\n Allow from all\n</Directory>\n",
+      owner   => "root",
+      group   => "root",
+      mode    => 644,
+      notify  => Exec["reload-apache2"],
+    }
+  }
 }
 
 # Class: kbp_lamp::php-cgi
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 class kbp_lamp::php-cgi {
-	include kbp_lamp::common
-	include kbp_lamp::cgi
+  include kbp_lamp::common
+  include kbp_lamp::cgi
 
-	package { ["php5-cgi","php-apc"]:
-		ensure => latest,
-	}
+  package { ["php5-cgi","php-apc"]:
+    ensure => latest,
+  }
 
-	# We specifically do not want mod-php5
-	package { "libapache2-mod-php5":
-		ensure => purged,
-		notify => Service["apache2"],
-	}
+  # We specifically do not want mod-php5
+  package { "libapache2-mod-php5":
+    ensure => purged,
+    notify => Service["apache2"],
+  }
 }

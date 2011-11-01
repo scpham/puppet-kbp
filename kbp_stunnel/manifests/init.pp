@@ -3,20 +3,20 @@
 # Define: kbp_stunnel::site
 #
 # Parameters:
-#	port
-#		Undocumented
+#  port
+#    Undocumented
 #
 # Actions:
-#	Undocumented
+#  Undocumented
 #
 # Depends:
-#	Undocumented
-#	gen_puppet
+#  Undocumented
+#  gen_puppet
 #
 define kbp_stunnel::site ($port=443) {
-	gen_ferm::rule { "Stunnel forward for ${name}":
-		proto  => "tcp",
-		dport  => $port,
-		action => "ACCEPT";
-	}
+  gen_ferm::rule { "Stunnel forward for ${name}":
+    proto  => "tcp",
+    dport  => $port,
+    action => "ACCEPT";
+  }
 }
