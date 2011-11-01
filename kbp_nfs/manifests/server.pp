@@ -44,5 +44,5 @@ class kbp_nfs::server($need_gssd = "no", $need_idmapd = "no", $need_statd = "yes
 
 	Gen_ferm::Rule <<| tag == "nfs_monitoring" |>>
 
-	Kbp_nfs::Client::Mount_opts <<| tag == $nfs_tag |>>
+	Kbp_nfs::Client::Export_opts <<| tag == $nfs_tag |>>
 }

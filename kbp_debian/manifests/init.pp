@@ -164,16 +164,8 @@ class kbp_debian inherits kbp_base {
 		source => "kbp_debian/skel/bash_profile";
 	}
 
-	kpackage { "adduser":
-		ensure => installed,
-	}
-
-	kfile { "/etc/adduser.conf":
-		source => "kbp_debian/adduser.conf",
-		require => Package["adduser"],
-	}
-
 	kpackage {
+		"adduser":;
 		"locales":
 			require      => File["/var/cache/debconf/locales.preseed"],
 			responsefile => "/var/cache/debconf/locales.preseed",

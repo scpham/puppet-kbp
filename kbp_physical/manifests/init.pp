@@ -45,7 +45,8 @@ class kbp_physical {
 
 	# Backup the MBR
 	kfile { "/etc/backup/prepare.d/mbr":
-		source => "kbp_physical/mbr",
-		mode   => 700;
+		source  => "kbp_physical/mbr",
+		mode    => 700,
+		require => Package["backup-scripts"];
 	}
 }
