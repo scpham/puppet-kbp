@@ -75,8 +75,7 @@ class kbp_base {
   augeas { "/etc/adduser.conf":
     lens    => "Shellvars.lns",
     incl    => "/etc/adduser.conf",
-    force   => true,
-    changes => 'set LAST_UID 9999';
+    changes => "set LAST_UID 9999";
   }
 
   kbp_base::staff_user {
