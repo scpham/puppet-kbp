@@ -19,7 +19,8 @@ class kbp_vim {
     "set listchars=tab:»˙,trail:•":;
     "set hlsearch":;
     "set ruler":;
-    "autocmd FileType puppet set textwidth=140":;
+    "autocmd FileType puppet set textwidth=140":
+      ensure => "absent";
     "autocmd FileType puppet set tabstop=2":;
     "autocmd FileType puppet set expandtab":;
     "autocmd FileType puppet set shiftwidth=2":;
