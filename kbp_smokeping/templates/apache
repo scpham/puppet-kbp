@@ -7,6 +7,7 @@ ScriptAlias /smokeping /usr/share/smokeping/cgi-bin/smokeping.cgi
         Require valid-user
 </Location>
 <% else -%>
+Alias /<%= name %>/images /usr/share/smokeping/www/images
 ScriptAlias /<%= name %> /usr/share/smokeping/cgi-bin/smokeping_<%= name %>.cgi
 <Location /<%= name %>>
         AuthType Basic
