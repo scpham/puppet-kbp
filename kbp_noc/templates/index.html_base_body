@@ -1,0 +1,2 @@
+		<dt><a href='/<%= name %>/'><%= fullname %></a></dt>
+		<dd><%= fullname %> NOC</dd>
