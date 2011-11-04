@@ -19,9 +19,11 @@ class kbp_vim {
     "set listchars=tab:»˙,trail:•":;
     "set hlsearch":;
     "set ruler":;
-    "autocmd FileType puppet set textwidth=140":;
+    "autocmd FileType puppet set textwidth=140":
+      ensure => "absent";
     "autocmd FileType puppet set tabstop=2":;
     "autocmd FileType puppet set expandtab":;
+    "autocmd FileType puppet set shiftwidth=2":;
     'silent execute "!mkdir -p ~/.tmp"':;
     ["set backupdir=~/.tmp/","set directory=~/.tmp/"]:
       require => Gen_vim::Global_setting['silent execute "!mkdir -p ~/.tmp"'];
