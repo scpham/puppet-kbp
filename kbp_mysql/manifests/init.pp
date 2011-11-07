@@ -21,6 +21,8 @@ class kbp_mysql::mastermaster($mysql_name, $setup_backup=true, $monitoring_ha_sl
 class kbp_mysql::master($mysql_name, $setup_backup=true) {
   include kbp_mysql::server
 
+  Gen_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
+
   Mysql::Server::Grant <<| tag == "mysql_${environment}_${mysql_name}" |>>
   Kbp_mysql::Monitoring_dependency <<| tag == "mysql_${environment}_${mysql_name}" |>>
 
@@ -53,6 +55,8 @@ class kbp_mysql::master($mysql_name, $setup_backup=true) {
 #
 class kbp_mysql::slave($mysql_name, $setup_backup=true, $monitoring_ha=false) {
   include kbp_mysql::server
+
+  Gen_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
 
   @@mysql::server::grant { "repl_${fqdn}":
     user        => "repl",
@@ -95,6 +99,8 @@ class kbp_mysql::slave($mysql_name, $setup_backup=true, $monitoring_ha=false) {
 class kbp_mysql::standalone($mysql_name, $setup_backup=false) {
   include kbp_mysql::server
 
+  Gen_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
+
   Kfile <| title == "/etc/mysql/conf.d/expire_logs.cnf" |> {
     ensure => $setup_backup ? {
       true  => "present",
@@ -120,8 +126,6 @@ class kbp_mysql::server {
   include mysql::server
   include kbp_trending::mysql
   include kbp_mysql::monitoring::icinga::server
-
-  Gen_ferm::Rule <<| tag == "mysql_${environment}_${name}" |>>
 
   kfile { "/etc/mysql/conf.d/expire_logs.cnf":
     content => "[mysqld]\nexpire_logs_days = 7\n",

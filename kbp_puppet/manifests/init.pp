@@ -38,7 +38,7 @@ class kbp_puppet {
   }
 
   Concat <| |> {
-#    testpms => ["testpuppetmaster.kumina.nl"],
+    testpms => ["testpuppetmaster.kumina.nl"],
   }
 }
 

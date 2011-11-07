@@ -530,6 +530,14 @@ class kbp_icinga::server {
       source => "kbp_icinga/server/icinga-check-alive",
       mode   => 755;
   }
+
+  @@kbp_noc::customer_entry_export { "Icinga":
+    path            => "icinga",
+    regex_paths     => ["/cgi-bin/icinga/","/stylesheets/","/images/"],
+    url             => "http://icinga.kumina.nl",
+    text            => "Availability monitoring of servers and services.",
+    add_environment => false;
+  }
 }
 
 # Class: kbp_icinga::environment

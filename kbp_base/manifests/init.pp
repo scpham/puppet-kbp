@@ -159,9 +159,15 @@ class kbp_base::environment {
   include kbp_monitoring::environment
   include kbp_user::environment
 
-  @@kbp_smokeping::environment { "${environment}":; }
+  Kbp_noc::Customer_entry_export <<| |>>
 
-  kbp_smokeping::targetgroup { "${environment}":; }
+  @@kbp_noc::environment { $environment:
+    fullname => $customer_name;
+  }
+
+  @@kbp_smokeping::environment { $environment:; }
+
+  kbp_smokeping::targetgroup { $environment:; }
 }
 
 class kbp_base::wanted_packages {
