@@ -6,7 +6,8 @@
 #  Undocumented
 #
 # Depends:
-#  Undocumented
+#  gen_kvm
+#  gen_apt::preference
 #  gen_puppet
 #
 class kbp_kvm {
