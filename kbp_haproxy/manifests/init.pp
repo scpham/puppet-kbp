@@ -10,7 +10,6 @@ class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $lo
     haproxy_tag => $haproxy_tag;
   }
 
-  Gen_ferm::Rule <<| tag == $haproxy_tag |>>
   # These exported kfiles contain the firewall fragments
   Ekfile <<| tag == $haproxy_tag |>>
 }
