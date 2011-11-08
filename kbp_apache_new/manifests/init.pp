@@ -120,6 +120,10 @@ define kbp_apache_new::cgi($documentroot) {
   }
 }
 
+class kbp_apache_new::module::jk {
+  include gen_apache::jk
+}
+
 define kbp_apache_new::php_cgi($documentroot) {
   include gen_base::php5-cgi
   include gen_base::php-apc
@@ -287,15 +291,17 @@ define kbp_apache_new::glassfish_domain($site, $site_port, $connector_port) {
     "1 worker domain":
       content   => "${name},",
       linebreak => false,
-      target    => "/etc/apache2/worker.properties";
+      target    => "/etc/apache2/workers.properties";
     "3 worker domain settings":
-      content => template("kbp_apache_new/glassfish/worker.properties_settings"),
-      target  => "/etc/apache2/worker.properties";
+      content => template("kbp_apache_new/glassfish/workers.properties_settings"),
+      target  => "/etc/apache2/workers.properties";
   }
 }
 
 class kbp_apache_new::glassfish_domain_base {
-  concat { "/etc/apache2/worker.properties":
+  include kbp_apache_new::module::jk
+
+  concat { "/etc/apache2/workers.properties":
     require => Package["apache2"];
   }
 
@@ -303,10 +309,10 @@ class kbp_apache_new::glassfish_domain_base {
     "0 worker base":
       content   => "worker.list=",
       linebreak => false,
-      target    => "/etc/apache2/worker.properties";
+      target    => "/etc/apache2/workers.properties";
     "2 worker base":
       content => "",
-      target  => "/etc/apache2/worker.properties";
+      target  => "/etc/apache2/workers.properties";
   }
 
   kfile { "/etc/apache2/conf.d/jk":
