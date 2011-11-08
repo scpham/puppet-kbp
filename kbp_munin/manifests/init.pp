@@ -301,7 +301,7 @@ class kbp_munin::server inherits munin::server {
     require => [Package["munin"], Package["rsync"]];
   }
 
-  @@kbp_noc::customer_entry_export { "Munin":
+  @@kbp_dashboard::customer_entry_export { "Munin":
     path => "munin",
     url  => "http://munin.kumina.nl",
     text => "Graphs of server usage and performance.";

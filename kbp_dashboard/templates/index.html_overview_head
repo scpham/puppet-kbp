@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en'>
+<head>
+  <title><%= fullname %> server overview</title>
+  <link rel='stylesheet' type='text/css' media='screen' href='style.css' />
+</head>
+<body>
+<div id='header'>
+  <%= fullname %> server overview
+</div>
+<div id='content'>
+  <table cellspacing="20">
+    <tr>
+      <th colspan="2" align="center">FQDN</th>
+      <th align="center">IPv4</th>
+      <th align="center">IPv6</th>
+      <th align="center">Procs</th>
+      <th align="center">Memory</th>
+    </tr>

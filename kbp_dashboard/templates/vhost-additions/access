@@ -1,0 +1,9 @@
+<Location />
+Order Allow,Deny
+Allow From All
+
+AuthName "Authorized Personnel ONLY"
+AuthType Basic
+AuthUserFile /srv/www/<%= domain %>/.htpasswd
+require valid-user
+</Location>
