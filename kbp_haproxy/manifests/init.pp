@@ -10,7 +10,6 @@ class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $lo
     haproxy_tag => $haproxy_tag;
   }
 
-  Gen_ferm::Rule <<| tag == $haproxy_tag |>>
   # These exported kfiles contain the firewall fragments
   Ekfile <<| tag == $haproxy_tag |>>
 }
@@ -60,10 +59,13 @@ class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $lo
 #  Undocumented
 #  gen_puppet
 #
-define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_url=false, $monitoring_response=false, $cookie=false, $make_lbconfig, $httpcheck_uri=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s", $timeout_http_request="10s", $tcp_sslport=false, $haproxy_tag="haproxy_${environment}") {
+define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_url=false, $monitoring_response=false, $monitoring_address=false, $cookie=false, $make_lbconfig, $httpcheck_uri=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s", $timeout_http_request="10s", $tcp_sslport=false, $haproxy_tag="haproxy_${environment}") {
   gen_ferm::rule { "HAProxy forward for ${name}":
     proto     => "tcp",
-    daddr     => $listenaddress,
+    daddr     => $listenaddress ? {
+      "0.0.0.0" => undef,
+      default   => $listenaddress,
+    },
     dport     => $port,
     action    => "ACCEPT",
     exported  => true,
@@ -116,7 +118,10 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
 
   if $monitor_site {
     kbp_monitoring::haproxy { "${name}":
-      address            => $listenaddress,
+      address            => $monitoring_address ? {
+        false   => $listenaddress,
+        default => $monitoring_address,
+      },
       ha                 => $monitoring_ha,
       url                => $monitoring_url,
       port               => $serverport,

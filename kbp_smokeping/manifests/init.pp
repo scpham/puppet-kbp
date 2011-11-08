@@ -38,7 +38,7 @@ class kbp_smokeping::server {
     source => "kbp_smokeping/basepage.html";
   }
 
-  @@kbp_noc::customer_entry_export { "Smokeping":
+  @@kbp_dashboard::customer_entry_export { "Smokeping":
     path        => "smokeping",
     regex_paths => ["/images/"],
     url         => "http://smokeping.kumina.nl",

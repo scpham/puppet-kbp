@@ -531,7 +531,7 @@ class kbp_icinga::server {
       mode   => 755;
   }
 
-  @@kbp_noc::customer_entry_export { "Icinga":
+  @@kbp_dashboard::customer_entry_export { "Icinga":
     path            => "icinga",
     regex_paths     => ["/cgi-bin/icinga/","/stylesheets/","/images/"],
     url             => "http://icinga.kumina.nl",

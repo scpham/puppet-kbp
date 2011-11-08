@@ -24,6 +24,7 @@ class kbp_base {
   include kbp_sysctl
   include kbp_time
   include kbp_vim
+  include kbp_dashboard::client
   if $is_virtual == "false" {
     include kbp_physical
   }
@@ -160,9 +161,9 @@ class kbp_base::environment {
   include kbp_monitoring::environment
   include kbp_user::environment
 
-  Kbp_noc::Customer_entry_export <<| |>>
+  Kbp_dashboard::Customer_entry_export <<| |>>
 
-  @@kbp_noc::environment { $environment:
+  @@kbp_dashboard::environment { $environment:
     fullname => $customer_name;
   }
 
