@@ -152,11 +152,11 @@ define kbp_apache_new::php_cgi($documentroot) {
 #  gen_puppet
 #
 define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot="/srv/www/${name}", $create_documentroot=true, $address=false, $address6=false,
-    $port=false, $make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false,
+    $port=false, $make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false, $wildcard=false,
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false,
     $monitor=true, $smokeping=true, $php=false) {
   include kbp_apache_new
-  if $ssl or $key or $cert or $intermediate {
+  if $key or $cert or $intermediate or $wildcard or $ssl {
     include kbp_apache_new::ssl
   }
 
@@ -164,7 +164,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     false   => $name,
     default => "${name}_${port}",
   }
-  if $key or $cert or $intermediate or $ssl {
+  if $key or $cert or $intermediate or $wildcard or $ssl {
     $full_name = regsubst($temp_name,'^([^_]*)$','\1_443')
   } else {
     $full_name = regsubst($temp_name,'^([^_]*)$','\1_80')
@@ -185,6 +185,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     key              => $key,
     cert             => $cert,
     intermediate     => $intermediate,
+    wildcard         => $wildcard,
     redirect_non_ssl => $redirect_non_ssl;
   }
 
@@ -216,7 +217,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
   }
 
-  if $ssl or $key or $cert or $intermediate {
+  if $key or $cert or $intermediate or $wildcard or $ssl {
     kbp_monitoring::sslcert { $real_name:
       path => "/etc/ssl/certs/${real_name}.pem";
     }
@@ -248,5 +249,17 @@ define kbp_apache_new::vhost_addition($ensure="present", $content=false, $source
     ensure  => $ensure,
     content => $content,
     source  => $source;
+  }
+}
+
+define kbp_apache_new::keys {
+  $key_name = regsubst($name,'^(.*)/(.*)$','\2')
+
+  kfile {
+    "/etc/ssl/private/${key_name}.key":
+      source => "${name}.key",
+      mode   => 400;
+    "/etc/ssl/certs/${key_name}.pem":
+      source => "${name}.pem";
   }
 }

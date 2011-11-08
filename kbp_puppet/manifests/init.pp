@@ -74,6 +74,9 @@ class kbp_puppet::default_config {
     "splay":
       value   => 'true',
       section => "agent";
+    "server":
+      value   => 'puppetmaster.kumina.nl',
+      section => "agent";
   }
 }
 

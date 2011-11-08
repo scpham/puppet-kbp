@@ -9,7 +9,10 @@ class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $lo
     loglevel  => $loglevel,
     haproxy_tag => $haproxy_tag;
   }
+
   Gen_ferm::Rule <<| tag == $haproxy_tag |>>
+  # These exported kfiles contain the firewall fragments
+  Ekfile <<| tag == $haproxy_tag |>>
 }
 
 # Define: kbp_haproxy::site
