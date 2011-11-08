@@ -3,17 +3,24 @@
 # Class: kbp_apt
 #
 # Actions:
-#  Undocumented
+#  Setup APT the way we like it.
 #
 # Depends:
-#  Undocumented
+#  gen_apt
 #  gen_puppet
 #
 class kbp_apt {
   include gen_apt
 
-  # Keys for backports, kumina, cassandra, ksplice, jenkins, rabbitmq (in this order)
-  gen_apt::key { ["16BA136C","498B91E6","8D77295D","B6D4038E","D50582E6","056E8E56"]:; }
+  # Keys for ksplice, jenkins, rabbitmq (in this order)
+  gen_apt::key {
+    "B6D4038E":
+      source => "kbp_apt/keys/B6D4038E";
+    "D50582E6":
+      source => "kbp_apt/keys/D50582E6";
+    "056E8E56":
+      source => "kbp_apt/keys/056E8E56";
+  }
 
   gen_apt::cron_apt::config {
     # First, update the package list and don't mail us. A second run is done to see if there are packages to be installed
@@ -32,3 +39,41 @@ class kbp_apt {
       configfile  => "/etc/cron-apt/config-mail";
   }
 }
+
+# Class: kbp_apt::kumina
+#
+# Actions:
+#  Setup the APT source for the kumina repository, including keeping the key up-to-date and making sure we always prefer
+#  packages that we've packaged ourselves.
+#
+# Depends:
+#  gen_apt
+#  gen_puppet
+#
+class kbp_apt::kumina {
+  gen_apt::key { "498B91E6":
+    source => "kbp_apt/keys/498B91E6";
+  }
+
+  gen_apt::source {
+    "kumina":
+      comment      => "Kumina repository.",
+      sourcetype   => "deb",
+      uri          => "http://debian.kumina.nl/debian",
+      distribution => "${lsbdistcodename}-kumina",
+      components   => "main",
+      key          => "498B91E6";
+  }
+
+  # This is the actual key, packaged.
+  kpackage { "kumina-archive-keyring":
+    ensure => latest,
+  }
+
+  # Always prefer packages that we created ourselves.
+  gen_apt::preference { "all":
+    package => "*",
+    repo    => "${lsbdistcodename}-kumina";
+  }
+}
+
