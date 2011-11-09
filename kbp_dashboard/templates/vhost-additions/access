@@ -4,6 +4,6 @@ Allow From All
 
 AuthName "Authorized Personnel ONLY"
 AuthType Basic
-AuthUserFile /srv/www/<%= domain %>/.htpasswd
+AuthUserFile /srv/www/<%= url %>/.htpasswd
 require valid-user
 </Location>
