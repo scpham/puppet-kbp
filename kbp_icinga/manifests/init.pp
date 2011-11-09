@@ -531,6 +531,10 @@ class kbp_icinga::server {
       mode   => 755;
   }
 
+  @@kbp_munin::alert_export { "icinga":
+    command => "/usr/sbin/send_nsca -H ${fqdn} -c /etc/send_nsca.cfg";
+  }
+
   @@kbp_dashboard::customer_entry_export { "Icinga":
     path            => "icinga",
     regex_paths     => ["/cgi-bin/icinga/","/stylesheets/","/images/"],

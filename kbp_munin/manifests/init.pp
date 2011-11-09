@@ -18,6 +18,12 @@ class kbp_munin::client inherits munin::client {
   }
 
   Gen_ferm::Rule <<| tag == "general_trending" |>>
+
+  @@concat::add_content { "2 ${fqdn}":
+    content => template("kbp_munin/munin.conf_client"),
+    target  => "/etc/munin/munin-${environment}.conf",
+    tag     => "munin_client";
+  }
 }
 
 # Class: kbp_munin::client::apache
@@ -80,6 +86,7 @@ class kbp_munin::client::haproxy {
 #
 class kbp_munin::client::puppetmaster {
   include kbp_munin::client
+
   munin::client::plugin {
     "puppet_nodes":
       script_path => "/usr/local/share/munin/plugins",
@@ -266,13 +273,13 @@ class kbp_munin::server inherits munin::server {
     tag    => "general_trending";
   }
 
-  Kfile["/etc/munin/munin.conf"] {
-    source => "kbp_munin/server/munin.conf",
+  Kfile <| title == "/etc/munin/munin.conf" |> {
+    ensure  => absent,
   }
 
   Kfile <| title == "/etc/send_nsca.cfg" |> {
-    mode    => 640,
-    group   => "munin",
+    mode  => 640,
+    group => "munin",
   }
 
   kpackage { "rsync":; }
@@ -280,24 +287,24 @@ class kbp_munin::server inherits munin::server {
   # The RRD files for Munin are stored on a memory backed filesystem, so
   # sync it to disk on reboots.
   kfile { "/etc/init.d/munin-server":
-    source => "munin/server/init.d/munin-server",
-    mode => 755,
+    source  => "munin/server/init.d/munin-server",
+    mode    => 755,
     require => [Package["rsync"], Package["munin"]],
   }
 
   service { "munin-server":
-    enable => true,
+    enable  => true,
     require => File["/etc/init.d/munin-server"],
   }
 
   exec { "/etc/init.d/munin-server start":
-    unless => "/bin/sh -c '[ -d /dev/shm/munin ]'",
+    unless  => "/bin/sh -c '[ -d /dev/shm/munin ]'",
     require => Service["munin-server"];
   }
 
   # Cron job which syncs the RRD files to disk every 30 minutes.
   kfile { "/etc/cron.d/munin-sync":
-    source => "munin/server/cron.d/munin-sync",
+    source  => "munin/server/cron.d/munin-sync",
     require => [Package["munin"], Package["rsync"]];
   }
 
@@ -305,5 +312,72 @@ class kbp_munin::server inherits munin::server {
     path      => "munin",
     entry_url => "http://munin.kumina.nl",
     text      => "Graphs of server usage and performance.";
+  }
+
+  Kbp_munin::Environment <<| |>>
+  Kbp_munin::Alert <<| |>>
+  Concat::Add_content <<| tag == "munin_client" |>>
+}
+
+define kbp_munin::environment {
+  service { "munin-${name}":
+    require => File["/etc/init.d/munin-${name}","/dev/shm/munin-${name}"];
+  }
+
+  kfile {
+    "/etc/init.d/munin-${name}":
+      mode    => 755,
+      content => template("kbp_munin/init-script");
+    ["/dev/shm/munin-${name}","/var/log/munin-${name}","/var/run/munin-${name}","/var/lib/munin-${name}"]:
+      ensure  => directory,
+      owner   => "munin";
+    "/srv/www/${fqdn}/${name}":
+      ensure  => directory,
+      group   => "www-data",
+      owner   => "munin";
+    "/etc/cron.d/munin-${name}":
+      owner   => "root",
+      content => template("kbp_munin/cron");
+    "/etc/cron.d/munin-sync-${name}":
+      owner   => "root",
+      content => template("kbp_munin/cron-sync");
+    "/etc/logrotate.d/munin-${name}":
+      owner   => "root",
+      content => template("kbp_munin/logrotate");
+  }
+
+  concat {
+    "/etc/munin/munin-${name}.conf":
+      require => Package["munin"];
+    "/srv/www/${fqdn}/${name}/.htpasswd":
+      require => Kfile["/srv/www/${fqdn}/${name}"];
+  }
+
+  concat::add_content { "0 ${name} base":
+    content => template("kbp_munin/munin.conf_base"),
+    target  => "/etc/munin/munin-${name}.conf";
+  }
+
+  kbp_apache_new::vhost_addition { "${fqdn}_80/access_${name}":
+    content => template("kbp_munin/vhost-additions/access");
+  }
+
+  Concat::Add_content <<| tag == "htpasswd_${name}" |>> {
+    target => "/srv/www/${fqdn}/${name}/.htpasswd",
+  }
+}
+
+define kbp_munin::alert_export($command) {
+  @@kbp_munin::alert { "${name}_${environment}":
+    alert_name  => $name,
+    command     => $command,
+    environment => $environment;
+  }
+}
+
+define kbp_munin::alert($alert_name, $command, $environment) {
+  concat::add_content { "1 $name":
+    content => template("kbp_munin/munin.conf_alert"),
+    target  => "/etc/munin/munin-${environment}.conf";
   }
 }

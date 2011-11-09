@@ -170,6 +170,10 @@ class kbp_base::environment {
   @@kbp_smokeping::environment { $environment:; }
 
   kbp_smokeping::targetgroup { $environment:; }
+
+  Kbp_munin::Alert_export <<| |>>
+
+  @@kbp_munin::environment { $environment:; }
 }
 
 class kbp_base::wanted_packages {
