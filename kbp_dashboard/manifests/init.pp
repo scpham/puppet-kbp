@@ -106,12 +106,12 @@ define kbp_dashboard::environment($fullname) {
   }
 }
 
-define kbp_dashboard::customer_entry_export($path, $extra_paths=false, $regex_paths=false, $url, $text, $add_environment=true) {
+define kbp_dashboard::customer_entry_export($path, $extra_paths=false, $regex_paths=false, $entry_url, $text, $add_environment=true) {
   @@kbp_dashboard::customer_entry { "${name}_${environment}":
     path            => $path,
     extra_paths     => $extra_paths,
     regex_paths     => $regex_paths,
-    url             => $url,
+    entry_url       => $entry_url,
     text            => $text,
     add_environment => $add_environment,
     entry_name      => $name,
