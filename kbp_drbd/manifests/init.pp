@@ -13,13 +13,16 @@
 #  Undocumented
 #  gen_puppet
 #
-define kbp_drbd($mastermaster=true, $time_out=false, $connect_int=false, $ping_int=false, $ping_timeout=false, $after_sb_0pri="discard-younger-primary",
+define kbp_drbd($location, $fstype=false, $mastermaster=true, $time_out=false, $connect_int=false, $ping_int=false, $ping_timeout=false, $after_sb_0pri="discard-younger-primary",
     $after_sb_1pri="discard-secondary", $after_sb_2pri="call-pri-lost-after-sb", $rate="5M") {
-  include kbp_drbd::monitoring::icinga
   if $mastermaster {
     class { "kbp_ocfs2":
       ocfs2_tag => $name;
     }
+  }
+
+  if ! $mastermaster and ! $fstype {
+    fail { "fstype must be specified when not in mastermaster":; }
   }
 
   gen_drbd { $name:
@@ -43,22 +46,25 @@ define kbp_drbd($mastermaster=true, $time_out=false, $connect_int=false, $ping_i
     action => "ACCEPT",
     tag    => "ferm_drbd_${environment}_${name}";
   }
-}
 
-# Class: kbp_drbd::monitoring::icinga
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_drbd::monitoring::icinga {
-  kbp_icinga::service { "check_drbd":
-    service_description => "DRBD",
-    check_command       => "check_drbd",
-    nrpe                => true,
-    warnsms             => false;
+  mount { $location:
+    ensure   => mounted,
+    device   => "/dev/drbd1",
+    fstype   => $mastermaster ? {
+      false   => "ocfs2",
+      default => $fstype,
+    },
+    options  => "nodev,nosuid,noatime",
+    dump     => "0",
+    pass     => "0",
+    remounts => true,
+    target   => "/etc/fstab",
   }
+
+  kfile { "${location}/.monitoring":
+    content => "DRBD_mount_ok",
+    require => Mount[$location];
+  }
+
+  kbp_monitoring::drbd { $location:; }
 }

@@ -41,6 +41,10 @@ class kbp_icinga::client {
       arguments => '$ARG1$ $ARG2$';
     "check_drbd":
       arguments => "-d All";
+    "check_drbd_mount":
+      sudo      => true,
+      command   => "check_file",
+      arguments => '-f $ARG1$ -c $ARG2$';
     "check_heartbeat":;
     "check_java_heap_usage":
       command   => "check_javaheapusage",
@@ -243,6 +247,11 @@ class kbp_icinga::server {
       command_name  => "check_dummy",
       host_argument => false,
       arguments     => "0";
+    "check_drbd_mount":
+      conf_dir     => "generic",
+      command_name => "check_drbd_mount",
+      arguments    => ['$ARG1$','$ARG2$'],
+      nrpe         => true;
     "check-host-alive":
       conf_dir     => "generic",
       command_name => "check_ping",
@@ -1081,6 +1090,35 @@ define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=fals
       false   => undef,
       default => $proxy,
     };
+  }
+}
+
+# Define: kbp_icinga::drbd
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+define kbp_icinga::drbd {
+  include gen_base::python-argparse
+
+  $sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
+
+  kbp_icinga::service { "drbd_mount_${sanitized_name}":
+    service_description => "DRBD mount ${name}",
+    check_command       => "check_drbd_mount",
+    arguments           => ["${name}/.monitoring","DRBD_mount_ok"],
+    nrpe                => true;
+  }
+
+  kbp_icinga::service { "check_drbd":
+    service_description => "DRBD",
+    check_command       => "check_drbd",
+    nrpe                => true,
+    warnsms             => false;
   }
 }
 

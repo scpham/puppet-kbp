@@ -260,6 +260,27 @@ class kbp_monitoring::asterisk($package="icinga") {
   }
 }
 
+# Define: kbp_monitoring::drbd
+#
+# Parameters:
+#  name
+#    Undocumented
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+define kbp_monitoring::drbd($package="icinga") {
+  case $package {
+    "icinga": {
+      kbp_icinga::drbd { $name:; }
+    }
+  }
+}
+
 # Define: kbp_monitoring::nfs::client
 #
 # Parameters:
