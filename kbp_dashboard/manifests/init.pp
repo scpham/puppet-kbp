@@ -119,7 +119,7 @@ define kbp_dashboard::customer_entry_export($path, $extra_paths=false, $regex_pa
   }
 }
 
-define kbp_dashboard::customer_entry($path, $extra_paths=false, $regex_paths=false, $url, $text, $add_environment=true, $entry_name, $environment) {
+define kbp_dashboard::customer_entry($path, $extra_paths=false, $regex_paths=false, $entry_url, $text, $add_environment=true, $entry_name, $environment) {
   $base_path = $path
 
   concat::add_content { "1 index.html content for ${entry_name} for ${environment}":
