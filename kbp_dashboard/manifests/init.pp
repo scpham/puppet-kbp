@@ -33,21 +33,34 @@ class kbp_dashboard::server($url="dashboard.kumina.nl") {
 
   Kbp_dashboard::Customer_entry <<| |>>
   Kbp_dashboard::Base_entry <<| |>>
-  Kbp_dashboard::Overview_entry <<| |>> {
+  Kbp_dashboard::Overview_entry_host <<| |>> {
+    url => $url,
+  }
+  Kbp_dashboard::Overview_entry_vm <<| |>> {
     url => $url,
   }
 }
 
 class kbp_dashboard::client {
-  $resource_name = $is_virtual ? {
-    "true"  => "1 index.html overview body for ${parent} ${fqdn}",
-    "false" => "1 index.html overview body for ${fqdn}"
-  }
+  if $is_virtual == "false" {
+    $resource_name = "1 index.html overview body for ${fqdn}"
 
-  @@kbp_dashboard::overview_entry { $fqdn:
-    resource_name => $resource_name,
-    environment   => $environment,
-    content       => template("kbp_dashboard/index.html_overview_body");
+    @@kbp_dashboard::overview_entry_host { $fqdn:
+      resource_name => $resource_name,
+      environment   => $environment,
+      content       => template("kbp_dashboard/index.html_overview_body");
+    }
+  } else {
+    $resource_name        = "1 index.html overview body for ${parent} ${fqdn}"
+    $parent_resource_name = "1 index.html overview body for ${parent}"
+
+    @@kbp_dashboard::overview_entry_vm { $fqdn:
+      resource_name        => $resource_name,
+      environment          => $environment,
+      parent               => $parent,
+      parent_resource_name => $parent_resource_name,
+      content              => template("kbp_dashboard/index.html_overview_body");
+    }
   }
 }
 
@@ -141,7 +154,20 @@ define kbp_dashboard::base_entry($path, $text, $entry_name, $environment) {
   }
 }
 
-define kbp_dashboard::overview_entry($resource_name, $content, $environment, $url=false) {
+define kbp_dashboard::overview_entry_host($resource_name, $content, $environment, $parent=false, $url=false) {
+  Concat::Add_content <| title == $resource_name |> {
+    content => $content,
+  }
+}
+
+define kbp_dashboard::overview_entry_vm($resource_name, $content, $environment, $parent=false, $parent_resource_name=false, $url=false) {
+  if $parent and ! defined(Concat::Add_content[$parent_resource_name]) {
+    concat::add_content { $parent_resource_name:
+      content => template("kbp_dashboard/index.html_overview_body_parent"),
+      target  => "/srv/www/${url}/${environment}/overview/index.html";
+    }
+  }
+
   concat::add_content { $resource_name:
     content => $content,
     target  => "/srv/www/${url}/${environment}/overview/index.html";
