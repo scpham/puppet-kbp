@@ -302,8 +302,8 @@ class kbp_munin::server inherits munin::server {
   }
 
   @@kbp_dashboard::customer_entry_export { "Munin":
-    path => "munin",
-    url  => "http://munin.kumina.nl",
-    text => "Graphs of server usage and performance.";
+    path      => "munin",
+    entry_url => "http://munin.kumina.nl",
+    text      => "Graphs of server usage and performance.";
   }
 }

@@ -534,7 +534,7 @@ class kbp_icinga::server {
   @@kbp_dashboard::customer_entry_export { "Icinga":
     path            => "icinga",
     regex_paths     => ["/cgi-bin/icinga/","/stylesheets/","/images/"],
-    url             => "http://icinga.kumina.nl",
+    entry_url       => "http://icinga.kumina.nl",
     text            => "Availability monitoring of servers and services.",
     add_environment => false;
   }

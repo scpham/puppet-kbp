@@ -41,7 +41,7 @@ class kbp_smokeping::server {
   @@kbp_dashboard::customer_entry_export { "Smokeping":
     path        => "smokeping",
     regex_paths => ["/images/"],
-    url         => "http://smokeping.kumina.nl",
+    entry_url   => "http://smokeping.kumina.nl",
     text        => "Graphs of site responsiveness.";
   }
 }
