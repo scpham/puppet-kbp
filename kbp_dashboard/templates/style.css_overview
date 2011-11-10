@@ -53,3 +53,8 @@ img {
 a.graph {
 	border-bottom: none;
 }
+
+tr.bottomborder td {
+	border-bottom: 1px solid black;
+	padding: 0px;
+}
