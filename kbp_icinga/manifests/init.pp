@@ -254,7 +254,7 @@ class kbp_icinga::server {
         "check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql",
         "check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion",
         "check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap",
-        "check_puppet_freshness","check_puppet_failures","check_nullmailer","check_passenger_queue"]:
+        "check_puppet_failures","check_nullmailer","check_passenger_queue"]:
       conf_dir => "generic",
       nrpe     => true;
     "return-ok":
@@ -322,9 +322,8 @@ class kbp_icinga::server {
       conf_dir  => "generic",
       arguments => ['$ARG1$','$ARG2$','$ARG3$','$ARG4$'],
       nrpe      => true;
-    "check_puppet_state":
+    "check_puppet_dontrun":
       conf_dir     => "generic",
-      command_name => "check_puppet_state",
       arguments    => ['$ARG1$'],
       nrpe         => true;
     "check_tcp":
