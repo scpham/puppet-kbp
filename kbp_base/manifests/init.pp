@@ -38,8 +38,6 @@ class kbp_base {
     include gen_base::libfreetype6
   }
 
-  $sanitized_customer_name = regsubst($customer_name, '[^a-zA-Z0-9\-_]', '_', 'G')
-
   gen_sudo::rule {
     "User root has total control":
       entity            => "root",
