@@ -87,6 +87,10 @@ class kbp_icinga::client {
     "check_proc_status":
       sudo      => true,
       arguments => '$ARG1$';
+    "check_puppet_dontrun":
+      sudo      => true,
+      command   => "check_file",
+      arguments => '-f $ARG1$ -n';
     "check_puppet_state_freshness":
       sudo      => true,
       command   => "check_puppet",
@@ -147,6 +151,11 @@ class kbp_icinga::client {
       check_command       => "check_ksplice",
       nrpe                => true,
       sms                 => false;
+    "puppet_dontrun":
+      service_description => "Puppet dontrun",
+      check_command       => "check_puppet_dontrun",
+      arguments           => ["/etc/puppet/dontrunpuppetd"],
+      nrpe                => true;
     "puppet_state":
       service_description => "Puppet state freshness",
       check_command       => "check_puppet_state_freshness",
@@ -200,6 +209,12 @@ class kbp_icinga::client {
       check_command       => "check_zombie_processes",
       nrpe                => true,
       sms                 => false;
+  }
+
+  gen_icinga::servicedependency { "puppet_dependency_freshness_dontrun":
+    dependent_service_description => "Puppet state freshness",
+    host_name                     => $fqdn,
+    service_description           => "Puppet dontrun";
   }
 
   gen_sudo::rule { "Icinga can run all plugins as root":
@@ -307,6 +322,11 @@ class kbp_icinga::server {
       conf_dir  => "generic",
       arguments => ['$ARG1$','$ARG2$','$ARG3$','$ARG4$'],
       nrpe      => true;
+    "check_puppet_state":
+      conf_dir     => "generic",
+      command_name => "check_puppet_state",
+      arguments    => ['$ARG1$'],
+      nrpe         => true;
     "check_tcp":
       conf_dir  => "generic",
       arguments => '-p $ARG1$';
