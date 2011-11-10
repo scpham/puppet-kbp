@@ -155,7 +155,9 @@ class kbp_icinga::client {
       service_description => "Puppet dontrun",
       check_command       => "check_puppet_dontrun",
       arguments           => ["/etc/puppet/dontrunpuppetd"],
-      nrpe                => true;
+      nrpe                => true,
+      sms                 => false,
+      customer_notify     => false;
     "puppet_state":
       service_description => "Puppet state freshness",
       check_command       => "check_puppet_state_freshness",
