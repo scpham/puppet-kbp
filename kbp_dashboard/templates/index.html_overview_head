@@ -10,11 +10,16 @@
   <%= fullname %> server overview
 </div>
 <div id='content'>
-  <table cellspacing="20">
+  <table cellpadding="5">
     <tr>
-      <th colspan="2" align="center">FQDN</th>
-      <th align="center">IPv4</th>
-      <th align="center">IPv6</th>
-      <th align="center">Procs</th>
-      <th align="center">Memory</th>
+      <th rowspan="4" colspan="3">FQDN</th>
+      <th rowspan="4">IPv4</th>
+      <th rowspan="4">IPv6</th>
+      <th>Procs</th>
     </tr>
+    <tr>
+      <th>Memory</th>
+    </tr>
+    <tr/>
+    <tr/>
+    <tr class='bottomborder'><td colspan="6"></td></tr>

@@ -1,13 +1,18 @@
     <tr>
 <% if is_virtual=="true" -%>
       <td/>
-      <td align="left"><%= fqdn %></td>
+      <td colspan="2" align="left"><%= fqdn %></td>
 <% else -%>
-      <td align="left"><%= fqdn %></td>
+      <td colspan="2" align="left"><%= fqdn %></td>
       <td/>
 <% end -%>
       <td align="center"><%= ipaddress %></td>
       <td align="center"><% if has_variable?("ipaddress6") %><%= ipaddress6 %><% else %>None<% end %></td>
       <td align="center"><%= processorcount %></td>
+    </tr>
+    <tr>
       <td align="center"><%= memorysize %></td>
     </tr>
+    <tr/>
+    <tr/>
+    <tr class='bottomborder'><td colspan="6"></td></tr>
