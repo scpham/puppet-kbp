@@ -11,6 +11,7 @@
 #
 class kbp_icinga::client {
   include gen_icinga::client
+  include gen_base::python-argparse
 
   clientcommand {
     "check_3ware":
