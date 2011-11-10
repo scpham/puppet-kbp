@@ -1,4 +1,4 @@
-[<%= customer_name %>;<%= fqdn %>]
+[<%= sanitized_customer_name %>;<%= fqdn %>]
   address <%= ipaddress %>
   use_node_name yes
   df.notify_alias Filesystem usage
