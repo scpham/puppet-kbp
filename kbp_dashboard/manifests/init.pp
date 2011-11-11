@@ -51,7 +51,7 @@ class kbp_dashboard::client {
       content       => template("kbp_dashboard/index.html_overview_body");
     }
   } else {
-    $resource_name        = "1 index.html overview body for ${parent} ${fqdn}"
+    $resource_name        = "1 index.html overview body for ${parent} 1 ${fqdn}"
     $parent_resource_name = "1 index.html overview body for ${parent}"
 
     @@kbp_dashboard::overview_entry_vm { $fqdn:
@@ -155,14 +155,14 @@ define kbp_dashboard::base_entry($path, $text, $entry_name, $environment) {
 }
 
 define kbp_dashboard::overview_entry_host($resource_name, $content, $environment, $parent=false, $url=false) {
-  Concat::Add_content <| title == "${resource_name}_${environment}" |> {
+  Concat::Add_content <| title == "${resource_name} 0 ${environment}" |> {
     content => $content,
   }
 }
 
 define kbp_dashboard::overview_entry_vm($resource_name, $content, $environment, $parent=false, $parent_resource_name=false, $url=false) {
-  if $parent and ! defined(Concat::Add_content["${parent_resource_name}_${environment}"]) {
-    concat::add_content { "${parent_resource_name}_${environment}":
+  if $parent and ! defined(Concat::Add_content["${parent_resource_name} 0 ${environment}"]) {
+    concat::add_content { "${parent_resource_name} 0 ${environment}":
       content => template("kbp_dashboard/index.html_overview_body_parent"),
       target  => "/srv/www/${url}/${environment}/overview/index.html";
     }

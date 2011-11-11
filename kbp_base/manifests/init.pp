@@ -25,6 +25,7 @@ class kbp_base {
   include kbp_time
   include kbp_vim
   include kbp_dashboard::client
+  include kbp_munin::client
   if $is_virtual == "false" {
     include kbp_physical
   }
