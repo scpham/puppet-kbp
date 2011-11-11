@@ -33,5 +33,5 @@
       <td align="center"><%= memorysize %></td>
     </tr>
     <tr class='bottomborder'>
-      <td colspan="8"></td>
+      <td colspan="9"></td>
     </tr>
