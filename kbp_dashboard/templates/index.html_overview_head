@@ -12,9 +12,11 @@
 <div id='content'>
   <table cellpadding="5">
     <tr>
-      <th rowspan="4" colspan="3">FQDN</th>
-      <th rowspan="4">IPv4</th>
-      <th rowspan="4">IPv6</th>
+      <th rowspan="2" colspan="3">FQDN</th>
+      <th rowspan="2">Interface</th>
+      <th rowspan="2">IPv4</th>
+      <th rowspan="2">IPv6</th>
+      <th rowspan="2">MAC</th>
       <th>Procs</th>
     </tr>
     <tr>
@@ -22,4 +24,4 @@
     </tr>
     <tr/>
     <tr/>
-    <tr class='bottomborder'><td colspan="6"></td></tr>
+    <tr class='bottomborder'><td colspan="8"></td></tr>
