@@ -1,8 +1,10 @@
     <tr>
-      <td align="left"><%= parent %></td>
+      <td colspan="2" align="left"><%= parent %></td>
       <td/>
       <td/>
       <td/>
       <td/>
-      <td/>
+    </tr>
+    <tr class='bottomborder'>
+      <td colspan="6"></td>
     </tr>

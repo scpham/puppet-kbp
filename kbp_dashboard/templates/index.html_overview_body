@@ -11,15 +11,15 @@
       <td align="center"><%= processorcount %></td>
     </tr>
     <tr>
+      <td/>
+      <td/>
+      <td/>
+      <td/>
+      <td/>
       <td align="center"><%= memorysize %></td>
     </tr>
     <tr/>
     <tr/>
     <tr class='bottomborder'>
-      </td>
-      </td>
-      </td>
-      </td>
-      </td>
       <td colspan="6"></td>
     </tr>
