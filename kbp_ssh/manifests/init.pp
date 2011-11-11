@@ -11,6 +11,7 @@
 #
 class kbp_ssh {
   include gen_openssl::common
+
   gen_ferm::rule { "SSH":
     proto  => "tcp",
     dport  => "22",
