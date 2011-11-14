@@ -6,7 +6,7 @@
 <% end -%>
 <% used_ifs = Array.new -%>
 <% interfaces.split(',').each do |interface| -%>
-<% if interface != "lo" and (has_variable?("ipaddress_".concat(interface)) or has_variable?("ipaddress_".concat(interface))) -%>
+<% if interface != "lo" and has_variable?("macaddress_".concat(interface)") and (has_variable?("ipaddress_".concat(interface)) or has_variable?("ipaddress_".concat(interface))) -%>
 <% used_ifs[used_ifs.length] = interface -%>
 <% end -%>
 <% end -%>
