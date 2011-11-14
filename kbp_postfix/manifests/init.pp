@@ -11,7 +11,7 @@
 #
 class kbp_postfix inherits postfix {
   include munin::client
-  include gen_openssl::common
+  include kbp_openssl::common
 
   munin::client::plugin { ["postfix_mailqueue", "postfix_mailstats", "postfix_mailvolume"]:
     ensure => present,

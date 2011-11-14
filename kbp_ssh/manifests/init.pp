@@ -10,7 +10,7 @@
 #  gen_puppet
 #
 class kbp_ssh {
-  include gen_openssl::common
+  include kbp_openssl::common
 
   gen_ferm::rule { "SSH":
     proto  => "tcp",
