@@ -155,8 +155,15 @@ define kbp_dashboard::base_entry($path, $text, $entry_name, $environment) {
 }
 
 define kbp_dashboard::overview_entry_host($resource_name, $content, $environment, $parent=false, $url=false) {
-  Concat::Add_content <| title == "${resource_name} 0 ${environment}" |> {
-    content => $content,
+  if defined(Concat::Add_content["${resource_name} 0 ${environment}"]) {
+    Concat::Add_content <| title == "${resource_name} 0 ${environment}" |> {
+      content => $content,
+    }
+  } else {
+    concat::add_content { "${resource_name} 0 ${environment}":
+      content => $content,
+      target  => "/srv/www/${url}/${environment}/overview/index.html";
+    }
   }
 }
 
