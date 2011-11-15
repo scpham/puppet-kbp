@@ -196,6 +196,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
     kbp_apache_new::glassfish_domain { $glassfish_domain:
       site           => $real_name,
+      site_port      => $port,
       connector_port => $glassfish_connector_port;
     }
   }
@@ -275,10 +276,10 @@ define kbp_apache_new::keys {
   }
 }
 
-define kbp_apache_new::glassfish_domain($site, $connector_port) {
+define kbp_apache_new::glassfish_domain($site, $site_port, $connector_port) {
   include kbp_apache_new::glassfish_domain_base
 
-  kbp_apache_new::vhost_addition { "${site}/glassfish-jk":
+  kbp_apache_new::vhost_addition { "${site}_${site_port}/glassfish-jk":
     content => "JkMount /* ${name}";
   }
 
