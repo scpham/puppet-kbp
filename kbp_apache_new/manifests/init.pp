@@ -194,9 +194,9 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       fail { "glassfish_connector_port is undefined for ${site}":; }
     }
 
-    kbp_apache_new::glassfish { $glassfish_domain:
+    kbp_apache_new::glassfish_domain { $glassfish_domain:
       site           => $real_name,
-      site_port      => $port,
+      site_port      => $real_port,
       connector_port => $glassfish_connector_port;
     }
   }
