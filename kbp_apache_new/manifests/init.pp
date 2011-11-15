@@ -154,7 +154,7 @@ define kbp_apache_new::php_cgi($documentroot) {
 define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot="/srv/www/${name}", $create_documentroot=true, $address=false, $address6=false,
     $port=false, $make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false, $wildcard=false,
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false,
-    $monitor=true, $smokeping=true, $php=false) {
+    $monitor=true, $smokeping=true, $php=false, $glassfish_domain=false, $glassfish_connector_port=false) {
   include kbp_apache_new
   if $key or $cert or $intermediate or $wildcard or $ssl {
     include kbp_apache_new::ssl
@@ -187,6 +187,17 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     intermediate     => $intermediate,
     wildcard         => $wildcard,
     redirect_non_ssl => $redirect_non_ssl;
+  }
+
+  if $glassfish_domain {
+    if ! $glassfish_connector_port {
+      fail { "glassfish_connector_port is undefined for ${site}":; }
+    }
+
+    kbp_apache_new::glassfish { $glassfish_domain:
+      site           => $real_name,
+      connector_port => $glassfish_connector_port;
+    }
   }
 
   if $php {
@@ -261,5 +272,43 @@ define kbp_apache_new::keys {
       mode   => 400;
     "/etc/ssl/certs/${key_name}.pem":
       source => "${name}.pem";
+  }
+}
+
+define kbp_apache_new::glassfish_domain($site, $connector_port) {
+  include kbp_apache_new::glassfish_domain_base
+
+  kbp_apache_new::vhost_addition { "${site}/glassfish-jk":
+    content => "JkMount /* ${name}";
+  }
+
+  concat::add_content {
+    "1 worker domain":
+      content   => "${name},",
+      linebreak => false,
+      target    => "/etc/apache2/worker.properties";
+    "3 worker domain settings":
+      content => template("kbp_apache_new/glassfish/worker.properties_settings"),
+      target  => "/etc/apache2/worker.properties";
+  }
+}
+
+class kbp_apache_new::glassfish_domain_base {
+  concat { "/etc/apache2/worker.properties":
+    require => Package["apache2"];
+  }
+
+  concat::add_content {
+    "0 worker base":
+      content   => "worker.list=",
+      linebreak => false,
+      target    => "/etc/apache2/worker.properties";
+    "2 worker base":
+      content => "",
+      target  => "/etc/apache2/worker.properties";
+  }
+
+  kfile { "/etc/apache2/conf.d/jk":
+    content => template("kbp_apache_new/conf.d/jk");
   }
 }
