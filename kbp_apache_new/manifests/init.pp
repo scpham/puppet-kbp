@@ -196,7 +196,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
     kbp_apache_new::glassfish_domain { $glassfish_domain:
       site           => $real_name,
-      site_port      => $port,
+      site_port      => $real_port,
       connector_port => $glassfish_connector_port;
     }
   }
