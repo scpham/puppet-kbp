@@ -21,8 +21,7 @@ class kbp_ssh {
 
   # remove this commit after 3 days....
   kfile { "/etc/ssh/sshd_config":
-    source => "kbp_ssh/sshd_config",
-    notify => Service['ssh'];
+    source => "kbp_ssh/sshd_config";
   }
 
   # Disable password logins and root logins
