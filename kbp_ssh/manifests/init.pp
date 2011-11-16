@@ -19,14 +19,19 @@ class kbp_ssh {
     tag    => "ferm";
   }
 
-  # Disable password logins and root logins
-  augeas { "sshd_config":
-    lens    => 'Sshd.lns',
-    incl    => "/etc/ssh/sshd_config",
-    changes => [
-      "set PermitRootLogin no",
-      "set PasswordAuthentication no"
-    ],
-    notify  => Service["ssh"];
+  # remove this commit after 3 days....
+  kfile { "/etc/ssh/sshd_config":
+    source => "kbp_ssh/sshd_config";
   }
+
+  # Disable password logins and root logins
+  #augeas { "sshd_config":
+  #  lens    => 'Sshd.lns',
+  #  incl    => "/etc/ssh/sshd_config",
+  #  changes => [
+  #    "set PermitRootLogin no",
+  #    "set PasswordAuthentication no"
+  #  ],
+  #  notify  => Service["ssh"];
+  #}
 }

@@ -58,12 +58,18 @@ class kbp_base {
     mode  => 0644,
   }
 
+  # Fix an oops..... remove this commit in 3 days
+  kfile { "/etc/default/rcS":
+      source => "kbp_base/rcS";
+  }
+
   # Force fsck on boot to repair the file system if it is inconsistent,
   # so we don't have to open the console and run fsck by hand
-  augeas { "/etc/default/rcS":
-    context => "/files/etc/default/rcS",
-    changes => "set FSCKFIX yes";
-  }
+  #augeas { "/etc/default/rcS":
+  #  lens    => "Shellvars.lns",
+  #  incl    => "/files/etc/default/rcS",
+  #  changes => "set FSCKFIX yes";
+  #}
 
   # Add the Kumina group and users
   # XXX Needs to do a groupmod when a group with gid already exists.
