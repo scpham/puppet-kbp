@@ -6,7 +6,8 @@
 #  Undocumented
 #
 # Depends:
-#  Undocumented
+#  gen_kvm
+#  gen_apt::preference
 #  gen_puppet
 #
 class kbp_kvm {
@@ -16,4 +17,5 @@ class kbp_kvm {
   exec { "/bin/echo 1 > /sys/kernel/mm/ksm/run":
     onlyif => "/usr/bin/test `cat /sys/kernel/mm/ksm/run` -eq 0",
   }
+
 }

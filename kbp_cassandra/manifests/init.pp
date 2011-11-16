@@ -39,11 +39,18 @@ class kbp_cassandra::client($customtag="cassandra_${environment}") {
 #  Undocumented
 #
 # Depends:
-#  Undocumented
+#  kbp_monitoring::cassandra
+#  gen_cassandra
 #  gen_puppet
 #
 class kbp_cassandra::server($customtag="cassandra_${environment}", $java_monitoring=false, $servicegroups=false, $sms=true) {
   include kbp_monitoring::cassandra
+  include gen_cassandra
+
+  # Make sure we use the Sun Java package
+  Kpackage <| title == "cassandra" |> {
+    require => Package["sun-java6-jdk"],
+  }
 
   @@gen_ferm::rule { "Internal Cassandra connections from ${fqdn}":
     saddr  => $fqdn,

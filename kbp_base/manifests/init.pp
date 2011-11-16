@@ -17,22 +17,23 @@ class kbp_base {
   include sysctl
   include kbp_acpi
   include kbp_apt
+  include kbp_apt::kumina
   include kbp_monitoring::client
   include kbp_puppet
   include kbp_ssh
   include kbp_sysctl
   include kbp_time
   include kbp_vim
+  include kbp_dashboard::client
+  include kbp_munin::client
   if $is_virtual == "false" {
     include kbp_physical
   }
   if $fqdn != "puppetmaster.kumina.nl" {
     include kbp_puppet::default_config
   }
-
   # Needed by elinks
   include gen_base::libmozjs2d
-
   if versioncmp($lsbdistrelease, 6) >= 0 { # Squeeze
     # Needed by grub2
     include gen_base::libfreetype6
@@ -75,8 +76,7 @@ class kbp_base {
   augeas { "/etc/adduser.conf":
     lens    => "Shellvars.lns",
     incl    => "/etc/adduser.conf",
-    force   => true,
-    changes => 'set LAST_UID 9999';
+    changes => "set LAST_UID 9999";
   }
 
   kbp_base::staff_user {
@@ -160,9 +160,19 @@ class kbp_base::environment {
   include kbp_monitoring::environment
   include kbp_user::environment
 
-  @@kbp_smokeping::environment { "${environment}":; }
+  Kbp_dashboard::Customer_entry_export <<| |>>
 
-  kbp_smokeping::targetgroup { "${environment}":; }
+  @@kbp_dashboard::environment { $environment:
+    fullname => $customer_name;
+  }
+
+  @@kbp_smokeping::environment { $environment:; }
+
+  kbp_smokeping::targetgroup { $environment:; }
+
+  Kbp_munin::Alert_export <<| |>>
+
+  @@kbp_munin::environment { $environment:; }
 }
 
 class kbp_base::wanted_packages {

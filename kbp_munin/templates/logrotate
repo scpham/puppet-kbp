@@ -1,0 +1,35 @@
+/var/log/munin-<%= name %>/munin-update.log {
+        daily
+        missingok
+        rotate 7
+        compress
+        notifempty
+        create 640 munin adm
+}
+
+/var/log/munin-<%= name %>/munin-graph.log {
+        daily
+        missingok
+        rotate 7
+        compress
+        notifempty
+        create 664 munin www-data
+}
+
+/var/log/munin-<%= name %>/munin-html.log {
+        daily
+        missingok
+        rotate 7
+        compress
+        notifempty
+        create 640 munin adm
+}
+
+/var/log/munin-<%= name %>/munin-limits.log {
+        daily
+        missingok
+        rotate 7
+        compress
+        notifempty
+        create 640 munin adm
+}

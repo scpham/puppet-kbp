@@ -37,6 +37,13 @@ class kbp_smokeping::server {
   kfile { "/etc/smokeping/basepage.html":
     source => "kbp_smokeping/basepage.html";
   }
+
+  @@kbp_dashboard::customer_entry_export { "Smokeping":
+    path        => "smokeping",
+    regex_paths => ["/images/"],
+    entry_url   => "http://smokeping.kumina.nl",
+    text        => "Graphs of site responsiveness.";
+  }
 }
 
 # Class: kbp_smokeping::server

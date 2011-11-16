@@ -33,11 +33,11 @@ class kbp_debian::lenny {
 
   gen_apt::source {
     "${lsbdistcodename}-volatile":
-      comment => "Repository for volatile packages in $lsbdistcodename, such as SpamAssassin and Clamav",
-      sourcetype => "deb",
-      uri => "$aptproxy/debian-volatile/",
+      comment      => "Repository for volatile packages in $lsbdistcodename, such as SpamAssassin and Clamav",
+      sourcetype   => "deb",
+      uri          => "http://ftp.nl.debian.org/debian-volatile/",
       distribution => "${lsbdistcodename}/volatile",
-      components => "main";
+      components   => "main";
   }
 
   kpackage { "mailx":
@@ -71,12 +71,12 @@ class kbp_debian::squeeze {
   }
 
   gen_apt::source {
-    "${lsbdistcodename}-updates":
-          comment => "Repository for update packages in $lsbdistcodename, such as SpamAssassin and Clamav",
-          sourcetype => "deb",
-          uri => "$aptproxy/debian/",
-          distribution => "${lsbdistcodename}-updates",
-          components => "main";
+    "squeeze-updates":
+          comment      => "Repository for update packages in ${lsbdistcodename}, such as SpamAssassin and Clamav",
+          sourcetype   => "deb",
+          uri          => "http://ftp.nl.debian.org/debian/",
+          distribution => "squeeze-updates",
+          components   => "main";
   }
 
   kpackage { "bsd-mailx":
@@ -179,41 +179,23 @@ class kbp_debian inherits kbp_base {
 
   gen_apt::source {
     "${lsbdistcodename}-base":
-      comment => "The main repository for the installed Debian release: $lsbdistdescription.",
-      sourcetype => "deb",
-      uri => "$aptproxy/debian/",
+      comment      => "The main repository for the installed Debian release: ${lsbdistdescription}.",
+      sourcetype   => "deb",
+      uri          => "http://ftp.nl.debian.org/debian/",
       distribution => "${lsbdistcodename}",
-      components => "main non-free";
+      components   => "main non-free";
     "${lsbdistcodename}-security":
-      comment => "Security updates for $lsbdistcodename.",
-      sourcetype => "deb",
-      uri => "$aptproxy/security/",
+      comment      => "Security updates for ${lsbdistcodename}.",
+      sourcetype   => "deb",
+      uri          => "http://security.debian.org/",
       distribution => "${lsbdistcodename}/updates",
-      components => "main";
+      components   => "main";
     "${lsbdistcodename}-backports":
-      comment => "Repository for packages which have been backported to $lsbdistcodename.",
-      sourcetype => "deb",
-      uri => "$aptproxy/backports",
+      comment      => "Repository for packages which have been backported to ${lsbdistcodename}.",
+      sourcetype   => "deb",
+      uri          => "http://backports.debian.org/debian-backports",
       distribution => "${lsbdistcodename}-backports",
-      components => "main contrib non-free",
-      require => Gen_apt::Key["16BA136C"];
-    "kumina":
-      comment => "Local repository, for packages maintained by Kumina.",
-      sourcetype => "deb",
-      uri => "$aptproxy/kumina/",
-      distribution => "${lsbdistcodename}-kumina",
-      components => "main",
-      require => Gen_apt::Key["498B91E6"];
-  }
-
-  # Package which makes sure the installed Kumina repository key is up-to-date.
-  kpackage { "kumina-archive-keyring":
-    ensure => latest;
-  }
-
-  gen_apt::preference { "all":
-    package => "*",
-    repo    => "${lsbdistcodename}-kumina";
+      components   => "main contrib non-free";
   }
 
   # TODO: move to appropriate modules (ticket 588)

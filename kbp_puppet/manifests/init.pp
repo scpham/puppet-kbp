@@ -38,7 +38,7 @@ class kbp_puppet {
   }
 
   Concat <| |> {
-#    testpms => ["testpuppetmaster.kumina.nl"],
+    testpms => ["testpuppetmaster.kumina.nl"],
   }
 }
 
@@ -73,6 +73,9 @@ class kbp_puppet::default_config {
       section => "agent";
     "splay":
       value   => 'true',
+      section => "agent";
+    "server":
+      value   => 'puppetmaster.kumina.nl',
       section => "agent";
   }
 }

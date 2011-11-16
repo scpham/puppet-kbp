@@ -1,0 +1,5 @@
+[<%= sanitized_customer_name %>;<%= fqdn %>]
+  address <%= ipaddress %>
+  use_node_name yes
+  df.notify_alias Filesystem usage
+  df_inode.notify_alias Inode usage

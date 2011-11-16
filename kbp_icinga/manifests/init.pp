@@ -11,6 +11,7 @@
 #
 class kbp_icinga::client {
   include gen_icinga::client
+  include gen_base::python-argparse
 
   clientcommand {
     "check_3ware":
@@ -41,6 +42,10 @@ class kbp_icinga::client {
       arguments => '$ARG1$ $ARG2$';
     "check_drbd":
       arguments => "-d All";
+    "check_drbd_mount":
+      sudo      => true,
+      command   => "check_file",
+      arguments => '-f $ARG1$ -c $ARG2$';
     "check_heartbeat":;
     "check_java_heap_usage":
       command   => "check_javaheapusage",
@@ -83,6 +88,10 @@ class kbp_icinga::client {
     "check_proc_status":
       sudo      => true,
       arguments => '$ARG1$';
+    "check_puppet_dontrun":
+      sudo      => true,
+      command   => "check_file",
+      arguments => '-f $ARG1$ -n';
     "check_puppet_state_freshness":
       sudo      => true,
       command   => "check_puppet",
@@ -143,6 +152,13 @@ class kbp_icinga::client {
       check_command       => "check_ksplice",
       nrpe                => true,
       sms                 => false;
+    "puppet_dontrun":
+      service_description => "Puppet dontrun",
+      check_command       => "check_puppet_dontrun",
+      arguments           => ["/etc/puppet/dontrunpuppetd"],
+      nrpe                => true,
+      sms                 => false,
+      customer_notify     => false;
     "puppet_state":
       service_description => "Puppet state freshness",
       check_command       => "check_puppet_state_freshness",
@@ -198,6 +214,12 @@ class kbp_icinga::client {
       sms                 => false;
   }
 
+  gen_icinga::servicedependency { "puppet_dependency_freshness_dontrun":
+    dependent_service_description => "Puppet state freshness",
+    host_name                     => $fqdn,
+    service_description           => "Puppet dontrun";
+  }
+
   gen_sudo::rule { "Icinga can run all plugins as root":
     entity            => "nagios",
     as_user           => "root",
@@ -235,7 +257,7 @@ class kbp_icinga::server {
         "check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql",
         "check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion",
         "check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap",
-        "check_puppet_freshness","check_puppet_failures","check_nullmailer","check_passenger_queue"]:
+        "check_puppet_failures","check_nullmailer","check_passenger_queue"]:
       conf_dir => "generic",
       nrpe     => true;
     "return-ok":
@@ -243,6 +265,11 @@ class kbp_icinga::server {
       command_name  => "check_dummy",
       host_argument => false,
       arguments     => "0";
+    "check_drbd_mount":
+      conf_dir     => "generic",
+      command_name => "check_drbd_mount",
+      arguments    => ['$ARG1$','$ARG2$'],
+      nrpe         => true;
     "check-host-alive":
       conf_dir     => "generic",
       command_name => "check_ping",
@@ -298,6 +325,10 @@ class kbp_icinga::server {
       conf_dir  => "generic",
       arguments => ['$ARG1$','$ARG2$','$ARG3$','$ARG4$'],
       nrpe      => true;
+    "check_puppet_dontrun":
+      conf_dir     => "generic",
+      arguments    => ['$ARG1$'],
+      nrpe         => true;
     "check_tcp":
       conf_dir  => "generic",
       arguments => '-p $ARG1$';
@@ -529,6 +560,18 @@ class kbp_icinga::server {
     "/usr/bin/icinga-check-alive":
       source => "kbp_icinga/server/icinga-check-alive",
       mode   => 755;
+  }
+
+  @@kbp_munin::alert_export { "icinga":
+    command => "/usr/sbin/send_nsca -H ${fqdn} -c /etc/send_nsca.cfg";
+  }
+
+  @@kbp_dashboard::customer_entry_export { "Icinga":
+    path            => "icinga",
+    regex_paths     => ["/cgi-bin/icinga/","/stylesheets/","/images/"],
+    entry_url       => "http://icinga.kumina.nl",
+    text            => "Availability monitoring of servers and services.",
+    add_environment => false;
   }
 }
 
@@ -1069,6 +1112,35 @@ define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=fals
       false   => undef,
       default => $proxy,
     };
+  }
+}
+
+# Define: kbp_icinga::drbd
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+define kbp_icinga::drbd {
+  include gen_base::python-argparse
+
+  $sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
+
+  kbp_icinga::service { "drbd_mount_${sanitized_name}":
+    service_description => "DRBD mount ${name}",
+    check_command       => "check_drbd_mount",
+    arguments           => ["${name}/.monitoring","DRBD_mount_ok"],
+    nrpe                => true;
+  }
+
+  kbp_icinga::service { "check_drbd":
+    service_description => "DRBD",
+    check_command       => "check_drbd",
+    nrpe                => true,
+    warnsms             => false;
   }
 }
 
