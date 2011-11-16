@@ -21,7 +21,8 @@ class kbp_ssh {
 
   # Disable password logins and root logins
   augeas { "sshd_config":
-    context => "/files/etc/ssh/sshd_config",
+    lens    => 'Sshd.lns',
+    incl    => "/etc/ssh/sshd_config",
     changes => [
       "set PermitRootLogin no",
       "set PasswordAuthentication no"
