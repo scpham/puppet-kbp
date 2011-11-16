@@ -29,7 +29,7 @@ class kbp_ssh {
   #  lens    => 'Sshd.lns',
   #  incl    => "/etc/ssh/sshd_config",
   #  changes => [
-  #    "set PermitRootLogin no",
+  #    "set PermitRootLogin forced-commands-only",
   #    "set PasswordAuthentication no"
   #  ],
   #  notify  => Service["ssh"];
