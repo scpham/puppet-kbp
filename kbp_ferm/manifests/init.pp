@@ -91,7 +91,6 @@ class kbp_ferm::offenders {
     "20111116 Ssh brute force attack on several machines":
       ips => ["(94.73.154.122 46.167.171.12 199.180.129.141 71.6.165.238 85.95.227.169)"];
   }
-  }
 }
 
 # Define: kbp_ferm::block
