@@ -1,3 +1,5 @@
+export LC_CTYPE=en_US.UTF-8
+
 [ "$TERM" = "xterm" ] && export TERM=xterm-256color
 [ "$TERM" = "screen" ] && export TERM=screen-256color
 
