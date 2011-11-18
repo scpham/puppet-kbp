@@ -18,7 +18,7 @@ class kbp_pacemaker ($customtag="pacemaker_${environment}") {
   class { "gen_pacemaker":
     customtag => $customtag;
   }
-  include kbp_pacemaker::monitoring::icinga
+  include kbp_monitoring::pacemaker
 }
 
 define kbp_pacemaker::primitive ($provider, $location=false, $location_score="inf", $location_name=false, $start_timeout=false, $monitor_interval=false,
@@ -77,23 +77,6 @@ define kbp_pacemaker::order ($score="inf", $resource_1, $resource_2, $customtag=
 define kbp_pacemaker::group ($customtag="pacemaker_${environment}") {
   gen_pacemaker::group { "${name}":
     customtag => $customtag;
-  }
-}
-
-# Class: kbp_pacemaker::monitoring::icinga
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_pacemaker::monitoring::icinga {
-  kbp_icinga::service { "pacemaker":
-    service_description => "Pacemaker",
-    check_command       => "check_pacemaker",
-    nrpe                => true;
   }
 }
 

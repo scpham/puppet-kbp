@@ -135,6 +135,36 @@ class kbp_monitoring::heartbeat($package="icinga") {
   }
 }
 
+# Class: kbp_monitoring::pacemaker
+#
+# Parameters:
+#  package
+#    Which monitoring package to use
+#
+# Actions:
+#  Set monitoring for pacemaker
+#
+# Depends:
+#  gen_puppet
+class kbp_monitoring::pacemaker ($package = "icinga"){
+  case $package {
+    "icinga": {
+      gen_sudo::rule { "pacemaker sudo rules":
+        entity => "nagios",
+        as_user => "root",
+        command => "/usr/sbin/crm_mon -s",
+        password_required => false;
+      }
+
+      kbp_icinga::service { "pacemaker":
+        service_description => "Pacemaker",
+        check_command       => "check_pacemaker",
+        nrpe                => true;
+      }
+    }
+  }
+}
+
 # Class: kbp_monitoring::nfs::server
 #
 # Parameters:
