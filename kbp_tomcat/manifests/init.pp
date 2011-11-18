@@ -54,8 +54,9 @@ class kbp_tomcat::mysql {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_tomcat::webapp($war="", $urlpath="/", $context_xml_content=false, $root_app=false) {
+define kbp_tomcat::webapp($war="", $urlpath="/", $context_xml_content=false, $root_app=false, $tomcat_tag="tomcat_${environment}") {
   gen_tomcat::context { $name:
+    tomcat_tag          => $tomcat_tag,
     war                 => $war,
     urlpath             => $urlpath,
     context_xml_content => $context_xml_content,
