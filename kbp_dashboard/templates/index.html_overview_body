@@ -18,10 +18,10 @@
       <td rowspan="2" colspan="2" align="left"><%= fqdn %></td>
       <td/>
 <% end -%>
-      <td rowspan="2" align="center"><% used_ifs.each do |used_if| %><%= used_if %><% if !used_if.start_with?("eth") %><% eths.each do | eth | %><% if eval("macaddress_".concat(used_if)) == eval("macaddress_".concat(eth))%> (<%= eth %>)<% end %><% end %><% end %><br><% end %></td>
-      <td rowspan="2" align="center"><% used_ifs.each do |used_if| %><% if has_variable?("ipaddress_".concat(used_if)) %><%= eval("ipaddress_".concat(used_if)) %><br><% else %>None<br><% end %><% end %></td>
-      <td rowspan="2" align="center"><% used_ifs.each do |used_if| %><% if has_variable?("ipaddress6_".concat(used_if)) %><%= eval("ipaddress6_".concat(used_if)) %><br><% else %>None<br><% end %><% end %></td>
-      <td rowspan="2" align="center"><% used_ifs.each do |used_if| %><%= eval("macaddress_".concat(used_if)) %><br><% end %></td>
+      <td rowspan="2" align="center"><% used_ifs.each do |used_if| %><%= used_if %><% if !used_if.start_with?("eth") %><% eths.each do | eth | %><% if eval("macaddress_".concat(used_if)) == eval("macaddress_".concat(eth))%> (<%= eth %>)<% end %><% end %><% end %><br><% end %><% if has_variable?("ec2_public_ipv4") or has_variable?("ec2_public_ipv6") %><br>ec2<% end %></td>
+      <td rowspan="2" align="center"><% used_ifs.each do |used_if| %><% if has_variable?("ipaddress_".concat(used_if)) %><%= eval("ipaddress_".concat(used_if)) %><br><% else %>None<br><% end %><% end %><% if has_variable?("ec2_public_ipv4") %><br><%= ec2_public_ipv4 %><% else %>None<% end %></td>
+      <td rowspan="2" align="center"><% used_ifs.each do |used_if| %><% if has_variable?("ipaddress6_".concat(used_if)) %><%= eval("ipaddress6_".concat(used_if)) %><br><% else %>None<br><% end %><% end %><% if has_variable?("ec2_public_ipv6") %><br><%= ec2_public_ipv6 %><% else %>None<% end %></td>
+      <td rowspan="2" align="center"><% used_ifs.each do |used_if| %><%= eval("macaddress_".concat(used_if)) %><br><% end %><% if has_variable?("ec2_public_ipv4") or has_variable?("ec2_public_ipv6") %><br>N/A<% end %></td>
       <td align="center"><%= processorcount %></td>
     </tr>
     <tr>
