@@ -148,11 +148,10 @@ define kbp_glassfish_new::domain($portbase,
       webport    => $web_port;
     }
 
-    kbp_apache_new::site { $web_servername:
-      glassfish_domain         => $name,
-      glassfish_connector_port => $jkport,
-      create_documentroot      => false,
-      require                  => Augeas["JK listener for ${name}"];
+    kbp_glassfish_new::domain::site { $web_servername:
+      glassfish_domain => $name,
+      jkport           => $jkport,
+      require          => Augeas["JK listener for ${name}"];
     }
   } else {
     kbp_monitoring::mbean_value { "${name}":
@@ -199,4 +198,12 @@ define kbp_glassfish_new::monitoring::icinga::site () {
     service_description => "Glassfish domain ${name}",
     host_name           => $name;
   }
+}
+
+define glassfish_new::domain::site ($glassfish_domain, $jkport) {
+    kbp_apache_new::site { $name:
+      glassfish_domain         => $glassfish_domain,
+      glassfish_connector_port => $jkport,
+      create_documentroot      => false;
+    }
 }
