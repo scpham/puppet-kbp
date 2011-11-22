@@ -21,7 +21,7 @@ class kbp_openssl::common {
   else {
     gen_apt::preference {
       ["libssl0.9.8","openssl"]:
-        version => "0.9.8o-4squeeze3";
+        version => "0.9.8o-4squeeze4";
     }
   }
 }
