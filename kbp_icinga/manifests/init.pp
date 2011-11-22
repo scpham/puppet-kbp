@@ -217,7 +217,8 @@ class kbp_icinga::client {
   gen_icinga::servicedependency { "puppet_dependency_freshness_dontrun":
     dependent_service_description => "Puppet state freshness",
     host_name                     => $fqdn,
-    service_description           => "Puppet dontrun";
+    service_description           => "Puppet dontrun",
+    notification_failure_criteria => "c";
   }
 
   gen_sudo::rule { "Icinga can run all plugins as root":
