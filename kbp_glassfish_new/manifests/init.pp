@@ -43,6 +43,26 @@ class kbp_glassfish_new {
     }
 }
 
+class kbp_glassfish_new::cluster {
+  include kbp_glassfish_new
+
+  kfile {
+    "/srv/glassfish/nodes":
+      ensure  => directory,
+      owner   => 'glassfish',
+      group   => 'glassfish',
+      mode    => 775,
+      require => Package['glassfish'];
+    "/opt/glassfish/nodes":
+      ensure  => link,
+      target  => '/srv/glassfish/nodes',
+      owner   => 'glassfish',
+      group   => 'glassfish',
+      mode    => 775,
+      require => Package['glassfish'];
+  }
+}
+
 # Define: kbp_glassfish_new::domain
 #
 # Actions:
