@@ -32,7 +32,7 @@ class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $serveralias=false, $docu
 
   # Ensure that everyone in the group tomcat6 can restart Tomcat
   kbp_sudo::rule { "Allow tomcat manipulation when in the tomcat6 group":
-    command           => "/etc/init.d/tomcat6",
+    command           => "/etc/init.d/tomcat6 [a-z]*",
     as_user           => "root",
     entity            => "@tomcat6",
     password_required => false,
