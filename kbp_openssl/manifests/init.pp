@@ -15,13 +15,13 @@ class kbp_openssl::common {
   if $lsbmajdistrelease < 6 {
     gen_apt::preference {
       ["libssl0.9.8","openssl"]:
-        version => "0.9.8g-15+lenny13";
+        version => "0.9.8g-15+lenny14";
     }
   }
   else {
     gen_apt::preference {
       ["libssl0.9.8","openssl"]:
-        version => "0.9.8o-4squeeze3";
+        version => "0.9.8o-4squeeze4";
     }
   }
 }
