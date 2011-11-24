@@ -59,39 +59,3 @@ class kbp_rabbitmq::client($rabbitmq_name=false) {
     };
   }
 }
-
-class kbp_rabbitmq::mcollective($pass_client=$pass_server, $pass_server=$pass_client, $rabbitmq_name=false) {
-  class { "kbp_rabbitmq":
-    rabbitmq_name => $rabbitmq_name,
-    port          => 6163,
-    stomp         => true;
-  }
-
-  $user_client = "mcollective_client"
-  $user_server = "mcollective_server"
-
-  gen_rabbitmq::add_user {
-    $user_client:
-      password => $pass_client;
-    $user_server:
-      password => $pass_server;
-  }
-
-  gen_rabbitmq::set_permissions {
-    "permissions for ${user_client}":
-      username => $user_client;
-#      conf     => "\"^amq-gen-.*\"";
-    "permissions for ${user_server}":
-      username => $user_server;
-#      conf     => "\"^amq-gen-.*\"";
-  }
-
-  @@concat::add_content {
-    "1 ${user_client} creds":
-      content => template("kbp_rabbitmq/mcollective_client.cfg_connections"),
-      target  => "/etc/mcollective/client.cfg";
-    "1 ${user_server} creds":
-      content => template("kbp_rabbitmq/mcollective_server.cfg_connections"),
-      target  => "/etc/mcollective/server.cfg";
-  }
-}
