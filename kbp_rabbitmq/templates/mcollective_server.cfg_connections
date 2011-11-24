@@ -1,0 +1,4 @@
+plugin.stomp.user = <%= user_server %>
+plugin.stomp.password = <%= pass_server %>
+plugin.stomp.host = <%= fqdn %>
+plugin.stomp.port = 6163

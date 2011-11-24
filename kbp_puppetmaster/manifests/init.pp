@@ -36,12 +36,6 @@ class kbp_puppetmaster {
 
   gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
 
-  gen_apt::source { "rabbitmq":
-    uri          => "http://www.rabbitmq.com/debian",
-    distribution => "testing",
-    components   => ["main"];
-  }
-
   kpackage {
     "puppetmaster":
       ensure  => present,
