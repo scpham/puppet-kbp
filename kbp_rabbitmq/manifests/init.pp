@@ -19,7 +19,7 @@ class kbp_rabbitmq($rabbitmq_name=false, $port=5672, $ssl_cert=false, $ssl_key=f
   }
   $real_tag = $rabbitmq_name ? {
     false   => "rabbitmq_${environment}",
-    default => "rabbitmq_${environment}_${rabbitmq_name}",
+    default => "rabbitmq_${rabbitmq_name}",
   }
 
   class { $real_class:
@@ -55,7 +55,7 @@ class kbp_rabbitmq::client($rabbitmq_name=false) {
     saddr => $fqdn,
     tag   => $rabbitmq_name ? {
       false   => "rabbitmq_${environment}",
-      default => "rabbitmq_${environment}_${rabbitmq_name}",
+      default => "rabbitmq_${rabbitmq_name}",
     };
   }
 }
