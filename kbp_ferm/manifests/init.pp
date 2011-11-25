@@ -163,43 +163,47 @@ define kbp_ferm::forward($inc, $proto, $port, $dest, $dport) {
 
 define kbp_ferm::rule($prio=500, $interface=false, $outerface=false, $saddr=false, $daddr=false, $proto=false,
     $icmptype=false, $sport=false, $dport=false, $jump=false, $action=DROP, $table=filter,
-    $chain=INPUT, $ensure=present, $exported=false, $customtag=false) {
+    $chain=INPUT, $ensure=present, $exported=false, $customtag=false, $fqdn=$fqdn, $ipaddress6=$ipaddress6) {
   if ! $exported {
     gen_ferm::rule { $name:
-      prio      => $prio,
-      interface => $interface,
-      outerface => $outerface,
-      saddr     => $saddr,
-      daddr     => $daddr,
-      proto     => $proto,
-      icmptype  => $icmptype,
-      sport     => $sport,
-      dport     => $dport,
-      jump      => $jump,
-      action    => $action,
-      table     => $table,
-      chain     => $chain,
-      ensure    => $ensure,
-      customtag => $customtag;
+      prio       => $prio,
+      interface  => $interface,
+      outerface  => $outerface,
+      saddr      => $saddr,
+      daddr      => $daddr,
+      proto      => $proto,
+      icmptype   => $icmptype,
+      sport      => $sport,
+      dport      => $dport,
+      jump       => $jump,
+      action     => $action,
+      table      => $table,
+      chain      => $chain,
+      ensure     => $ensure,
+      customtag  => $customtag,
+      fqdn       => $fqdn,
+      ipaddress6 => $ipaddress6;
     }
   } else {
     @@kbp_ferm::rule { "${name} for ${fqdn}":
-      prio      => $prio,
-      interface => $interface,
-      outerface => $outerface,
-      saddr     => $saddr,
-      daddr     => $daddr,
-      proto     => $proto,
-      icmptype  => $icmptype,
-      sport     => $sport,
-      dport     => $dport,
-      jump      => $jump,
-      action    => $action,
-      table     => $table,
-      chain     => $chain,
-      ensure    => $ensure,
-      exported  => false,
-      customtag => $customtag;
+      prio       => $prio,
+      interface  => $interface,
+      outerface  => $outerface,
+      saddr      => $saddr,
+      daddr      => $daddr,
+      proto      => $proto,
+      icmptype   => $icmptype,
+      sport      => $sport,
+      dport      => $dport,
+      jump       => $jump,
+      action     => $action,
+      table      => $table,
+      chain      => $chain,
+      ensure     => $ensure,
+      exported   => false,
+      customtag  => $customtag,
+      fqdn       => $fqdn,
+      ipaddress6 => $ipaddress6;
     }
   }
 }
