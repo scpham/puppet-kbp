@@ -31,8 +31,8 @@ class kbp_rabbitmq($rabbitmq_name=false, $port=5672, $ssl_cert=false, $ssl_key=f
     namespace => $namespace;
   }
 
-  Gen_ferm::Rule <<| tag == $real_tag |>> {
-    dport => $ssl_cert ? {
+  Kbp_ferm::Rule <<| tag == $real_tag |>> {
+    dport  => $ssl_cert ? {
       false   => $port,
       default => "(${port} ${ssl_port})",
     },
@@ -51,11 +51,12 @@ class kbp_rabbitmq($rabbitmq_name=false, $port=5672, $ssl_cert=false, $ssl_key=f
 #  gen_puppet
 #
 class kbp_rabbitmq::client($rabbitmq_name=false) {
-  @@gen_ferm::rule { "Connections to RabbitMQ for ${fqdn}":
-    saddr => $fqdn,
-    tag   => $rabbitmq_name ? {
+  kbp_ferm::rule { "Connections to RabbitMQ":
+    saddr    => $fqdn,
+    tag      => $rabbitmq_name ? {
       false   => "rabbitmq_${environment}",
       default => "rabbitmq_${rabbitmq_name}",
-    };
+    },
+    exported => true;
   }
 }
