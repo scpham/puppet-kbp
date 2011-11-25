@@ -1,0 +1,40 @@
+{rabbitmq_federation,
+ [ {exchanges, [[{exchange,     "my-exchange"},
+                 {virtual_host, "/"},
+                 {type,         "topic"},
+                 {durable,      true},
+                 {auto_delete,  false},
+                 {internal,     false},
+                 {upstream_set, "my-upstreams"}]
+               ]},
+   {upstream_sets, [{"my-upstreams", [[{connection, "upstream-server"},
+                                       {exchange,   "my-upstream-x"},
+                                       {max_hops,   2}]
+                                     ]}
+                   ]},
+   {connections, [{"upstream-server", [{host,            "upstream-server"},
+                                       {protocol,        "amqps"},
+                                       {port,            5671},
+                                       {virtual_host,    "/"},
+                                       {username,        "myusername"},
+                                       {password,        "secret"},
+                                       {mechanism,       default},
+                                       {prefetch_count,  1000},
+                                       {reconnect_delay, 5},
+                                       {heartbeat,       1},
+                                       {queue_expires,   30000},
+                                       {message_ttl,     10000},
+                                       {ssl_options,
+                                        [{cacertfile, "/path/to/cacert.pem"},
+                                         {certfile,   "/path/to/cert.pem"},
+                                         {keyfile,    "/path/to/key.pem"},
+                                         {verify,     verify_peer},
+                                         {fail_if_no_peer_cert, true}
+                                        ]}
+                                      ]},
+                  {"another-server", [...elided...]}
+                 ]},
+   {local_username, "myusername"},
+   {local_nodename, "my-server"}
+ ]
+}
