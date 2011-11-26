@@ -1,2 +1,2 @@
-<% ignore=['uptime_seconds','--- !ruby/sym _timestamp','servername','memoryfreeinbytes','memoryfree','uptime_hours','serverip'] %>
-<%= scope.to_hash.reject { |k,v| !( k.is_a?(String) && v.is_a?(String) && ! ignore.include?(k) ) }.to_yaml %>
+<% ignore=['uptime_seconds','--- !ruby/sym _timestamp','servername','memoryfreeinbytes','memoryfree','uptime_hours','serverip','swapfree','swapfreeinbytes'] %>
+<%= scope.to_hash.reject { |k,v| !( k.is_a?(String) && v.is_a?(String) && ! ignore.include?(k) ) }.to_yaml.sort %>
