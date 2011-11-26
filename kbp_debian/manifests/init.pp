@@ -94,8 +94,6 @@ class kbp_debian::squeeze {
 #  gen_puppet
 #
 class kbp_debian inherits kbp_base {
-  $aptproxy = "http://apt-proxy.sys.kumina.nl:9999"
-
   include "kbp_debian::$lsbdistcodename"
   include rng-tools
 
