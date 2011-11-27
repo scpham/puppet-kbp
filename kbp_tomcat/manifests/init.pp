@@ -56,19 +56,150 @@ class kbp_tomcat::mysql {
 # Define: kbp_tomcat::webapp
 #
 # Actions:
-#  Undocumented
+#  Setup a Tomcat webapp.
+#
+# Parameters:
+#  war
+#    The warfile to use for this app.
+#  urlpath
+#    The path on which the app should be mounted in Tomcat
+#  context_xml_content
+#    DEPRECATED Extra XML stuff inside the <Context/>. Don't use.
+#  root_app
+#    Set to true if the ROOT app should point to this app.
+#  tomcat_tag
+#    The default tag to use.
+#  additional_context_settings
+#    Additional options to set inside the <Context/> tag. Like debug and stuff. Should be a hash like:
+#    { "debug" => { value => "5" }, "reloadable" => { value => true } }
+#  environment_settings
+#    Environment variables to set within this Tomcat Context. Should be a hash like:
+#    { "emailHost" => { value => "smtp", var_type => "java.lang.String" } }
+#  valve_settings
+#    Valves to open for specific IP addresses within this Tomcat Context.
+#  datasource_settings
+#    JNDI Datasources for this Tomcat Context. Should be a hash like:
+#    { "jdbc/WBISDataSource" => { username => "wbis", password => "verysecret", url => "jdbc:mysql://mysql-rw/wbis",
+#                                 max_active => "8", max_idle => "4", driver => "com.mysql.jdbc.Driver" } }
 #
 # Depends:
-#  Undocumented
+#  gen_tomcat
 #  gen_puppet
 #
-define kbp_tomcat::webapp($war="", $urlpath="/", $context_xml_content=false, $root_app=false, $tomcat_tag="tomcat_${environment}") {
+define kbp_tomcat::webapp($war="", $urlpath="/", $context_xml_content=false, $root_app=false, $tomcat_tag="tomcat_${environment}",
+                          $additional_context_settings = false, $environment_settings = false, $valve_settings = false,
+                          $datasource_settings = false) {
   gen_tomcat::context { $name:
     tomcat_tag          => $tomcat_tag,
     war                 => $war,
     urlpath             => $urlpath,
     context_xml_content => $context_xml_content,
     root_app            => $root_app;
+  }
+
+  if $additional_context_settings {
+    # This is a very elaborate workaround for not being able to add an option
+    # to create_resources. Solved when puppet bug #9768 is fixed.
+    # This would then be enough:
+    #  - create_resources("gen_tomcat::additional_context_setting",$additional_context_settings, {context => $name})
+    $contextkeys = hash_keys($additional_context_settings)
+    kbp_tomcat::additional_context_setting { $contextkeys:
+      context => $name,
+      hash    => $additional_context_settings,
+    }
+  }
+
+  if $environment_settings {
+    # This is a very elaborate workaround for not being able to add an option
+    # to create_resources. Solved when puppet bug #9768 is fixed.
+    # This would then be enough:
+    #  - create_resources("gen_tomcat::environment",$environment_settings, {context => $name})
+    $environmentkeys = hash_keys($environment_settings)
+    kbp_tomcat::environment_setting { $environmentkeys:
+      context => $name,
+      hash    => $environment_settings,
+    }
+  }
+
+  if $valve_settings {
+    # This is a very elaborate workaround for not being able to add an option
+    # to create_resources. Solved when puppet bug #9768 is fixed.
+    # This would then be enough:
+    #  - create_resources("gen_tomcat::valve",$valve_settings, {context => $name})
+    $valvekeys = hash_keys($valve_settings)
+    kbp_tomcat::valve_setting { $valvekeys:
+      context => $name,
+      hash    => $valve_settings,
+    }
+  }
+
+  if $datasource_settings {
+    # This is a very elaborate workaround for not being able to add an option
+    # to create_resources. Solved when puppet bug #9768 is fixed.
+    # This would then be enough:
+    #  - create_resources("gen_tomcat::datasource",$datasource_settings, {context => $name})
+    $datasourcekeys = hash_keys($datasource_settings)
+    kbp_tomcat::datasource_setting { $datasourcekeys:
+      context => $name,
+      hash    => $datasource_settings,
+    }
+  }
+}
+
+# Define: kbp_tomcat::additional_context_setting
+#
+# Actions:
+#  A dirty workaround for #9768 (puppet bug).
+#
+define kbp_tomcat::additional_context_setting ($context, $hash) {
+  gen_tomcat::additional_context_setting { "${name}":
+    context      => $context,
+    setting_name => $name,
+    value        => $hash[$name],
+  }
+}
+
+# Define: kbp_tomcat::environment_setting
+#
+# Actions:
+#  A dirty workaround for #9768 (puppet bug).
+#
+define kbp_tomcat::environment_setting ($context, $hash) {
+  gen_tomcat::environment { "${name}":
+    context  => $context,
+    var_name => $name,
+    value    => $hash[$name]["value"],
+    var_type => $hash[$name]["var_type"],
+  }
+}
+
+# Define: kbp_tomcat::valve_setting
+#
+# Actions:
+#  A dirty workaround for #9768 (puppet bug).
+#
+define kbp_tomcat::valve_setting ($context, $hash) {
+  gen_tomcat::valve { "${name}":
+    context   => $context,
+    classname => $name,
+    allow     => $hash[$name]["allow"],
+  }
+}
+
+# Define: kbp_tomcat::datasource_setting
+#
+# Actions:
+#  A dirty workaround for #9768 (puppet bug).
+#
+define kbp_tomcat::datasource_setting ($context, $hash) {
+  gen_tomcat::datasource { "${name}":
+    context    => $context,
+    resource   => $name,
+    username   => $hash[$name]["username"],
+    password   => $hash[$name]["password"],
+    url        => $hash[$name]["url"],
+    max_active => $hash[$name]["max_active"],
+    max_idle   => $hash[$name]["max_idle"],
   }
 }
 
