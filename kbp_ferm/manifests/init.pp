@@ -209,6 +209,4 @@ define kbp_ferm::rule($prio=500, $interface=false, $outerface=false, $saddr=fals
       };
     }
   }
-
-  notify { "IPADDRESS6: ${ipaddress6}":; }
 }
