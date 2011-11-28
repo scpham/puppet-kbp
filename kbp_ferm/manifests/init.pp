@@ -203,7 +203,12 @@ define kbp_ferm::rule($prio=500, $interface=false, $outerface=false, $saddr=fals
       exported   => false,
       customtag  => $customtag,
       fqdn       => $fqdn,
-      ipaddress6 => $ipaddress6;
+      ipaddress6 => $ipaddress6 ? {
+        undef   => false,
+        default => $ipaddress6,
+      };
     }
   }
+
+  notify { "IPADDRESS6: ${ipaddress6}":; }
 }
