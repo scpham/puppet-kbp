@@ -13,7 +13,7 @@ class kbp_icinga::client {
   include gen_icinga::client
   include gen_base::python-argparse
 
-  clientcommand {
+  kbp_icinga::clientcommand {
     "check_3ware":
       sudo      => true;
     "check_adaptec":
@@ -226,13 +226,6 @@ class kbp_icinga::client {
     as_user           => "root",
     password_required => false,
     command           => "/usr/lib/nagios/plugins/";
-  }
-
-  define clientcommand($sudo=false, $path=false, $command=false, $arguments=false) {
-    kfile { "/etc/nagios/nrpe.d/${name}.cfg":
-      content => template("kbp_icinga/clientcommand"),
-      require => Package["nagios-nrpe-server"];
-    }
   }
 }
 
@@ -832,6 +825,13 @@ class kbp_icinga::asterisk {
     service_description => "Asterisk status",
     check_command       => "check_asterisk",
     nrpe                => true;
+  }
+}
+
+define kbp_icinga::clientcommand($sudo=false, $path=false, $command=false, $arguments=false) {
+  kfile { "/etc/nagios/nrpe.d/${name}.cfg":
+    content => template("kbp_icinga/clientcommand"),
+    require => Package["nagios-nrpe-server"];
   }
 }
 
