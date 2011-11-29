@@ -37,14 +37,15 @@ define kbp_drbd($location, $fstype=false, $mastermaster=true, $time_out=false, $
     rate          => $rate;
   }
 
-  Gen_ferm::Rule <<| tag == "ferm_drbd_${environment}_${name}" |>>
+  Kbp_ferm::Rule <<| tag == "ferm_drbd_${environment}_${name}" |>>
 
-  @@gen_ferm::rule { "DRBD connections from ${fqdn} for ${name}":
-    saddr  => $fqdn,
-    proto  => "tcp",
-    dport  => 7789,
-    action => "ACCEPT",
-    tag    => "ferm_drbd_${environment}_${name}";
+  kbp_ferm::rule { "DRBD connections from ${fqdn} for ${name}":
+    saddr    => $fqdn,
+    proto    => "tcp",
+    dport    => 7789,
+    action   => "ACCEPT",
+    exported => true,
+    tag      => "ferm_drbd_${environment}_${name}";
   }
 
   mount { $location:
