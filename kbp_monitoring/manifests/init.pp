@@ -41,9 +41,14 @@ class kbp_monitoring::client::sslcert {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_monitoring::server($package="icinga") {
+class kbp_monitoring::server($package="icinga", $dbpassword=false, $dbhost=false) {
   case $package {
-    "icinga": { include kbp_icinga::server }
+    "icinga": {
+      class { "kbp_icinga::server":
+        dbpassword => $dbpassword,
+        dbhost     => $dbhost;
+      }
+    }
     "nagios": { include kbp_nagios::server }
   }
 
