@@ -226,6 +226,7 @@ define kbp_base::staff_user($ensure = "present", $fullname, $uid, $password_hash
         content => "$sshkeys",
         owner   => "$username",
         group   => "kumina",
+        notify  => Kaugeas["sshd_config PermitRootLogin"],
         require => File["/home/$username"],
       }
 
