@@ -27,13 +27,11 @@ class kbp_ocfs2($ocfs2_tag="") {
     target  => "/etc/ocfs2/cluster.conf";
   }
 
-  Concat::Add_content <<| tag == $real_tag |>>
-
-  @@concat::add_content { "Ocfs2 cluster config for ${fqdn}":
-    content => template("kbp_ocfs2/node"),
-    target  => "/etc/ocfs2/cluster.conf",
-    tag     => $real_tag;
+  kbp_ocfs2::cluster_config { "cluster_config":
+    real_tag => $real_tag;
   }
+
+  Concat::Add_content <<| tag == $real_tag |>>
 
   Gen_ferm::Rule <<| tag == $real_tag |>>
 
@@ -43,5 +41,13 @@ class kbp_ocfs2($ocfs2_tag="") {
     dport  => 7777,
     action => "ACCEPT",
     tag    => $real_tag;
+  }
+}
+
+define kbp_ocfs2::cluster_config($real_tag, $fqdn=$fqdn) {
+  @@concat::add_content { "Ocfs2 cluster config for ${fqdn}":
+    content => template("kbp_ocfs2/node"),
+    target  => "/etc/ocfs2/cluster.conf",
+    tag     => $real_tag;
   }
 }
