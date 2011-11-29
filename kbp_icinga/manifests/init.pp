@@ -13,7 +13,7 @@ class kbp_icinga::client {
   include gen_icinga::client
   include gen_base::python-argparse
 
-  clientcommand {
+  kbp_icinga::clientcommand {
     "check_3ware":
       sudo      => true;
     "check_adaptec":
@@ -227,16 +227,42 @@ class kbp_icinga::client {
     password_required => false,
     command           => "/usr/lib/nagios/plugins/";
   }
+}
 
-  define clientcommand($sudo=false, $path=false, $command=false, $arguments=false) {
-    kfile { "/etc/nagios/nrpe.d/${name}.cfg":
-      content => template("kbp_icinga/clientcommand"),
-      require => Package["nagios-nrpe-server"];
-    }
+class kbp_icinga::server($dbpassword, $dbhost="localhost") {
+  include kbp_icinga::server::base
+
+  kfile {
+    "/etc/icinga/ido2db.cfg":
+      content => template("kbp_icinga/ido2db.cfg"),
+      owner   => "nagios",
+      mode    => 600,
+      require => Package["icinga"],
+      notify  => Exec["reload-icinga"];
+    "/etc/icinga/modules/idoutils.cfg":
+      content => template("kbp_icinga/idoutils.cfg"),
+      require => Package["icinga"],
+      notify  => Exec["reload-icinga"];
+  }
+
+  @@mysql::server::db { "icinga":
+    tag => "mysql_kumina";
+  }
+
+  @@mysql::server::grant { "icinga":
+    user     => "icinga",
+    password => $dbpassword,
+    db       => "icinga",
+    hostname => "%",
+    tag      => "mysql_kumina";
+  }
+
+  kbp_mysql::client { "icinga":
+    mysql_name => "mysql_kumina";
   }
 }
 
-# Class: kbp_icinga::server
+# Class: kbp_icinga::server::base
 #
 # Actions:
 #  Undocumented
@@ -834,6 +860,14 @@ class kbp_icinga::asterisk {
     service_description => "Asterisk status",
     check_command       => "check_asterisk",
     nrpe                => true;
+  }
+}
+
+
+define kbp_icinga::clientcommand($sudo=false, $path=false, $command=false, $arguments=false) {
+  kfile { "/etc/nagios/nrpe.d/${name}.cfg":
+    content => template("kbp_icinga/clientcommand"),
+    require => Package["nagios-nrpe-server"];
   }
 }
 
