@@ -227,6 +227,11 @@ class kbp_icinga::client {
     password_required => false,
     command           => "/usr/lib/nagios/plugins/";
   }
+
+  kfile { "/usr/lib/nagios/plugins/check_memory":
+    source => "kbp_icinga/check_memory",
+    mode   => 755;
+  }
 }
 
 class kbp_icinga::server($dbpassword, $dbhost="localhost") {
@@ -258,7 +263,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
   }
 
   kbp_mysql::client { "icinga":
-    mysql_name => "mysql_kumina";
+    mysql_name => "icinga";
   }
 }
 
