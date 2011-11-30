@@ -271,7 +271,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_icinga::server {
+class kbp_icinga::server::base {
   include gen_icinga::server
   include kbp_nsca::server
 
