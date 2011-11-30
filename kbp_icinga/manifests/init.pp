@@ -1688,6 +1688,8 @@ define kbp_icinga::dnszone($master, $sms=true) {
     check_command       => "check_dnszone",
     arguments           => [$name,$master],
     nrpe                => true,
+    check_interval      => 60,
+    retry_interval      => 60,
     sms                 => $sms;
   }
 }
