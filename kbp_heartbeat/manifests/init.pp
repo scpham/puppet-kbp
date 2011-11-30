@@ -34,20 +34,16 @@
 class kbp_heartbeat($autojoin="none", $warntime=5, $deadtime=15, $initdead=60, $keepalive=2, $crm="respawn", $node_name=$hostname, $node_dev="eth0", $node_ip=$ipaddress_eth0, $customtag="heartbeat_${environment}") {
   include kbp_monitoring::heartbeat
   class { "gen_heartbeat":
-    customtag => $customtag;
-  }
-
-  gen_heartbeat::ha_cf { "heartbeatconfig_${fqdn}":
-    autojoin  => $autojoin,
-    warntime  => $warntime,
-    deadtime  => $deadtime,
-    initdead  => $initdead,
-    keepalive => $keepalive,
-    crm       => $crm,
-    node_name => $node_name,
-    node_ip   => $node_ip,
-    node_dev  => $node_dev,
-    customtag => $customtag;
+    autojoin      => $autojoin,
+    warntime      => $warntime,
+    deadtime      => $deadtime,
+    initdead      => $initdead,
+    keepalive     => $keepalive,
+    crm           => $crm,
+    node_name     => $node_name,
+    node_ip       => $node_ip,
+    node_dev      => $node_dev,
+    heartbeat_tag => $customtag;
   }
 
   Gen_ferm::Rule <<| tag == $customtag |>>
