@@ -142,6 +142,13 @@ define kbp_glassfish_new::domain($portbase,
     require => Exec["Create glassfish domain ${name}"];
   }
 
+  kbp_glassfish_new::instance { $name:
+    portbase           => $portbase,
+    java_monitoring    => $java_monitoring,
+    sms                => $sms,
+    java_servicegroups => $java_servicegroups;
+  }
+
   if $web_servername { # We want an Apache in front of it.
     # Portbase +10 is unused.. let's use it as jk port.
     $jkport = $portbase + 10
@@ -160,21 +167,14 @@ define kbp_glassfish_new::domain($portbase,
      require => Exec["Create glassfish domain ${name}"];
     }
 
-    kbp_monitoring::glassfish { "${name}":
-      statuspath => $statuspath ? {
-        false   => undef,
-        default => $statuspath,
-      },
-      webport    => $web_port;
-    }
-
     kbp_glassfish_new::domain::site { $web_servername:
       glassfish_domain => $name,
       jkport           => $jkport,
+      webport          => $web_port,
       require          => Augeas["JK listener for ${name}"];
     }
   } else {
-    kbp_monitoring::mbean_value { "${name}":
+    kbp_monitoring::mbean_value { $name:
       jmxport       => $jmxport,
       objectname    => $mbean_objectname,
       attributename => $mbean_attributename,
@@ -187,19 +187,6 @@ define kbp_glassfish_new::domain($portbase,
     }
   }
 
-  if $java_monitoring {
-    kbp_monitoring::java { "${name}_${jmxport}":
-      servicegroups  => $java_servicegroups ? {
-        false   => undef,
-        default => $java_servicegroups,
-      },
-      sms            => $sms;
-    }
-  }
-
-  kbp_trending::glassfish { "${name}":
-      jmxport => $jmxport;
-  }
 }
 
 # Define: kbp_glassfish_new::monitoring::icinga::site
@@ -220,10 +207,70 @@ define kbp_glassfish_new::monitoring::icinga::site () {
   }
 }
 
-define glassfish_new::domain::site ($glassfish_domain, $jkport) {
-    kbp_apache_new::site { $name:
-      glassfish_domain         => $glassfish_domain,
-      glassfish_connector_port => $jkport,
-      create_documentroot      => false;
+# Define: kbp_glassfish_new::domain::site
+#
+# Actions:
+#  Setup an apache vhost for the glassfish_domain, use this in the customer-specific code when
+#  we _don't_ create the domain/instance, but the client wants monitoring+trending.
+#
+# Parameters:
+#  glassfish_domain:
+#   Name of the domain (to connect to)
+#  jkport:
+#   The port to connect to
+# webport:
+#  External port to listen on for HTTP traffic
+#  TODO ssl options
+# statuspath:
+#  a path to check om (e.g. /status.html)
+#
+define glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 80, $statuspath=false) {
+  kbp_apache_new::site { $name:
+    glassfish_domain         => $glassfish_domain,
+    glassfish_connector_port => $jkport,
+    create_documentroot      => false;
+  }
+
+  kbp_glassfish_new::monitoring::icinga::site { $name:; }
+
+  kbp_monitoring::glassfish { "${name}":
+    statuspath => $statuspath ? {
+      false   => undef,
+      default => $statuspath,
+    },
+    webport    => $webport;
+  }
+}
+
+# Define: kbp_glassfish_new::instance
+#
+# Actions:
+#  Setup monitoring and trending, use this in the customer-specific code when
+#  we _don't_ create the domain/instance, but the client wants monitoring+trending.
+#
+# Parameters:
+#  portbase:
+#   The portbase for this instance
+#  java_monitoring:
+#   Do we want to monitor?
+#  sms:
+#   Do we (kumina) want to receive SMSes?
+#  java_servicegroups:
+#   which Icinga servicegroup should receive notifications?
+#
+define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true, $java_servicegroups=false){
+  $jmxport = $portbase+86
+  if $java_monitoring {
+    kbp_monitoring::java { "${name}_${jmxport}":
+      servicegroups  => $java_servicegroups ? {
+        false   => undef,
+        default => $java_servicegroups,
+      },
+      sms            => $sms;
     }
+  }
+
+  kbp_trending::glassfish { "${name}":
+      jmxport => $jmxport;
+  }
 }
