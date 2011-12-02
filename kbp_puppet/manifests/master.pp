@@ -14,10 +14,6 @@ class kbp_puppet::master {
   include kbp_puppet::vim
   include kbp_rails::mysql
   include kbp_apache::passenger
-  class { "kbp_mysql::server":
-    mysql_name   => "puppetmaster",
-    bind_address => "127.0.0.1";
-  }
   include kbp_trending::puppetmaster
   # TODO once this uses the new apache modules this can be removed
   include kbp_monitoring::passenger::queue
