@@ -1,40 +1,30 @@
 # Author: Kumina bv <support@kumina.nl>
 
-class kbp_mysql::mastermaster($mysql_name, $setup_backup=true, $monitoring_ha_slaving=false) {
+class kbp_mysql::mastermaster($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false) {
   class { "kbp_mysql::master":
     mysql_name   => $mysql_name,
+    bind_address => $bind_address,
     setup_backup => $setup_backup;
   }
   class { "kbp_mysql::slave":
     mysql_name    => $mysql_name,
-    setup_backup  => $setup_backup,
+    mastermaster  => true,
     monitoring_ha => $monitoring_ha_slaving;
-  }
-
-  Kbp_mysql::Monitoring_dependency <<| tag == "mysql_${environment}_${mysql_name}" |>>
-
-  if ! defined(Kbp_mysql::Monitoring_dependency["mysql_${environment}_${mysql_name}_${fqdn}"]) {
-    @@kbp_mysql::monitoring_dependency { "mysql_${environment}_${mysql_name}_${fqdn}":; }
   }
 }
 
-class kbp_mysql::master($mysql_name, $setup_backup=true) {
-  include kbp_mysql::server
-
-  Gen_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
+class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true) {
+  class { "kbp_mysql::server":
+    mysql_name   => $mysql_name,
+    setup_backup => $setup_backup,
+    bind_address => $bind_address;
+  }
 
   Mysql::Server::Grant <<| tag == "mysql_${environment}_${mysql_name}" |>>
   Kbp_mysql::Monitoring_dependency <<| tag == "mysql_${environment}_${mysql_name}" |>>
 
   if ! defined(Kbp_mysql::Monitoring_dependency["mysql_${environment}_${mysql_name}_${fqdn}"]) {
     @@kbp_mysql::monitoring_dependency { "mysql_${environment}_${mysql_name}_${fqdn}":; }
-  }
-
-  Kfile <| title == "/etc/mysql/conf.d/expire_logs.cnf" |> {
-    ensure => $setup_backup ? {
-      true  => "present",
-      false => "absent",
-    },
   }
 }
 
@@ -53,10 +43,14 @@ class kbp_mysql::master($mysql_name, $setup_backup=true) {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::slave($mysql_name, $setup_backup=true, $monitoring_ha=false) {
-  include kbp_mysql::server
-
-  Gen_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
+class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false) {
+  if ! $mastermaster {
+    class { "kbp_mysql::server":
+      mysql_name   => $mysql_name,
+      setup_backup => $setup_backup,
+      bind_address => $bind_address;
+    }
+  }
 
   @@mysql::server::grant { "repl_${fqdn}":
     user        => "repl",
@@ -87,26 +81,6 @@ class kbp_mysql::slave($mysql_name, $setup_backup=true, $monitoring_ha=false) {
     nrpe                => true,
     ha                  => $monitoring_ha;
   }
-
-  Kfile <| title == "/etc/mysql/conf.d/expire_logs.cnf" |> {
-    ensure => $setup_backup ? {
-      true  => "present",
-      false => "absent",
-    },
-  }
-}
-
-class kbp_mysql::standalone($mysql_name, $setup_backup=false) {
-  include kbp_mysql::server
-
-  Gen_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
-
-  Kfile <| title == "/etc/mysql/conf.d/expire_logs.cnf" |> {
-    ensure => $setup_backup ? {
-      true  => "present",
-      false => "absent",
-    },
-  }
 }
 
 # Class: kbp_mysql::server
@@ -122,14 +96,21 @@ class kbp_mysql::standalone($mysql_name, $setup_backup=false) {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::server {
+class kbp_mysql::server($mysql_name, $bind_address, $setup_backup) {
   include mysql::server
   include kbp_trending::mysql
   include kbp_mysql::monitoring::icinga::server
 
-  kfile { "/etc/mysql/conf.d/expire_logs.cnf":
-    content => "[mysqld]\nexpire_logs_days = 7\n",
-    notify  => Exec["reload-mysql"];
+  if $setup_backup {
+    kfile { "/etc/mysql/conf.d/expire_logs.cnf":
+      content => "[mysqld]\nexpire_logs_days = 7\n",
+      notify  => Exec["reload-mysql"];
+    }
+  }
+
+  kfile { "/etc/mysql/conf.d/bind-address.cnf":
+    content => "[mysqld]\nbind-address = ${bind_address}\n",
+    notify  => Service["mysql"];
   }
 
   if defined(Package["offsite-backup"]) {
@@ -145,6 +126,8 @@ class kbp_mysql::server {
       require => Package["local-backup"];
     }
   }
+
+  Gen_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
 
   Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
 }
