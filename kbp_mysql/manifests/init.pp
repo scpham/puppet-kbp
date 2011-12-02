@@ -96,7 +96,7 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::server($mysql_name, $bind_address, $setup_backup) {
+class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=false) {
   include mysql::server
   include kbp_trending::mysql
   include kbp_mysql::monitoring::icinga::server
