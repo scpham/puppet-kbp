@@ -171,7 +171,7 @@ class kbp_mysql::client::java {
 #  kbp_mysql::server
 #
 class kbp_mysql::puppetmaster {
-  class { "kbp_mysql::standalone":
+  class { "kbp_mysql::server":
     mysql_name => "puppetmaster";
   }
 

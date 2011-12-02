@@ -14,7 +14,7 @@ class kbp_puppetmaster {
   include kbp_apache::passenger
   include kbp_vim::puppet
   include kbp_git
-  class { "kbp_mysql::standalone":
+  class { "kbp_mysql::server":
     mysql_name => "puppetmaster";
   }
   class { "kbp_trending::puppetmaster":
