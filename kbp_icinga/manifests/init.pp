@@ -218,6 +218,7 @@ class kbp_icinga::client {
     dependent_service_description => "Puppet state freshness",
     host_name                     => $fqdn,
     service_description           => "Puppet dontrun",
+    execution_failure_criteria    => "c",
     notification_failure_criteria => "c";
   }
 
@@ -250,16 +251,26 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
       notify  => Exec["reload-icinga"];
   }
 
-  @@mysql::server::db { "icinga":
-    tag => "mysql_kumina";
+  @@mysql::server::db {
+    "icinga":
+        tag => "mysql_kumina";
+    "icinga_web":
+        tag => "mysql_kumina";
   }
 
-  @@mysql::server::grant { "icinga":
-    user     => "icinga",
-    password => $dbpassword,
-    db       => "icinga",
-    hostname => "%",
-    tag      => "mysql_kumina";
+  @@mysql::server::grant {
+    "icinga":
+      user     => "icinga",
+      password => $dbpassword,
+      db       => "icinga",
+      hostname => "%",
+      tag      => "mysql_kumina";
+    "icinga-web":
+      user     => "icinga",
+      password => $dbpassword,
+      db       => "icinga_web",
+      hostname => "%",
+      tag      => "mysql_kumina";
   }
 
   kbp_mysql::client { "icinga":
