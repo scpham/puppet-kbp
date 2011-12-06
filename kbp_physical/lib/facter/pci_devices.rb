@@ -20,7 +20,7 @@ def add_fact(fact, code)
   Facter.add(fact) { setcode { code } }
 end
 
-case Facter.value(:operatingsystem)
+case Facter.value(:lsbdistid)
   when /Debian|Ubuntu/
     lspci = "/usr/bin/lspci"
   when /Redhat|CentOS|Fedora/
