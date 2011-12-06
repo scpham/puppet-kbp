@@ -15,6 +15,7 @@
 #
 class kbp_ocfs2($ocfs2_tag="") {
   include gen_ocfs2
+  include gen_base::libcups2
 
   $real_tag = "ferm_ocfs2_${environment}_${ocfs2_tag}"
 
