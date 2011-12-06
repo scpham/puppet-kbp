@@ -10,6 +10,7 @@
 #  gen_puppet
 #
 class kbp_samba::server inherits samba::server {
+  include gen_base::libcups2
   gen_ferm::rule { "Samba traffic (netbios-ns)":
     proto     => "udp",
     dport     => "137",
