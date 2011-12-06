@@ -21,7 +21,7 @@ def add_fact(fact, code)
 end
 
 case Facter.value(:lsbdistid)
-  when /Debian|Ubuntu/
+  when /Debian|Ubuntu|LinuxMint/
     lspci = "/usr/bin/lspci"
   when /Redhat|CentOS|Fedora/
     lspci = "/sbin/lspci"
