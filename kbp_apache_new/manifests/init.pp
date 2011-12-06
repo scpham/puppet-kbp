@@ -212,7 +212,13 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   }
 
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
-    kbp_monitoring::site { $name:
+    if $key or $cert or $intermediate or $wildcard or $ssl {
+      $monitor_name = "${name} SSL"
+    } else {
+      $monitor_name = $name
+    }
+
+    kbp_monitoring::site { $monitor_name:
       max_check_attempts => $max_check_attempts,
       auth               => $auth,
       path               => $monitor_path,
@@ -257,6 +263,11 @@ define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=
     forward      => $forward,
     ensure       => $ensure,
     serveralias  => $serveralias;
+  }
+
+  kbp_monitoring::site { $name:
+    expect_forward    => true,
+    response_contains => $forward;
   }
 }
 

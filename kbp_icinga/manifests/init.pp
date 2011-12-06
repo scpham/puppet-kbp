@@ -319,6 +319,11 @@ class kbp_icinga::server::base {
       conf_dir     => "generic",
       command_name => "check_ping",
       arguments    => ["-w 5000,100%","-c 5000,100%","-p 1"];
+    "check_forward":
+      conf_dir      => "generic",
+      command_name  => "check_http",
+      host_argument => '-I $HOSTADDRESS$',
+      arguments     => ['-H $ARG1$','-R $ARG2$','-e 301'];
     "check_http":
       conf_dir  => "generic",
       arguments => ['-I $HOSTADDRESS$','-t 20'];
@@ -1437,7 +1442,8 @@ define kbp_icinga::java($servicegroups=false, $sms=true) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::site($address=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false, $max_check_attempts=false, $port=false, $path=false, $response=false, $vhost=true) {
+define kbp_icinga::site($address=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false, $max_check_attempts=false,
+      $port=false, $path=false, $response=false, $vhost=true, $expect_forward=false, $response_contains=false) {
   if $address {
     if $conf_dir {
       $confdir = "${conf_dir}/${name}"
@@ -1449,14 +1455,17 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$::fqdn, $serv
       gen_icinga::configdir { $confdir:; }
     }
 
-    kbp_icinga::host { "${name}":
+    kbp_icinga::host { $name:
       conf_dir => $confdir,
       address  => $address,
       parents  => $parents;
     }
   }
 
-  if $vhost {
+  if $expect_forward {
+    $check_command = "check_http_forward"
+    $arguments     = [$name,$response_contains]
+  } elsif $vhost {
     if $auth {
       $check_command = "check_http_vhost_auth"
       $arguments     = $name
