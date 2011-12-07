@@ -274,3 +274,24 @@ define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true,
       jmxport => $jmxport;
   }
 }
+
+# Define: kbp_glassfish_new::patch
+#
+# Actions: Move a jar from /srv/glassfish/patches to $destdir
+#
+# Parameters
+#  ensure:
+#   Set to absent to remove the file (will not restore the original!)
+#  destdir:
+#   The directory the file should be placed in
+#
+define kbp_glassfish_new::patch ($ensure = present, $destdir="/opt/glassfish/modules"){
+  file { "${destdir}/${name}":
+    ensure  => $ensure,
+    source  => "/srv/glassfish/patches/${name}",
+    owner   => "root",
+    group   => "root",
+    mode    => 644,
+    require => Package["glassfish"];
+  }
+}
