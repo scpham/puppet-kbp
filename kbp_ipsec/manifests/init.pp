@@ -38,6 +38,10 @@ class kbp_ipsec ($listen=false, $ssl_path="/etc/ssl") {
 #    (List of) local networks (e.g. ["10.1.2.0/24","10.1.4.0/23"])
 #  remotenet
 #    (List of) remote networks
+#  authmethod
+#    Phase 1 authentication method. Can be "rsasig" (default) or "psk"/"pre_shared_key"
+#  psk
+#    In case of authmethod=psk: the pre-shared key to be used
 #  cert
 #    Path to certificate file (optional)
 #  key
@@ -61,13 +65,15 @@ class kbp_ipsec ($listen=false, $ssl_path="/etc/ssl") {
 #  gen_ipsec
 #  kbp_ferm
 #
-define kbp_ipsec::peer ($local_ip, $peer_ip, $peer_asn1dn, $localnet, $remotenet, $cert="certs/${fqdn}.pem", $key="private/${fqdn}.key", $cafile="cacert.pem", $phase1_enc="aes 256", $phase1_hash="sha1", $phase1_dh="5", $phase2_dh="5", $phase2_enc="aes 256", $phase2_auth="hmac_sha1") {
+define kbp_ipsec::peer ($local_ip, $peer_ip, $peer_asn1dn, $localnet, $remotenet, $authmethod="rsasig", $psk=false, $cert="certs/${fqdn}.pem", $key="private/${fqdn}.key", $cafile="cacert.pem", $phase1_enc="aes 256", $phase1_hash="sha1", $phase1_dh="5", $phase2_dh="5", $phase2_enc="aes 256", $phase2_auth="hmac_sha1") {
   gen_ipsec::peer { $name:
     local_ip    => $local_ip,
     peer_ip     => $peer_ip,
     peer_asn1dn => $peer_asn1dn,
     localnet    => $localnet,
     remotenet   => $remotenet,
+    authmethod  => $authmethod,
+    psk         => $psk,
     cert        => $cert,
     key         => $key,
     cafile      => $cafile,
