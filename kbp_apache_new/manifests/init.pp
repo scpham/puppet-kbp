@@ -213,15 +213,18 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
     if $key or $cert or $intermediate or $wildcard or $ssl {
       $monitor_name = "${name} SSL"
+      $real_ssl     = true
     } else {
       $monitor_name = $name
+      $real_ssl     = false
     }
 
     kbp_monitoring::site { $monitor_name:
       max_check_attempts => $max_check_attempts,
       auth               => $auth,
       path               => $monitor_path,
-      response           => $monitor_response;
+      response           => $monitor_response,
+      ssl                => $real_ssl;
     }
 
     if $smokeping {
