@@ -13,6 +13,7 @@ class kbp_base {
   include kbp_base::wanted_packages
   include gen_base::dnsutils
   include gen_base::wget
+  include gen_base::telnet_ssl
   include lvm
   include sysctl
   include kbp_acpi
