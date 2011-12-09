@@ -42,12 +42,26 @@ class kbp_ipsec ($listen=false, $ssl_path="/etc/ssl") {
 #    Path to certificate file (optional)
 #  key
 #    Path to private key file (optional)
+#  cafile
+#    Path to CA certificate (optional)
+#  phase1_enc
+#    Phase 1 encryption algorithm (optional)
+#  phase1_hash
+#    Phase 1 hash algorithm (optional)
+#  phase1_dh
+#    Phase 1 Diffie-Hellman group (optional)
+#  phase2_dh
+#    Phase 2 Diffie-Hellman group (optional)
+#  phase2_enc
+#    Phase 2 encryption algorithm (optional)
+#  phase2_auth
+#    Phase 2 authentication method (optional)
 #
 # Depends:
 #  gen_ipsec
 #  kbp_ferm
 #
-define kbp_ipsec::peer ($local_ip, $peer_ip, $peer_asn1dn, $localnet, $remotenet, $cert="certs/${fqdn}.pem", $key="private/${fqdn}.key") {
+define kbp_ipsec::peer ($local_ip, $peer_ip, $peer_asn1dn, $localnet, $remotenet, $cert="certs/${fqdn}.pem", $key="private/${fqdn}.key", $cafile="cacert.pem", $phase1_enc="aes 256", $phase1_hash="sha1", $phase1_dh="5", $phase2_dh="5", $phase2_enc="aes 256", $phase2_auth="hmac_sha1") {
   gen_ipsec::peer { $name:
     local_ip    => $local_ip,
     peer_ip     => $peer_ip,
@@ -55,7 +69,14 @@ define kbp_ipsec::peer ($local_ip, $peer_ip, $peer_asn1dn, $localnet, $remotenet
     localnet    => $localnet,
     remotenet   => $remotenet,
     cert        => $cert,
-    key         => $key;
+    key         => $key,
+    cafile      => $cafile,
+    phase1_enc  => $phase1_enc,
+    phase1_hash => $phase1_hash,
+    phase1_dh   => $phase1_dh,
+    phase2_dh   => $phase2_dh,
+    phase2_enc  => $phase2_enc,
+    phase2_auth => $phase2_auth;
   }
 
   kbp_ferm::rule {
