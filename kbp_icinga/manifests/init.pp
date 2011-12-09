@@ -1506,8 +1506,6 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     $arguments     = [$port,$path,$response,$real_statuscode]
   }
 
-  notify { "${name}: ${check_command}":; }
-
   kbp_icinga::service { "vhost_${name}":
     conf_dir            => $address ? {
       false   => undef,
