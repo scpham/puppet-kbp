@@ -309,11 +309,11 @@ define kbp_apache_new::glassfish_domain($site, $site_port, $connector_port) {
   }
 
   concat::add_content {
-    "1 worker domain":
+    "1 worker domain ${name}":
       content   => "${name},",
       linebreak => false,
       target    => "/etc/apache2/workers.properties";
-    "3 worker domain settings":
+    "3 worker domain ${name} settings":
       content => template("kbp_apache_new/glassfish/workers.properties_settings"),
       target  => "/etc/apache2/workers.properties";
   }
