@@ -1,5 +1,5 @@
-worker.<%= site %>.type=ajp13
-worker.<%= site %>.host=localhost
-worker.<%= site %>.port=<%= connector_port %>
-worker.<%= site %>.socket_keepalive=1
-worker.<%= site %>.socket_timeout=300
+worker.<%= name %>.type=ajp13
+worker.<%= name %>.host=localhost
+worker.<%= name %>.port=<%= connector_port %>
+worker.<%= name %>.socket_keepalive=1
+worker.<%= name %>.socket_timeout=300

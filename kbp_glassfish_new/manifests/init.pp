@@ -3,43 +3,43 @@
 class kbp_glassfish_new {
   include gen_glassfish
 
-  group { 'glassfish':
+  group { "glassfish":
     gid     => 2000,
-    require => Package['glassfish'];
+    require => Package["glassfish"];
   }
 
-  user { 'glassfish':
+  user { "glassfish":
     uid         => "2000",
     gid         => "glassfish",
     managehome  => false,
-    require     => [Package['glassfish'], Group['glassfish']]
+    require     => [Package["glassfish"], Group["glassfish"]]
   }
 
   setfacl {
     "Directory permissions on /srv/glassfish for user glassfish":
       dir     => "/srv/glassfish",
       acl     => "default:user:glassfish:rwx",
-      require => File['/srv/glassfish'];
+      require => File["/srv/glassfish"];
     "Directory permissions on /srv/glassfish for group glassfish":
       dir => "/srv/glassfish",
       acl => "default:group:glassfish:rwx",
-      require => File['/srv/glassfish'];
+      require => File["/srv/glassfish"];
   }
 
   kfile {
-    ['/srv/glassfish','/srv/glassfish/domains']:
+    ["/srv/glassfish","/srv/glassfish/domains"]:
       ensure  => directory,
-      owner   => 'glassfish',
-      group   => 'glassfish',
+      owner   => "glassfish",
+      group   => "glassfish",
       mode    => 775,
-      require => User['glassfish'];
-    '/opt/glassfish/domains':
+      require => User["glassfish"];
+    "/opt/glassfish/domains":
       ensure  => link,
-      target  => '/srv/glassfish/domains',
-      owner   => 'glassfish',
-      group   => 'glassfish',
+      target  => "/srv/glassfish/domains",
+      owner   => "glassfish",
+      group   => "glassfish",
       force   => true,
-      require => [File['/srv/glassfish/domains'],Package['glassfish']];
+      require => [File["/srv/glassfish/domains"],Package["glassfish"]];
     }
 }
 
@@ -49,17 +49,17 @@ class kbp_glassfish_new::cluster {
   kfile {
     "/srv/glassfish/nodes":
       ensure  => directory,
-      owner   => 'glassfish',
-      group   => 'glassfish',
+      owner   => "glassfish",
+      group   => "glassfish",
       mode    => 775,
-      require => Package['glassfish'];
+      require => User["glassfish"];
     "/opt/glassfish/nodes":
       ensure  => link,
-      target  => '/srv/glassfish/nodes',
-      owner   => 'glassfish',
-      group   => 'glassfish',
+      target  => "/srv/glassfish/nodes",
+      owner   => "glassfish",
+      group   => "glassfish",
       mode    => 775,
-      require => Package['glassfish'];
+      require => User["glassfish"];
   }
 }
 
@@ -107,37 +107,37 @@ class kbp_glassfish_new::cluster {
 #  gen_puppet
 #  gen_glassfish::domain
 #
-define kbp_glassfish_new::domain($portbase,
+define kbp_glassfish_new::domain($portbase, ensure="present",
     $web_servername=false, $web_serveralias = [], $web_port = "80", $web_sslport = false, $web_redundant=false,
     $java_monitoring=false, $java_servicegroups=false, $monitoring_sms=true, $monitoring_statuspath=false,
     $mbean_objectname=false, $mbean_attributename=false, $mbean_expectedvalue=false, $mbean_attributekey=false) {
 
   $jmxport   = $portbase + 86
 
+  # Whether the domain should be auto started (the customer can put an 'autostart' file in the root of the domain/<name> directory
   $autostart = $name in split($glassfish_autostart_domains, ',')
+
   gen_glassfish::domain { $name:
     portbase  => $portbase,
-    ensure    => $autostart? {
-      true    => 'running',
-      default => undef,
+    ensure    => $ensure ? {
+      "present" => $autostart ? {
+        true    => "running",
+        default => "",
+      },
+      default => $ensure,
     };
   }
 
   # Override this require, as we want domains to be in /srv/glassfish/domains
   Exec <| title == "Create glassfish domain ${name}" |> {
-    require => File['/srv/glassfish/domains'],
+    require => File["/srv/glassfish/domains"],
     creates => "/srv/glassfish/domains/${name}",
-  }
-
-  Kfile <| title == "Glassfish domain ${name} autostart" |> {
-    path    => "/opt/glassfish/domains/${name}/autostart",
-    require => File["/srv/glassfish/domains/${name}"],
   }
 
   kfile { "/srv/glassfish/domains/${name}":
     ensure  => directory,
-    owner   => 'glassfish',
-    group   => 'glassfish',
+    owner   => "glassfish",
+    group   => "glassfish",
     mode    => 755,
     require => Exec["Create glassfish domain ${name}"];
   }
@@ -189,24 +189,6 @@ define kbp_glassfish_new::domain($portbase,
 
 }
 
-# Define: kbp_glassfish_new::monitoring::icinga::site
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-define kbp_glassfish_new::monitoring::icinga::site () {
-  kbp_icinga::host { $name:; }
-
-  kbp_icinga::site { $name:
-    service_description => "Glassfish domain ${name}",
-    host_name           => $name;
-  }
-}
-
 # Define: kbp_glassfish_new::domain::site
 #
 # Actions:
@@ -224,21 +206,11 @@ define kbp_glassfish_new::monitoring::icinga::site () {
 # statuspath:
 #  a path to check om (e.g. /status.html)
 #
-define glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 80, $statuspath=false) {
+define kbp_glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 80, $statuspath=false) {
   kbp_apache_new::site { $name:
     glassfish_domain         => $glassfish_domain,
     glassfish_connector_port => $jkport,
     create_documentroot      => false;
-  }
-
-  kbp_glassfish_new::monitoring::icinga::site { $name:; }
-
-  kbp_monitoring::glassfish { "${name}":
-    statuspath => $statuspath ? {
-      false   => undef,
-      default => $statuspath,
-    },
-    webport    => $webport;
   }
 }
 
