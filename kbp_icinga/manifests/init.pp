@@ -319,58 +319,53 @@ class kbp_icinga::server::base {
       conf_dir     => "generic",
       command_name => "check_ping",
       arguments    => ["-w 5000,100%","-c 5000,100%","-p 1"];
-    "check_forward":
-      conf_dir      => "generic",
-      command_name  => "check_http",
-      host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-H $ARG1$','-R $ARG2$','-e 301'];
     "check_http":
       conf_dir  => "generic",
-      arguments => ['-I $HOSTADDRESS$','-t 20'];
+      arguments => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20'];
     "check_http_vhost":
       conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-H $ARG1$','-t 20'];
-    "check_http_auth":
-      conf_dir     => "generic",
-      command_name => "check_http",
-      host_argument => '-H $HOSTNAME$',
-      arguments    => ['-I $HOSTADDRESS$',"-e 401,403",'-t 20'];
-    "check_http_vhost_auth":
+      arguments     => ['-H $ARG1$','-e $ARG2$','-t 20'];
+    "check_http_vhost_response":
       conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-H $ARG1$',"-e 401,403",'-t 20'];
+      arguments     => ['-H $ARG1$','-r $ARG2$','-e $ARG3$','-t 20'];
+    "check_http_vhost_ssl":
+      conf_dir      => "generic",
+      command_name  => "check_http",
+      host_argument => '-I $ARG1$',
+      arguments     => ['-H $ARG2$','-e $ARG3$','-t 20'];
     "check_http_url":
       conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-H $HOSTNAME$',
-      arguments     => ['-u $ARG1$','-t 20'];
+      arguments     => ['-u $ARG1$','-e $ARG2$','-t 20'];
     "check_http_vhost_url":
       conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-H $ARG1$ -u $ARG2$','-t 20'];
+      arguments     => ['-H $ARG1$ -u $ARG2$','-e $ARG3$','-t 20'];
     "check_http_url_response":
       conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-H $HOSTNAME$',
-      arguments     => ['-u $ARG1$','-r $ARG2$','-t 20'];
+      arguments     => ['-u $ARG1$','-r $ARG2$','-e $ARG3$','-t 20'];
     "check_http_vhost_url_response":
       conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-H $ARG1$','-u $ARG2$','-r $ARG3$','-t 20'];
+      arguments     => ['-H $ARG1$','-u $ARG2$','-r $ARG3$','-e $ARG4$','-t 20'];
     "check_http_port_url_response":
       conf_dir      => "generic",
       command_name  => "check_http",
-      arguments     => ['-p $ARG1$','-u $ARG2$','-r $ARG3$','-t 20'];
+      arguments     => ['-p $ARG1$','-u $ARG2$','-r $ARG3$','-e $ARG4$','-t 20'];
     "check_http_vhost_port_url_response":
       conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-H $ARG1$','-p $ARG2$','-u $ARG3$','-r $ARG4$','-t 20'];
+      arguments     => ['-H $ARG1$','-p $ARG2$','-u $ARG3$','-r $ARG4$','-e $ARG5$','-t 20'];
     "check_mbean_value":
       conf_dir  => "generic",
       arguments => ['$ARG1$','$ARG2$','$ARG3$','$ARG4$'],
@@ -1338,7 +1333,7 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $response=false, $max_check_attempts=false) {
+define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $response=false, $statuscode="200", $max_check_attempts=false) {
   $confdir = "${::environment}/${name}"
 
   gen_icinga::configdir { $confdir:; }
@@ -1362,7 +1357,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $respon
       service_description => "Virtual host ${name}",
       host_name           => $name,
       check_command       => "check_http_vhost_port_url_response",
-      arguments           => [$name,$port,$url,$response],
+      arguments           => [$name,$port,$url,$response,$statuscode],
       max_check_attempts  => $max_check_attempts,
       ha                  => $ha;
     }
@@ -1372,7 +1367,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $respon
       service_description => "Virtual host ${name}",
       host_name           => $name,
       check_command       => "check_http_vhost_url_response",
-      arguments           => [$name,$url,$response],
+      arguments           => [$name,$url,$response,$statuscode],
       max_check_attempts  => $max_check_attempts,
       ha                  => $ha;
     }
@@ -1382,7 +1377,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $respon
       service_description => "Virtual host ${name}",
       host_name           => $name,
       check_command       => "check_http_vhost",
-      arguments           => $name,
+      arguments           => [$name,$statuscode],
       max_check_attempts  => $max_check_attempts,
       ha                  => $ha;
     }
@@ -1442,9 +1437,10 @@ define kbp_icinga::java($servicegroups=false, $sms=true) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::site($address=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false, $max_check_attempts=false,
-      $port=false, $path=false, $response=false, $vhost=true, $expect_forward=false, $response_contains=false) {
-  if $address {
+define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false,
+      $max_check_attempts=false, $port=false, $path=false, $response=false, $statuscode=false, $vhost=true,
+      $ssl=false) {
+  if ! $vhost {
     if $conf_dir {
       $confdir = "${conf_dir}/${name}"
 
@@ -1462,47 +1458,52 @@ define kbp_icinga::site($address=false, $conf_dir=false, $parents=$::fqdn, $serv
     }
   }
 
-  if $expect_forward {
-    $check_command = "check_http_forward"
-    $arguments     = [$name,$response_contains]
-  } elsif $vhost {
-    if $auth {
-      $check_command = "check_http_vhost_auth"
-      $arguments     = $name
-    } elsif $port and $port != 80 {
+  $real_statuscode = $statuscode ? {
+    false   => $auth ? {
+      true  => "401,403",
+      false => "200",
+    },
+    default => $statuscode,
+  }
+
+  if $vhost {
+    if $port and $port != 80 {
       if $path {
         if $response {
           $check_command = "check_http_vhost_port_url_response"
-          $arguments     = [$name,$port,$path,$response]
+          $arguments     = [$name,$port,$path,$response,$real_statuscode]
         } else {
           $check_command = "check_http_vhost_port_url"
-          $arguments     = [$name,$port,$path]
+          $arguments     = [$name,$port,$path,$real_statuscode]
         }
       } else {
         $check_command = "check_http_vhost_port"
-        $arguments     = [$name,$port]
+        $arguments     = [$name,$port,$real_statuscode]
       }
     } elsif $path {
       if $response {
         $check_command = "check_http_vhost_url_response"
-        $arguments     = [$name,$path,$response]
+        $arguments     = [$name,$path,$response,$real_statuscode]
       } else {
         $check_command = "check_http_vhost_url"
-        $arguments     = [$name,$path]
+        $arguments     = [$name,$path,$real_statuscode]
       }
+    } elsif $ssl {
+      $check_command = "check_http_vhost_ssl"
+      $arguments     = $address ? {
+        "*"     => ['$HOSTADDRESS$',$name,$real_statuscode],
+        default => [$address,$name,$real_statuscode],
+      }
+    } elsif $response {
+      $check_command = "check_http_vhost_response"
+      $arguments     = [$name,$response,$real_statuscode]
     } else {
       $check_command = "check_http_vhost"
-      $arguments     = $name
+      $arguments     = [$name,$real_statuscode]
     }
-  } else {
-    if $port {
-      if $path {
-        if $response {
-          $check_command = "check_http_port_url_response"
-          $arguments     = [$port,$path,$response]
-        }
-      }
-    }
+  } elsif $port and $path and $response {
+    $check_command = "check_http_port_url_response"
+    $arguments     = [$port,$path,$response,$real_statuscode]
   }
 
   kbp_icinga::service { "vhost_${name}":

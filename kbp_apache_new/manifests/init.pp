@@ -189,8 +189,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     key              => $key,
     cert             => $cert,
     intermediate     => $intermediate,
-    wildcard         => $wildcard,
-    redirect_non_ssl => $redirect_non_ssl;
+    wildcard         => $wildcard;
   }
 
   if $glassfish_domain {
@@ -243,6 +242,14 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     kbp_monitoring::sslcert { $real_name:
       path => "/etc/ssl/certs/${real_name}.pem";
     }
+
+    if $redirect_non_ssl {
+      kbp_apache_new::forward_vhost { $real_name:
+        ensure      => $ensure,
+        forward     => "https://${real_name}",
+        serveralias => $serveralias;
+      }
+    }
   }
 
   if ! defined(Gen_ferm::Rule["HTTP connections on ${real_port}"]) {
@@ -266,8 +273,8 @@ define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=
   }
 
   kbp_monitoring::site { $name:
-    expect_forward    => true,
-    response_contains => $forward;
+    statuscode => 301,
+    response   => $forward;
   }
 }
 
