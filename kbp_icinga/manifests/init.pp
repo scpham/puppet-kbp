@@ -336,7 +336,7 @@ class kbp_icinga::server::base {
       conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
-      arguments     => ['-H $ARG2$','-e $ARG3$','-t 20'];
+      arguments     => ['-S','-H $ARG2$','-e $ARG3$','-t 20'];
     "check_http_url":
       conf_dir      => "generic",
       command_name  => "check_http",
