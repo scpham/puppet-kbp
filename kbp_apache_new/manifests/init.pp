@@ -220,11 +220,13 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
 
     kbp_monitoring::site { $monitor_name:
-      max_check_attempts => $max_check_attempts,
-      auth               => $auth,
-      path               => $monitor_path,
-      response           => $monitor_response,
-      ssl                => $real_ssl;
+      service_description => "Vhost ${name} SSL",
+      host_name           => $name,
+      max_check_attempts  => $max_check_attempts,
+      auth                => $auth,
+      path                => $monitor_path,
+      response            => $monitor_response,
+      ssl                 => $real_ssl;
     }
 
     if $smokeping {
