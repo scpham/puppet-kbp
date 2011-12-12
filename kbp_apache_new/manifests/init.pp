@@ -275,9 +275,11 @@ define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=
     serveralias  => $serveralias;
   }
 
-  kbp_monitoring::site { $name:
-    statuscode => 301,
-    response   => $forward;
+  kbp_monitoring::site { "${name}_forward":
+    service_description => "Vhost ${name} forward",
+    host_name           => $name,
+    statuscode          => 301,
+    response            => $forward;
   }
 }
 
