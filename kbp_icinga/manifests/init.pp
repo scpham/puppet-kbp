@@ -1620,6 +1620,7 @@ define kbp_icinga::glassfish($webport, $statuspath=false) {
 
   kbp_icinga::site { $name:
     service_description => "Glassfish ${name} status",
+    host_name           => $fqdn,
     port                => $webport,
     path                => $realpath,
     response            => "RUNNING";
