@@ -1515,8 +1515,8 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       false   => "Vhost ${name}",
       default => $service_description,
     },
-    host_name           => $address ? {
-      false   => undef,
+    host_name           => $vhost ? {
+      true    => undef,
       default => $name,
     },
     check_command       => $check_command,
