@@ -65,7 +65,7 @@ class kbp_ipsec ($listen=false, $ssl_path="/etc/ssl") {
 #  gen_ipsec
 #  kbp_ferm
 #
-define kbp_ipsec::peer ($local_ip, $peer_ip, $peer_asn1dn, $localnet, $remotenet, $authmethod="rsasig", $psk=false, $cert="certs/${fqdn}.pem", $key="private/${fqdn}.key", $cafile="cacert.pem", $phase1_enc="aes 256", $phase1_hash="sha1", $phase1_dh="5", $phase2_dh="5", $phase2_enc="aes 256", $phase2_auth="hmac_sha1") {
+define kbp_ipsec::peer ($local_ip, $peer_ip, $peer_asn1dn=false, $localnet, $remotenet, $authmethod="rsasig", $psk=false, $cert="certs/${fqdn}.pem", $key="private/${fqdn}.key", $cafile="cacert.pem", $phase1_enc="aes 256", $phase1_hash="sha1", $phase1_dh="5", $phase2_dh="5", $phase2_enc="aes 256", $phase2_auth="hmac_sha1") {
   gen_ipsec::peer { $name:
     local_ip    => $local_ip,
     peer_ip     => $peer_ip,
