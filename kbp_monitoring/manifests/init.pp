@@ -465,7 +465,7 @@ define kbp_monitoring::java($package="icinga", $servicegroups=false, $sms=true) 
 #  gen_puppet
 #
 define kbp_monitoring::site($package="icinga", $address=false, $conf_dir=$false, $parents=$false, $auth=false, $max_check_attempts=false,
-    $path=false, $response=false, $vhost=true, $statuscode=false, $ssl=false) {
+    $path=false, $response=false, $vhost=true, $statuscode=false, $ssl=false, $host_name=false) {
   case $package {
     "icinga": {
       kbp_icinga::site { "${name}":
@@ -502,7 +502,8 @@ define kbp_monitoring::site($package="icinga", $address=false, $conf_dir=$false,
           default => false,
         },
         statuscode         => $statuscode,
-        ssl                => $ssl;
+        ssl                => $ssl,
+        host_name          => $host_name;
       }
     }
   }
