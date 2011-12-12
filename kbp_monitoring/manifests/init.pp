@@ -465,45 +465,46 @@ define kbp_monitoring::java($package="icinga", $servicegroups=false, $sms=true) 
 #  gen_puppet
 #
 define kbp_monitoring::site($package="icinga", $address=false, $conf_dir=$false, $parents=$false, $auth=false, $max_check_attempts=false,
-    $path=false, $response=false, $vhost=true, $statuscode=false, $ssl=false, $host_name=false) {
+    $path=false, $response=false, $vhost=true, $statuscode=false, $ssl=false, $host_name=false, $service_description) {
   case $package {
     "icinga": {
       kbp_icinga::site { "${name}":
-        address            => $address ? {
+        address             => $address ? {
           false   => undef,
           default => $address,
         },
-        conf_dir           => $conf_dir ? {
+        conf_dir            => $conf_dir ? {
           false   => undef,
           default => $conf_dir,
         },
-        parents            => $parents ? {
+        parents             => $parents ? {
           false   => undef,
           default => $parents,
         },
-        max_check_attempts => $max_check_attempts ? {
+        max_check_attempts  => $max_check_attempts ? {
           false   => undef,
           default => $max_check_attempts,
         },
-        auth               => $auth ? {
+        auth                => $auth ? {
           false   => undef,
           default => $auth,
         },
-        path               => $path ? {
+        path                => $path ? {
           false   => undef,
           default => $path,
         },
-        response           => $response ? {
+        response            => $response ? {
           false   => undef,
           default => $response,
         },
-        vhost              => $vhost ? {
+        vhost               => $vhost ? {
           true    => undef,
           default => false,
         },
-        statuscode         => $statuscode,
-        ssl                => $ssl,
-        host_name          => $host_name;
+        statuscode          => $statuscode,
+        ssl                 => $ssl,
+        host_name           => $host_name,
+        service_description => $service_description;
       }
     }
   }
