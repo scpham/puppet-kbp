@@ -337,30 +337,16 @@ class kbp_icinga::server::base {
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
       arguments     => ['-S','-H $ARG2$','-e $ARG3$','-t 20'];
-    "check_http_url":
-      conf_dir      => "generic",
-      command_name  => "check_http",
-      host_argument => '-H $HOSTNAME$',
-      arguments     => ['-u $ARG1$','-e $ARG2$','-t 20'];
     "check_http_vhost_url":
       conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ['-H $ARG1$ -u $ARG2$','-e $ARG3$','-t 20'];
-    "check_http_url_response":
-      conf_dir      => "generic",
-      command_name  => "check_http",
-      host_argument => '-H $HOSTNAME$',
-      arguments     => ['-u $ARG1$','-r $ARG2$','-e $ARG3$','-t 20'];
     "check_http_vhost_url_response":
       conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ['-H $ARG1$','-u $ARG2$','-r $ARG3$','-e $ARG4$','-t 20'];
-    "check_http_port_url_response":
-      conf_dir      => "generic",
-      command_name  => "check_http",
-      arguments     => ['-p $ARG1$','-u $ARG2$','-r $ARG3$','-e $ARG4$','-t 20'];
     "check_http_vhost_port_url_response":
       conf_dir      => "generic",
       command_name  => "check_http",
@@ -1444,25 +1430,6 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     false   => $name,
     default => $host_name,
   }
-
-  if ! $vhost {
-    if $conf_dir {
-      $confdir = "${conf_dir}/${real_name}"
-
-      gen_icinga::configdir { $confdir:; }
-    } else {
-      $confdir = "${::environment}/${real_name}"
-
-      gen_icinga::configdir { $confdir:; }
-    }
-
-    kbp_icinga::host { $real_name:
-      conf_dir => $confdir,
-      address  => $address,
-      parents  => $parents;
-    }
-  }
-
   $real_statuscode = $statuscode ? {
     false   => $auth ? {
       true  => "401,403",
@@ -1471,44 +1438,54 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     default => $statuscode,
   }
 
-  if $vhost {
-    if $port and $port != 80 {
-      if $path {
-        if $response {
-          $check_command = "check_http_vhost_port_url_response"
-          $arguments     = [$real_name,$port,$path,$response,$real_statuscode]
-        } else {
-          $check_command = "check_http_vhost_port_url"
-          $arguments     = [$real_name,$port,$path,$real_statuscode]
-        }
-      } else {
-        $check_command = "check_http_vhost_port"
-        $arguments     = [$real_name,$port,$real_statuscode]
-      }
-    } elsif $path {
-      if $response {
-        $check_command = "check_http_vhost_url_response"
-        $arguments     = [$real_name,$path,$response,$real_statuscode]
-      } else {
-        $check_command = "check_http_vhost_url"
-        $arguments     = [$real_name,$path,$real_statuscode]
-      }
-    } elsif $ssl {
-      $check_command = "check_http_vhost_ssl"
-      $arguments     = $address ? {
-        "*"     => ['$HOSTADDRESS$',$real_name,$real_statuscode],
-        default => [$address,$real_name,$real_statuscode],
-      }
-    } elsif $response {
-      $check_command = "check_http_vhost_response"
-      $arguments     = [$real_name,$response,$real_statuscode]
-    } else {
-      $check_command = "check_http_vhost"
-      $arguments     = [$real_name,$real_statuscode]
+  if ! $vhost {
+    $confdir = $conf_dir ? {
+      false   => "${::environment}/${real_name}",
+      default => "${conf_dir}/${real_name}",
     }
-  } elsif $port and $path and $response {
-    $check_command = "check_http_port_url_response"
-    $arguments     = [$port,$path,$response,$real_statuscode]
+
+    gen_icinga::configdir { $confdir:; }
+
+    kbp_icinga::host { $real_name:
+      conf_dir => $confdir,
+      address  => $address,
+      parents  => $parents;
+    }
+  }
+
+  if $port and $port != 80 {
+    if $path {
+      if $response {
+        $check_command = "check_http_vhost_port_url_response"
+        $arguments     = [$real_name,$port,$path,$response,$real_statuscode]
+      } else {
+        $check_command = "check_http_vhost_port_url"
+        $arguments     = [$real_name,$port,$path,$real_statuscode]
+      }
+    } else {
+      $check_command = "check_http_vhost_port"
+      $arguments     = [$real_name,$port,$real_statuscode]
+    }
+  } elsif $path {
+    if $response {
+      $check_command = "check_http_vhost_url_response"
+      $arguments     = [$real_name,$path,$response,$real_statuscode]
+    } else {
+      $check_command = "check_http_vhost_url"
+      $arguments     = [$real_name,$path,$real_statuscode]
+    }
+  } elsif $ssl {
+    $check_command = "check_http_vhost_ssl"
+    $arguments     = $address ? {
+      "*"     => ['$HOSTADDRESS$',$real_name,$real_statuscode],
+      default => [$address,$real_name,$real_statuscode],
+    }
+  } elsif $response {
+    $check_command = "check_http_vhost_response"
+    $arguments     = [$real_name,$response,$real_statuscode]
+  } else {
+    $check_command = "check_http_vhost"
+    $arguments     = [$real_name,$real_statuscode]
   }
 
   kbp_icinga::service { "vhost_${name}":
