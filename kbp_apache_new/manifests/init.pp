@@ -217,7 +217,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
     if $real_ssl {
       $monitor_name = "${name} SSL"
-      $real_service_description => "Vhost ${name} SSL",
+      $real_service_description => "Vhost ${name} SSL"
 
       kbp_monitoring::sslcert { $real_name:
         path => "/etc/ssl/certs/${real_name}.pem";
@@ -232,7 +232,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       }
     } else {
       $monitor_name = $name
-      $real_service_description => "Vhost ${name}",
+      $real_service_description => "Vhost ${name}"
     }
 
     kbp_monitoring::site { $monitor_name:
@@ -257,9 +257,6 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         path  => $monitor_path;
       }
     }
-  }
-
-  if $key or $cert or $intermediate or $wildcard or $ssl {
   }
 
   if ! defined(Gen_ferm::Rule["HTTP connections on ${real_port}"]) {
