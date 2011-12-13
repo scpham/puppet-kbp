@@ -1572,10 +1572,8 @@ define kbp_icinga::http($customfqdn=$::fqdn, $auth=false) {
     conf_dir            => "${::environment}/${customfqdn}",
     service_description => "HTTP",
     host_name           => $customfqdn,
-    check_command       => $auth ? {
-      false   => "check_http",
-      default => "check_http_auth",
-    };
+    check_command       => "check_http",
+    statuscode          => "200,301,302,401,403";
   }
 }
 
