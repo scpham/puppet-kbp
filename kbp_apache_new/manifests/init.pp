@@ -162,13 +162,17 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   include kbp_apache_new
   if $key or $cert or $intermediate or $wildcard or $ssl {
     include kbp_apache_new::ssl
+
+    $real_ssl = true
+  } else {
+    $real_ssl = false
   }
 
   $temp_name   = $port ? {
     false   => $name,
     default => "${name}_${port}",
   }
-  if $key or $cert or $intermediate or $wildcard or $ssl {
+  if $real_ssl {
     $full_name = regsubst($temp_name,'^([^_]*)$','\1_443')
   } else {
     $full_name = regsubst($temp_name,'^([^_]*)$','\1_80')
@@ -211,16 +215,28 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   }
 
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
-    if $key or $cert or $intermediate or $wildcard or $ssl {
+    if $real_ssl {
       $monitor_name = "${name} SSL"
-      $real_ssl     = true
+      $real_service_description => "Vhost ${name} SSL",
+
+      kbp_monitoring::sslcert { $real_name:
+        path => "/etc/ssl/certs/${real_name}.pem";
+      }
+
+      if $redirect_non_ssl {
+        kbp_apache_new::forward_vhost { $real_name:
+          ensure      => $ensure,
+          forward     => "https://${real_name}",
+          serveralias => $serveralias;
+        }
+      }
     } else {
       $monitor_name = $name
-      $real_ssl     = false
+      $real_service_description => "Vhost ${name}",
     }
 
     kbp_monitoring::site { $monitor_name:
-      service_description => "Vhost ${name} SSL",
+      service_description => $real_service_description,
       host_name           => $name,
       max_check_attempts  => $max_check_attempts,
       auth                => $auth,
@@ -244,17 +260,6 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   }
 
   if $key or $cert or $intermediate or $wildcard or $ssl {
-    kbp_monitoring::sslcert { $real_name:
-      path => "/etc/ssl/certs/${real_name}.pem";
-    }
-
-    if $redirect_non_ssl {
-      kbp_apache_new::forward_vhost { $real_name:
-        ensure      => $ensure,
-        forward     => "https://${real_name}",
-        serveralias => $serveralias;
-      }
-    }
   }
 
   if ! defined(Gen_ferm::Rule["HTTP connections on ${real_port}"]) {
