@@ -1573,7 +1573,7 @@ define kbp_icinga::http($customfqdn=$::fqdn, $auth=false) {
     service_description => "HTTP",
     host_name           => $customfqdn,
     check_command       => "check_http",
-    statuscode          => "200,301,302,401,403";
+    arguments           => "200,301,302,401,403";
   }
 }
 
