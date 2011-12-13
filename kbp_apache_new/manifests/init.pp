@@ -216,7 +216,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
     if $real_ssl {
-      $monitor_name             = "${name} SSL"
+      $monitor_name             = "${name}_SSL"
       $real_service_description = "Vhost ${name} SSL"
 
       kbp_monitoring::sslcert { $real_name:

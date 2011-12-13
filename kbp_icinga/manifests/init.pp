@@ -1477,6 +1477,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
   } elsif $ssl {
     $check_command = "check_http_vhost_ssl"
     $arguments     = $address ? {
+      false   => ['$HOSTADDRESS$',$real_name,$real_statuscode],
       "*"     => ['$HOSTADDRESS$',$real_name,$real_statuscode],
       default => [$address,$real_name,$real_statuscode],
     }
