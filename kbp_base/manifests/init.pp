@@ -14,6 +14,7 @@ class kbp_base {
   include gen_base::dnsutils
   include gen_base::wget
   include gen_base::telnet_ssl
+  include gen_cron
   include lvm
   include sysctl
   include kbp_acpi
