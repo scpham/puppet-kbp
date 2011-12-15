@@ -251,7 +251,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
       require => Package["icinga"],
       notify  => Exec["reload-icinga"];
     "/etc/icinga-web/databases.xml":
-      content => template("kbp_icinga/icinga-web/databases.xml");
+      content => template("kbp_icinga/icinga-web/databases.xml"),
 #      require => Package["icinga-web"],
       notify  => Exec["clearcache_icinga-web"];
     "/etc/default/icinga":
