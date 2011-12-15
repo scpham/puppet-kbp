@@ -43,9 +43,11 @@ class kbp_cassandra::client($customtag="cassandra_${environment}") {
 #  gen_cassandra
 #  gen_puppet
 #
-class kbp_cassandra::server($customtag="cassandra_${environment}", $java_monitoring=false, $servicegroups=false, $sms=true) {
+class kbp_cassandra::server($branch="07x", $customtag="cassandra_${environment}", $java_monitoring=false, $servicegroups=false, $sms=true) {
   include kbp_monitoring::cassandra
-  include gen_cassandra
+  class { "gen_cassandra":
+    branch => $branch;
+  }
 
   # Make sure we use the Sun Java package
   Kpackage <| title == "cassandra" |> {
