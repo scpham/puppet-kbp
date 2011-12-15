@@ -32,6 +32,8 @@ class kbp_ipsec ($listen=false, $ssl_path="/etc/ssl") {
 #    Local endpoint of the ipsec tunnel
 #  peer_ip
 #    Remote endpoint of the ipsec tunnel
+#  exchange_mode
+#    Phase 1 exchange mode (optional, default "main")
 #  peer_asn1dn
 #    Peer's ASN.1 DN (Everything after "Subject: " in output of openssl x509 -text)
 #  localnet
@@ -65,24 +67,25 @@ class kbp_ipsec ($listen=false, $ssl_path="/etc/ssl") {
 #  gen_ipsec
 #  kbp_ferm
 #
-define kbp_ipsec::peer ($local_ip, $peer_ip, $peer_asn1dn=false, $localnet, $remotenet, $authmethod="rsasig", $psk=false, $cert="certs/${fqdn}.pem", $key="private/${fqdn}.key", $cafile="cacert.pem", $phase1_enc="aes 256", $phase1_hash="sha1", $phase1_dh="5", $phase2_dh="5", $phase2_enc="aes 256", $phase2_auth="hmac_sha1") {
+define kbp_ipsec::peer ($local_ip, $peer_ip, $exchange_mode="main", $peer_asn1dn=false, $localnet, $remotenet, $authmethod="rsasig", $psk=false, $cert="certs/${fqdn}.pem", $key="private/${fqdn}.key", $cafile="cacert.pem", $phase1_enc="aes 256", $phase1_hash="sha1", $phase1_dh="5", $phase2_dh="5", $phase2_enc="aes 256", $phase2_auth="hmac_sha1") {
   gen_ipsec::peer { $name:
-    local_ip    => $local_ip,
-    peer_ip     => $peer_ip,
-    peer_asn1dn => $peer_asn1dn,
-    localnet    => $localnet,
-    remotenet   => $remotenet,
-    authmethod  => $authmethod,
-    psk         => $psk,
-    cert        => $cert,
-    key         => $key,
-    cafile      => $cafile,
-    phase1_enc  => $phase1_enc,
-    phase1_hash => $phase1_hash,
-    phase1_dh   => $phase1_dh,
-    phase2_dh   => $phase2_dh,
-    phase2_enc  => $phase2_enc,
-    phase2_auth => $phase2_auth;
+    local_ip      => $local_ip,
+    peer_ip       => $peer_ip,
+    exchange_mode => $exchange_mode,
+    peer_asn1dn   => $peer_asn1dn,
+    localnet      => $localnet,
+    remotenet     => $remotenet,
+    authmethod    => $authmethod,
+    psk           => $psk,
+    cert          => $cert,
+    key           => $key,
+    cafile        => $cafile,
+    phase1_enc    => $phase1_enc,
+    phase1_hash   => $phase1_hash,
+    phase1_dh     => $phase1_dh,
+    phase2_dh     => $phase2_dh,
+    phase2_enc    => $phase2_enc,
+    phase2_auth   => $phase2_auth;
   }
 
   kbp_ferm::rule {
