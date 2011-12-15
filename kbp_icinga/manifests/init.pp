@@ -253,9 +253,15 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
     "/etc/icinga-web/databases.xml":
       content => template("kbp_icinga/icinga-web/databases.xml");
 #      require => Package["icinga-web"],
+      notify  => Exec["clearcache_icinga-web"];
     "/etc/default/icinga":
       content => template("kbp_icinga/default_icinga"),
       notify  => Exec["reload-icinga"];
+  }
+
+  exec { "clearcache_icinga-web":
+    command     => "/usr/share/icinga-web/bin/clearcache.sh",
+    refreshonly => true;
   }
 
   @@mysql::server::db {
