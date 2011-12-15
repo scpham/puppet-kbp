@@ -236,7 +236,8 @@ class kbp_icinga::client {
 }
 
 class kbp_icinga::server($dbpassword, $dbhost="localhost") {
-  include kbp_icinga::server::base
+  include gen_icinga::server
+  include kbp_nsca::server
 
   kfile {
     "/etc/icinga/ido2db.cfg":
@@ -276,22 +277,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
   kbp_mysql::client { "icinga":
     mysql_name => "icinga";
   }
-}
 
-# Class: kbp_icinga::server::base
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_icinga::server::base {
-  include gen_icinga::server
-  include kbp_nsca::server
-
-  gen_apt::preference { ["icinga","icinga-core","icinga-cgi","icinga-common","icinga-doc"]:; }
+  gen_apt::preference { ["icinga","icinga-core","icinga-cgi","icinga-common","icinga-doc","icinga-idoutils"]:; }
 
   Gen_icinga::Servercommand <<| |>>
 
