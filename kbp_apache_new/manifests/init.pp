@@ -15,11 +15,11 @@ class kbp_apache_new {
 
   kfile {
     "/etc/apache2/mods-available/deflate.conf":
-      source  => "kbp_apache/mods-available/deflate.conf",
+      source  => "kbp_apache_new/mods-available/deflate.conf",
       require => Package["apache2"],
       notify  => Exec["reload-apache2"];
     "/etc/apache2/conf.d/security":
-      source  => "kbp_apache/conf.d/security",
+      source  => "kbp_apache_new/conf.d/security",
       require => Package["apache2"],
       notify  => Exec["reload-apache2"];
     "/srv/www":
