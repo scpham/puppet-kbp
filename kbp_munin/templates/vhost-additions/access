@@ -1,8 +1,8 @@
+<Location /<%= name %>>
+Order Allow,Deny
+Allow From All
 AuthName "Authorized Personnel ONLY"
 AuthType Basic
 AuthUserFile /srv/www/<%= fqdn %>/<%= name %>/.htpasswd
 require valid-user
-<Location /<%= name %>>
-Order Allow,Deny
-Allow From All
 </Location>
