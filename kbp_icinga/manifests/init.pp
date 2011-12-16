@@ -239,6 +239,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
   include gen_icinga::server
   include kbp_nsca::server
 
+  kpackage { "icinga-web":;}
+
   kfile {
     "/etc/icinga/ido2db.cfg":
       content => template("kbp_icinga/ido2db.cfg"),
