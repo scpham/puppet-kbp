@@ -2,17 +2,17 @@
 <ae:configurations xmlns:ae="http://agavi.org/agavi/config/global/envelope/1.0" xmlns="http://agavi.org/agavi/config/parts/translation/1.0">
 	<ae:configuration>
 		<!--
-		* Example to change locales
-		Stripping down available languages and set one as default
+			* Example to change locales
+			Stripping down available languages and set one as default
 		-->
-		 <available_locales default_locale="en" default_timezone="GMT+1">
+		<available_locales default_locale="en" default_timezone="Europe/Amsterdam">
 			<available_locale identifier="en">
-			  <ae:parameter name="description">English</ae:parameter>
+				<ae:parameter name="description">English</ae:parameter>
 			</available_locale>
-		 </available_locales>
+		</available_locales>
 		<!--
-		* Example changing date formats
-		Changing the tstamp format for icinga grids
+			* Example changing date formats
+			Changing the tstamp format for icinga grids
 		-->
 		<!--
 		<translators default_domain="icinga.default">
