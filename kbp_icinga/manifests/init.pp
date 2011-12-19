@@ -340,6 +340,11 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
     "check_http_vhost_ssl":
       conf_dir      => "generic",
       command_name  => "check_http",
+      host_argument => '-I $HOSTADDRESS$',
+      arguments     => ['-S','-H $ARG2$','-e $ARG3$','-t 20'];
+    "check_http_vhost_ssl_address":
+      conf_dir      => "generic",
+      command_name  => "check_http",
       host_argument => '-I $ARG1$',
       arguments     => ['-S','-H $ARG2$','-e $ARG3$','-t 20'];
     "check_http_vhost_url":
@@ -1480,11 +1485,12 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       $arguments     = [$real_name,$path,$real_statuscode]
     }
   } elsif $ssl {
-    $check_command = "check_http_vhost_ssl"
-    $arguments     = $address ? {
-      false   => ['$HOSTADDRESS$',$real_name,$real_statuscode],
-      "*"     => ['$HOSTADDRESS$',$real_name,$real_statuscode],
-      default => [$address,$real_name,$real_statuscode],
+    if $address == false or $address == "*" {
+      $check_command = "check_http_vhost_ssl"
+      $arguments     = [$real_name,$real_statuscode],
+    } else {
+      $check_command = "check_http_vhost_ssl_address"
+      $arguments     = [$address,$real_name,$real_statuscode],
     }
   } elsif $response {
     $check_command = "check_http_vhost_response"
