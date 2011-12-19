@@ -552,7 +552,7 @@ define kbp_monitoring::raidcontroller($package="icinga", $driver) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_monitoring::http($package="icinga", $customfqdn=false, $auth=false) {
+define kbp_monitoring::http($package="icinga", $customfqdn=false, $auth=false, $proxy=false) {
   case $package {
     "icinga": {
       kbp_icinga::http { "${name}":
@@ -560,7 +560,8 @@ define kbp_monitoring::http($package="icinga", $customfqdn=false, $auth=false) {
           false   => undef,
           default => $customfqdn,
         },
-        auth       => $auth;
+        auth       => $auth,
+        proxy      => $proxy;
       }
     }
   }

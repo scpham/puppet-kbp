@@ -36,7 +36,8 @@ class kbp_physical {
 
     if !$consoleipmi {
       kbp_monitoring::http { "http_${consolefqdn}":
-        customfqdn => $consolefqdn;
+        customfqdn => $consolefqdn,
+        proxy      => $consoleproxy;
       }
     }
   }
