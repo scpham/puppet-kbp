@@ -1487,10 +1487,10 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
   } elsif $ssl {
     if $address == false or $address == "*" {
       $check_command = "check_http_vhost_ssl"
-      $arguments     = [$real_name,$real_statuscode],
+      $arguments     = [$real_name,$real_statuscode]
     } else {
       $check_command = "check_http_vhost_ssl_address"
-      $arguments     = [$address,$real_name,$real_statuscode],
+      $arguments     = [$address,$real_name,$real_statuscode]
     }
   } elsif $response {
     $check_command = "check_http_vhost_response"
