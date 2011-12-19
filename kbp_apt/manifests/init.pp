@@ -66,7 +66,7 @@ class kbp_apt::kumina {
   }
 
   # This is the actual key, packaged.
-  kpackage { "kumina-archive-keyring":
+  kpackage { ["apt-transport-https","kumina-archive-keyring"]:
     ensure => latest,
   }
 
