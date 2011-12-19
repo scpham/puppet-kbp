@@ -113,17 +113,29 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=fals
     notify  => Service["mysql"];
   }
 
-  if defined(Package["offsite-backup"]) {
+  if defined(Kpackage["offsite-backup"]) {
     kfile { "/etc/backup/prepare.d/mysql":
       ensure  => link,
       target  => "/usr/share/backup-scripts/prepare/mysql",
-      require => Package["offsite-backup"];
+      require => Kpackage["offsite-backup"];
     }
-  } elsif defined(Package["local-backup"]) {
+
+    line { "/var/lib/mysql in backup excludes":
+      file    => "/etc/backup/excludes",
+      content => "/var/lib/mysql/*",
+      require => Kpackage["offsite-backup"],
+    }
+  } elsif defined(Kpackage["local-backup"]) {
     kfile { "/etc/backup/prepare.d/mysql":
-      ensure => link,
+      ensure  => link,
       target  => "/usr/share/backup-scripts/prepare/mysql",
-      require => Package["local-backup"];
+      require => Kpackage["local-backup"];
+    }
+
+    line { "/var/lib/mysql in backup excludes":
+      file    => "/etc/backup/excludes",
+      content => "/var/lib/mysql/*",
+      require => Kpackage["local-backup"],
     }
   }
 
