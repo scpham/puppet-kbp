@@ -119,24 +119,17 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=fals
       target  => "/usr/share/backup-scripts/prepare/mysql",
       require => Kpackage["offsite-backup"];
     }
-
-    line { "/var/lib/mysql in backup excludes":
-      file    => "/etc/backup/excludes",
-      content => "/var/lib/mysql/*",
-      require => Kpackage["offsite-backup"],
-    }
   } elsif defined(Kpackage["local-backup"]) {
     kfile { "/etc/backup/prepare.d/mysql":
       ensure  => link,
       target  => "/usr/share/backup-scripts/prepare/mysql",
       require => Kpackage["local-backup"];
     }
+  }
 
-    line { "/var/lib/mysql in backup excludes":
-      file    => "/etc/backup/excludes",
-      content => "/var/lib/mysql/*",
-      require => Kpackage["local-backup"],
-    }
+  content { "exclude_var_lib_mysql":
+    content => "/var/lib/mysql/*",
+    target  => "/etc/backup/excludes";
   }
 
   Gen_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
