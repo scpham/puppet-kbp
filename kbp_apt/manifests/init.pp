@@ -59,7 +59,7 @@ class kbp_apt::kumina {
     "kumina":
       comment      => "Kumina repository.",
       sourcetype   => "deb",
-      uri          => "https://debian.kumina.nl/debian",
+      uri          => "http://debian.kumina.nl/debian",
       distribution => "${lsbdistcodename}-kumina",
       components   => "main",
       key          => "498B91E6";
