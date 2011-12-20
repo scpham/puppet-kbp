@@ -29,6 +29,7 @@ class kbp_base {
   include kbp_dashboard::client
   include kbp_munin::client
   include kbp_mcollective::server
+  include kbp_ferm
   if $is_virtual == "false" {
     include kbp_physical
   }
