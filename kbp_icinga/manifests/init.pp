@@ -235,11 +235,20 @@ class kbp_icinga::client {
   }
 }
 
-class kbp_icinga::proxy {
+class kbp_icinga::proxy($proxytag="proxy_${environment}") {
   include gen_base::nagios-nrpe-plugin
 
   kfile { "/etc/nagios/nrpe.d/runcommand.cfg":
     content => 'command[runcommand]=$ARG1$';
+  }
+
+  kbp_ferm::rule { "NRPE monitoring from ${fqdn}":
+    saddr     => $fqdn,
+    proto     => "tcp",
+    dport     => 5666,
+    action    => "ACCEPT",
+    exported  => true,
+    customtag => $proxytag;
   }
 }
 
