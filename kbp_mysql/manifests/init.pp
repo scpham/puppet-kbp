@@ -127,7 +127,7 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=fals
     }
   }
 
-  content { "exclude_var_lib_mysql":
+  concat::add_content { "exclude_var_lib_mysql":
     content => "/var/lib/mysql/*",
     target  => "/etc/backup/excludes";
   }
