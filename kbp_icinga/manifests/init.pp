@@ -237,7 +237,7 @@ class kbp_icinga::client {
 
 class kbp_icinga::proxy {
   kbp_icinga::clientcommand { "runcommand":
-    check_command => '$ARG1$';
+    command => '$ARG1$';
   }
 }
 
