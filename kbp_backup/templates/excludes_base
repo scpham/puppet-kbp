@@ -12,7 +12,6 @@
 /sbin/*
 /selinux/*
 /srv/chroot/*/proc
-/srv/data
 /sys/*
 /tmp/*
 /usr/bin/*
