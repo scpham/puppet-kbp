@@ -57,6 +57,11 @@ define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024", $
     client   => $nfs_client,
     tag      => $nfs_tag;
   }
+
+  concat::add_content { "exclude_nfsmount_${name}":
+    content => $name,
+    target  => "/etc/backup/excludes";
+  }
 }
 
 define kbp_nfs::client::export_opts($location, $options, client) {
