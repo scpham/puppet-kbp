@@ -236,6 +236,8 @@ class kbp_icinga::client {
 }
 
 class kbp_icinga::proxy {
+  include gen_base::nagios-nrpe-plugin
+
   kfile { "/etc/nagios/nrpe.d/runcommand.cfg":
     content => 'command[runcommand]=$ARG1$';
   }
