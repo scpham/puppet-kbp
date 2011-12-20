@@ -1,4 +1,4 @@
-define kbp_backup::client($method="offsite", $backup_server="backup.kumina.nl", $backup_home="/backup/${environment}", $backup_user=$environment, $backup_remove_older_than="20B") {
+define kbp_backup::client($method="offsite", $backup_server="backup.kumina.nl", $backup_home="/backup/${environment}", $backup_user=$environment, $backup_remove_older_than="30B") {
   case $method {
     "offsite": {
       class { "offsitebackup::client":
