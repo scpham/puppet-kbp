@@ -1,14 +1,23 @@
-define kbp_backup::client($method="offsite") {
-  $package = $method ? {
-    "offsite" => "offsitebackup::client",
-    "local"   => "localbackup::client",
-    default   => fail("Invalid method (${method}) for kbp_backup::client"),
+define kbp_backup::client($method="offsite", $backup_server="backup.kumina.nl", $backup_home="/backup/${environment}", $backup_user=$environment, $backup_remove_older_than="20B") {
+  case $method {
+    "offsite": {
+      class { "offsitebackup::client":
+        backup_server            => $backup_server,
+        backup_home              => $backup_home,
+        backup_user              => $backup_user,
+        backup_remove_older_than => $backup_remove_older_than;
+      }
+    }
+    "local":   {
+      class { "localbackup::client":; }
+    }
+    default:   {
+      fail("Invalid method (${method}) for kbp_backup::client")
+    }
   }
 
-  include $package
-
   kfile { "/etc/backup/includes":
-    content => "/",
+    content => "/\n",
     require => Kpackage["offsite-backup"];
   }
 
