@@ -43,6 +43,9 @@ class kbp_base {
     include gen_base::libfreetype6
   }
 
+  # Use offsitebackup as default
+  kbp_backup::client { "backup":; }
+
   gen_sudo::rule {
     "User root has total control":
       entity            => "root",

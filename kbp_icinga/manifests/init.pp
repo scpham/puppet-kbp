@@ -235,6 +235,12 @@ class kbp_icinga::client {
   }
 }
 
+class kbp_icinga::proxy {
+  kbp_icinga::clientcommand { "runcommand":
+    check_command => '$ARG1$';
+  }
+}
+
 class kbp_icinga::server($dbpassword, $dbhost="localhost") {
   include gen_icinga::server
   include kbp_nsca::server
