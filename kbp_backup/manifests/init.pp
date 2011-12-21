@@ -31,7 +31,9 @@ define kbp_backup::client($method="offsite", $backup_server="backup.kumina.nl", 
 }
 
 define kbp_backup::exclude($content=false) {
-  concat::add_content { $name:
+  $sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
+
+  concat::add_content { $sanitized_name:
     content => $content,
     target  => "/etc/backup/excludes";
   }
