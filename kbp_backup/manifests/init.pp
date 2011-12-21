@@ -17,6 +17,8 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
   case $real_method {
     "absent": {}
     "offsite": {
+      $package = "offsite-backup"
+
       class { "offsitebackup::client":
         backup_server            => $backup_server,
         backup_home              => $backup_home,
@@ -25,6 +27,8 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
       }
     }
     "local":   {
+      $package = "local-backup"
+
       class { "localbackup::client":; }
     }
     default:   {
@@ -35,12 +39,18 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
   kfile { "/etc/backup/includes":
     ensure  => $ensure,
     content => "/\n",
-    require => Kpackage["offsite-backup"];
+    require => $ensure ? {
+      "absent" => undef,
+      default  => Kpackage[$package],
+    };
   }
 
   concat { "/etc/backup/excludes":
     ensure  => $ensure,
-    require => Kpackage["offsite-backup"];
+    require => $ensure ? {
+      "absent" => undef,
+      default  => Kpackage[$package],
+    };
   }
 
   kbp_backup::exclude { "excludes_base":
