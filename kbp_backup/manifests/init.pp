@@ -1,5 +1,21 @@
-define kbp_backup::client($method="offsite", $backup_server="backup.kumina.nl", $backup_home="/backup/${environment}", $backup_user=$environment, $backup_remove_older_than="30B") {
-  case $method {
+class kbp_backup::disable {
+  Kbp_backup::Client <| |> {
+    ensure => absent,
+  }
+
+  Kbp_backup::Exclude <| |> {
+    ensure => absent,
+  }
+}
+
+define kbp_backup::client($ensure="present", $method="offsite", $backup_server="backup.kumina.nl", $backup_home="/backup/${environment}", $backup_user=$environment, $backup_remove_older_than="30B") {
+  $real_method = $ensure ? {
+    "absent" => "absent",
+    default  => $method,
+  }
+
+  case $real_method {
+    "absent": {}
     "offsite": {
       class { "offsitebackup::client":
         backup_server            => $backup_server,
@@ -17,23 +33,27 @@ define kbp_backup::client($method="offsite", $backup_server="backup.kumina.nl", 
   }
 
   kfile { "/etc/backup/includes":
+    ensure  => $ensure,
     content => "/\n",
     require => Kpackage["offsite-backup"];
   }
 
   concat { "/etc/backup/excludes":
+    ensure  => $ensure,
     require => Kpackage["offsite-backup"];
   }
 
   kbp_backup::exclude { "excludes_base":
+    ensure  => $ensure,
     content => template("kbp_backup/excludes_base");
   }
 }
 
-define kbp_backup::exclude($content=false) {
+define kbp_backup::exclude($ensure="present", $content=false) {
   $sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
 
   concat::add_content { $sanitized_name:
+    ensure  => $ensure,
     content => $content,
     target  => "/etc/backup/excludes";
   }
