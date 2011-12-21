@@ -36,21 +36,25 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
     }
   }
 
-  kfile { "/etc/backup/includes":
-    ensure  => $ensure,
-    content => "/\n",
-    require => $ensure ? {
-      "absent" => undef,
-      default  => Kpackage[$package],
-    };
-  }
+  if $ensure == "absent" {
+    kfile { "/etc/backup/includes":
+      ensure  => $ensure;
+    }
 
-  concat { "/etc/backup/excludes":
-    ensure  => $ensure,
-    require => $ensure ? {
-      "absent" => undef,
-      default  => Kpackage[$package],
-    };
+    concat { "/etc/backup/excludes":
+      ensure  => $ensure;
+    }
+  } else {
+    kfile { "/etc/backup/includes":
+      ensure  => $ensure,
+      content => "/\n",
+      require => Kpackage[$package];
+    }
+
+    concat { "/etc/backup/excludes":
+      ensure  => $ensure,
+      require => Kpackage[$package];
+    }
   }
 
   kbp_backup::exclude { "excludes_base":
