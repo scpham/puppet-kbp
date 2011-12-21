@@ -30,6 +30,7 @@ class kbp_base {
   include kbp_munin::client
   include kbp_mcollective::server
   include kbp_ferm
+  include kbp_nagios::nrpe
   if $is_virtual == "false" {
     include kbp_physical
   }
