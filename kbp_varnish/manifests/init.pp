@@ -16,4 +16,8 @@ class kbp_varnish inherits varnish {
     script_path => "/usr/local/share/munin/plugins",
     script => "varnish_",
   }
+
+  kbp_backup::exclude { "varnish data":
+    content => "/var/lib/varnish/*";
+  }
 }
