@@ -13,4 +13,8 @@ class kbp_rails::mysql {
   class { "kbp_mysql::server":
     mysql_name => "rails";
   }
+
+  kbp_backup::exclude { "rails data":
+    content => "/srv/rails/*";
+  }
 }
