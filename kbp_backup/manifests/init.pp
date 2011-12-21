@@ -25,8 +25,14 @@ define kbp_backup::client($method="offsite", $backup_server="backup.kumina.nl", 
     require => Kpackage["offsite-backup"];
   }
 
-  concat::add_content { "excludes/base":
-    content => template("kbp_backup/excludes_base"),
+  kbp_backup::exclude { "excludes_base":
+    content => template("kbp_backup/excludes_base");
+  }
+}
+
+define kbp_backup::exclude($content=false) {
+  concat::add_content { $name:
+    content => $content,
     target  => "/etc/backup/excludes";
   }
 }

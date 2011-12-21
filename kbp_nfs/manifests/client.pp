@@ -37,17 +37,9 @@ define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024", $
     options => $mount_options;
   }
 
-  if defined(Package["offsite-backup"]) {
-    line { "Exclude NFS mount ${name} from backups.":
-      file    => "/etc/backup/excludes",
-      content => $name,
-      require => Package["offsite-backup"];
-    }
-  } elsif defined(Package["local-backup"]) {
-    line { "Exclude NFS mount ${name} from backups.":
-      file    => "/etc/backup/excludes",
-      content => $name,
-      require => Package["local-backup"];
+  if defined(Package["offsite-backup"] or defined(Package["local-backup"]) {
+    kbp_backup::exclude { "exclude_nfsmount_${name}":
+      content => $name;
     }
   }
 
@@ -56,11 +48,6 @@ define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024", $
     options  => $export_options,
     client   => $nfs_client,
     tag      => $nfs_tag;
-  }
-
-  concat::add_content { "exclude_nfsmount_${name}":
-    content => $name,
-    target  => "/etc/backup/excludes";
   }
 }
 

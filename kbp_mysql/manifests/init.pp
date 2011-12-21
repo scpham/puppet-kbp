@@ -127,9 +127,8 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=fals
     }
   }
 
-  concat::add_content { "exclude_var_lib_mysql":
-    content => "/var/lib/mysql/*",
-    target  => "/etc/backup/excludes";
+  kbp_backup::exclude { "exclude_var_lib_mysql":
+    content => "/var/lib/mysql/*";
   }
 
   Gen_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
