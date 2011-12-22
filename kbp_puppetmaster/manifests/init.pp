@@ -485,19 +485,23 @@ define kbp_puppetmaster::cleanconfig($configfile=false) {
     require => Kpackage["puppetstoredconfigcleanhenker"];
   }
 
-  # Also clean up old reports
-  tidy { "/var/lib/puppet/reports":
-    age     => "1d",
-    backup  => false,
-    recurse => true,
-    rmdirs  => true,
+  if ! defined(Tidy["/var/lib/puppet/reports"]) {
+    # Also clean up old reports
+    tidy { "/var/lib/puppet/reports":
+      age     => "1d",
+      backup  => false,
+      recurse => true,
+      rmdirs  => true,
+    }
   }
 
-  # And old backups from file resources
-  tidy { "/var/lib/puppet/clientbucket":
-    age     => "1w",
-    backup  => false,
-    recurse => true,
-    rmdirs  => true,
+  if ! defined(Tidy["/var/lib/puppet/clientbucket"]) {
+    # And old backups from file resources
+    tidy { "/var/lib/puppet/clientbucket":
+      age     => "1w",
+      backup  => false,
+      recurse => true,
+      rmdirs  => true,
+    }
   }
 }
