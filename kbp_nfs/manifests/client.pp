@@ -37,10 +37,8 @@ define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024", $
     options => $mount_options;
   }
 
-  if defined(Package["offsite-backup"]) or defined(Package["local-backup"]) {
-    kbp_backup::exclude { "exclude_nfsmount_${name}":
-      content => $name;
-    }
+  kbp_backup::exclude { "exclude_nfsmount_${name}":
+    content => $name;
   }
 
   @@kbp_nfs::client::export_opts { "${name} mount options for ${fqdn}":
