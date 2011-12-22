@@ -38,7 +38,7 @@ define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024", $
   }
 
   kbp_backup::exclude { "exclude_nfsmount_${name}":
-    content => $name;
+    content => "${name}/*";
   }
 
   @@kbp_nfs::client::export_opts { "${name} mount options for ${fqdn}":
