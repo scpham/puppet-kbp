@@ -18,6 +18,6 @@ class kbp_varnish inherits varnish {
   }
 
   kbp_backup::exclude { "varnish data":
-    content => "/var/lib/varnish/*";
+    content => "/var/lib/varnish/*\n/var/lib/varnish/*";
   }
 }
