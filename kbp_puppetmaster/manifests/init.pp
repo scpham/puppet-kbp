@@ -484,4 +484,11 @@ define kbp_puppetmaster::cleanconfig($configfile=false) {
     content => template("kbp_puppetmaster/puppetstoredconfigcleanhenker.cron"),
     require => Kpackage["puppetstoredconfigcleanhenker"];
   }
+
+  # Also clean up old reports
+  tidy { "/var/lib/puppet/reports":
+    age     => "1d",
+    recurse => true,
+    rmdirs  => true,
+  }
 }
