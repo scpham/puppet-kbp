@@ -1198,6 +1198,24 @@ define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=fals
   }
 }
 
+# Define: kbp_icinga::ipsec
+#
+# Actions:
+#  Monitor an ipsec tunnel with ping check via NRPE
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+define kbp_icinga::ipsec ($monitoring_remote_ip) {
+  kbp_icinga::service { "ipsec_peer_${name}":
+    service_description => "IPSEC peer ${name}",
+    check_command       => "check_ping_nrpe",
+    arguments           => [$monitoring_remote_ip],
+    nrpe                => true;
+  }
+}
+
 # Define: kbp_icinga::drbd
 #
 # Actions:
