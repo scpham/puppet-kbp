@@ -1,5 +1,15 @@
 # Author: Kumina bv <support@kumina.nl>
 
+define kbp_syslog($client=true, $environmentonly=true) {
+  if $client {
+    include kbp_syslog::client
+  } else {
+    class { "kbp_syslog::server":
+      environmentonly => $environmentonly;
+    }
+  }
+}
+
 # Class: kbp_syslog::server
 #
 # Parameters:
@@ -13,10 +23,10 @@
 #  Undocumented
 #  gen_puppet
 #
-class kbp_syslog::server($environmentonly=false) {
-  include "kbp_syslog::server::$lsbdistcodename"
+class kbp_syslog::server($environmentonly=true) {
+  include "kbp_syslog::server::${lsbdistcodename}"
 
-  if ($environmentonly) {
+  if $environmentonly {
     Gen_ferm::Rule <<| tag == "syslog_${environment}" |>>
   } else {
     Gen_ferm::Rule <<| tag == "syslog" |>>
@@ -32,46 +42,16 @@ class kbp_syslog::server($environmentonly=false) {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_syslog::client($environmentonly=false){
-  include "kbp_syslog::client::$lsbdistcodename"
+class kbp_syslog::client {
+  include "kbp_syslog::client::${lsbdistcodename}"
 
   @@gen_ferm::rule { "Syslog traffic from ${fqdn}":
     saddr  => $fqdn,
     proto  => "udp",
     dport  => 514,
     action => "ACCEPT",
-    tag    => $environmentonly ? {
-      false   => ["syslog","syslog_${environment}"],
-      default => "syslog_${environment}",
-    };
+    tag    => ["syslog","syslog_${environment}"];
   }
-}
-
-# Class: kbp_syslog::server::etch
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_syslog::server::etch inherits syslog-ng::server {
-  kfile { "/etc/logrotate.d/syslog-ng":
-    source => "kbp_syslog/server/logrotate.d/syslog-ng";
-  }
-}
-
-# Class: kbp_syslog::client::etch
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_syslog::client::etch inherits sysklogd::client {
 }
 
 # Class: kbp_syslog::server::lenny

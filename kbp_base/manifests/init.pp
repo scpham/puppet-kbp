@@ -44,6 +44,8 @@ class kbp_base {
     include gen_base::libfreetype6
   }
 
+  kbp_syslog { "syslog":; }
+
   kbp_backup::client { "backup":; }
 
   gen_sudo::rule {
