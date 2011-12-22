@@ -492,4 +492,12 @@ define kbp_puppetmaster::cleanconfig($configfile=false) {
     recurse => true,
     rmdirs  => true,
   }
+
+  # And old backups from file resources
+  tidy { "/var/lib/puppet/clientbucket":
+    age     => "1w",
+    backup  => false,
+    recurse => true,
+    rmdirs  => true,
+  }
 }
