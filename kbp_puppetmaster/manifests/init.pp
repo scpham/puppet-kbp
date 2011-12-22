@@ -488,6 +488,7 @@ define kbp_puppetmaster::cleanconfig($configfile=false) {
   # Also clean up old reports
   tidy { "/var/lib/puppet/reports":
     age     => "1d",
+    backup  => false,
     recurse => true,
     rmdirs  => true,
   }
