@@ -704,6 +704,29 @@ define kbp_monitoring::dnszone($master, $sms=true, $package="icinga") {
   }
 }
 
+# Define: kbp_monitoring::ipsec
+#
+# Parameters:
+#  name
+#    Undocumented
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+define kbp_monitoring::ipsec($package="icinga", $monitoring_remote_ip) {
+  case $package {
+    "icinga": {
+      kbp_icinga::ipsec{ $name:
+        monitoring_remote_ip => $monitoring_remote_ip;
+      }
+    }
+  }
+}
+
 # Define: kbp_monitoring::virtualhost
 #
 # Parameters:

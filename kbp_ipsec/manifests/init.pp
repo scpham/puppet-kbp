@@ -62,12 +62,14 @@ class kbp_ipsec ($listen=false, $ssl_path="/etc/ssl") {
 #    Phase 2 encryption algorithm (optional)
 #  phase2_auth
 #    Phase 2 authentication method (optional)
+#  monitoring_remote_ip
+#    Remote IP to be checked (ping) by monitoring
 #
 # Depends:
 #  gen_ipsec
 #  kbp_ferm
 #
-define kbp_ipsec::peer ($local_ip, $peer_ip, $encap="tunnel", $exchange_mode="main", $peer_asn1dn=false, $localnet=false, $remotenet=false, $authmethod="rsasig", $psk=false, $cert="certs/${fqdn}.pem", $key="private/${fqdn}.key", $cafile="cacert.pem", $phase1_enc="aes 256", $phase1_hash="sha1", $phase1_dh="5", $phase2_dh="5", $phase2_enc="aes 256", $phase2_auth="hmac_sha1") {
+define kbp_ipsec::peer ($local_ip, $peer_ip, $encap="tunnel", $exchange_mode="main", $peer_asn1dn=false, $localnet=false, $remotenet=false, $authmethod="rsasig", $psk=false, $cert="certs/${fqdn}.pem", $key="private/${fqdn}.key", $cafile="cacert.pem", $phase1_enc="aes 256", $phase1_hash="sha1", $phase1_dh="5", $phase2_dh="5", $phase2_enc="aes 256", $phase2_auth="hmac_sha1", $monitoring_remote_ip=false) {
   gen_ipsec::peer { $name:
     local_ip      => $local_ip,
     peer_ip       => $peer_ip,
@@ -99,5 +101,11 @@ define kbp_ipsec::peer ($local_ip, $peer_ip, $encap="tunnel", $exchange_mode="ma
       proto  => "udp",
       dport  => 500,
       action => "ACCEPT";
+  }
+
+  if $monitoring_remote_ip {
+    kbp_monitoring::ipsec { $name:
+      monitoring_remote_ip => $monitoring_remote_ip;
+    }
   }
 }
