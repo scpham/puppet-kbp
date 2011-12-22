@@ -18,7 +18,7 @@ shopt -s checkwinsize
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*)
-    PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}<%= "." << dcenv %>: ${PWD/$HOME/~}\007"'
+    PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}.<%= environment %>: ${PWD/$HOME/~}\007"'
     ;;
 *)
     ;;
@@ -55,7 +55,7 @@ fi
 
 #2 line prompt
 if [ "`which git`" != "" ]; then
-    PS1='\[\033[36m\]($?)\[\033[0m\] \[\033[32m\]\h<%= "." << dcenv %>: \w $(__git_ps1 "(%s)")\n\[\033[1;31m\]\u \[\033[1;34m\]\[\033[1;36m\]\[\033[0m\]\$ \[\033[0m\]'
+    PS1='\[\033[36m\]($?)\[\033[0m\] \[\033[32m\]\h.<%= environment %>: \w $(__git_ps1 "(%s)")\n\[\033[1;31m\]\u \[\033[1;34m\]\[\033[1;36m\]\[\033[0m\]\$ \[\033[0m\]'
 else
-    PS1='\[\033[36m\]($?)\[\033[0m\] \[\033[32m\]\h<%= "." << dcenv %>: \w\n\[\033[1;31m\]\u \[\033[1;34m\]\[\033[1;36m\]\[\033[0m\]\$ \[\033[0m\]'
+    PS1='\[\033[36m\]($?)\[\033[0m\] \[\033[32m\]\h.<%= environment %>: \w\n\[\033[1;31m\]\u \[\033[1;34m\]\[\033[1;36m\]\[\033[0m\]\$ \[\033[0m\]'
 fi
