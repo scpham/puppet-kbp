@@ -20,6 +20,16 @@ class kbp_ssh {
     tag    => "ferm";
   }
 
+  @@sshkey { $fqdn:
+    host_aliases => $ipaddress,
+    type         => ssh-rsa,
+    key          => $sshrsakey,
+    tag          => "sshkey_${environment}",
+    ensure       => present;
+  }
+
+  Sshkey <<| tag == "sshkey_${environment}" |>>
+
   # Disable password logins and root logins
   kaugeas {
     "sshd_config PermitRootLogin":
@@ -33,6 +43,9 @@ class kbp_ssh {
       changes => "set PasswordAuthentication no",
       notify  => Service["ssh"];
   }
+
+  # Fix permissions.
+  kfile { "/etc/ssh/ssh_known_hosts":; }
 }
 
 # Class: kbp_ssh::permit_root_logins_with_forced_commands
