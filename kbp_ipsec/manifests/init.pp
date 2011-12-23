@@ -119,7 +119,7 @@ define kbp_ipsec::peer ($local_ip, $peer_ip, $encap="tunnel", $exchange_mode="ma
 }
 
 define kbp_ipsec::monitoring ($peer) {
-  kbp_monitoring::ipsec { "${peer}_ping_${name}":
+  kbp_monitoring::ipsec { "${fqdn}_${peer}_${name}":
     monitoring_remote_ip => $name;
   }
 }
