@@ -32,8 +32,12 @@ class kbp_ipsec ($listen=false, $ssl_path="/etc/ssl") {
 #    Local endpoint of the ipsec tunnel
 #  peer_ip
 #    Remote endpoint of the ipsec tunnel
+#  encap
+#    Encapsulation mode. Must be "tunnel" (default) or "transport"
 #  exchange_mode
 #    Phase 1 exchange mode (optional, default "main")
+#  proposal_check
+#    racoon's proposal check (see racoon(8)) (optional, default "obey")
 #  peer_asn1dn
 #    Peer's ASN.1 DN (Everything after "Subject: " in output of openssl x509 -text)
 #  localnet
@@ -62,6 +66,8 @@ class kbp_ipsec ($listen=false, $ssl_path="/etc/ssl") {
 #    Phase 2 encryption algorithm (optional)
 #  phase2_auth
 #    Phase 2 authentication method (optional)
+#  policy_level
+#    Policy level (search for "level" in setkey(8)) (optional)
 #  monitoring_remote_ip
 #    Remote IP to be checked (ping) by monitoring
 #
@@ -69,12 +75,13 @@ class kbp_ipsec ($listen=false, $ssl_path="/etc/ssl") {
 #  gen_ipsec
 #  kbp_ferm
 #
-define kbp_ipsec::peer ($local_ip, $peer_ip, $encap="tunnel", $exchange_mode="main", $peer_asn1dn=false, $localnet=false, $remotenet=false, $authmethod="rsasig", $psk=false, $cert="certs/${fqdn}.pem", $key="private/${fqdn}.key", $cafile="cacert.pem", $phase1_enc="aes 256", $phase1_hash="sha1", $phase1_dh="5", $phase2_dh="5", $phase2_enc="aes 256", $phase2_auth="hmac_sha1", $monitoring_remote_ip=false) {
+define kbp_ipsec::peer ($local_ip, $peer_ip, $encap="tunnel", $exchange_mode="main", $proposal_check=false, $peer_asn1dn=false, $localnet=false, $remotenet=false, $authmethod="rsasig", $psk=false, $cert="certs/${fqdn}.pem", $key="private/${fqdn}.key", $cafile="cacert.pem", $phase1_enc="aes 256", $phase1_hash="sha1", $phase1_dh="5", $phase2_dh="5", $phase2_enc="aes 256", $phase2_auth="hmac_sha1", $policy_level="unique", $monitoring_remote_ip=false) {
   gen_ipsec::peer { $name:
     local_ip      => $local_ip,
     peer_ip       => $peer_ip,
     encap         => $encap,
     exchange_mode => $exchange_mode,
+    proposal_check => $proposal_check,
     peer_asn1dn   => $peer_asn1dn,
     localnet      => $localnet,
     remotenet     => $remotenet,
@@ -88,7 +95,8 @@ define kbp_ipsec::peer ($local_ip, $peer_ip, $encap="tunnel", $exchange_mode="ma
     phase1_dh     => $phase1_dh,
     phase2_dh     => $phase2_dh,
     phase2_enc    => $phase2_enc,
-    phase2_auth   => $phase2_auth;
+    phase2_auth   => $phase2_auth,
+    policy_level  => $policy_level;
   }
 
   kbp_ferm::rule {
