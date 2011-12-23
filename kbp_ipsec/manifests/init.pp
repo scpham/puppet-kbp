@@ -112,8 +112,14 @@ define kbp_ipsec::peer ($local_ip, $peer_ip, $encap="tunnel", $exchange_mode="ma
   }
 
   if $monitoring_remote_ip {
-    kbp_monitoring::ipsec { $name:
-      monitoring_remote_ip => $monitoring_remote_ip;
+    kbp_ipsec::monitoring { $monitoring_remote_ip:
+      peer => $name;
     }
+  }
+}
+
+define kbp_ipsec::monitoring ($peer) {
+  kbp_monitoring::ipsec { "${peer}_ping_${name}":
+    monitoring_remote_ip => $name;
   }
 }
