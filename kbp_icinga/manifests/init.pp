@@ -86,7 +86,7 @@ class kbp_icinga::client {
     "check_passenger_queue":
       sudo      => true;
     "check_ping":
-      arguments => '$ARG1$ $ARG2$ $ARG3$';
+      arguments => '-w $ARG1$ -c $ARG2$ -p $ARG3$ -H $ARG4$';
     "check_proc_status":
       sudo      => true,
       arguments => '$ARG1$';
@@ -342,11 +342,11 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
       nrpe         => true;
     "check_ping":
       conf_dir     => "generic",
-      arguments    => ["-w 5000,100%","-c 5000,100%","-p 1"];
+      arguments    => ['-w 5000,100%','-c 5000,100%','-p 1'];
     "check_ping_nrpe":
       conf_dir     => "generic",
       command_name => "check_ping",
-      arguments    => ["-w 5000,100%","-c 5000,100%","-p 1",'-H $ARG1$'],
+      arguments    => ['5000,100%','5000,100%','1','$ARG1$'],
       nrpe         => true;
     "check_http":
       conf_dir  => "generic",
