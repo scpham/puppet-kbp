@@ -67,12 +67,13 @@ define kbp_loadbalancer::site ($sslport=false, $listenaddress, $port=80, $monito
   }
 }
 
-class kbp_loadbalancer ($failover=false, $customtag=false) {
+class kbp_loadbalancer ($failover=false, $customtag=false, $forwardfor=false) {
   class { "kbp_haproxy":
     failover  => $failover,
     haproxy_tag => $customtag ? {
       false   => undef,
       default => $customtag,
-    };
+    },
+    forwardfor => $forwardfor;
   }
 }
