@@ -9,7 +9,7 @@
 #  Undocumented
 #  gen_puppet
 #
-define kbp_postfix($relayhost=false, $myhostname=$fqdn, $mynetworks="127.0.0.0/8 [::1]/128", $mydestination=false, $mode=false, $catch_all=false, $mailname=false, $active=false) {
+define kbp_postfix($relayhost=false, $myhostname=$fqdn, $mynetworks="127.0.0.0/8 [::1]/128", $mydestination=false, $mode=false, $catch_all=false, $mailname=false, $active=false, $incoming => false) {
   if $active {
   class { "postfix":
     relayhost     => $relayhost,
@@ -43,31 +43,12 @@ define kbp_postfix($relayhost=false, $myhostname=$fqdn, $mynetworks="127.0.0.0/8
     ensure => absent;
   }
 
-  if $secondary {
+  if $incoming or mode == "primary" or mode == "secondary" {
     gen_ferm::rule { "SMTP connections":
       proto  => "tcp",
-      dport  => 25,
+      dport  => "(25 465)",
       action => "ACCEPT";
     }
   }
-  }
-}
-
-# Class: kbp_postfix::primary
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_postfix::primary {
-  include kbp_postfix
-
-  gen_ferm::rule { "SMTP connections":
-    proto  => "tcp",
-    dport  => "(25 465)",
-    action => "ACCEPT";
   }
 }
