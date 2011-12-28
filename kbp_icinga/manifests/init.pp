@@ -453,6 +453,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
       require => Package["icinga"];
     "/etc/icinga/config":
       ensure  => directory,
+      purge   => true,
+      recurse => true,
+      force   => true,
       require => Package["icinga"];
     "/etc/icinga/config/generic":
       ensure  => directory;
