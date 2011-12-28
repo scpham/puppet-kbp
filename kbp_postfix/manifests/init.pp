@@ -9,42 +9,47 @@
 #  Undocumented
 #  gen_puppet
 #
-class kbp_postfix inherits postfix {
+define kbp_postfix($relayhost=false, $myhostname=$fqdn, $mynetworks="127.0.0.0/8 [::1]/128", $mydestination=false, $mode=false, $catch_all=false, $mailname=false, $active=false) {
+  if $active {
+  class { "postfix":
+    relayhost     => $relayhost,
+    myhostname    => $myhostname,
+    mynetworks    => $mynetworks,
+    mydestination => $mydestination,
+    mode          => $mode,
+    catch_all     => $catch_all,
+  }
   include munin::client
   include kbp_openssl::common
 
-  munin::client::plugin { ["postfix_mailqueue", "postfix_mailstats", "postfix_mailvolume"]:
-    ensure => present,
+  $real_mailname = $mailname ? {
+    false   => $fqdn,
+    default => $mailname,
   }
+
+  line { "root: reports+${environment}@kumina.nl":
+    file => "/etc/aliases";
+  }
+
+  kfile { "/etc/mailname":
+    content => "${real_mailname}\n",
+    notify  => Service["postfix"],
+    require => Package["postfix"];
+  }
+
+  munin::client::plugin { ["postfix_mailqueue", "postfix_mailstats", "postfix_mailvolume"]:; }
 
   munin::client::plugin { ["exim_mailstats"]:
-    ensure => absent,
+    ensure => absent;
   }
 
-  # The Postfix init script copies /etc/ssl/certs stuff on (re)start, so restart Postfix
-  # on changes!
-  Service["postfix"] {
-    require => File["/etc/ssl/certs"],
-    subscribe => File["/etc/ssl/certs"],
+  if $secondary {
+    gen_ferm::rule { "SMTP connections":
+      proto  => "tcp",
+      dport  => 25,
+      action => "ACCEPT";
+    }
   }
-}
-
-# Class: kbp_postfix::secondary
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_postfix::secondary {
-  include kbp_postfix
-
-  gen_ferm::rule { "SMTP connections":
-    proto  => "tcp",
-    dport  => 25,
-    action => "ACCEPT";
   }
 }
 

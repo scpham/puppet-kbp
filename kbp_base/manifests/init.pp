@@ -44,6 +44,8 @@ class kbp_base {
     include gen_base::libfreetype6
   }
 
+  kbp_postfix { "postfix":; }
+
   kbp_ksplice { "ksplice":; }
 
   kbp_syslog { "syslog":; }
@@ -204,115 +206,75 @@ class kbp_base::wanted_packages {
   include gen_base::realpath
 }
 
-define kbp_base::staff_user($ensure = "present", $fullname, $uid, $password_hash, $sshkeys = "", $shell = "bash") {
-    $username = $name
-    user { "$username":
-      comment   => $fullname,
-      ensure     => $ensure,
-      gid     => "kumina",
-      uid     => $uid,
-      groups     => ["adm", "staff", "root"],
-      membership   => minimum,
-      shell     => "/bin/$shell",
-      home     => "/home/$username",
-      require   => [File["/etc/skel/.bash_profile"], Package[$shell]],
-      password   => $password_hash,
+define kbp_base::staff_user($ensure="present", $fullname, $uid, $password_hash, $sshkeys="", $shell="bash") {
+    user { $name:
+      comment      => $fullname,
+      ensure       => $ensure,
+      gid          => "kumina",
+      uid          => $uid,
+      groups       => ["adm", "staff", "root"],
+      membership   => "minimum",
+      shell        => "/bin/${shell}",
+      home         => "/home/${name}",
+      password     => $password_hash,
+      require      => [File["/etc/skel/.bash_profile"], Package[$shell]];
     }
 
     if $ensure == "present" {
-      kfile { "/home/$username":
-        ensure => directory,
-        mode   => 750,
-        owner   => "$username",
-        group   => "kumina",
-        require => [User["$username"], Group["kumina"]],
+      kfile {
+        "/home/${name}":
+          ensure  => directory,
+          mode    => 750,
+          owner   => $name,
+          group   => "kumina",
+          require => [User[$name], Group["kumina"]];
+        "/home/${name}/.ssh":
+          ensure  => directory,
+          mode    => 700,
+          owner   => $name,
+          group   => "kumina";
+        "/home/${name}/.ssh/authorized_keys":
+          content => $sshkeys,
+          owner   => $name,
+          group   => "kumina",
+          notify  => Kaugeas["sshd_config PermitRootLogin"];
+        "/home/${name}/.${shell}rc":
+          content => template("kbp_base/home/${name}/.${shell}rc"),
+          owner   => $name,
+          group   => "kumina";
+        "/home/${name}/.bash_profile":
+          source  => "kbp_base/home/${name}/.bash_profile",
+          owner   => $name,
+          group   => "kumina";
+        "/home/${name}/.bash_aliases":
+          source  => "kbp_base/home/${name}/.bash_aliases",
+          owner   => $name,
+          group   => "kumina";
+        "/home/${name}/.tmp":
+          ensure  => directory,
+          owner   => $name,
+          group   => "kumina";
+        "/home/${name}/.gitconfig":
+          content => template("kbp_base/git/.gitconfig"),
+          group   => "kumina";
+        "/home/${name}/.reportbugrc":
+          content => "REPORTBUGEMAIL=${name}@kumina.nl\n",
+          group   => "kumina";
       }
 
-      kfile { "/home/$username/.ssh":
-        ensure   => directory,
-        mode   => 700,
-        owner   => "$username",
-        group   => "kumina",
-        require => File["/home/$username"],
+      line { "${name}: ${name}@kumina.nl":
+        file => "/etc/aliases";
       }
 
-      kfile { "/home/$username/.ssh/authorized_keys":
-        ensure   => present,
-        content => "$sshkeys",
-        owner   => "$username",
-        group   => "kumina",
-        notify  => Kaugeas["sshd_config PermitRootLogin"],
-        require => File["/home/$username"],
-      }
-
-      concat::add_content { "Add $username to Kumina SSH keyring":
+      concat::add_content { "Add ${name} to Kumina SSH keyring":
         target  => "/etc/ssh/kumina.keys",
-        content => "# $fullname <$username@kumina.nl>\n$sshkeys",
-      }
-
-      kfile { "/home/$username/.${shell}rc":
-        ensure   => present,
-        content => template("kbp_base/home/$username/.${shell}rc"),
-        owner   => "$username",
-        group   => "kumina",
-        require => File["/home/$username"],
-      }
-
-      kfile { "/home/$username/.bash_profile":
-        ensure   => present,
-        source   => "kbp_base/home/$username/.bash_profile",
-        owner   => "$username",
-        group   => "kumina",
-        require => File["/home/$username"],
-      }
-
-      kfile { "/home/$username/.bash_aliases":
-        ensure   => present,
-        source   => "kbp_base/home/$username/.bash_aliases",
-        owner   => "$username",
-        group   => "kumina",
-        require => File["/home/$username"],
-      }
-
-      kfile { "/home/$username/.darcs":
-        ensure => directory,
-        mode   => 755,
-        owner   => "$username",
-        group   => "kumina",
-        require => File["/home/$username"],
-      }
-
-      kfile { "/home/$username/.tmp":
-        ensure => directory,
-        mode   => 755,
-        owner   => "$username",
-        group   => "kumina",
-        require => File["/home/$username"],
-      }
-
-      kfile { "/home/$username/.darcs/author":
-        ensure => present,
-        content => "$fullname <$username@kumina.nl>\n",
-        group => "kumina",
-        require => File["/home/$username/.darcs"],
-      }
-
-      kfile { "/home/$username/.gitconfig":
-        ensure => present,
-        content => template("kbp_base/git/.gitconfig"),
-        group => "kumina";
-      }
-
-      kfile { "/home/$username/.reportbugrc":
-        ensure => present,
-        content => "REPORTBUGEMAIL=$username@kumina.nl\n",
-        group => "kumina";
+        content => "# ${fullname} <${name}@kumina.nl>\n${sshkeys}";
       }
     } else {
-      kfile { "/home/$username":
+      kfile { "/home/${name}":
         ensure  => absent,
         force   => true,
-        recurse => true,
+        recurse => true;
       }
     }
   }
