@@ -9,7 +9,7 @@
 #  Undocumented
 #  gen_puppet
 #
-define kbp_postfix($relayhost=false, $myhostname=$fqdn, $mynetworks="127.0.0.0/8 [::1]/128", $mydestination=false, $mode=false, $catch_all=false, $mailname=false, $active=false, $incoming => false) {
+define kbp_postfix($relayhost=false, $myhostname=$fqdn, $mynetworks="127.0.0.0/8 [::1]/128", $mydestination=false, $mode=false, $catch_all=false, $mailname=false, $active=false, $incoming=false) {
   if $active {
   class { "postfix":
     relayhost     => $relayhost,
