@@ -31,7 +31,7 @@
 #  Undocumented
 #  gen_puppet
 #
-define kbp_loadbalancer::site ($sslport=false, $listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $cookie=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=false, $make_lbconfig=true, $httpcheck_uri=false, $httpcheck_port=false, $servername=$::hostname, $serverip=$::ipaddress_eth0, $serverport=80, $balance="static-rr", $max_check_attempts=false, $lb_timeout_connect="15s", $lb_timeout_server_client="20s", $lb_timeout_http_request="10s", $lb_tcp_sslport=false, $customtag=false) {
+define kbp_loadbalancer::site ($sslport=false, $listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $cookie=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=false, $monitoring_hostname = false, $make_lbconfig=true, $httpcheck_uri=false, $httpcheck_port=false, $servername=$::hostname, $serverip=$::ipaddress_eth0, $serverport=80, $balance="static-rr", $max_check_attempts=false, $lb_timeout_connect="15s", $lb_timeout_server_client="20s", $lb_timeout_http_request="10s", $lb_tcp_sslport=false, $customtag=false) {
   kbp_haproxy::site { "${name}":
     listenaddress         => $listenaddress,
     port                  => $port,
@@ -42,6 +42,7 @@ define kbp_loadbalancer::site ($sslport=false, $listenaddress, $port=80, $monito
     monitoring_url        => $monitoring_url,
     monitoring_response   => $monitoring_response,
     monitoring_address    => $monitoring_address,
+    monitoring_hostname   => $monitoring_hostname,
     balance               => $balance,
     servername            => $servername,
     serverport            => $serverport,

@@ -1376,54 +1376,15 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $response=false, $statuscode="200", $max_check_attempts=false) {
-  $confdir = "${::environment}/${name}"
-
-  gen_icinga::configdir { $confdir:; }
-
-  kbp_icinga::host { "${name}":
-    conf_dir   => $confdir,
-    address    => $address,
-    parents    => $loadbalancer::otherhost ? {
-      undef   => $fqdn,
-      default => "${fqdn}, ${loadbalancer::otherhost}",
-    },
-    hostgroups => $ha ? {
-      false => undef,
-      true  => "ha_hosts",
-    };
-  }
-
-  if $url and $response and $port{
-    kbp_icinga::service { "virtual_host_${name}":
-      conf_dir            => $confdir,
-      service_description => "Virtual host ${name}",
-      host_name           => $name,
-      check_command       => "check_http_vhost_port_url_response",
-      arguments           => [$name,$port,$url,$response,$statuscode],
-      max_check_attempts  => $max_check_attempts,
-      ha                  => $ha;
-    }
-  } elsif $url and $response {
-    kbp_icinga::service { "virtual_host_${name}":
-      conf_dir            => $confdir,
-      service_description => "Virtual host ${name}",
-      host_name           => $name,
-      check_command       => "check_http_vhost_url_response",
-      arguments           => [$name,$url,$response,$statuscode],
-      max_check_attempts  => $max_check_attempts,
-      ha                  => $ha;
-    }
-  } else {
-    kbp_icinga::service { "virtual_host_${name}":
-      conf_dir            => $confdir,
-      service_description => "Virtual host ${name}",
-      host_name           => $name,
-      check_command       => "check_http_vhost",
-      arguments           => [$name,$statuscode],
-      max_check_attempts  => $max_check_attempts,
-      ha                  => $ha;
-    }
+define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_name=false, $response=false, $statuscode="200", $max_check_attempts=false) {
+  kbp_icinga::site { $name:
+    address            => $address,
+    port               => $port,
+    path               => $url,
+    max_check_attempts => $max_check_attempts,
+    statuscode         => $statuscode,
+    host_name          => $host_name,
+    vhost              => false;
   }
 }
 
