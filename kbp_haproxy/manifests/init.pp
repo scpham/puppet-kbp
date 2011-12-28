@@ -1,13 +1,14 @@
 # Author: Kumina bv <support@kumina.nl>
 
 
-class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $loglevel="warning") {
+class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $loglevel="warning", $forwardfor=false) {
   include kbp_trending::haproxy
 
   class { "gen_haproxy":
     failover  => $failover,
     loglevel  => $loglevel,
-    haproxy_tag => $haproxy_tag;
+    haproxy_tag => $haproxy_tag,
+    forwardfor => $forwardfor;
   }
 
   # These exported kfiles contain the firewall fragments
@@ -61,7 +62,10 @@ class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $lo
 #  Undocumented
 #  gen_puppet
 #
-define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=false, $cookie=false, $make_lbconfig, $httpcheck_uri=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s", $timeout_http_request="10s", $tcp_sslport=false, $haproxy_tag="haproxy_${environment}") {
+define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=false, $monitoring_hostname=false, $cookie=false, $make_lbconfig, $httpcheck_uri=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s", $timeout_http_request="10s", $tcp_sslport=false, $haproxy_tag="haproxy_${environment}") {
+
+  $safe_name=regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
+
   gen_ferm::rule { "HAProxy forward for ${name}":
     proto     => "tcp",
     daddr     => $listenaddress ? {
@@ -75,7 +79,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
   }
 
   if $make_lbconfig {
-    gen_haproxy::site { "${name}":
+    gen_haproxy::site { "${safe_name}":
       listenaddress         => $listenaddress,
       port                  => $port,
       cookie                => $cookie,
@@ -91,7 +95,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
       haproxy_tag           => $haproxy_tag;
     }
     if $tcp_sslport {
-      gen_haproxy::site { "${name}_ssl":
+      gen_haproxy::site { "${safe_name}_ssl":
       listenaddress         => $listenaddress,
       port                  => "443",
       mode                  => "tcp",
@@ -127,6 +131,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
       ha                 => $monitoring_ha,
       statuscode         => $monitoring_status,
       url                => $monitoring_url,
+      host_name          => $monitoring_hostname,
       port               => $serverport,
       max_check_attempts => $max_check_attempts,
       response           => $monitoring_response;
