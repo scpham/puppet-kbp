@@ -456,7 +456,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
       purge   => true,
       recurse => true,
       force   => true,
-      require => Package["icinga"];
+      require => Package["icinga"],
+      notify  => Exec["reload-icinga"];
     "/etc/icinga/config/generic":
       ensure  => directory;
     "/etc/icinga/config/generic/notify_commands.cfg":
