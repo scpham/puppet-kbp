@@ -12,6 +12,7 @@
 class kbp_activemq {
   include gen_activemq
   include kbp_ferm
+  include kbp_trending::activemq
 
   kfile {
     "/etc/activemq/activemq.xml":

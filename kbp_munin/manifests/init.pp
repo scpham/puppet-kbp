@@ -26,6 +26,24 @@ class kbp_munin::client inherits munin::client {
   }
 }
 
+# Class: kbp_munin::client::activemq
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_munin::client::activemq {
+  include kbp_munin::client
+
+  munin::client::plugin { ["activemq_size", "activemq_subscribers", "activemq_traffic"]:
+    script_path => "/usr/share/munin/plugins/kumina",
+    script      => "activemq_";
+  }
+}
+
 # Class: kbp_munin::client::apache
 #
 # Actions:

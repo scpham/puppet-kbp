@@ -12,6 +12,26 @@
 class kbp_trending {
 }
 
+# Class: kbp_trending::activemq
+#
+# Parameters:
+#  method
+#    Undocumented
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_trending::activemq ($method="munin") {
+  case $method {
+    "munin": { include kbp_munin::client::activemq }
+    default: { fail("No trending for ${method}.") }
+  }
+}
+
 # Class: kbp_trending::puppetmaster
 #
 # Parameters:
