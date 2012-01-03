@@ -1115,7 +1115,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 #
 # Depends:
 #  gen_puppet
-define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=false,$hostgroups=false,$parents=false,$address=$ipaddress,$ensure=present,
+define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=false,$hostgroups=false,$parents=false,$address=$external_ipaddress,$ensure=present,
     $initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
     $retain_nonstatus_information=false, $check_command=false, $check_interval=false, $notification_period=false, $notification_interval=false, $max_check_attempts=false,
     $register=1, $proxy=false) {
