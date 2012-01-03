@@ -237,7 +237,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
     kbp_monitoring::site { $monitor_name:
       service_description => $real_service_description,
-      host_name           => $name,
+      host_name           => $real_name,
       max_check_attempts  => $max_check_attempts,
       auth                => $auth,
       path                => $monitor_path,
