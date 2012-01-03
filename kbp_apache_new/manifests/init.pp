@@ -216,8 +216,8 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
     if $real_ssl {
-      $monitor_name             = "${name}_SSL"
-      $real_service_description = "Vhost ${name} SSL"
+      $monitor_name             = "${real_name}_SSL"
+      $real_service_description = "Vhost ${real_name} SSL"
 
       kbp_monitoring::sslcert { $real_name:
         path => "/etc/ssl/certs/${real_name}.pem";
@@ -231,8 +231,8 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         }
       }
     } else {
-      $monitor_name             = $name
-      $real_service_description = "Vhost ${name}"
+      $monitor_name             = $real_name
+      $real_service_description = "Vhost ${real_name}"
     }
 
     kbp_monitoring::site { $monitor_name:
