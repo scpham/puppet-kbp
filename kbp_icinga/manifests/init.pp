@@ -232,6 +232,10 @@ class kbp_icinga::client {
   }
 }
 
+class kbp_icinga::proxyclient($proxytag="proxy_${environment}") {
+  Kbp_ferm::Rule <<| tag == $proxytag |>>
+}
+
 class kbp_icinga::proxy($proxytag="proxy_${environment}") {
   include gen_base::nagios-nrpe-plugin
 

@@ -1,5 +1,15 @@
 # Author: Kumina bv <support@kumina.nl>
 
+class kbp_monitoring::proxy($package="icinga", $proxytag="proxy_${environment}") {
+  case $package {
+    "icinga": {
+      class { "kbp_icinga::proxy":
+        proxytag => $proxytag;
+      }
+    }
+  }
+}
+
 class kbp_monitoring::client($package="icinga") {
   Gen_ferm::Rule <<| tag == "general_monitoring" |>>
   Gen_ferm::Rule <<| tag == "general_monitoring_${environment}" |>>
