@@ -10,6 +10,8 @@
 #  gen_puppet
 #
 class kbp_physical {
+  include kbp_libvirt
+
   case $raidcontroller0_driver {
     "3w-9xxx": {
       kpackage { "3ware-cli-binary":; }
