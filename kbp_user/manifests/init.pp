@@ -17,7 +17,7 @@ define kbp_user($uid, $gid, $comment, $groups=false, $keys=false) {
 
   if $keys {
     kbp_user::expand_keys { $keys:
-      user    => $name,
+      user => $name,
     }
   }
 }
