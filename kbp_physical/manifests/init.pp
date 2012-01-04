@@ -19,6 +19,8 @@ class kbp_physical::bonding {
 #
 class kbp_physical {
   include kbp_libvirt
+  include gen_base::bridge-utils
+  include gen_base::vlan
 
   case $raidcontroller0_driver {
     "3w-9xxx": {
