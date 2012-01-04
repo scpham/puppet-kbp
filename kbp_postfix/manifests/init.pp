@@ -26,8 +26,11 @@ define kbp_postfix($relayhost=false, $myhostname=$fqdn, $mynetworks="127.0.0.0/8
     default => $mailname,
   }
 
-  line { "root: reports+${environment}@kumina.nl":
-    file => "/etc/aliases";
+  line {
+    "root: reports+${environment}@kumina.nl":
+      file => "/etc/aliases";
+    "reports: root":
+      file => "/etc/aliases";
   }
 
   kfile { "/etc/mailname":
