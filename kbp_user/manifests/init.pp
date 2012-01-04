@@ -17,13 +17,13 @@ define kbp_user($uid, $gid, $comment, $groups=false, $keys=false) {
 
   if $keys {
     kbp_user::expand_keys { $keys:
-      user => $name;
+      user    => $name,
     }
   }
 }
 
-define kbp_user::expand_keys {
-  ssh_authorized_key { "${user}_${comment}":
+define kbp_user::expand_keys($user) {
+  ssh_authorized_key { "${user}_${name}":
     user => $user,
     key  => $name,
     type => "ssh-rsa";
