@@ -279,6 +279,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
       content => template("kbp_icinga/icinga-web/translation.xml"),
       require => Package["icinga-web"],
       notify  => Exec["clearcache_icinga-web"];
+    "/usr/share/icinga-web/app/config/factories.xml":
+      content => template("kbp_icinga/icinga-web/factories.xml"),
+      require => Package["icinga-web"],
+      notify  => Exec["clearcache_icinga-web"];
     "/etc/default/icinga":
       content => template("kbp_icinga/default_icinga"),
       notify  => Exec["reload-icinga"];
