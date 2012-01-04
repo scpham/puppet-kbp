@@ -1,0 +1,3 @@
+alias bond0 bonding
+alias bond1 bonding
+options bonding mode=active-backup miimon=100 max_bonds=2

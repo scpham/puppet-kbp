@@ -1,5 +1,13 @@
 # Author: Kumina bv <support@kumina.nl>
 
+class kbp_physical::bonding {
+  include gen_base::ifenslave-2_6
+
+  kfile { "/etc/modprobe.d/bonding":
+    content => template("kbp_physical/bonding");
+  }
+}
+
 # Class: kbp_physical
 #
 # Actions:
