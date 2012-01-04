@@ -18,6 +18,7 @@ class kbp_physical::bonding {
 #  gen_puppet
 #
 class kbp_physical {
+  include kbp_kvm
   include kbp_libvirt
   include gen_base::bridge-utils
   include gen_base::vlan
