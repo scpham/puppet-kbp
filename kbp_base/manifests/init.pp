@@ -262,9 +262,7 @@ define kbp_base::staff_user($ensure="present", $fullname, $uid, $password_hash, 
           group   => "kumina";
       }
 
-      line { "${name}: ${name}@kumina.nl":
-        file => "/etc/aliases";
-      }
+      postfix::alias { "${name}: ${name}@kumina.nl":; }
 
       concat::add_content { "Add ${name} to Kumina SSH keyring":
         target  => "/etc/ssh/kumina.keys",
