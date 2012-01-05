@@ -25,6 +25,8 @@ class kbp_webalizer {
       group   => "staff",
       mode    => 755,
       source  => "kbp_webalizer/webalizer-multi";
+    "/srv/www/webalizer":
+      ensure  => directory;
   }
 
   if tagged(apache) {
