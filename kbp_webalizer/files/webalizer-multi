@@ -6,8 +6,8 @@
 # Bart Cortooms, Kumina bv, 2005-2009.
 
 # Defaults
-SITES_BASE_DIR=/var/www
-OUTPUT_DIR=/var/www/webalizer
+SITES_BASE_DIR=/srv/www
+OUTPUT_DIR=/srv/www/webalizer
 LOGS=/var/log/apache2
 WEBALIZER_BIN=/usr/bin/webalizer
 WEBAZOLVER_BIN=/usr/bin/webazolver

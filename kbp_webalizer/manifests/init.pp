@@ -9,47 +9,33 @@
 #  Undocumented
 #  gen_puppet
 #
-class kbp_webalizer inherits webalizer {
-  File["/etc/cron.daily/webalizer"] {
-    source => "puppet://puppet/kbp_webalizer/cron.daily/webalizer",
-    require => File["/usr/local/bin/webalizer-multi"],
+class kbp_webalizer {
+  include webalizer
+
+  Kfile <|  title == "/etc/cron.daily/webalizer" |> {
+    source  => "kbp_webalizer/cron.daily/webalizer",
   }
 
-  file {
+  kfile {
     "/etc/webalizer-multi.conf":
-      owner => "root",
-      group => "staff",
-      mode => 755,
-      source => "puppet://puppet/kbp_webalizer/webalizer-multi.conf";
+      group   => "staff",
+      mode    => 755,
+      source  => "kbp_webalizer/webalizer-multi.conf";
     "/usr/local/bin/webalizer-multi":
-      owner => "root",
-      group => "staff",
-      mode => 755,
-      source => "puppet://puppet/kbp_webalizer/webalizer-multi",
-      require => [File["/etc/webalizer-multi.conf"], Package["webalizer"]];
+      group   => "staff",
+      mode    => 755,
+      source  => "kbp_webalizer/webalizer-multi";
   }
 
   if tagged(apache) {
-    file {
+    kfile {
       "/etc/apache2/conf.d/webalizer":
-        source => "puppet://puppet/kbp_webalizer/apache2/conf.d/webalizer",
-        owner => "root",
-        group => "root",
-        mode => 644,
+        source  => "kbp_webalizer/apache2/conf.d/webalizer",
         require => Package["apache2"],
-        notify => Exec["reload-apache2"];
-      # Allow www-data to read the files
-      "/etc/logrotate.d/apache2":
-        source => "puppet://puppet/kbp_webalizer/logrotate.d/apache2",
-        owner => "root",
-        group => "root",
-        mode => 644,
-        require => Package["apache2"];
+        notify  => Exec["reload-apache2"];
       "/var/log/apache2":
-        owner => "root",
-        group => "adm",
-        mode => 755,
-        require => Package["apache2"];
+        group   => "adm",
+        mode    => 755;
     }
   }
 }
