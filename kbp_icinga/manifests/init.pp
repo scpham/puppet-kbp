@@ -259,6 +259,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
 
   kpackage { "icinga-web":;}
 
+  gen_logrotate { "icinga":
+    logs => "/var/log/icinga/icinga.log";
+  }
+
   kfile {
     "/etc/icinga/ido2db.cfg":
       content => template("kbp_icinga/ido2db.cfg"),
