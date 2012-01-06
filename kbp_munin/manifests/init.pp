@@ -280,7 +280,7 @@ define kbp_munin::client::jmxcheck {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_munin::server inherits munin::server {
+class kbp_munin::server($port=443) inherits munin::server {
   include kbp_nsca::client
 
   @@gen_ferm::rule { "Munin connections from ${fqdn}":
@@ -376,7 +376,7 @@ define kbp_munin::environment {
     target  => "/etc/munin/munin-${name}.conf";
   }
 
-  kbp_apache_new::vhost_addition { "${fqdn}_80/access_${name}":
+  kbp_apache_new::vhost_addition { "${fqdn}_${port}/access_${name}":
     content => template("kbp_munin/vhost-additions/access");
   }
 
