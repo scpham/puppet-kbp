@@ -259,7 +259,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
 
   kpackage { "icinga-web":;}
 
-  gen_logrotate { "icinga":
+  gen_logrotate::rotate { "icinga":
     logs => "/var/log/icinga/icinga.log";
   }
 

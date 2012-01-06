@@ -1,11 +1,17 @@
-class kbp_dashboard::server($url="dashboard.kumina.nl") {
-  Kbp_dashboard::Environment <<| |>>
+class kbp_dashboard::server($url, $make_default=false, $wildcard=false, intermediate=false) {
+  if $wildcard or $intermediate {
+    $port = 443
+  } else {
+    $port = 80
+  }
 
   kbp_apache_new::site { $url:
     auth         => true,
     documentroot => "/srv/www/${url}",
     serveralias  => false,
-    make_default => $make_default;
+    make_default => $make_default,
+    wildcard     => $wildcard,
+    intermediate => $intermediate;
   }
 
   kfile {
@@ -31,13 +37,14 @@ class kbp_dashboard::server($url="dashboard.kumina.nl") {
       target  => "/srv/www/${url}/index.html";
   }
 
+  Kbp_dashboard::Environment <<| |>>
   Kbp_dashboard::Customer_entry <<| |>>
   Kbp_dashboard::Base_entry <<| |>>
   Kbp_dashboard::Overview_entry_host <<| |>> {
-    url => $url,
+    url  => $url,
   }
   Kbp_dashboard::Overview_entry_vm <<| |>> {
-    url => $url,
+    url  => $url,
   }
 }
 
@@ -107,7 +114,7 @@ define kbp_dashboard::environment($fullname) {
     target => "/srv/www/${url}/${name}/.htpasswd",
   }
 
-  kbp_apache_new::vhost_addition { "${url}_80/access_${name}":
+  kbp_apache_new::vhost_addition { "${url}_${port}/access_${name}":
     content => template("kbp_dashboard/vhost-additions/access");
   }
 
@@ -140,7 +147,7 @@ define kbp_dashboard::customer_entry($path, $extra_paths=false, $regex_paths=fal
     target  => "/srv/www/${url}/${environment}/index.html";
   }
 
-  kbp_apache_new::vhost_addition { "${url}_80/proxy_${entry_name}_${environment}":
+  kbp_apache_new::vhost_addition { "${url}_${port}/proxy_${entry_name}_${environment}":
     content => template("kbp_dashboard/vhost-additions/proxy");
   }
 }
