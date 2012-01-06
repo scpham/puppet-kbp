@@ -288,6 +288,12 @@ define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=
 }
 
 define kbp_apache_new::vhost_addition($ensure="present", $content=false, $source=false) {
+  $fullname = regsubst($name,'^(.*?)_.*$','\1')
+
+  if defined(Kbp_apache_new::Forward_vhost[$fullname]) {
+    fail("kbp_apache_new::vhost_addition ${name} is inconsistent as a forward is in place for this site.")
+  }
+
   gen_apache::vhost_addition { $name:
     ensure  => $ensure,
     content => $content,
