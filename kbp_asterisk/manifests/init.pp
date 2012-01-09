@@ -20,7 +20,7 @@ class kbp_asterisk::server {
   }
 
   @@gen_ferm::rule { "Asterisk CDR logging from ${fqdn}_v4":
-    saddr  => "81.30.39.28",
+    saddr  => $external_ipaddress,
     proto  => "tcp",
     dport  => 3306,
     action => "ACCEPT",
