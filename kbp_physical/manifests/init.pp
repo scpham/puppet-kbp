@@ -41,7 +41,14 @@ class kbp_physical {
   }
 
   if $consolefqdn != -1 {
-    kbp_icinga::virtualhost { "${consolefqdn}":
+    if ! $consolefqdn {
+      fail("\$consolefqdn has not been set in the site.pp")
+    }
+    if ! $consoleaddress {
+      fail("\$consoleaddress has not been set in the site.pp")
+    }
+
+    kbp_icinga::virtualhost { $consolefqdn:
       address => $consoleaddress,
       parents => $consoleparent,
       proxy   => $consoleproxy;
