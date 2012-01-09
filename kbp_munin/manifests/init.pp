@@ -283,6 +283,11 @@ define kbp_munin::client::jmxcheck {
 class kbp_munin::server($port=443) inherits munin::server {
   include kbp_nsca::client
 
+  $ssl = $port ? {
+    443 => true,
+    80  => false,
+  }
+
   @@gen_ferm::rule { "Munin connections from ${fqdn}":
     saddr  => $fqdn,
     proto  => "tcp",
@@ -328,7 +333,10 @@ class kbp_munin::server($port=443) inherits munin::server {
 
   @@kbp_dashboard::customer_entry_export { "Munin":
     path      => "munin",
-    entry_url => "http://munin.kumina.nl",
+    entry_url => $ssl ? {
+      false => "http://munin.kumina.nl",
+      true  => "https://munin.kumina.nl",
+    },
     text      => "Graphs of server usage and performance.";
   }
 
