@@ -253,7 +253,7 @@ class kbp_icinga::proxy($proxytag="proxy_${environment}") {
   }
 }
 
-class kbp_icinga::server($dbpassword, $dbhost="localhost") {
+class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
   include gen_icinga::server
   include kbp_nsca::server
 
@@ -661,7 +661,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost") {
   @@kbp_dashboard::customer_entry_export { "Icinga":
     path            => "icinga",
     regex_paths     => ["/cgi-bin/icinga/","/stylesheets/","/images/"],
-    entry_url       => "http://icinga.kumina.nl",
+    entry_url       => $ssl ? {
+      false => "http://icinga.kumina.nl",
+      true  => "https://icinga.kumina.nl",
+    },
     text            => "Availability monitoring of servers and services.",
     add_environment => false;
   }
