@@ -9,7 +9,7 @@
 #  Undocumented
 #  gen_puppet
 #
-class kbp_smokeping::server {
+class kbp_smokeping::server($ssl=true) {
   include gen_smokeping::server
 
   Kbp_smokeping::Environment <<| |>>
@@ -41,7 +41,10 @@ class kbp_smokeping::server {
   @@kbp_dashboard::customer_entry_export { "Smokeping":
     path        => "smokeping",
     regex_paths => ["/images/"],
-    entry_url   => "http://smokeping.kumina.nl",
+    entry_url   => $ssl ? {
+      false => "http://smokeping.kumina.nl",
+      true  => "https://smokeping.kumina.nl",
+    },
     text        => "Graphs of site responsiveness.";
   }
 }
