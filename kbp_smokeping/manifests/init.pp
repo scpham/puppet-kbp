@@ -55,7 +55,7 @@ class kbp_smokeping::server {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_smokeping::environment($owner="Kumina bv", $contact="support@kumina.nl", $url="smokeping.kumina.nl", $syslogfacility="local0") {
+define kbp_smokeping::environment($owner="Kumina bv", $contact="support@kumina.nl", $url="smokeping.kumina.nl", $syslogfacility="local0", $port=443) {
   gen_smokeping::environment { "${name}":
     owner          => $owner,
     contact        => $contact,
@@ -66,7 +66,7 @@ define kbp_smokeping::environment($owner="Kumina bv", $contact="support@kumina.n
     syslogfacility => $syslogfacility;
   }
 
-  kbp_apache_new::vhost_addition { "${url}_80/smokeping_${name}.conf":
+  kbp_apache_new::vhost_addition { "${url}_${port}/smokeping_${name}.conf":
     content => template("kbp_smokeping/apache");
   }
 
