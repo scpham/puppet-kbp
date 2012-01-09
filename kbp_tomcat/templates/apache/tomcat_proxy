@@ -1,0 +1,5 @@
+<Location / >
+  Allow from all
+  # Proxy to Tomcat
+  ProxyPass ajp://localhost:<%= port %>/
+</Location>

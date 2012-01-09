@@ -272,7 +272,7 @@ define kbp_apache_new::module {
   gen_apache::module { $name:; }
 }
 
-define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=false) {
+define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=false, $statuscode=301) {
   gen_apache::forward_vhost { $name:
     forward      => $forward,
     ensure       => $ensure,
@@ -282,7 +282,7 @@ define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=
   kbp_monitoring::site { "${name}_forward":
     service_description => "Vhost ${name} forward",
     host_name           => $name,
-    statuscode          => 301,
+    statuscode          => $statuscode,
     response            => $forward;
   }
 }

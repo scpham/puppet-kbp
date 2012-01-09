@@ -11,7 +11,7 @@
 #
 class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $serveralias=false, $documentroot=false, $ssl=false, $ajp13_connector_port = "8009",
                   $java_opts="", $jvm_max_mem=false){
-  include kbp_apache
+  include kbp_apache_new
 
   class { "gen_tomcat":
     ajp13_connector_port => $ajp13_connector_port,
@@ -20,9 +20,7 @@ class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $serveralias=false, $docu
   }
 
   # Enable mod-proxy-ajp
-  apache::module { "proxy_ajp":
-    ensure => present,
-  }
+  kbp_apache_new::module { "proxy_ajp":; }
 
   # Add /usr/share/java/*.jar to the tomcat classpath
   kfile { "/srv/tomcat/conf/catalina.properties":
@@ -35,7 +33,7 @@ class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $serveralias=false, $docu
     command           => "/etc/init.d/tomcat6 [a-z]*",
     as_user           => "root",
     entity            => "%tomcat6",
-    password_required => false,
+    password_required => false;
   }
 }
 
@@ -212,17 +210,21 @@ define kbp_tomcat::datasource_setting ($context, $hash) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_tomcat::apache_proxy_ajp_site($port, $ssl=false, $serveralias=false, $documentroot=false, $ensure="present",
-                                         $tomcat_tag="tomcat_${environment}") {
-  apache::site_config { "${name}":
-    serveralias  => $serveralias,
-    documentroot => $documentroot,
-    template     => "kbp_tomcat/apache/mod-proxy-ajp.conf",
-    require      => Apache::Module["proxy_ajp"],
+define kbp_tomcat::apache_proxy_ajp_site($port=8009, $ssl=false, $serveralias=false, $documentroot="/srv/www/${name}", $ensure="present", $tomcat_tag="tomcat_${environment}") {
+  $fullname = $ssl ? {
+    false => "${name}_80",
+    true  => "${name}_443",
   }
 
-  kbp_apache::site { "${name}":
-    ensure => $ensure,
+  kbp_apache_new::site { $name:
+    ensure       => $ensure,
+    serveralias  => $serveralias,
+    documentroot => $documentroot,
+    require      => Kbp_apache_new::Module["proxy_ajp"],
+  }
+
+  kbp_apache_new::vhost_addition { "${fullname}/tomcat_proxy":
+    content => template("kbp_tomcat/apache/tomcat_proxy");
   }
 
 #  kbp_tomcat::apache_proxy_ajp_site { "${domain}":
