@@ -181,7 +181,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   $real_port   = regsubst($full_name,'^(.*)_(.*)$','\2')
   $dontmonitor = ["default","default-ssl","localhost"]
 
-  gen_apache::site { $name:
+  gen_apache::site { $full_name:
     ensure           => $ensure,
     serveralias      => $serveralias,
     documentroot     => $documentroot,
