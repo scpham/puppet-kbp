@@ -210,7 +210,8 @@ define kbp_tomcat::datasource_setting ($context, $hash) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_tomcat::apache_proxy_ajp_site($port=8009, $ssl=false, $serveralias=false, $documentroot="/srv/www/${name}", $ensure="present", $tomcat_tag="tomcat_${environment}") {
+define kbp_tomcat::apache_proxy_ajp_site($ensure="present", $port=8009, $ssl=false, $serveralias=false, $documentroot="/srv/www/${name}", $tomcat_tag="tomcat_${environment}",
+    $sourcepath="/", $urlpath="/") {
   $fullname = $ssl ? {
     false => "${name}_80",
     true  => "${name}_443",
