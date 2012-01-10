@@ -49,7 +49,7 @@ class kbp_subversion::lenny {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_subversion inherits trac {
+class kbp_subversion {
   include subversion
   include apache
   include "kbp_subversion::$lsbdistcodename"

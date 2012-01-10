@@ -28,10 +28,6 @@ define kbp_postfix($relayhost=false, $myhostname=$fqdn, $mynetworks="127.0.0.0/8
 
   postfix::alias { ["root: reports+${environment}@kumina.nl","reports: root"]:; }
 
-  postfix::alias { "tempthingie: root":
-    ensure => absent;
-  }
-
   kfile { "/etc/mailname":
     content => "${real_mailname}\n",
     notify  => Service["postfix"],
