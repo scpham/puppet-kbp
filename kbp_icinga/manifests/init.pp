@@ -239,8 +239,12 @@ class kbp_icinga::proxyclient($proxytag="proxy_${environment}") {
 class kbp_icinga::proxy($proxytag="proxy_${environment}") {
   include gen_base::nagios-nrpe-plugin
 
-  kfile { "/etc/nagios/nrpe.d/runcommand.cfg":
-    content => 'command[runcommand]=$ARG1$';
+  kfile {
+    "/etc/nagios/nrpe.d/runcommand.cfg":
+      content => 'command[runcommand]=$ARG1$';
+    "/etc/default/openbsd-inetd":
+      content => "OPTIONS='-R 2560'",
+      notify  => Service["openbsd-inetd"];
   }
 
   kbp_ferm::rule { "NRPE monitoring from ${fqdn}":
