@@ -211,7 +211,7 @@ define kbp_tomcat::datasource_setting ($context, $hash) {
 #  gen_puppet
 #
 define kbp_tomcat::apache_proxy_ajp_site($ensure="present", $port=8009, $ssl=false, $serveralias=false, $documentroot="/srv/www/${name}", $tomcat_tag="tomcat_${environment}",
-    $sourcepath="/", $urlpath="/") {
+    $sourcepath="/", $urlpath="/", $php=false) {
   $fullname = $ssl ? {
     false => "${name}_80",
     true  => "${name}_443",
@@ -221,6 +221,7 @@ define kbp_tomcat::apache_proxy_ajp_site($ensure="present", $port=8009, $ssl=fal
     ensure       => $ensure,
     serveralias  => $serveralias,
     documentroot => $documentroot,
+    php          => $php,
     require      => Kbp_apache_new::Module["proxy_ajp"],
   }
 
