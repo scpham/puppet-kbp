@@ -169,6 +169,10 @@ class kbp_base {
       require => File["/etc/motd.tail"],
       subscribe => File["/etc/motd.tail"];
   }
+
+  # kerberos 5 libs: not used explicitly, but as a dependency; always install latest
+  include gen_base::krb5
+
 }
 
 # Class: kbp_base::environment
