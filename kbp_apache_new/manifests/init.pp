@@ -35,12 +35,6 @@ class kbp_apache_new {
 
   kbp_apache_new::module { ["deflate","rewrite"]:; }
 
-  @kpackage { "php5-gd":
-    ensure  => latest,
-    require => Package["apache2"],
-    notify  => Exec["reload-apache2"];
-  }
-
   kbp_monitoring::http { "http_${fqdn}":; }
 }
 
