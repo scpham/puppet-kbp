@@ -171,8 +171,10 @@ class kbp_base {
   }
 
   # kerberos 5 libs: not used explicitly, but as a dependency; always install latest
-  include gen_base::krb5
-
+  include gen_base::libgssapi-krb5-2
+  include gen_base::libk5crypto3
+  include gen_base::libkrb5-3
+  include gen_base::libkrb5support0
 }
 
 # Class: kbp_base::environment
