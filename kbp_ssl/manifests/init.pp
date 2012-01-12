@@ -27,7 +27,7 @@ define kbp_ssl::private_key($source=false, $content=false) {
     fail("Private key ${name} has both a \$source and a \$content, only one can be used.")
   }
 
-  kfile { "/etc/ssl/private/${name}.content":
+  kfile { "/etc/ssl/private/${name}.key":
     content => $content ? {
       false   => undef,
       default => $content,
