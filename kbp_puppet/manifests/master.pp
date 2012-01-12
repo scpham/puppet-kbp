@@ -242,7 +242,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
       }
     } else {
       @@mysql::server::db { $real_dbname:
-        tag => "mysql_puppetmaster";
+        tag => "puppetmaster";
       }
 
       @@mysql::server::grant { $real_dbname:
@@ -250,11 +250,11 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
         password => $real_dbpasswd,
         db       => $real_dbname,
         hostname => "%",
-        tag      => "mysql_puppetmaster";
+        tag      => "puppetmaster";
       }
 
       kbp_mysql::client { "puppetmaster":
-        customtag => "mysql_puppetmaster",
+        mysql_name => "puppetmaster",
       }
     }
 
