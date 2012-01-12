@@ -1,5 +1,9 @@
 # Author: Kumina bv <support@kumina.nl>
 
+class kbp_postfix::mailgraph {
+  include gen_base::mailgraph
+}
+
 # Class: kbp_postfix
 #
 # Actions:
