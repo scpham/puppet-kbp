@@ -1,0 +1,2 @@
+WSGIScriptAlias <%= django_root_path %> /srv/django/<%= django_root_django %>
+Alias <%= django_static_path %> /srv/django/<%= django_static_django %>

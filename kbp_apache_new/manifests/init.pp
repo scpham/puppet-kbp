@@ -152,7 +152,8 @@ define kbp_apache_new::php_cgi($documentroot) {
 define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot="/srv/www/${name}", $create_documentroot=true, $address=false, $address6=false,
     $port=false, $make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false, $wildcard=false,
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false,
-    $monitor=true, $smokeping=true, $php=false, $glassfish_domain=false, $glassfish_connector_port=false) {
+    $monitor=true, $smokeping=true, $php=false, $glassfish_domain=false, $glassfish_connector_port=false, $django_root_path=false,
+    $django_root_django=false, $django_static_path=false, $django_static_django=false) {
   include kbp_apache_new
   if $key or $cert or $intermediate or $wildcard or $ssl {
     include kbp_apache_new::ssl
@@ -188,24 +189,6 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     cert             => $cert,
     intermediate     => $intermediate,
     wildcard         => $wildcard;
-  }
-
-  if $glassfish_domain {
-    if ! $glassfish_connector_port {
-      fail { "glassfish_connector_port is undefined for ${site}":; }
-    }
-
-    kbp_apache_new::glassfish_domain { $glassfish_domain:
-      site           => $real_name,
-      site_port      => $real_port,
-      connector_port => $glassfish_connector_port;
-    }
-  }
-
-  if $php {
-    kbp_apache_new::php_cgi { $full_name:
-      documentroot => $documentroot;
-    }
   }
 
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
@@ -258,6 +241,44 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       proto  => "tcp",
       dport  => $real_port,
       action => "ACCEPT";
+    }
+  }
+
+  if $glassfish_domain {
+    if ! $glassfish_connector_port {
+      fail { "glassfish_connector_port is undefined for ${site}":; }
+    }
+
+    kbp_apache_new::glassfish_domain { $glassfish_domain:
+      site           => $real_name,
+      site_port      => $real_port,
+      connector_port => $glassfish_connector_port;
+    }
+  }
+
+  if $django_root_path or $django_root_django or $django_static_path or $django_static_django {
+    include kbp_django
+
+    if ! $django_root_path {
+      fail("${fullname} is defined as a Django site but \$django_root_path has not been set")
+    }
+    if ! $django_root_django {
+      fail("${fullname} is defined as a Django site but \$django_root_django has not been set")
+    }
+    if ! $django_static_path {
+      fail("${fullname} is defined as a Django site but \$django_static_path has not been set")
+    }
+    if ! $django_static_django {
+      fail("${fullname} is defined as a Django site but \$django_static_django has not been set")
+    }
+    kbp_apache_new::vhost_addition { "${full_name}/django":
+      content => template("kbp_apache_new/vhost-additions/django")
+    }
+  }
+
+  if $php {
+    kbp_apache_new::php_cgi { $full_name:
+      documentroot => $documentroot;
     }
   }
 }
