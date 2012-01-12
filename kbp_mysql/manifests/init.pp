@@ -171,16 +171,16 @@ class kbp_mysql::puppetmaster {
     mysql_name => "puppetmaster";
   }
 
-  Gen_ferm::Rule       <<| tag == "mysql_${environment}_puppetmaster" |>>
-  Mysql::Server::Db    <<| tag == "mysql_${environment}_puppetmaster" |>>
-  Mysql::Server::Grant <<| tag == "mysql_${environment}_puppetmaster" |>>
+  Kbp_ferm::Rule       <<| tag == "mysql_${environment}_puppetmaster" |>>
+  Mysql::Server::Db    <<| tag == "${environment}_puppetmaster" |>>
+  Mysql::Server::Grant <<| tag == "${environment}_puppetmaster" |>>
 }
 
 # Define: kbp_mysql::client
 #
 # Parameters:
-#  customtag
-#    Use a different tag than the default "mysql_${environment}"
+#  mysql_name
+#    The name of the service that's using MySQL
 #
 # Actions:
 #  Open the firewall on the server to allow access from this client.
@@ -188,18 +188,19 @@ class kbp_mysql::puppetmaster {
 #  use "dummy" everywhere, it still clashes.
 #
 # Depends:
-#  gen_ferm
+#  kbp_ferm
 #  gen_puppet
 #
-define kbp_mysql::client ($mysql_name=false, $address=$fqdn) {
+define kbp_mysql::client ($mysql_name, $address=$fqdn) {
   include gen_base::mysql_client
 
-  @@gen_ferm::rule { "MySQL connections from ${fqdn} for ${name}":
-    saddr  => $address,
-    proto  => "tcp",
-    dport  => 3306,
-    action => "ACCEPT",
-    tag    => "mysql_${environment}_${mysql_name}";
+  kbp_ferm::rule { "MySQL connections from ${fqdn} for ${name}":
+    exported => true,
+    saddr    => $address,
+    proto    => "tcp",
+    dport    => 3306,
+    action   => "ACCEPT",
+    tag      => "mysql_${environment}_${mysql_name}";
   }
 }
 

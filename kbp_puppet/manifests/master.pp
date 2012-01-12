@@ -177,7 +177,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
   }
 
   # Open the firewall for our puppetmaster
-  gen_ferm::rule { "Connections to puppetmaster ${name}.":
+  kbp_ferm::rule { "Connections to puppetmaster ${name}.":
     proto  => "tcp",
     dport  => $port,
     action => "ACCEPT",
@@ -242,7 +242,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
       }
     } else {
       @@mysql::server::db { $real_dbname:
-        tag => "puppetmaster";
+        tag => "${environment}_puppetmaster";
       }
 
       @@mysql::server::grant { $real_dbname:
@@ -250,7 +250,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
         password => $real_dbpasswd,
         db       => $real_dbname,
         hostname => "%",
-        tag      => "puppetmaster";
+        tag      => "${environment}_puppetmaster";
       }
 
       kbp_mysql::client { "puppetmaster":
