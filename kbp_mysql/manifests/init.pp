@@ -171,9 +171,9 @@ class kbp_mysql::puppetmaster {
     mysql_name => "puppetmaster";
   }
 
-  Gen_ferm::Rule <<| tag == "mysql_puppetmaster" |>>
-  Mysql::Server::Db <<| tag == "mysql_puppetmaster" |>>
-  Mysql::Server::Grant <<| tag == "mysql_puppetmaster" |>>
+  Gen_ferm::Rule       <<| tag == "mysql_${environment}_puppetmaster" |>>
+  Mysql::Server::Db    <<| tag == "mysql_${environment}_puppetmaster" |>>
+  Mysql::Server::Grant <<| tag == "mysql_${environment}_puppetmaster" |>>
 }
 
 # Define: kbp_mysql::client
