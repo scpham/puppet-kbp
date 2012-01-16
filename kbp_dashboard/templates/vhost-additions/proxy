@@ -1,3 +1,6 @@
+<% if entry_url[/^https/] %>
+SSLProxyEngine On
+<% end %>
 ProxyPass /<%= environment %>/<%= base_path %> <%= entry_url %><% if add_environment %>/<%= environment %><% end %>
 ProxyPassReverse /<%= environment %>/<%= base_path %> <%= entry_url %><% if add_environment %>/<%= environment %><% end %>
 <% if extra_paths -%>
