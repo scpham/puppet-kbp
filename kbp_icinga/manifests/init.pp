@@ -232,8 +232,21 @@ class kbp_icinga::client {
   }
 }
 
-class kbp_icinga::proxyclient($proxytag="proxy_${environment}") {
-  Kbp_ferm::Rule <<| tag == $proxytag |>>
+class kbp_icinga::proxyclient($proxy, $proxytag="proxy_${environment}", $saddr=false) {
+  if $saddr {
+    Kbp_ferm::Rule <<| tag == $proxytag |>> {
+      saddr => $saddr,
+    }
+  } else {
+    Kbp_ferm::Rule <<| tag == $proxytag |>>
+  }
+
+  Kbp_icinga::Service <| |> {
+    proxy => $proxy,
+  }
+  Kbp_icinga::Host <| |> {
+    proxy => $proxy,
+  }
 }
 
 class kbp_icinga::proxy($proxytag="proxy_${environment}") {

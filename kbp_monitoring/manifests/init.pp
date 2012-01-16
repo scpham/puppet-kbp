@@ -10,6 +10,18 @@ class kbp_monitoring::proxy($package="icinga", $proxytag="proxy_${environment}")
   }
 }
 
+class kbp_monitoring::proxyclient($package="icinga", $proxy, $proxytag="proxy_${environment}", $saddr=false) {
+  case $package {
+    "icinga": {
+      class { "kbp_icinga::proxyclient":
+        proxy    => $proxy,
+        proxytag => $proxytag,
+        saddr    => $saddr;
+      }
+    }
+  }
+}
+
 class kbp_monitoring::client($package="icinga") {
   Gen_ferm::Rule <<| tag == "general_monitoring" |>>
   Gen_ferm::Rule <<| tag == "general_monitoring_${environment}" |>>

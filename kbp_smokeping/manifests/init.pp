@@ -58,8 +58,10 @@ class kbp_smokeping::server($ssl=true) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_smokeping::environment($owner="Kumina bv", $contact="support@kumina.nl", $url="smokeping.kumina.nl", $syslogfacility="local0", $port=443) {
-  gen_smokeping::environment { "${name}":
+define kbp_smokeping::environment($url, $owner="Kumina bv", $contact="support@kumina.nl", $syslogfacility="local0", $port=443, $htpasswd=false) {
+  $real_htpasswd = regsubst($htpasswd, '\${environment}', '${name}', 'G')
+
+  gen_smokeping::environment { $name:
     owner          => $owner,
     contact        => $contact,
     cgiurl         => $name ? {
@@ -73,10 +75,17 @@ define kbp_smokeping::environment($owner="Kumina bv", $contact="support@kumina.n
     content => template("kbp_smokeping/apache");
   }
 
-  concat { "/etc/smokeping/config.d/${name}/.htpasswd":; }
+  if $real_htpasswd {
+    kfile { "/etc/smokeping/config.d/${name}/.htpasswd":
+      ensure => link,
+      target => $real_htpasswd;
+    }
+  } else {
+    concat { "/etc/smokeping/config.d/${name}/.htpasswd":; }
 
-  Concat::Add_content <<| tag == "htpasswd_${name}" |>> {
-    target => "/etc/smokeping/config.d/${name}/.htpasswd",
+    Concat::Add_content <<| tag == "htpasswd_${name}" |>> {
+      target => "/etc/smokeping/config.d/${name}/.htpasswd",
+    }
   }
 }
 
