@@ -288,12 +288,13 @@ class kbp_munin::server($port=443) inherits munin::server {
     80  => false,
   }
 
-  @@gen_ferm::rule { "Munin connections from ${fqdn}":
-    saddr  => $fqdn,
-    proto  => "tcp",
-    dport  => "4949",
-    action => "ACCEPT",
-    tag    => "general_trending";
+  kbp_ferm::rule { "Munin connections from ${fqdn}":
+    saddr    => $fqdn,
+    proto    => "tcp",
+    dport    => "4949",
+    action   => "ACCEPT",
+    exported => true,
+    ferm_tag => "general_trending";
   }
 
   Kfile <| title == "/etc/munin/munin.conf" |> {
