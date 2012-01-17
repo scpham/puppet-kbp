@@ -37,9 +37,7 @@ class kbp_puppet {
     gen_apt::preference { ["libaugeas-ruby", "libaugeas-ruby1.8", "augeas-lenses", "libaugeas0", "augeas-tools"]:;}
   }
 
-  Concat <| |> {
-    testpms => ["testpuppetmaster.kumina.nl"],
-  }
+  Kbp_puppet::Settestpms <<| |>>
 }
 
 # Class: kbp_puppet::test_default_config
@@ -91,4 +89,10 @@ class kbp_puppet::default_config {
 #
 class kbp_puppet::vim {
   include kbp_vim::puppet
+}
+
+define kbp_puppet::settestpms($testpms) {
+  Concat <| |> {
+    testpms => $testpms,
+  }
 }
