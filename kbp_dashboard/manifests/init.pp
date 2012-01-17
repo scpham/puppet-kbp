@@ -1,4 +1,4 @@
-class kbp_dashboard::server($url, $make_default=false, $wildcard=false, intermediate=false) {
+class kbp_dashboard::server($url, $make_default=false, $wildcard=false, $intermediate=false) {
   if $wildcard or $intermediate {
     $port = 443
   } else {
