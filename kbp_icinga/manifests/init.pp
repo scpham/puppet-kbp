@@ -192,6 +192,11 @@ class kbp_icinga::client {
       service_description => "Open files",
       check_command       => "check_open_files",
       nrpe                => true;
+    "nrpe":
+      service_description => "NRPE port",
+      check_command       => "check_tcp",
+      arguments           => "5666",
+      customer_notify     => false;
     "ntp_offset":
       service_description => "NTP offset",
       check_command       => "check_remote_ntp",
@@ -345,134 +350,105 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
 
   Gen_icinga::Servercommand <<| |>>
 
-  gen_icinga::servercommand {
-    ["check_ssh","check_smtp"]:
-      conf_dir => "generic";
+  kbp_icinga::servercommand {
+    ["check_ssh","check_smtp"]:;
     ["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory",
         "check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd","check_pacemaker","check_mysql",
         "check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion",
         "check_dhcp","check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap",
         "check_puppet_failures","check_nullmailer","check_passenger_queue"]:
-      conf_dir => "generic",
       nrpe     => true;
     "return-ok":
-      conf_dir      => "generic",
       command_name  => "check_dummy",
       host_argument => false,
       arguments     => "0";
     "check_drbd_mount":
-      conf_dir     => "generic",
       command_name => "check_drbd_mount",
       arguments    => ['$ARG1$','$ARG2$'],
       nrpe         => true;
     "check_ping":
-      conf_dir     => "generic",
       arguments    => ['-w 5000,100%','-c 5000,100%','-p 1'];
     "check_ping_nrpe":
-      conf_dir     => "generic",
       command_name => "check_ping",
       arguments    => ['5000,100%','5000,100%','1','$ARG1$'],
       nrpe         => true;
     "check_http":
-      conf_dir  => "generic",
       arguments => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20'];
     "check_http_vhost":
-      conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ['-H $ARG1$','-e $ARG2$','-t 20'];
     "check_http_vhost_port":
-      conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ['-H $ARG1$','-p $ARG2$','-e $ARG5$','-t 20'];
     "check_http_vhost_response":
-      conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ['-H $ARG1$','-r $ARG2$','-e $ARG3$','-t 20'];
     "check_http_vhost_ssl":
-      conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ['-S','-H $ARG1$','-e $ARG2$','-t 20'];
     "check_http_vhost_ssl_address":
-      conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
       arguments     => ['-S','-H $ARG2$','-e $ARG3$','-t 20'];
     "check_http_vhost_url":
-      conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ['-H $ARG1$','-u $ARG2$','-e $ARG3$','-t 20'];
     "check_http_vhost_url_ssl":
-      conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ['-S','-H $ARG1$','-u $ARG2$','-e $ARG3$','-t 20'];
     "check_http_vhost_url_ssl_address":
-      conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
       arguments     => ['-S','-H $ARG2$','-u $ARG3$','-e $ARG4$','-t 20'];
     "check_http_vhost_url_response":
-      conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ['-H $ARG1$','-u $ARG2$','-r $ARG3$','-e $ARG4$','-t 20'];
     "check_http_vhost_port_url_response":
-      conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ['-H $ARG1$','-p $ARG2$','-u $ARG3$','-r $ARG4$','-e $ARG5$','-t 20'];
     "check_mbean_value":
-      conf_dir  => "generic",
-      arguments => ['$ARG1$','$ARG2$','$ARG3$','$ARG4$'],
-      nrpe      => true;
+      arguments     => ['$ARG1$','$ARG2$','$ARG3$','$ARG4$'],
+      nrpe          => true;
     "check_puppet_dontrun":
-      conf_dir     => "generic",
-      arguments    => ['$ARG1$'],
-      nrpe         => true;
+      arguments     => ['$ARG1$'],
+      nrpe          => true;
     "check_tcp":
-      conf_dir  => "generic",
-      arguments => '-p $ARG1$';
+      arguments     => '-p $ARG1$';
     "check_nfs_client":
-      conf_dir     => "generic",
-      command_name => "check_nfs_client",
-      arguments    => ['$ARG1$','$ARG2$'],
-      nrpe         => true;
+      command_name  => "check_nfs_client",
+      arguments     => ['$ARG1$','$ARG2$'],
+      nrpe          => true;
     "check_nfs_server":
-      conf_dir     => "generic",
-      command_name => "check_rpc",
-      arguments    => "-C nfs -c2,3";
+      command_name  => "check_rpc",
+      arguments     => "-C nfs -c2,3";
     "check_sslcert":
-      conf_dir  => "generic",
-      arguments => '$ARG1$',
-      nrpe      => true;
+      arguments     => '$ARG1$',
+      nrpe          => true;
     "check_proc_status":
-      conf_dir  => "generic",
-      arguments => '$ARG1$',
-      nrpe      => true;
+      arguments     => '$ARG1$',
+      nrpe          => true;
     "check_ssl_cert":
-      conf_dir      => "generic",
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ["-t 20",'-H $ARG1$',"-C 30"];
     "check_java_heap_usage":
-      conf_dir  => "generic",
-      arguments => '$ARG1$',
-      nrpe      => true;
+      arguments     => '$ARG1$',
+      nrpe          => true;
     "check_imaps":
-      conf_dir     => "generic",
-      command_name => "check_imap",
-      arguments    => ["-p 993","-S"];
+      command_name  => "check_imap",
+      arguments     => ["-p 993","-S"];
     "check_dnszone":
-      conf_dir  => "generic",
-      arguments => ['$ARG1$','$ARG2$'],
-      nrpe      => true;
+      arguments     => ['$ARG1$','$ARG2$'],
+      nrpe          => true;
     "check_rabbitmqctl":
-      conf_dir  => "generic",
       arguments => '$ARG1$',
       nrpe      => true;
   }
@@ -1001,7 +977,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
   }
   $real_name = $conf_dir ? {
     /.*generic.*/ => $name,
-    default   => "${name}_${host_name}",
+    default       => "${name}_${host_name}",
   }
 
   if $ha {
@@ -1010,127 +986,43 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
     }
   }
 
-  gen_icinga::service { "${real_name}":
+  gen_icinga::service { $real_name:
     conf_dir                     => $conf_dir,
     use                          => $real_use,
-    servicegroups                => $servicegroups ? {
-      false   => undef,
-      default => $servicegroups,
-    },
-    service_description          => $service_description ? {
-      false   => undef,
-      default => $service_description,
-    },
-    check_command                => $check_command ? {
-      false   => undef,
-      default => $check_command,
-    },
+    servicegroups                => $servicegroups,
+    service_description          => $service_description,
+    check_command                => $check_command,
     host_name                    => $register ? {
       0       => undef,
       default => $host_name,
     },
-    initial_state                => $initial_state ? {
-      false   => undef,
-      default => $initial_state,
-    },
-    active_checks_enabled        => $active_checks_enabled ? {
-      false   => undef,
-      default => $active_checks_enabled,
-    },
-    passive_checks_enabled       => $passive_checks_enabled ? {
-      false   => undef,
-      default => $passive_checks_enabled,
-    },
-    obsess_over_service          => $obsess_over_service ? {
-      false   => undef,
-      default => $obsess_over_service,
-    },
-    check_freshness              => $check_freshness ? {
-      false   => undef,
-      default => $check_freshness,
-    },
-    freshness_threshold          => $freshness_threshold ? {
-      false   => undef,
-      default => $freshness_threshold,
-    },
-    notifications_enabled        => $notifications_enabled ? {
-      false   => undef,
-      default => $notifications_enabled,
-    },
-    event_handler_enabled        => $event_handler_enabled ? {
-      false   => undef,
-      default => $event_handler_enabled,
-    },
-    flap_detection_enabled       => $flap_detection_enabled ? {
-      false   => undef,
-      default => $flap_detection_enabled,
-    },
-    process_perf_data            => $process_perf_data ? {
-      false   => undef,
-      default => $process_perf_data,
-    },
-    retain_status_information    => $retain_status_information ? {
-      false   => undef,
-      default => $retain_status_information,
-    },
-    retain_nonstatus_information => $retain_nonstatus_information ? {
-      false   => undef,
-      default => $retain_nonstatus_information,
-    },
-    notification_interval        => $notification_interval ? {
-      false   => undef,
-      default => $notification_interval,
-    },
-    is_volatile                  => $is_volatile ? {
-      false   => undef,
-      default => $is_volatile,
-    },
-    check_period                 => $check_period ? {
-      false   => undef,
-      default => $check_period,
-    },
-    check_interval               => $check_interval ? {
-      false   => undef,
-      default => $check_interval,
-    },
-    retry_interval               => $retry_interval ? {
-      false   => undef,
-      default => $retry_interval,
-    },
-    notification_period          => $notification_period ? {
-      false   => undef,
-      default => $notification_period,
-    },
-    notification_options         => $notification_options ? {
-      false   => undef,
-      default => $notification_options,
-    },
+    initial_state                => $initial_state,
+    active_checks_enabled        => $active_checks_enabled,
+    passive_checks_enabled       => $passive_checks_enabled,
+    obsess_over_service          => $obsess_over_service,
+    check_freshness              => $check_freshness,
+    freshness_threshold          => $freshness_threshold,
+    notifications_enabled        => $notifications_enabled,
+    event_handler_enabled        => $event_handler_enabled,
+    flap_detection_enabled       => $flap_detection_enabled,
+    process_perf_data            => $process_perf_data,
+    retain_status_information    => $retain_status_information,
+    retain_nonstatus_information => $retain_nonstatus_information,
+    notification_interval        => $notification_interval,
+    is_volatile                  => $is_volatile,
+    check_period                 => $check_period,
+    check_interval               => $check_interval,
+    retry_interval               => $retry_interval,
+    notification_period          => $notification_period,
+    notification_options         => $notification_options,
     contact_groups               => false,
-    contacts                     => $contacts ? {
-      false   => undef,
-      default => $contacts,
-    },
-    max_check_attempts           => $max_check_attempts ? {
-      false   => undef,
-      default => $max_check_attempts,
-    },
-    arguments                    => $arguments ? {
-      false   => undef,
-      default => $arguments,
-    },
-    register                     => $register ? {
-      false   => undef,
-      default => $register,
-    },
-    nrpe                         => $nrpe ? {
-      false   => undef,
-      default => $nrpe,
-    },
+    contacts                     => $contacts,
+    max_check_attempts           => $max_check_attempts,
+    arguments                    => $arguments,
+    register                     => $register,
+    nrpe                         => $nrpe,
     ensure                       => $ensure,
-    proxy                        => $proxy ? {
-      false   => undef,
-      default => $proxy,
-    };
+    proxy                        => $proxy;
   }
 }
 
@@ -1146,7 +1038,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 #  gen_puppet
 define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=false,$hostgroups=false,$parents=false,$address=$external_ipaddress,$ensure=present,
     $initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
-    $retain_nonstatus_information=false, $check_command=false, $check_interval=false, $notification_period=false, $notification_interval=false, $max_check_attempts=false,
+    $retain_nonstatus_information=false, $check_command="check_ping", $check_interval=false, $notification_period=false, $notification_interval=false, $max_check_attempts=false,
     $register=1, $proxy=false) {
   $contacts = $register ? {
     0       => "devnull",
@@ -1161,77 +1053,40 @@ define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=fals
     default => $use,
   }
 
-  gen_icinga::host { "${name}":
+  gen_icinga::host { $name:
     ensure                       => $ensure,
     conf_dir                     => $conf_dir,
     use                          => $real_use,
-    hostgroups                   => $hostgroups ? {
-      false   => undef,
-      default => $hostgroups,
-    },
-    parents                      => $parents ? {
-      false   => undef,
-      default => $parents,
-    },
-    address   => $address,
-    initial_state                => $initial_state ? {
-      false   => undef,
-      default => $initialstate,
-    },
-    notifications_enabled        => $notifications_enabled ? {
-      false   => undef,
-      default => $notifications_enabled,
-    },
-    event_handler_enabled        => $event_handler_enabled ? {
-      false   => undef,
-      default => $event_handler_enabled,
-    },
-    flap_detection_enabled       => $flap_detection_enabled ? {
-      false   => undef,
-      default => $flap_detection_enabled,
-    },
-    process_perf_data            => $process_perf_data ? {
-      false   => undef,
-      default => $process_perf_data,
-    },
-    retain_status_information    => $retain_status_information ? {
-      false   => undef,
-      default => $retain_status_information,
-    },
-    retain_nonstatus_information => $retain_nonstatus_information ? {
-      false   => undef,
-      default => $retain_nonstatus_information,
-    },
-    check_command                => $check_command ? {
-      false   => undef,
-      default => $check_command,
-    },
-    check_interval               => $check_interval ? {
-      false   => undef,
-      default => $check_interval,
-    },
-    notification_period          => $notification_period ? {
-      false   => undef,
-      default => $notification_period,
-    },
-    notification_interval        => $notification_interval ? {
-      false   => undef,
-      default => $notification_interval,
-    },
+    hostgroups                   => $hostgroups,
+    parents                      => $parents,
+    address                      => $address,
+    initial_state                => $initial_state,
+    notifications_enabled        => $notifications_enabled,
+    event_handler_enabled        => $event_handler_enabled,
+    flap_detection_enabled       => $flap_detection_enabled,
+    process_perf_data            => $process_perf_data,
+    retain_status_information    => $retain_status_information,
+    retain_nonstatus_information => $retain_nonstatus_information,
+    check_command                => $check_command,
+    check_interval               => $check_interval,
+    notification_period          => $notification_period,
+    notification_interval        => $notification_interval,
     contact_groups               => false,
-    contacts                     => $contacts ? {
-      false   => undef,
-      default => $contacts,
-    },
-    max_check_attempts           => $max_check_attempts ? {
-      false   => undef,
-      default => $max_check_attempts,
-    },
+    contacts                     => $contacts,
+    max_check_attempts           => $max_check_attempts,
     register                     => $register,
-    proxy                        => $proxy ? {
-      false   => undef,
-      default => $proxy,
-    };
+    proxy                        => $proxy;
+  }
+}
+
+define kbp_icinga::servercommand($conf_dir="generic", $command_name=false, $host_argument='-H $HOSTADDRESS$', $arguments=false, $nrpe=false, $time_out=30) {
+  gen_icinga::servercommand { $name:
+    conf_dir      => $conf_dir,
+    command_name  => $command_name,
+    host_argument => $host_argument,
+    arguments     => $arguments,
+    nrpe          => $nrpe,
+    time_out      => $time_out;
   }
 }
 
