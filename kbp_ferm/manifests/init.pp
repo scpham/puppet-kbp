@@ -180,7 +180,6 @@ define kbp_ferm::rule($prio=500, $interface=false, $outerface=false, $saddr=fals
       table      => $table,
       chain      => $chain,
       ensure     => $ensure,
-      ferm_tag   => $ferm_tag,
       fqdn       => $fqdn,
       ipaddress6 => $ipaddress6;
     }
@@ -201,12 +200,12 @@ define kbp_ferm::rule($prio=500, $interface=false, $outerface=false, $saddr=fals
       chain      => $chain,
       ensure     => $ensure,
       exported   => false,
-      ferm_tag   => $ferm_tag,
       fqdn       => $fqdn,
       ipaddress6 => $ipaddress6 ? {
         undef   => false,
         default => $ipaddress6,
-      };
+      },
+      tag        => $ferm_tag;
     }
   }
 }
