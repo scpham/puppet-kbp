@@ -17,7 +17,7 @@ class kbp_munin::client inherits munin::client {
     content => "user root";
   }
 
-  Gen_ferm::Rule <<| tag == "general_trending" |>>
+  Kbp_ferm::Rule <<| tag == "general_trending" |>>
 
   @@concat::add_content { "2 ${fqdn}":
     content => template("kbp_munin/munin.conf_client"),
