@@ -986,6 +986,16 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
     }
   }
 
+  if $nrpe {
+    gen_icinga::servicedependency { "nrpe_dependency_${real_name}_nrpe_port":
+      dependent_service_description => $service_description,
+      host_name                     => $fqdn,
+      service_description           => "NRPE port",
+      execution_failure_criteria    => "c",
+      notification_failure_criteria => "c";
+    }
+  }
+
   gen_icinga::service { $real_name:
     conf_dir                     => $conf_dir,
     use                          => $real_use,
