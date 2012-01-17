@@ -163,7 +163,8 @@ define kbp_ferm::forward($inc, $proto, $port, $dest, $dport) {
 
 define kbp_ferm::rule($prio=500, $interface=false, $outerface=false, $saddr=false, $daddr=false, $proto=false,
     $icmptype=false, $sport=false, $dport=false, $jump=false, $action=DROP, $table=filter,
-    $chain=INPUT, $ensure=present, $exported=false, $ferm_tag=false, $fqdn=$fqdn, $ipaddress6=$ipaddress6) {
+    $chain=INPUT, $ensure=present, $exported=false, $ferm_tag=false, $fqdn=$fqdn, $ipaddress6=$ipaddress6, $customtag=false) {
+    notify { "kbp_ferm::rule ${name} customtag: ${customtag}":; }
   if ! $exported {
     gen_ferm::rule { $name:
       prio       => $prio,
