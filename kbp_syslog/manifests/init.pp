@@ -27,9 +27,9 @@ class kbp_syslog::server($environmentonly=true) {
   include "kbp_syslog::server::${lsbdistcodename}"
 
   if $environmentonly {
-    Gen_ferm::Rule <<| tag == "syslog_${environment}" |>>
+    Kbp_ferm::Rule <<| tag == "syslog_${environment}" |>>
   } else {
-    Gen_ferm::Rule <<| tag == "syslog" |>>
+    Kbp_ferm::Rule <<| tag == "syslog" |>>
   }
 }
 
@@ -45,12 +45,13 @@ class kbp_syslog::server($environmentonly=true) {
 class kbp_syslog::client {
   include "kbp_syslog::client::${lsbdistcodename}"
 
-  @@gen_ferm::rule { "Syslog traffic from ${fqdn}":
-    saddr  => $fqdn,
-    proto  => "udp",
-    dport  => 514,
-    action => "ACCEPT",
-    tag    => ["syslog","syslog_${environment}"];
+  kbp_ferm::rule { "Syslog traffic":
+    saddr    => $source_ipaddress,
+    proto    => "udp",
+    dport    => 514,
+    action   => "ACCEPT",
+    exported => true,
+    ferm_tag => ["syslog","syslog_${environment}"];
   }
 }
 

@@ -185,7 +185,7 @@ define kbp_ferm::rule($prio=500, $interface=false, $outerface=false, $saddr=fals
       ipaddress6 => $ipaddress6;
     }
   } else {
-    @@kbp_ferm::rule { "${name} for ${fqdn}":
+    @@kbp_ferm::rule { "${name} from ${fqdn}":
       prio       => $prio,
       interface  => $interface,
       outerface  => $outerface,

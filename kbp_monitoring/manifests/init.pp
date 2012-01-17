@@ -75,50 +75,50 @@ class kbp_monitoring::server($package="icinga", $dbpassword=false, $dbhost=false
   }
 
   kbp_ferm::rule {
-    "NRPE monitoring from ${fqdn}":
-      saddr    => $fqdn,
+    "NRPE monitoring":
+      saddr    => $source_ipaddress,
       proto    => "tcp",
       dport    => 5666,
       action   => "ACCEPT",
       exported => true,
       ferm_tag => "general_monitoring";
-    "MySQL monitoring from ${fqdn}":
-      saddr    => $fqdn,
+    "MySQL monitoring":
+      saddr    => $source_ipaddress,
       proto    => "tcp",
       dport    => 3306,
       action   => "ACCEPT",
       exported => true,
       ferm_tag => "mysql_monitoring";
-    "Sphinxsearch monitoring from ${fqdn}":
-      saddr    => $fqdn,
+    "Sphinxsearch monitoring":
+      saddr    => $source_ipaddress,
       proto    => "tcp",
       dport    => 3312,
       action   => "ACCEPT",
       exported => true,
       ferm_tag => "sphinxsearch_monitoring";
-    "Cassandra monitoring from ${fqdn}":
-      saddr    => $fqdn,
+    "Cassandra monitoring":
+      saddr    => $source_ipaddress,
       proto    => "tcp",
       dport    => "(7000 8080 9160)",
       action   => "ACCEPT",
       exported => true,
       ferm_tag => "cassandra_monitoring";
-    "Glassfish monitoring from ${fqdn}":
-      saddr    => $fqdn,
+    "Glassfish monitoring":
+      saddr    => $source_ipaddress,
       proto    => "tcp",
       dport    => 80,
       action   => "ACCEPT",
       exported => true,
       ferm_tag => "glassfish_monitoring";
-    "NFS monitoring from ${fqdn}":
-      saddr    => $fqdn,
+    "NFS monitoring":
+      saddr    => $source_ipaddress,
       proto    => "(tcp udp)",
       dport    => "(111 2049)",
       action   => "ACCEPT",
       exported => true,
       ferm_tag => "nfs_monitoring";
-    "DNS monitoring from ${fqdn}":
-      saddr    => $fqdn,
+    "DNS monitoring":
+      saddr    => $source_ipaddress,
       proto    => "udp",
       dport    => 53,
       action   => "ACCEPT",
