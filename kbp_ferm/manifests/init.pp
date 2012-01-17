@@ -152,18 +152,18 @@ define kbp_ferm::forward($inc, $proto, $port, $dest, $dport) {
       dport     => $port,
       action    => "ACCEPT";
     "Forward all ${proto} traffic from ${inc} to ${port} to ${dest}:${dport}_v4":
-      table  => "nat",
-      chain  => "PREROUTING",
-      daddr  => $inc,
-      proto  => $proto,
-      dport  => $port,
-      action => "DNAT to \"${dest}:${dport}\"";
+      table     => "nat",
+      chain     => "PREROUTING",
+      daddr     => $inc,
+      proto     => $proto,
+      dport     => $port,
+      action    => "DNAT to \"${dest}:${dport}\"";
   }
 }
 
 define kbp_ferm::rule($prio=500, $interface=false, $outerface=false, $saddr=false, $daddr=false, $proto=false,
     $icmptype=false, $sport=false, $dport=false, $jump=false, $action=DROP, $table=filter,
-    $chain=INPUT, $ensure=present, $exported=false, $customtag=false, $fqdn=$fqdn, $ipaddress6=$ipaddress6) {
+    $chain=INPUT, $ensure=present, $exported=false, $ferm_tag=false, $fqdn=$fqdn, $ipaddress6=$ipaddress6) {
   if ! $exported {
     gen_ferm::rule { $name:
       prio       => $prio,
@@ -180,7 +180,7 @@ define kbp_ferm::rule($prio=500, $interface=false, $outerface=false, $saddr=fals
       table      => $table,
       chain      => $chain,
       ensure     => $ensure,
-      customtag  => $customtag,
+      ferm_tag   => $ferm_tag,
       fqdn       => $fqdn,
       ipaddress6 => $ipaddress6;
     }
@@ -201,7 +201,7 @@ define kbp_ferm::rule($prio=500, $interface=false, $outerface=false, $saddr=fals
       chain      => $chain,
       ensure     => $ensure,
       exported   => false,
-      customtag  => $customtag,
+      ferm_tag   => $ferm_tag,
       fqdn       => $fqdn,
       ipaddress6 => $ipaddress6 ? {
         undef   => false,
