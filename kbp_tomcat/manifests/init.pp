@@ -218,12 +218,13 @@ define kbp_tomcat::apache_proxy_ajp_site($ensure="present", $port=8009, $ssl=fal
   }
 
   kbp_apache_new::site { $name:
-    ensure       => $ensure,
-    serveralias  => $serveralias,
-    documentroot => $documentroot,
-    php          => $php,
-    make_default => $make_default,
-    require      => Kbp_apache_new::Module["proxy_ajp"],
+    ensure          => $ensure,
+    serveralias     => $serveralias,
+    documentroot    => $documentroot,
+    php             => $php,
+    make_default    => $make_default,
+    monitoring_path => $urlpath,
+    require         => Kbp_apache_new::Module["proxy_ajp"],
   }
 
   kbp_apache_new::vhost_addition { "${fullname}/tomcat_proxy":
