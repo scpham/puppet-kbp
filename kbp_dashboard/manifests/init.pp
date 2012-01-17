@@ -1,17 +1,7 @@
-class kbp_dashboard::server($url, $make_default=false, $wildcard=false, $intermediate=false) {
-  if $wildcard or $intermediate {
-    $port = 443
-  } else {
-    $port = 80
-  }
-
-  kbp_apache_new::site { $url:
-    auth         => true,
-    documentroot => "/srv/www/${url}",
-    serveralias  => false,
-    make_default => $make_default,
-    wildcard     => $wildcard,
-    intermediate => $intermediate;
+class kbp_dashboard::server($url, $ssl=true) {
+  $port = $ssl ? {
+    false => 80,
+    true  => 443,
   }
 
   kfile {
@@ -23,9 +13,8 @@ class kbp_dashboard::server($url, $make_default=false, $wildcard=false, $interme
       require => Kfile["/srv/www/${url}"];
   }
 
-  concat {
-    "/srv/www/${url}/index.html":
-      require => Kfile["/srv/www/${url}"];
+  concat { "/srv/www/${url}/index.html":
+    require => Kfile["/srv/www/${url}"];
   }
 
   concat::add_content {
