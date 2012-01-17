@@ -67,15 +67,15 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
   $safe_name=regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
 
   gen_ferm::rule { "HAProxy forward for ${name}":
-    proto     => "tcp",
-    daddr     => $listenaddress ? {
+    proto    => "tcp",
+    daddr    => $listenaddress ? {
       "0.0.0.0" => undef,
       default   => $listenaddress,
     },
-    dport     => $port,
-    action    => "ACCEPT",
-    exported  => true,
-    customtag => $haproxy_tag;
+    dport    => $port,
+    action   => "ACCEPT",
+    exported => true,
+    ferm_tag => $haproxy_tag;
   }
 
   if $make_lbconfig {
