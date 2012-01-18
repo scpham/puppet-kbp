@@ -75,6 +75,9 @@ class kbp_puppet::default_config {
     "server":
       value   => 'puppetmaster.kumina.nl',
       section => "agent";
+    "report":
+      value   => 'false',
+      section => "agent";
   }
 }
 
