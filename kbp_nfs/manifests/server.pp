@@ -42,7 +42,7 @@ class kbp_nfs::server($need_gssd = "no", $need_idmapd = "no", $need_statd = "yes
     dport => "(111 2049 ${incoming_port} ${outgoing_port} ${mountd_port} ${lock_port})",
   }
 
-  Gen_ferm::Rule <<| tag == "nfs_monitoring" |>>
+  Kbp_ferm::Rule <<| tag == "nfs_monitoring" |>>
 
   Kbp_nfs::Client::Export_opts <<| tag == $nfs_tag |>>
 }
