@@ -124,40 +124,82 @@ define kbp_ferm::block ($ips) {
 #
 # Parameters:
 #  proto
-#    Undocumented
-#  port
-#    Undocumented
-#  dest
-#    Undocumented
-#  dport
-#    Undocumented
-#  inc
-#    Undocumented
+#    The protocol that should be forwarded (usually tcp, so it defaults to that)
+#  listen_addr
+#    The address to listen on
+#  listen_port
+#    The port to listen on
+#  dest_addr
+#    The destination address
+#  dest_port
+#    The destination port (on the machine that uses the destination address), defaults to
+#    listen_port.
+#
+#  TODO inc, port, dest, dport are legacy and should be replaced.
 #
 # Actions:
-#  Undocumented
+#  Setup a forward on a specific port to another ip address and optionally another port.
 #
 # Depends:
-#  Undocumented
+#  gen_ferm
 #  gen_puppet
 #
-define kbp_ferm::forward($inc, $proto, $port, $dest, $dport) {
+# TODO:
+#  Once every setup uses the new invocation, the definition header can change into:
+#define kbp_ferm::forward($listen_addr, $listen_port, $dest_addr, $dest_port = false, $proto = "tcp") {
+define kbp_ferm::forward($listen_addr = false, $listen_port = false, $dest_addr = false, $dest_port = false, $proto = "tcp",
+                         $inc = false, $port = false, $dest = false, $dport = false) {
+  # Warn about legacy
+  if $inc or $port or $dest or $dport {
+    notify { "The definition of kbp_ferm::forward has changed. Please update the code for this host to use the new definition! Resource: kbp_ferm::forward { ${name}:; }":; }
+  }
+
+  # Most of the following checks can be removed once the definition has changed, except for
+  # the $dest_port, because that should be $listen_port if not set. TODO
+  if ! $dest_port {
+    if $dport { $r_dest_port = $dport       }
+    else      { $r_dest_port = $listen_port }
+  } else {
+    $r_dest_port = $dest_port
+  }
+
+  if ! $dest_addr {
+    if $dest { $r_dest_addr = $dest         }
+    else     { fail('No $dest_addr given.') }
+  } else {
+    $r_dest_addr = $dest_addr
+  }
+
+  if ! $listen_port {
+    if $port { $r_listen_port = $port         }
+    else     { fail('No $listen_port given.') }
+  } else {
+    $r_listen_port = $listen_port
+  }
+
+  if ! $listen_addr {
+    if $inc { $r_listen_addr = $inc          }
+    else    { fail('No $listen_addr given.') }
+  } else {
+    $r_listen_addr = $listen_addr
+  }
+
+  # TODO If you remove the $r_* vars above, don't forget to change them here!
   gen_ferm::rule {
-    "Accept all ${proto} traffic from ${inc} to ${dest}:${port}_v4":
+    "Accept all ${proto} traffic from ${r_listen_addr}:${r_listen_port} to ${r_dest_addr}:${r_dest_port}_v4":
       chain     => "FORWARD",
-      interface => "eth1",
-      saddr     => $inc,
-      daddr     => $dest,
+      saddr     => $r_listen_addr,
+      daddr     => $r_dest_addr,
       proto     => $proto,
-      dport     => $port,
+      dport     => $r_dest_port,
       action    => "ACCEPT";
-    "Forward all ${proto} traffic from ${inc} to ${port} to ${dest}:${dport}_v4":
+    "Forward all ${proto} traffic from ${r_listen_addr}:${r_listen_port} to ${r_dest_addr}:${r_dest_port}_v4":
       table     => "nat",
       chain     => "PREROUTING",
-      daddr     => $inc,
+      daddr     => $r_listen_addr,
       proto     => $proto,
-      dport     => $port,
-      action    => "DNAT to \"${dest}:${dport}\"";
+      dport     => $r_listen_port,
+      action    => "DNAT to \"${r_dest_addr}:${r_dest_port}\"";
   }
 }
 
