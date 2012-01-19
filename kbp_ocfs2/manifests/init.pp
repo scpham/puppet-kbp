@@ -29,7 +29,8 @@ class kbp_ocfs2($ocfs2_tag="", $use_ipaddress=$external_ipaddress) {
   }
 
   kbp_ocfs2::cluster_config { "cluster_config":
-    real_tag => $real_tag;
+    use_ipaddress => $use_ipaddress,
+    real_tag      => $real_tag;
   }
 
   Concat::Add_content <<| tag == $real_tag |>>
