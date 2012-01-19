@@ -13,7 +13,7 @@
 #  Undocumented
 #  gen_puppet
 #
-class kbp_ocfs2($ocfs2_tag="") {
+class kbp_ocfs2($ocfs2_tag="", $use_ipaddress=$external_ipaddress) {
   include gen_ocfs2
   include gen_base::libcups2
 
@@ -45,7 +45,7 @@ class kbp_ocfs2($ocfs2_tag="") {
   }
 }
 
-define kbp_ocfs2::cluster_config($real_tag, $fqdn=$fqdn) {
+define kbp_ocfs2::cluster_config($real_tag, $fqdn=$fqdn, $use_ipaddress=$external_ipaddress) {
   @@concat::add_content { "Ocfs2 cluster config for ${fqdn}":
     content => template("kbp_ocfs2/node"),
     target  => "/etc/ocfs2/cluster.conf",

@@ -1,6 +1,6 @@
 node:
 	ip_port = 7777
-	ip_address = <%= ipaddress %>
-	number = <%= ipaddress.gsub(".","").to_i.modulo(254) %>
+	ip_address = <%= use_ipaddress %>
+	number = <%= use_ipaddress.gsub(".","").to_i.modulo(254) %>
 	name = <%= hostname %>
 	cluster = ocfs2

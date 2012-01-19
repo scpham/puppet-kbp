@@ -14,10 +14,11 @@
 #  gen_puppet
 #
 define kbp_drbd($location, $fstype=false, $mastermaster=true, $time_out=false, $connect_int=false, $ping_int=false, $ping_timeout=false, $after_sb_0pri="discard-younger-primary",
-    $after_sb_1pri="discard-secondary", $after_sb_2pri="call-pri-lost-after-sb", $rate="5M", $verify_alg="md5") {
+    $after_sb_1pri="discard-secondary", $after_sb_2pri="call-pri-lost-after-sb", $rate="5M", $verify_alg="md5", $use_ipaddress=$external_ipaddress) {
   if $mastermaster {
     class { "kbp_ocfs2":
-      ocfs2_tag => $name;
+      use_ipaddress => $use_ipaddress,
+      ocfs2_tag     => $name;
     }
   }
 
@@ -26,6 +27,7 @@ define kbp_drbd($location, $fstype=false, $mastermaster=true, $time_out=false, $
   }
 
   gen_drbd { $name:
+    use_ipaddress => $use_ipaddress,
     mastermaster  => $mastermaster,
     time_out      => $time_out,
     connect_int   => $connect_int,
