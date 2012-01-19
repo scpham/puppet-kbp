@@ -188,7 +188,6 @@ define kbp_ferm::forward($listen_addr = false, $listen_port = false, $dest_addr 
   gen_ferm::rule {
     "Accept all ${proto} traffic from ${r_listen_addr}:${r_listen_port} to ${r_dest_addr}:${r_dest_port}_v4":
       chain     => "FORWARD",
-      saddr     => $r_listen_addr,
       daddr     => $r_dest_addr,
       proto     => $proto,
       dport     => $r_dest_port,
