@@ -43,7 +43,7 @@ define kbp_drbd($location, $fstype=false, $mastermaster=true, $time_out=false, $
   Kbp_ferm::Rule <<| tag == "ferm_drbd_${environment}_${name}" |>>
 
   kbp_ferm::rule { "DRBD connections from ${fqdn} for ${name}":
-    saddr    => $fqdn,
+    saddr    => $use_ipaddress,
     proto    => "tcp",
     dport    => 7789,
     action   => "ACCEPT",

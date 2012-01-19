@@ -37,7 +37,7 @@ class kbp_ocfs2($ocfs2_tag="", $use_ipaddress=$external_ipaddress) {
   Gen_ferm::Rule <<| tag == $real_tag |>>
 
   @@gen_ferm::rule { "OCFS2 connections from ${fqdn}":
-    saddr  => $fqdn,
+    saddr  => $use_ipaddress,
     proto  => "tcp",
     dport  => 7777,
     action => "ACCEPT",
