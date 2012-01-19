@@ -941,12 +941,12 @@ define kbp_icinga::clientcommand($sudo=false, $path=false, $command=false, $argu
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::service($service_description=false, $use=false, $servicegroups=false, $passive=false, $ha=false, $sms=true,
+define kbp_icinga::service($ensure="present", $service_description=false, $use=false, $servicegroups=false, $passive=false, $ha=false, $sms=true,
     $warnsms=true, $conf_dir="${::environment}/${::fqdn}", $host_name=$::fqdn, $initial_state=false, $active_checks_enabled=false, $passive_checks_enabled=false,
     $obsess_over_service=false, $check_freshness=false, $freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false,
     $process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false,
     $check_interval=false, $retry_interval=false, $notification_period=false, $notification_options=false, $max_check_attempts=false, $check_command=false,
-    $arguments=false, $register=false, $nrpe=false, $ensure=present, $proxy=false, $customer_notify=true) {
+    $arguments=false, $register=false, $nrpe=false, $proxy=false, $customer_notify=true) {
   $contacts = $register ? {
     0       => "devnull",
     default => false,
@@ -988,6 +988,7 @@ define kbp_icinga::service($service_description=false, $use=false, $servicegroup
 
   if $nrpe {
     gen_icinga::servicedependency { "nrpe_dependency_${real_name}_nrpe_port":
+      ensure                        => $ensure,
       dependent_service_description => $service_description,
       host_name                     => $fqdn,
       service_description           => "NRPE port",
