@@ -11,6 +11,7 @@ define kbp_user($ensure="present", $uid, $gid, $comment, $groups=false, $keys=fa
       false   => undef,
       default => $groups,
     },
+    shell      => "/bin/bash",
     comment    => $comment,
     managehome => true,
     require    => Group[$gid];
