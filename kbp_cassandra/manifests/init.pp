@@ -44,7 +44,7 @@ class kbp_cassandra::client($customtag="cassandra_${environment}",$ferm_saddr=$e
 #  gen_cassandra
 #  gen_puppet
 #
-class kbp_cassandra::server($branch="07x", $customtag="cassandra_${environment}", $java_monitoring=false, $servicegroups=false, $sms=true) {
+class kbp_cassandra::server($branch="07x", $customtag="cassandra_${environment}", $java_monitoring=false, $servicegroups=false, $sms=true, $use_ipaddress=$external_ipaddress) {
   include kbp_monitoring::cassandra
   class { "gen_cassandra":
     branch => $branch;
@@ -55,12 +55,13 @@ class kbp_cassandra::server($branch="07x", $customtag="cassandra_${environment}"
     require => Package["sun-java6-jdk"],
   }
 
-  @@gen_ferm::rule { "Internal Cassandra connections from ${fqdn}":
-    saddr  => $fqdn,
-    proto  => "tcp",
-    dport  => 7000,
-    action => "ACCEPT",
-    tag    => $customtag;
+  kbp_ferm::rule { "Internal Cassandra connections from ${fqdn}":
+    exported => true,
+    saddr    => $use_ipaddress,
+    proto    => "tcp",
+    dport    => 7000,
+    action   => "ACCEPT",
+    ferm_tag => $customtag;
   }
 
   Kbp_ferm::Rule <<| tag == $customtag |>>
