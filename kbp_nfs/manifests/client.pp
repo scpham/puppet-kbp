@@ -23,11 +23,12 @@ define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024", $
 
   # This will probably end up opening the same ports for the same hosts multiple times on the
   # server if you have several mounts, but that's not a problem.
-  @@gen_ferm::rule { "NFS connections from ${fqdn} for ${real_serverpath}":
-    saddr  => $ferm_saddr,
-    proto  => "(tcp udp)",
-    action => "ACCEPT",
-    tag    => $nfs_tag;
+  kbp_ferm::rule { "NFS connections from ${fqdn} for ${real_serverpath}":
+    exported => true,
+    saddr    => $ferm_saddr,
+    proto    => "(tcp udp)",
+    action   => "ACCEPT",
+    ferm_tag => $nfs_tag;
   }
 
   kbp_monitoring::nfs::client { $name:; }

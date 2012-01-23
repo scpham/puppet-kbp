@@ -38,7 +38,7 @@ class kbp_nfs::server($need_gssd = "no", $need_idmapd = "no", $need_statd = "yes
     notify => Service["nfs-kernel-server"];
   }
 
-  Gen_ferm::Rule <<| tag == $nfs_tag |>> {
+  Kbp_ferm::Rule <<| tag == $nfs_tag |>> {
     dport => "(111 2049 ${incoming_port} ${outgoing_port} ${mountd_port} ${lock_port})",
   }
 
