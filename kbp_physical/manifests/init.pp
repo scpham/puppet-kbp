@@ -49,15 +49,17 @@ class kbp_physical {
     }
 
     kbp_icinga::virtualhost { $consolefqdn:
-      address => $consoleaddress,
-      parents => $consoleparent,
-      proxy   => $consoleproxy;
+      address            => $consoleaddress,
+      parents            => $consoleparent,
+      proxy              => $consoleproxy,
+      allowproxyoverride => false;
     }
 
     if !$consoleipmi {
       kbp_monitoring::http { "http_${consolefqdn}":
-        customfqdn => $consolefqdn,
-        proxy      => $consoleproxy;
+        customfqdn         => $consolefqdn,
+        proxy              => $consoleproxy,
+        allowproxyoverride => false;
       }
     }
   }
