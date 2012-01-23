@@ -123,7 +123,7 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=fals
     content => "/var/lib/mysql/*";
   }
 
-  Gen_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
+  Kbp_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
 
   Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
 }
@@ -200,7 +200,7 @@ define kbp_mysql::client ($mysql_name, $address=$fqdn) {
     proto    => "tcp",
     dport    => 3306,
     action   => "ACCEPT",
-    tag      => "mysql_${environment}_${mysql_name}";
+    ferm_tag => "mysql_${environment}_${mysql_name}";
   }
 }
 
