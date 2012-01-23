@@ -989,6 +989,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
   if $nrpe and $register != 0 {
     gen_icinga::servicedependency { "nrpe_dependency_${real_name}_nrpe_port":
       ensure                        => $ensure,
+      conf_dir                      => $conf_dir,
       dependent_service_description => $service_description,
       host_name                     => $host_name,
       service_description           => "NRPE port",
