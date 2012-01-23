@@ -13,13 +13,14 @@
 #  Undocumented
 #  gen_puppet
 #
-class kbp_cassandra::client($customtag="cassandra_${environment}") {
-  @@gen_ferm::rule { "Cassandra connections from ${fqdn}":
-    saddr  => $fqdn,
-    proto  => "tcp",
-    dport  => 9160,
-    action => "ACCEPT",
-    tag    => $customtag;
+class kbp_cassandra::client($customtag="cassandra_${environment}",$ferm_saddr=$external_ipaddress) {
+  kbp_ferm::rule { "Cassandra connections from ${fqdn}":
+    exported => true,
+    saddr    => $ferm_saddr,
+    proto    => "tcp",
+    dport    => 9160,
+    action   => "ACCEPT",
+    ferm_tag => $customtag;
   }
 }
 
@@ -62,7 +63,7 @@ class kbp_cassandra::server($branch="07x", $customtag="cassandra_${environment}"
     tag    => $customtag;
   }
 
-  Gen_ferm::Rule <<| tag == $customtag |>>
+  Kbp_ferm::Rule <<| tag == $customtag |>>
   Gen_ferm::Rule <<| tag == "cassandra_monitoring" |>>
 
   if $java_monitoring {
