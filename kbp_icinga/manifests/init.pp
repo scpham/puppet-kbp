@@ -246,10 +246,10 @@ class kbp_icinga::proxyclient($proxy, $proxytag="proxy_${environment}", $saddr=f
     Kbp_ferm::Rule <<| tag == $proxytag |>>
   }
 
-  Kbp_icinga::Service <| |> {
+  Kbp_icinga::Service <| allowproxyoverride == true|> {
     proxy => $proxy,
   }
-  Kbp_icinga::Host <| |> {
+  Kbp_icinga::Host <| allowproxyoverride == true |> {
     proxy => $proxy,
   }
 }
@@ -946,7 +946,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     $obsess_over_service=false, $check_freshness=false, $freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false,
     $process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false,
     $check_interval=false, $retry_interval=false, $notification_period=false, $notification_options=false, $max_check_attempts=false, $check_command=false,
-    $arguments=false, $register=false, $nrpe=false, $proxy=false, $customer_notify=true) {
+    $arguments=false, $register=false, $nrpe=false, $proxy=false, $customer_notify=true, $allowproxyoverride=true) {
   $contacts = $register ? {
     0       => "devnull",
     default => false,
@@ -1051,7 +1051,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
 define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=false,$hostgroups=false,$parents=false,$address=$external_ipaddress,$ensure=present,
     $initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
     $retain_nonstatus_information=false, $check_command="check_ping", $check_interval=false, $notification_period=false, $notification_interval=false, $max_check_attempts=false,
-    $register=1, $proxy=false) {
+    $register=1, $proxy=false, $allowproxyoverride=true) {
   $contacts = $register ? {
     0       => "devnull",
     default => false,
@@ -1236,14 +1236,14 @@ class kbp_icinga::rabbitmqctl($namespace) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environment, $parents=false, $hostgroups=false, $sms=true, $notification_period=false, $proxy=false) {
+define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environment, $parents=false, $hostgroups=false, $sms=true, $notification_period=false, $proxy=false, $allowproxyoverride=true) {
   $confdir = "${conf_dir}/${name}"
 
-  gen_icinga::configdir { "${confdir}":
+  gen_icinga::configdir { $confdir:
     ensure => $ensure;
   }
 
-  kbp_icinga::host { "${name}":
+  kbp_icinga::host { $name:
     ensure                => $ensure,
     conf_dir              => $confdir,
     address               => $address,
@@ -1260,7 +1260,8 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
       false   => undef,
       default => $notification_period,
     },
-    proxy                 => $proxy;
+    proxy                 => $proxy,
+    allowproxyoverride    => $allowproxyoverride;
   }
 }
 
@@ -1504,14 +1505,15 @@ define kbp_icinga::raidcontroller($driver) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::http($customfqdn=$::fqdn, $auth=false, $proxy=false) {
+define kbp_icinga::http($customfqdn=$::fqdn, $auth=false, $proxy=false, $allowproxyoverride=true) {
   kbp_icinga::service { "http_${customfqdn}":
     conf_dir            => "${::environment}/${customfqdn}",
     service_description => "HTTP",
     host_name           => $customfqdn,
     check_command       => "check_http",
     arguments           => "200,301,302,401,403",
-    proxy               => $proxy;
+    proxy               => $proxy,
+    allowproxyoverride  => $allowproxyoverride;
   }
 }
 
