@@ -1,3 +1,15 @@
+define kbp_ssl::keys {
+  $key_name = regsubst($name,'^(.*)/(.*)$','\2')
+
+  kbp_ssl::private_key { $key_name:
+    source => "${name}.key";
+  }
+
+  kbp_ssl::public_key { $key_name:
+    source => "${name}.pem";
+  }
+}
+
 define kbp_ssl::public_key($source=false, $content=false) {
   if ! ($source or $content) {
     fail("Public key ${name} has neither a \$source nor a \$content.")

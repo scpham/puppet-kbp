@@ -318,18 +318,6 @@ define kbp_apache_new::vhost_addition($ensure="present", $content=false, $source
   }
 }
 
-define kbp_apache_new::keys {
-  $key_name = regsubst($name,'^(.*)/(.*)$','\2')
-
-  kfile {
-    "/etc/ssl/private/${key_name}.key":
-      source => "${name}.key",
-      mode   => 400;
-    "/etc/ssl/certs/${key_name}.pem":
-      source => "${name}.pem";
-  }
-}
-
 define kbp_apache_new::glassfish_domain($site, $site_port, $connector_port) {
   include kbp_apache_new::glassfish_domain_base
 
