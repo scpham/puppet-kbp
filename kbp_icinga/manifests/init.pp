@@ -246,10 +246,10 @@ class kbp_icinga::proxyclient($proxy, $proxytag="proxy_${environment}", $saddr=f
     Kbp_ferm::Rule <<| tag == $proxytag |>>
   }
 
-  Kbp_icinga::Service <| allowproxyoverride == true|> {
+  Kbp_icinga::Service <| allowproxyoverride != false |> {
     proxy => $proxy,
   }
-  Kbp_icinga::Host <| allowproxyoverride == true |> {
+  Kbp_icinga::Host <| allowproxyoverride != false |> {
     proxy => $proxy,
   }
 }
