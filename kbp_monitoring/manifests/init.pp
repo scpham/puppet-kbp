@@ -381,7 +381,7 @@ define kbp_monitoring::nfs::client($package="icinga") {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_monitoring::sslcert($path, $package="icinga") {
+define kbp_monitoring::sslcert($path="/etc/ssl/certs/${name}.pem", $package="icinga") {
   case $package {
     "icinga": {
       kbp_icinga::sslcert { "${name}":

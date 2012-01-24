@@ -1,3 +1,11 @@
+define kbp_ssl::wildcard {
+  $key_name = regsubst($name,'^(.*)/(.*)$','\2')
+
+  kbp_monitoring::sslcert { $key_name:; }
+
+  kbp_ssl::keys { $name:; }
+}
+
 define kbp_ssl::keys {
   $key_name = regsubst($name,'^(.*)/(.*)$','\2')
 

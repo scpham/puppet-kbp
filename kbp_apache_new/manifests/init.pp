@@ -196,8 +196,8 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       $monitor_name             = "${real_name}_SSL"
       $real_service_description = "Vhost ${real_name} SSL"
 
-      kbp_monitoring::sslcert { $real_name:
-        path => "/etc/ssl/certs/${real_name}.pem";
+      if ! $wildcard {
+        kbp_monitoring::sslcert { $real_name:; }
       }
 
       if $redirect_non_ssl {
