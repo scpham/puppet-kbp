@@ -1,12 +1,13 @@
 # Author: Kumina bv <support@kumina.nl>
 
-class kbp_mysql::mastermaster($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false) {
+class kbp_mysql::mastermaster($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$fqdn) {
   class { "kbp_mysql::master":
     mysql_name   => $mysql_name,
     bind_address => $bind_address,
     setup_backup => $setup_backup;
   }
   class { "kbp_mysql::slave":
+    repl_host     => $repl_host,
     mysql_name    => $mysql_name,
     mastermaster  => true,
     monitoring_ha => $monitoring_ha_slaving;
@@ -43,7 +44,7 @@ class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false) {
+class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$fqdn) {
   if ! $mastermaster {
     class { "kbp_mysql::server":
       mysql_name   => $mysql_name,
@@ -55,7 +56,7 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
   @@mysql::server::grant { "repl_${fqdn}":
     user        => "repl",
     password    => "etohsh8xahNu",
-    hostname    => $fqdn,
+    hostname    => $repl_host,
     db          => "*",
     permissions => "replication slave",
     tag         => "mysql_${environment}_${mysql_name}";
@@ -68,7 +69,7 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
   }
 
   @@gen_ferm::rule { "MySQL slaving from ${fqdn}":
-    saddr  => $fqdn,
+    saddr  => $repl_host,
     proto  => "tcp",
     dport  => 3306,
     action => "ACCEPT",
