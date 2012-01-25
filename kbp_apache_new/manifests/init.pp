@@ -121,14 +121,14 @@ class kbp_apache_new::module::jk {
 class kbp_apache_new::intermediate::rapidssl {
   kbp_ssl::public_key { "RapidSSL_CA_bundle":
     source => "kbp_apache_new/ssl/RapidSSL_CA_bundle.pem",
-    notify => Exec["reload-apache"];
+    notify => Exec["reload-apache2"];
   }
 }
 
 class kbp_apache_new::intermediate::positivessl {
   kbp_ssl::public_key { "PositiveSSLCA":
     source => "kbp_apache_new/ssl/PositiveSSLCA.pem",
-    notify => Exec["reload-apache"];
+    notify => Exec["reload-apache2"];
   }
 }
 
