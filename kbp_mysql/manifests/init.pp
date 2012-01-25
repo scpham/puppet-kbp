@@ -68,12 +68,13 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
     permissions => "super, replication client";
   }
 
-  @@gen_ferm::rule { "MySQL slaving from ${fqdn}":
-    saddr  => $repl_host,
-    proto  => "tcp",
-    dport  => 3306,
-    action => "ACCEPT",
-    tag    => "mysql_${environment}_${mysql_name}";
+  kbp_ferm::rule { "MySQL slaving from ${fqdn}":
+    exported => true,
+    saddr    => $repl_host,
+    proto    => "tcp",
+    dport    => 3306,
+    action   => "ACCEPT",
+    ferm_tag => "mysql_${environment}_${mysql_name}";
   }
 
   kbp_icinga::service { "mysql_slaving":
