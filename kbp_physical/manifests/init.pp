@@ -58,6 +58,10 @@ class kbp_physical {
     if !$consoleipmi {
       kbp_monitoring::http { "http_${consolefqdn}":
         customfqdn           => $consolefqdn,
+        ssl                  => $consolessl ? {
+          true    => true,
+          default => false,
+        },
         proxy                => $consoleproxy,
         preventproxyoverride => true;
       }
