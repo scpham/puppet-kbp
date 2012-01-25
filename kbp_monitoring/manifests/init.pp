@@ -20,6 +20,44 @@ class kbp_monitoring::proxyclient($package="icinga", $proxy, $proxytag="proxy_${
       }
     }
   }
+
+  kbp_ferm::rule {
+    "NRPE monitoring":
+      saddr    => $saddr,
+      proto    => "tcp",
+      dport    => 5666,
+      action   => "ACCEPT";
+    "MySQL monitoring":
+      saddr    => $saddr,
+      proto    => "tcp",
+      dport    => 3306,
+      action   => "ACCEPT";
+    "Sphinxsearch monitoring":
+      saddr    => $saddr,
+      proto    => "tcp",
+      dport    => 3312,
+      action   => "ACCEPT";
+    "Cassandra monitoring":
+      saddr    => $saddr,
+      proto    => "tcp",
+      dport    => "(7000 8080 9160)",
+      action   => "ACCEPT";
+    "Glassfish monitoring":
+      saddr    => $saddr,
+      proto    => "tcp",
+      dport    => 80,
+      action   => "ACCEPT";
+    "NFS monitoring":
+      saddr    => $saddr,
+      proto    => "(tcp udp)",
+      dport    => "(111 2049)",
+      action   => "ACCEPT";
+    "DNS monitoring":
+      saddr    => $saddr,
+      proto    => "udp",
+      dport    => 53,
+      action   => "ACCEPT";
+  }
 }
 
 class kbp_monitoring::client($package="icinga") {

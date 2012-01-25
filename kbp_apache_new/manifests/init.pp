@@ -118,6 +118,42 @@ class kbp_apache_new::module::jk {
   include gen_apache::jk
 }
 
+class kbp_apache_new::intermediate::rapidssl {
+  kbp_ssl::public_key { "RapidSSL_CA_bundle":
+    source => "kbp_apache_new/ssl/RapidSSL_CA_bundle.pem",
+    notify => Exec["reload-apache2"];
+  }
+}
+
+class kbp_apache_new::intermediate::positivessl {
+  kbp_ssl::public_key { "PositiveSSLCA":
+    source => "kbp_apache_new/ssl/PositiveSSLCA.pem",
+    notify => Exec["reload-apache2"];
+  }
+}
+
+class kbp_apache_new::glassfish_domain_base {
+  include kbp_apache_new::module::jk
+
+  concat { "/etc/apache2/workers.properties":
+    require => Package["apache2"];
+  }
+
+  concat::add_content {
+    "0 worker base":
+      content   => "worker.list=",
+      linebreak => false,
+      target    => "/etc/apache2/workers.properties";
+    "2 worker base":
+      content => "",
+      target  => "/etc/apache2/workers.properties";
+  }
+
+  kfile { "/etc/apache2/conf.d/jk":
+    content => template("kbp_apache_new/conf.d/jk");
+  }
+}
+
 define kbp_apache_new::php_cgi($documentroot) {
   include gen_base::php5-cgi
   include gen_base::php-apc
@@ -333,27 +369,5 @@ define kbp_apache_new::glassfish_domain($site, $site_port, $connector_port) {
     "3 worker domain ${name} settings":
       content => template("kbp_apache_new/glassfish/workers.properties_settings"),
       target  => "/etc/apache2/workers.properties";
-  }
-}
-
-class kbp_apache_new::glassfish_domain_base {
-  include kbp_apache_new::module::jk
-
-  concat { "/etc/apache2/workers.properties":
-    require => Package["apache2"];
-  }
-
-  concat::add_content {
-    "0 worker base":
-      content   => "worker.list=",
-      linebreak => false,
-      target    => "/etc/apache2/workers.properties";
-    "2 worker base":
-      content => "",
-      target  => "/etc/apache2/workers.properties";
-  }
-
-  kfile { "/etc/apache2/conf.d/jk":
-    content => template("kbp_apache_new/conf.d/jk");
   }
 }
