@@ -1289,7 +1289,7 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
 #
 define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_name=false, $response=false,
     $statuscode="200", $max_check_attempts=false, $ssl=false) {
-  kbp_icinga::site { $name:
+  kbp_icinga::site { "${name}_80":
     address            => $address,
     port               => $port,
     path               => $url,
@@ -1306,7 +1306,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_n
   }
 
   if $ssl {
-    kbp_icinga::site { $name:
+    kbp_icinga::site { "${name}_443":
       address            => $address,
       ssl                => true,
       port               => $port,
