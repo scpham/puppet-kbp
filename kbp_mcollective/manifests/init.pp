@@ -1,8 +1,7 @@
 class kbp_mcollective::server {
   include gen_mcollective::server
-  class { "kbp_rabbitmq::client":
-    rabbitmq_name => "mcollective";
-  }
+
+  kbp_rabbitmq::client { "mcollective":; }
 
   kfile { "/etc/mcollective/facts.yaml":
     content => template("kbp_mcollective/facts"),

@@ -50,13 +50,10 @@ class kbp_rabbitmq($rabbitmq_name=false, $port=5672, $ssl_cert=false, $ssl_key=f
 #  gen_ferm
 #  gen_puppet
 #
-define kbp_rabbitmq::client($rabbitmq_name=false, $saddr=$fqdn) {
+define kbp_rabbitmq::client($saddr=$fqdn) {
   kbp_ferm::rule { "Connections to RabbitMQ":
     saddr    => $saddr,
-    tag      => $rabbitmq_name ? {
-      false   => "rabbitmq_${environment}",
-      default => "rabbitmq_${rabbitmq_name}",
-    },
+    tag      => "rabbitmq_${name}",
     exported => true;
   }
 }
