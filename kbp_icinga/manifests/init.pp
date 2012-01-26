@@ -1287,15 +1287,38 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_name=false, $response=false, $statuscode="200", $max_check_attempts=false) {
+define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_name=false, $response=false,
+    $statuscode="200", $max_check_attempts=false, $ssl=false) {
   kbp_icinga::site { $name:
     address            => $address,
     port               => $port,
     path               => $url,
     max_check_attempts => $max_check_attempts,
-    statuscode         => $statuscode,
-    host_name          => $host_name,
+    statuscode         => $ssl ? {
+      false => $statuscode,
+      true  => "301",
+    },
+    host_name          => $host_name ? {
+      false   => $name,
+      default => $host_name,
+    },
     vhost              => false;
+  }
+
+  if $ssl {
+    kbp_icinga::site { $name:
+      address            => $address,
+      ssl                => true,
+      port               => $port,
+      path               => $url,
+      max_check_attempts => $max_check_attempts,
+      statuscode         => $statuscode,
+      host_name          => $ssl ? {
+        false   => $name,
+        default => $host_name,
+      },
+      vhost              => false;
+    }
   }
 }
 
@@ -1373,12 +1396,16 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       default => "${conf_dir}/${real_name}",
     }
 
-    gen_icinga::configdir { $confdir:; }
+    if !defined(Gen_icinga::Configdir[$confdir]) {
+      gen_icinga::configdir { $confdir:; }
+    }
 
-    kbp_icinga::host { $real_name:
-      conf_dir => $confdir,
-      address  => $address,
-      parents  => $parents;
+    if !defined(Kbp_icinga::Host[$real_name]) {
+      kbp_icinga::host { $real_name:
+        conf_dir => $confdir,
+        address  => $address,
+        parents  => $parents;
+      }
     }
   }
 

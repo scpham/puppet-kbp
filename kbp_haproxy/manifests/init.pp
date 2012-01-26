@@ -128,6 +128,10 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
         false   => $listenaddress,
         default => $monitoring_address,
       },
+      ssl                => $tcp_sslport ? {
+        false   => false,
+        default => true,
+      },
       ha                 => $monitoring_ha,
       statuscode         => $monitoring_status,
       url                => $monitoring_url,
