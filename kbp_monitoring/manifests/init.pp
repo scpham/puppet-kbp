@@ -452,11 +452,13 @@ define kbp_monitoring::sslcert($path="/etc/ssl/certs/${name}.pem", $package="ici
 #  Undocumented
 #  gen_puppet
 #
-define kbp_monitoring::haproxy($address, $port=false, $ha=false, $host_name=false, $statuscode="200", $url=false, $response=false, $package="icinga", $max_check_attempts=false) {
+define kbp_monitoring::haproxy($address, $port=false, $ha=false, $host_name=false, $statuscode="200", $url=false,
+    $response=false, $package="icinga", $max_check_attempts=false, $ssl=false) {
   case $package {
     "icinga": {
       kbp_icinga::haproxy { $name:
         address            => $address,
+        ssl                => $ssl,
         ha                 => $ha,
         statuscode         => $statuscode,
         url                => $url,
@@ -612,12 +614,11 @@ define kbp_monitoring::raidcontroller($package="icinga", $driver) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_monitoring::http($package="icinga", $customfqdn=$fqdn, $auth=false, $proxy=false, $preventproxyoverride=false, $ssl=false) {
+define kbp_monitoring::http($package="icinga", $customfqdn=$fqdn, $auth=false, $proxy=false, $preventproxyoverride=false) {
   case $package {
     "icinga": {
       kbp_icinga::http { $name:
         customfqdn           => $customfqdn,
-        ssl                  => $ssl,
         auth                 => $auth,
         proxy                => $proxy,
         preventproxyoverride => $preventproxyoverride;

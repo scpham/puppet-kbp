@@ -363,19 +363,17 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       host_argument => false,
       arguments     => "0";
     "check_drbd_mount":
-      command_name => "check_drbd_mount",
-      arguments    => ['$ARG1$','$ARG2$'],
-      nrpe         => true;
+      command_name  => "check_drbd_mount",
+      arguments     => ['$ARG1$','$ARG2$'],
+      nrpe          => true;
     "check_ping":
-      arguments    => ['-w 5000,100%','-c 5000,100%','-p 1'];
+      arguments     => ['-w 5000,100%','-c 5000,100%','-p 1'];
     "check_ping_nrpe":
-      command_name => "check_ping",
-      arguments    => ['5000,100%','5000,100%','1','$ARG1$'],
-      nrpe         => true;
+      command_name  => "check_ping",
+      arguments     => ['5000,100%','5000,100%','1','$ARG1$'],
+      nrpe          => true;
     "check_http":
-      arguments => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20'];
-    "check_http_ssl":
-      arguments => ['-I $HOSTADDRESS$','-p 443','-e $ARG1$','-t 20'];
+      arguments     => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20'];
     "check_http_vhost":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
@@ -1295,15 +1293,38 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_name=false, $response=false, $statuscode="200", $max_check_attempts=false) {
-  kbp_icinga::site { $name:
+define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_name=false, $response=false,
+    $statuscode="200", $max_check_attempts=false, $ssl=false) {
+  kbp_icinga::site { "${name}_80":
     address            => $address,
     port               => $port,
     path               => $url,
     max_check_attempts => $max_check_attempts,
-    statuscode         => $statuscode,
-    host_name          => $host_name,
+    statuscode         => $ssl ? {
+      false => $statuscode,
+      true  => "301",
+    },
+    host_name          => $host_name ? {
+      false   => $name,
+      default => $host_name,
+    },
     vhost              => false;
+  }
+
+  if $ssl {
+    kbp_icinga::site { "${name}_443":
+      address            => $address,
+      ssl                => true,
+      port               => $port,
+      path               => $url,
+      max_check_attempts => $max_check_attempts,
+      statuscode         => $statuscode,
+      host_name          => $ssl ? {
+        false   => $name,
+        default => $host_name,
+      },
+      vhost              => false;
+    }
   }
 }
 
@@ -1381,12 +1402,16 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       default => "${conf_dir}/${real_name}",
     }
 
-    gen_icinga::configdir { $confdir:; }
+    if !defined(Gen_icinga::Configdir[$confdir]) {
+      gen_icinga::configdir { $confdir:; }
+    }
 
-    kbp_icinga::host { $real_name:
-      conf_dir => $confdir,
-      address  => $address,
-      parents  => $parents;
+    if !defined(Kbp_icinga::Host[$real_name]) {
+      kbp_icinga::host { $real_name:
+        conf_dir => $confdir,
+        address  => $address,
+        parents  => $parents;
+      }
     }
   }
 
@@ -1514,15 +1539,12 @@ define kbp_icinga::raidcontroller($driver) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::http($customfqdn=$::fqdn, $auth=false, $proxy=false, $preventproxyoverride=false, $ssl=false) {
+define kbp_icinga::http($customfqdn=$::fqdn, $auth=false, $proxy=false, $preventproxyoverride=false) {
   kbp_icinga::service { "http_${customfqdn}":
     conf_dir             => "${::environment}/${customfqdn}",
     service_description  => "HTTP",
     host_name            => $customfqdn,
-    check_command        => $ssl ? {
-      false => "check_http",
-      true  => "check_http_ssl",
-    },
+    check_command        => "check_http",
     arguments            => "200,301,302,401,403",
     proxy                => $proxy,
     preventproxyoverride => $preventproxyoverride;
