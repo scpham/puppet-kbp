@@ -642,11 +642,17 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
   }
 
   kfile {
+    # XXX: Please remove after 14-02-2012.
     "/etc/cron.d/icinga-check-alive-cron":
-      source => "kbp_icinga/server/icinga-check-alive-cron";
+      ensure => absent;
     "/usr/bin/icinga-check-alive":
       source => "kbp_icinga/server/icinga-check-alive",
       mode   => 755;
+  }
+
+  kcron { "icinga-check-alive":
+    minute => "*/5",
+    command => "/usr/bin/icinga-check-alive";
   }
 
   @@kbp_munin::alert_export { "icinga":
