@@ -381,7 +381,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
     "check_http_vhost_port":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-H $ARG1$','-p $ARG2$','-e $ARG5$','-t 20'];
+      arguments     => ['-H $ARG1$','-p $ARG2$','-e $ARG3$','-t 20'];
     "check_http_vhost_response":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
