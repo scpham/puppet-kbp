@@ -81,7 +81,8 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
   }
 
   kbp_tomcat::apache_proxy_ajp_site { "jira.informatm.com":
-    port => 8009;
+    port         => 8009,
+    monitor_path => "/jira/secure/Dashboard.jspa";
   }
 
   mysql::server::db { "${db_name}":
