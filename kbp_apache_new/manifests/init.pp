@@ -105,6 +105,10 @@ class kbp_apache_new::module::dav_fs {
   kbp_apache_new::module { "dav_fs":; }
 }
 
+class kbp_apache_new::module::auth_mysql {
+  kbp_apache_new::module { "auth_mysql":; }
+}
+
 define kbp_apache_new::cgi($documentroot) {
   include gen_base::libapache2-mod-fcgid
 
