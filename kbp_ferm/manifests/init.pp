@@ -61,6 +61,10 @@ class kbp_ferm {
       icmptype => "echo-request",
       action   => "ACCEPT";
   }
+
+  class { "kbp_monitoring::ferm_config":
+    filename => "/etc/ferm/ferm.conf";
+  }
 }
 
 # Class: kbp_ferm::offenders

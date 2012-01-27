@@ -46,7 +46,11 @@ class kbp_icinga::client {
       sudo      => true,
       command   => "check_file",
       arguments => '-f $ARG1$ -c $ARG2$';
+    "check_ferm_config":
+      arguments => '$ARG1$';
     "check_heartbeat":;
+    "check_icinga_config":
+      sudo      => true;
     "check_java_heap_usage":
       command   => "check_javaheapusage",
       arguments => '/etc/munin/plugins/jmx_$ARG1$_java_process_memory 96 93';
@@ -372,6 +376,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       command_name  => "check_ping",
       arguments     => ['5000,100%','5000,100%','1','$ARG1$'],
       nrpe          => true;
+    "check_ferm_config":
+      arguments     => ['$ARG1$'],
+      nrpe          => true;
     "check_http":
       arguments     => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20'];
     "check_http_vhost":
@@ -414,6 +421,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ['-H $ARG1$','-p $ARG2$','-u $ARG3$','-r $ARG4$','-e $ARG5$','-t 20'];
+    "check_icinga_config":
+      arguments     => ['$ARG1$'],
+      nrpe          => true;
     "check_mbean_value":
       arguments     => ['$ARG1$','$ARG2$','$ARG3$','$ARG4$'],
       nrpe          => true;
@@ -474,6 +484,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
     "/etc/icinga/config/generic/notify_commands.cfg":
       source  => "kbp_icinga/server/config/generic/notify_commands.cfg",
       notify  => Exec["reload-icinga"];
+  }
+
+  class { "kbp_monitoring::icinga_config":
+    filename => "/etc/icinga/icinga.cfg";
   }
 
   setfacl { "Allow www-data to read the command file":
@@ -810,6 +824,24 @@ class kbp_icinga::environment {
   }
 }
 
+# Class: kbp_icinga::ferm_config
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_icinga::ferm_config($filename) {
+  kbp_icinga::service { "ferm_config":
+    service_description => "Ferm configuration ${filename}",
+    check_command       => "ferm_config",
+    arguments           => $filename,
+    nrpe                => true;
+  }
+}
+
 # Class: kbp_icinga::heartbeat
 #
 # Actions:
@@ -823,6 +855,24 @@ class kbp_icinga::heartbeat {
   kbp_icinga::service { "heartbeat":
     service_description => "Heartbeat",
     check_command       => "check_heartbeat",
+    nrpe                => true;
+  }
+}
+
+# Class: kbp_icinga::icinga_config
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_icinga::icinga_config($filename) {
+  kbp_icinga::service { "icinga_config":
+    service_description => "Icinga configuration ${filename}",
+    check_command       => "icinga_config",
+    arguments           => $filename,
     nrpe                => true;
   }
 }

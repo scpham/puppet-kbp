@@ -186,6 +186,29 @@ class kbp_monitoring::environment($package="icinga") {
   }
 }
 
+# Class: kbp_monitoring::ferm_config
+#
+# Parameters:
+#  package
+#    Undocumented
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_monitoring::ferm_config($package="icinga", $filename) {
+  case $package {
+    "icinga": {
+      class { "kbp_icinga::ferm_config":
+        filename => $filename;
+      }
+    }
+  }
+}
+
 # Class: kbp_monitoring::heartbeat
 #
 # Parameters:
@@ -203,6 +226,29 @@ class kbp_monitoring::heartbeat($package="icinga") {
   case $package {
     "icinga": {
       include kbp_icinga::heartbeat
+    }
+  }
+}
+
+# Class: kbp_monitoring::icinga_config
+#
+# Parameters:
+#  package
+#    Undocumented
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_monitoring::icinga_config($package="icinga", $filename) {
+  case $package {
+    "icinga": {
+      class { "kbp_icinga::icinga_config":
+        filename => $filename;
+      }
     }
   }
 }
