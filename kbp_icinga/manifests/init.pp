@@ -836,7 +836,7 @@ class kbp_icinga::environment {
 class kbp_icinga::ferm_config($filename) {
   kbp_icinga::service { "ferm_config":
     service_description => "Ferm configuration ${filename}",
-    check_command       => "ferm_config",
+    check_command       => "check_ferm_config",
     arguments           => $filename,
     nrpe                => true;
   }
