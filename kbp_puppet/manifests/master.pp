@@ -300,8 +300,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
         section    => 'main';
     }
 
-    # TODO Only needed until puppetstoreconfigclean script also looks into
-    # the main section for the database credentials.
+    # We need these settings in [main] as well as [master], it seems.
     gen_puppet::set_config {
       "Set database adapter for ${name} in master.":
         configfile => $configfile,
@@ -322,6 +321,25 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
         configfile => $configfile,
         var        => 'dbpassword',
         value      => $real_dbpasswd,
+        section    => 'master';
+      "Set storeconfig for ${name} in master.":
+        configfile => $configfile,
+        var        => 'storeconfigs',
+        value      => 'true',
+        section    => 'master',
+        require    => Kpackage["libactiverecord-ruby1.8"];
+      "Set thin_storeconfigs for ${name} in master.":
+        configfile => $configfile,
+        var        => 'thin_storeconfigs',
+        value      => $queue ? {
+          true    => 'false',
+          default => 'true'
+        },
+        section    => 'master';
+      "Set dbmigrate for ${name} in master.":
+        configfile => $configfile,
+        var        => 'dbmigrate',
+        value      => 'true',
         section    => 'master';
     }
 
