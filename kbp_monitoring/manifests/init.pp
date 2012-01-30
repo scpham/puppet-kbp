@@ -230,29 +230,6 @@ class kbp_monitoring::heartbeat($package="icinga") {
   }
 }
 
-# Class: kbp_monitoring::icinga_config
-#
-# Parameters:
-#  package
-#    Undocumented
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_monitoring::icinga_config($package="icinga", $filename) {
-  case $package {
-    "icinga": {
-      class { "kbp_icinga::icinga_config":
-        filename => $filename;
-      }
-    }
-  }
-}
-
 # Class: kbp_monitoring::pacemaker
 #
 # Parameters:

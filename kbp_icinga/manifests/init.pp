@@ -486,7 +486,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       notify  => Exec["reload-icinga"];
   }
 
-  class { "kbp_monitoring::icinga_config":
+  class { "kbp_icinga::icinga_config":
     filename => "/etc/icinga/icinga.cfg";
   }
 
@@ -871,9 +871,10 @@ class kbp_icinga::heartbeat {
 class kbp_icinga::icinga_config($filename) {
   kbp_icinga::service { "icinga_config":
     service_description => "Icinga configuration ${filename}",
-    check_command       => "icinga_config",
+    check_command       => "check_icinga_config",
     arguments           => $filename,
-    nrpe                => true;
+    nrpe                => true,
+    sms                 => false;
   }
 }
 
