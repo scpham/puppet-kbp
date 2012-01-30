@@ -767,28 +767,28 @@ class kbp_icinga::environment {
       notification_options         => "w,u,c,r",
       register                     => "0";
     "critsms_service_${::environment}":
-      conf_dir      => "${::environment}/generic",
-      use           => "ha_service",
-      servicegroups => "wh_services_critsms,${::environment}_services",
-      register      => "0";
+      conf_dir                     => "${::environment}/generic",
+      use                          => "ha_service_${environment}",
+      servicegroups                => "wh_services_critsms,${::environment}_services",
+      register                     => "0";
     "warnsms_service_${::environment}":
-      conf_dir      => "${::environment}/generic",
-      use           => "ha_service",
-      servicegroups => "wh_services_warnsms,${::environment}_services",
-      register      => "0";
+      conf_dir                     => "${::environment}/generic",
+      use                          => "ha_service_${environment}",
+      servicegroups                => "wh_services_warnsms,${::environment}_services",
+      register                     => "0";
     "mail_service_${::environment}":
-      conf_dir      => "${::environment}/generic",
-      use           => "ha_service",
-      servicegroups => "mail_services,${::environment}_services",
-      register      => "0";
+      conf_dir                     => "${::environment}/generic",
+      use                          => "ha_service_${environment}",
+      servicegroups                => "mail_services,${::environment}_services",
+      register                     => "0";
     "passive_service_${::environment}":
-      conf_dir               => "${::environment}/generic",
-      use                    => "ha_service",
-      servicegroups          => "mail_services,${::environment}_services",
-      active_checks_enabled  => "0",
-      passive_checks_enabled => "1",
-      check_command          => "return-ok",
-      register               => "0";
+      conf_dir                     => "${::environment}/generic",
+      use                          => "ha_service_${environment}",
+      servicegroups                => "mail_services,${::environment}_services",
+      active_checks_enabled        => "0",
+      passive_checks_enabled       => "1",
+      check_command                => "return-ok",
+      register                     => "0";
   }
 
   kbp_icinga::host {
@@ -808,15 +808,15 @@ class kbp_icinga::environment {
       max_check_attempts           => "3",
       register                     => "0";
     "wh_host_${::environment}":
-      conf_dir      => "${::environment}/generic",
-      use           => "ha_host",
-      hostgroups    => "wh_hosts,${::environment}_hosts",
-      register      => "0";
+      conf_dir                     => "${::environment}/generic",
+      use                          => "ha_host_${::environment}",
+      hostgroups                   => "wh_hosts,${::environment}_hosts",
+      register                     => "0";
     "mail_host_${::environment}":
-      conf_dir      => "${::environment}/generic",
-      use           => "ha_host",
-      hostgroups    => "mail_hosts,${::environment}_hosts",
-      register      => "0";
+      conf_dir                     => "${::environment}/generic",
+      use                          => "ha_host_${::environment}",
+      hostgroups                   => "mail_hosts,${::environment}_hosts",
+      register                     => "0";
   }
 }
 
