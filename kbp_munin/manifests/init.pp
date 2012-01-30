@@ -395,8 +395,10 @@ define kbp_munin::environment {
 }
 
 define kbp_munin::alert_export($command) {
+  $sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
+
   @@kbp_munin::alert { "${name}_${environment}":
-    alert_name  => $name,
+    alert_name  => $sanitized_name,
     command     => $command,
     environment => $environment;
   }
