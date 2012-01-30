@@ -96,6 +96,8 @@ class kbp_ferm::offenders {
       ips => ["(94.73.154.122 46.167.171.12 199.180.129.141 71.6.165.238 85.95.227.169)"];
     "20120130 Ssh brute force attack on doorenvoor":
       ips => "94.199.108.203";
+    "20120130 Ssh brute force at timewax":
+      ips => "210.71.234.67";
   }
 }
 
