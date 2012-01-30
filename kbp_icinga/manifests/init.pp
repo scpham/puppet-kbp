@@ -325,23 +325,19 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
   }
 
   @@mysql::server::db {
-    "icinga":
+    "icinga for ${fqdn}":
         tag => "mysql_kumina";
-    "icinga_web":
+    "icinga_web for ${fqdn}":
         tag => "mysql_kumina";
   }
 
   @@mysql::server::grant {
-    "icinga":
-      user     => "icinga",
+    "icinga on icinga for ${fqdn}":
       password => $dbpassword,
-      db       => "icinga",
       hostname => "%",
       tag      => "mysql_kumina";
-    "icinga-web":
-      user     => "icinga",
+    "icinga-web on icinga_web for ${fqdn}":
       password => $dbpassword,
-      db       => "icinga_web",
       hostname => "%",
       tag      => "mysql_kumina";
   }
