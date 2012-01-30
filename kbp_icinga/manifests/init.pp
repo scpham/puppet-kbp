@@ -667,7 +667,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
     command => "/usr/sbin/send_nsca -H ${fqdn} -c /etc/send_nsca.cfg";
   }
 
-  @@kbp_dashboard::customer_entry_export { "Icinga":
+  @@kbp_dashboard::customer_entry_export { "Icinga on ${fqdn}":
     path            => "icinga",
     regex_paths     => ["/cgi-bin/icinga/","/stylesheets/","/images/"],
     entry_url       => $ssl ? {
