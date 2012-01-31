@@ -122,6 +122,10 @@ class kbp_apache_new::module::jk {
   include gen_apache::jk
 }
 
+class kbp_apache_new::module::headers {
+  kbp_apache_new::module { "headers":; }
+}
+
 class kbp_apache_new::intermediate::rapidssl {
   kbp_ssl::public_key { "RapidSSL_CA_bundle":
     source => "kbp_apache_new/ssl/RapidSSL_CA_bundle.pem",
