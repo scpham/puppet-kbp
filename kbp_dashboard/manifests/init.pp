@@ -5,6 +5,11 @@ class kbp_dashboard::server($url, $ssl=true) {
   }
 
   kfile {
+    "/srv/www/${url}":
+      ensure  => directory,
+      purge   => true,
+      recurse => true,
+      force   => true;
     "/srv/www/${url}/style.css":
       content => template("kbp_dashboard/style.css");
     "/srv/www/${url}/.htpasswd":
@@ -63,11 +68,17 @@ class kbp_dashboard::client {
 define kbp_dashboard::environment($fullname) {
   kfile {
     "/srv/www/${url}/${name}":
-      ensure  => directory;
+      ensure  => directory,
+      purge   => true,
+      recurse => true,
+      force   => true;
     "/srv/www/${url}/${name}/style.css":
       content => template("kbp_dashboard/style.css");
     "/srv/www/${url}/${name}/overview":
-      ensure  => directory;
+      ensure  => directory,
+      purge   => true,
+      recurse => true,
+      force   => true;
     "/srv/www/${url}/${name}/overview/style.css":
       content => template("kbp_dashboard/style.css_overview");
   }
