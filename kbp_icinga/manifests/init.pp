@@ -47,6 +47,7 @@ class kbp_icinga::client {
       command   => "check_file",
       arguments => '-f $ARG1$ -c $ARG2$';
     "check_ferm_config":
+      sudo      => true,
       arguments => '$ARG1$';
     "check_heartbeat":;
     "check_icinga_config":
