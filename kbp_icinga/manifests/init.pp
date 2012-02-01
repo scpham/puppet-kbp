@@ -836,6 +836,7 @@ class kbp_icinga::ferm_config($filename) {
     service_description => "Ferm configuration ${filename}",
     check_command       => "check_ferm_config",
     arguments           => $filename,
+    check_interval      => 900,
     nrpe                => true;
   }
 }
@@ -871,6 +872,7 @@ class kbp_icinga::icinga_config($filename) {
     service_description => "Icinga configuration ${filename}",
     check_command       => "check_icinga_config",
     arguments           => $filename,
+    check_interval      => 900,
     nrpe                => true,
     sms                 => false;
   }
@@ -1034,6 +1036,11 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     /.*generic.*/ => $name,
     default       => "${name}_${host_name}",
   }
+  if $check_interval and (!$notification_interval or $check_interval > $notification_interval) {
+    $real_notification_interval = $check_interval
+  } else {
+    $real_notification_interval = $notification_interval
+  }
 
   if $ha {
     Gen_icinga::Host <| title == $host_name |> {
@@ -1076,7 +1083,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     process_perf_data            => $process_perf_data,
     retain_status_information    => $retain_status_information,
     retain_nonstatus_information => $retain_nonstatus_information,
-    notification_interval        => $notification_interval,
+    notification_interval        => $real_notification_interval,
     is_volatile                  => $is_volatile,
     check_period                 => $check_period,
     check_interval               => $check_interval,
