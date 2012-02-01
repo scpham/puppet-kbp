@@ -475,8 +475,6 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       force   => true,
       require => Package["icinga"],
       notify  => Exec["reload-icinga"];
-    "/etc/icinga/config/generic":
-      ensure  => directory;
     "/etc/icinga/config/generic/notify_commands.cfg":
       source  => "kbp_icinga/server/config/generic/notify_commands.cfg",
       notify  => Exec["reload-icinga"];
@@ -491,6 +489,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
     acl          => "group:www-data:rw-",
     make_default => true;
   }
+
+  gen_icinga::configdir { "generic":; }
 
   kbp_icinga::service {
     "ha_service":
