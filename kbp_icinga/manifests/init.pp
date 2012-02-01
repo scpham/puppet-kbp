@@ -51,7 +51,8 @@ class kbp_icinga::client {
       arguments => '$ARG1$';
     "check_heartbeat":;
     "check_icinga_config":
-      sudo      => true;
+      sudo      => true,
+      arguments => '$ARG1$';
     "check_java_heap_usage":
       command   => "check_javaheapusage",
       arguments => '/etc/munin/plugins/jmx_$ARG1$_java_process_memory 96 93';
