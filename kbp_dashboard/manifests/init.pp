@@ -137,7 +137,7 @@ define kbp_dashboard::customer_entry_export($path, $extra_paths=false, $regex_pa
       entry_url       => $entry_url,
       text            => $text,
       add_environment => $add_environment,
-      entry_name      => $name,
+      entry_name      => $entry_name,
       environment     => $environment;
     }
   }
