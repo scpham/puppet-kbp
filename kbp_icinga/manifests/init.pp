@@ -1278,7 +1278,8 @@ class kbp_icinga::rabbitmqctl($namespace) {
     service_description => "Stale messages in RabbitMQ in ${namespace}",
     check_command       => "check_rabbitmqctl",
     arguments           => $namespace,
-    nrpe                => true;
+    nrpe                => true,
+    sms                 => false;
   }
 }
 
