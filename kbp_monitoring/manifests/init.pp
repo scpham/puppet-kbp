@@ -476,19 +476,20 @@ define kbp_monitoring::sslcert($path="/etc/ssl/certs/${name}.pem", $package="ici
 #  gen_puppet
 #
 define kbp_monitoring::haproxy($address, $port=false, $ha=false, $host_name=false, $statuscode="200", $url=false,
-    $response=false, $package="icinga", $max_check_attempts=false, $ssl=false) {
+    $response=false, $package="icinga", $max_check_attempts=false, $ssl=false, $preventproxyoverride=false) {
   case $package {
     "icinga": {
       kbp_icinga::haproxy { $name:
-        address            => $address,
-        ssl                => $ssl,
-        ha                 => $ha,
-        statuscode         => $statuscode,
-        url                => $url,
-        port               => $port,
-        host_name          => $host_name,
-        max_check_attempts => $max_check_attempts,
-        response           => $response;
+        address              => $address,
+        ssl                  => $ssl,
+        ha                   => $ha,
+        statuscode           => $statuscode,
+        url                  => $url,
+        port                 => $port,
+        host_name            => $host_name,
+        max_check_attempts   => $max_check_attempts,
+        response             => $response,
+        preventproxyoverride => $preventproxyoverride;
       }
     }
   }

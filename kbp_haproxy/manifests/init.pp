@@ -123,24 +123,25 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
 
   if $monitor_site {
     kbp_monitoring::haproxy { $name:
-      address            => $monitoring_address ? {
+      address              => $monitoring_address ? {
         false   => $listenaddress,
         default => $monitoring_address,
       },
-      ssl                => $tcp_sslport ? {
+      ssl                  => $tcp_sslport ? {
         false   => false,
         default => true,
       },
-      ha                 => $monitoring_ha,
-      statuscode         => $monitoring_status,
-      url                => $monitoring_url,
-      host_name          => $monitoring_hostname ? {
+      ha                   => $monitoring_ha,
+      statuscode           => $monitoring_status,
+      url                  => $monitoring_url,
+      host_name            => $monitoring_hostname ? {
         false   => $name,
         default => $monitoring_hostname,
       },
-      port               => $serverport,
-      max_check_attempts => $max_check_attempts,
-      response           => $monitoring_response;
+      port                 => $serverport,
+      max_check_attempts   => $max_check_attempts,
+      response             => $monitoring_response,
+      preventproxyoverride => true;
     }
   }
 }

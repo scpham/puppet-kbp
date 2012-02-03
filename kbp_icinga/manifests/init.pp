@@ -1355,36 +1355,38 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
 #  gen_puppet
 #
 define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_name=false, $response=false,
-    $statuscode="200", $max_check_attempts=false, $ssl=false) {
+    $statuscode="200", $max_check_attempts=false, $ssl=false, $preventproxyoverride=false) {
   kbp_icinga::site { "${name}_80":
-    address            => $address,
-    port               => $port,
-    path               => $url,
-    max_check_attempts => $max_check_attempts,
-    statuscode         => $ssl ? {
+    address              => $address,
+    port                 => $port,
+    path                 => $url,
+    max_check_attempts   => $max_check_attempts,
+    statuscode           => $ssl ? {
       false => $statuscode,
       true  => "301",
     },
-    host_name          => $host_name ? {
+    host_name            => $host_name ? {
       false   => $name,
       default => $host_name,
     },
-    vhost              => false;
+    vhost                => false,
+    preventproxyoverride => $preventproxyoverride;
   }
 
   if $ssl {
     kbp_icinga::site { "${name}_443":
-      address            => $address,
-      ssl                => true,
-      port               => $port,
-      path               => $url,
-      max_check_attempts => $max_check_attempts,
-      statuscode         => $statuscode,
-      host_name          => $ssl ? {
+      address              => $address,
+      ssl                  => true,
+      port                 => $port,
+      path                 => $url,
+      max_check_attempts   => $max_check_attempts,
+      statuscode           => $statuscode,
+      host_name            => $ssl ? {
         false   => $name,
         default => $host_name,
       },
-      vhost              => false;
+      vhost                => false,
+      preventproxyoverride => $preventproxyoverride;
     }
   }
 }
@@ -1444,7 +1446,7 @@ define kbp_icinga::java($servicegroups=false, $sms=true) {
 #
 define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false,
       $max_check_attempts=false, $port=false, $path=false, $response=false, $statuscode=false, $vhost=true,
-      $ssl=false, $host_name=false) {
+      $ssl=false, $host_name=false, $preventproxyoverride=false) {
   $real_name = $host_name ? {
     false   => $name,
     default => $host_name,
@@ -1522,24 +1524,25 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
   }
 
   kbp_icinga::service { "vhost_${name}":
-    conf_dir            => $address ? {
+    conf_dir             => $address ? {
       false   => undef,
       default => $confdir,
     },
-    service_description => $service_description ? {
+    service_description  => $service_description ? {
       false   => "Vhost ${real_name}",
       default => $service_description,
     },
-    host_name           => $vhost ? {
+    host_name            => $vhost ? {
       true    => undef,
       default => $real_name,
     },
-    check_command       => $check_command,
-    max_check_attempts  => $max_check_attempts ? {
+    check_command        => $check_command,
+    max_check_attempts   => $max_check_attempts ? {
       false   => undef,
       default => $max_check_attempts,
     },
-    arguments           => $arguments;
+    arguments            => $arguments,
+    preventproxyoverride => $preventproxyoverride;
   }
 }
 
