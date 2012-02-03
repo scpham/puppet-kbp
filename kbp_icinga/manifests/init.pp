@@ -340,9 +340,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       password => $dbpassword,
       hostname => "%",
       tag      => "mysql_kumina";
-    "icinga-web on icinga_web for ${fqdn}":
-      user     => "icinga-web",
-      db       => "icinga-web",
+    "icinga on icinga_web for ${fqdn}":
+      user     => "icinga",
+      db       => "icinga_web",
       password => $dbpassword,
       hostname => "%",
       tag      => "mysql_kumina";
