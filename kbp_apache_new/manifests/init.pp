@@ -193,7 +193,7 @@ define kbp_apache_new::php_cgi($documentroot) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot="/srv/www/${name}", $create_documentroot=true, $address=false, $address6=false,
+define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot=false, $create_documentroot=true, $address=false, $address6=false,
     $port=false, $make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false, $wildcard=false,
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false,
     $monitor=true, $smokeping=true, $php=false, $glassfish_domain=false, $glassfish_connector_port=false, $django_root_path=false,
@@ -219,11 +219,15 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   $real_name   = regsubst($full_name,'^(.*)_(.*)$','\1')
   $real_port   = regsubst($full_name,'^(.*)_(.*)$','\2')
   $dontmonitor = ["default","default-ssl","localhost"]
+  $real_documentroot = $documentroot ? {
+    false   => "/srv/www/${real_name}",
+    default => $documentroot,
+  }
 
   gen_apache::site { $full_name:
     ensure           => $ensure,
     serveralias      => $serveralias,
-    documentroot     => $documentroot,
+    documentroot     => $real_documentroot,
     address          => $address,
     address6         => $address6,
     port             => $port,
@@ -322,7 +326,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
   if $php {
     kbp_apache_new::php_cgi { $full_name:
-      documentroot => $documentroot;
+      documentroot => $real_documentroot;
     }
   }
 }
