@@ -1,24 +1,33 @@
 # Author: Kumina bv <support@kumina.nl>
 
-class kbp_mysql::mastermaster($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$fqdn) {
+# Parameters:
+#  mysql_name
+#    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
+class kbp_mysql::mastermaster($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$fqdn, $datadir=false) {
   class { "kbp_mysql::master":
     mysql_name   => $mysql_name,
     bind_address => $bind_address,
-    setup_backup => $setup_backup;
+    setup_backup => $setup_backup,
+    datadir      => $datadir;
   }
   class { "kbp_mysql::slave":
     repl_host     => $repl_host,
     mysql_name    => $mysql_name,
     mastermaster  => true,
-    monitoring_ha => $monitoring_ha_slaving;
+    monitoring_ha => $monitoring_ha_slaving,
+    datadir       => $datadir;
   }
 }
 
-class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true) {
+# Parameters:
+#  mysql_name
+#    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
+class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false) {
   class { "kbp_mysql::server":
     mysql_name   => $mysql_name,
     setup_backup => $setup_backup,
-    bind_address => $bind_address;
+    bind_address => $bind_address,
+    datadir      => $datadir;
   }
 
   Mysql::Server::Grant <<| tag == "mysql_${environment}_${mysql_name}" |>>
@@ -32,10 +41,8 @@ class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
 # Class: kbp_mysql::slave
 #
 # Parameters:
-#  customtag
-#    Undocumented
-#  otherhost
-#    Undocumented
+#  mysql_name
+#    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
 #
 # Actions:
 #  Undocumented
@@ -44,12 +51,13 @@ class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$fqdn) {
+class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$fqdn, $datadir=false) {
   if ! $mastermaster {
     class { "kbp_mysql::server":
       mysql_name   => $mysql_name,
       setup_backup => $setup_backup,
-      bind_address => $bind_address;
+      bind_address => $bind_address,
+      datadir      => $datadir;
     }
   }
 
@@ -88,8 +96,8 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
 # Class: kbp_mysql::server
 #
 # Parameters:
-#  otherhost
-#    Undocumented
+#  mysql_name
+#    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
 #
 # Actions:
 #  Undocumented
@@ -98,10 +106,12 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=false) {
-  include mysql::server
+class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=false, $datadir=false) {
   include kbp_trending::mysql
   include kbp_mysql::monitoring::icinga::server
+  class { "mysql::server":
+    datadir => $datadir;
+  }
 
   if $setup_backup {
     kfile { "/etc/mysql/conf.d/expire_logs.cnf":

@@ -9,8 +9,12 @@
 #  Undocumented
 #  gen_puppet
 #
-class kbp_libvirt inherits libvirt {
+define kbp_libvirt ($on_crash="destroy", $on_reboot="restart") {
   include munin::client
+  class { "libvirt":
+    on_crash  => $on_crash,
+    on_reboot => $on_reboot;
+  }
 
   gen_ferm::mod { "Allow bridged packets":
     chain  => "FORWARD",

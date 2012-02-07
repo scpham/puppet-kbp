@@ -223,7 +223,7 @@ define kbp_tomcat::apache_proxy_ajp_site($ensure="present", $port=8009, $ssl=fal
     documentroot => $documentroot,
     php          => $php,
     make_default => $make_default,
-    monitor_path => $urlpath,
+    monitor_path => $monitor_path,
     require      => Kbp_apache_new::Module["proxy_ajp"];
   }
 
