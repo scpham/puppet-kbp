@@ -140,6 +140,13 @@ class kbp_apache_new::intermediate::positivessl {
   }
 }
 
+class kbp_apache_new::intermediate::thawte {
+  kbp_ssl::public_key { "Thawte_SSL_CA":
+    source => "kbp_apache_new/ssl/Thawte_SSL_CA.pem",
+    notify => Exec["reload-apache2"];
+  }
+}
+
 class kbp_apache_new::glassfish_domain_base {
   include kbp_apache_new::module::jk
 
