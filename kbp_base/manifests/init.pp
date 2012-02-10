@@ -216,6 +216,7 @@ class kbp_base::wanted_packages {
   include gen_base::bzip2
   include gen_base::nscd
   include gen_base::elinks
+  include gen_base::dpkg
 }
 
 define kbp_base::staff_user($ensure="present", $fullname, $uid, $password_hash, $sshkeys="", $shell="bash") {
