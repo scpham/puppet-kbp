@@ -105,8 +105,8 @@ class kbp_debian inherits kbp_base {
 
   # Packages we want to have installed
   $wantedpackages = ["openssh-server", "less", "lftp", "screen", "file", "debsums", "dlocate", "gnupg",
-    "ucf", "elinks", "reportbug", "tree", "netcat", "openssh-client", "tcpdump", "iproute", "acl", "tmux",
-    "psmisc", "udev", "lsof", "strace", "pinfo", "lsb-release", "ethtool", "socat", "make", "nscd"]
+    "ucf", "reportbug", "tree", "netcat", "openssh-client", "tcpdump", "iproute", "acl", "tmux",
+    "psmisc", "udev", "lsof", "strace", "pinfo", "lsb-release", "ethtool", "socat", "make"]
   kpackage { $wantedpackages:
     ensure => installed;
   }

@@ -11,11 +11,6 @@
 #
 class kbp_base {
   include kbp_base::wanted_packages
-  include gen_base::dnsutils
-  include gen_base::wget
-  include gen_base::telnet_ssl
-  include gen_base::curl
-  include gen_base::bzip2
   include gen_cron
   include lvm
   include sysctl
@@ -214,6 +209,13 @@ class kbp_base::wanted_packages {
   include gen_base::libpam-runtime
   include gen_base::libpam0g
   include gen_base::realpath
+  include gen_base::dnsutils
+  include gen_base::wget
+  include gen_base::telnet_ssl
+  include gen_base::curl
+  include gen_base::bzip2
+  include gen_base::nscd
+  include gen_base::elinks
 }
 
 define kbp_base::staff_user($ensure="present", $fullname, $uid, $password_hash, $sshkeys="", $shell="bash") {
