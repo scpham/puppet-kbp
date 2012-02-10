@@ -217,6 +217,7 @@ class kbp_base::wanted_packages {
   include gen_base::nscd
   include gen_base::elinks
   include gen_base::dpkg
+  include gen_base::perl
   # Next is required for the linux kernel
   include gen_base::module_init_tools
 }
