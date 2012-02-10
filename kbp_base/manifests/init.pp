@@ -15,6 +15,7 @@ class kbp_base {
   include gen_base::wget
   include gen_base::telnet_ssl
   include gen_base::curl
+  include gen_base::bzip2
   include gen_cron
   include lvm
   include sysctl
