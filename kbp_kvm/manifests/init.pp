@@ -12,6 +12,7 @@
 #
 class kbp_kvm {
   include gen_kvm
+  include gen_base::libcurl3_gnutls
 
   # Enable KSM
   exec { "/bin/echo 1 > /sys/kernel/mm/ksm/run":
