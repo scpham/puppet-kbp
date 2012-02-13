@@ -109,6 +109,12 @@ class kbp_apache_new::module::auth_mysql {
   kbp_apache_new::module { "auth_mysql":; }
 }
 
+class kbp_apache_new::module::proxy_http {
+  kbp_apache_new::module { "proxy_http":
+    notify => Exec["force-reload-apache2"];
+  }
+}
+
 define kbp_apache_new::cgi($documentroot) {
   include gen_base::libapache2-mod-fcgid
 
