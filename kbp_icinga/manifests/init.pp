@@ -1458,8 +1458,13 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     },
     default => $statuscode,
   }
+  if $address or $address6 or ! $vhost{
+    $real_vhost = false
+  } else {
+    $real_vhost = true
+  }
 
-  if ! $vhost {
+  if ! $real_vhost {
     $confdir = $conf_dir ? {
       false   => "${::environment}/${real_name}",
       default => "${conf_dir}/${real_name}",
@@ -1524,7 +1529,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
   }
 
   kbp_icinga::service { "vhost_${name}":
-    conf_dir             => $address ? {
+    conf_dir             => $real_vhost ? {
       false   => undef,
       default => $confdir,
     },
@@ -1532,7 +1537,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       false   => "Vhost ${real_name}",
       default => $service_description,
     },
-    host_name            => $vhost ? {
+    host_name            => $real_vhost ? {
       true    => undef,
       default => $real_name,
     },
