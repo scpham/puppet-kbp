@@ -44,6 +44,15 @@ class kbp_ssh {
       notify  => Service["ssh"];
   }
 
+  # Enable ClientAliveInterval messages
+  kaugeas {
+    "sshd_config ClientAliveInterval":
+      lens    => 'Sshd.lns',
+      file    => "/etc/ssh/sshd_config",
+      changes => "set ClientAliveInterval 60",
+      notify  => Service["ssh"];
+  }
+
   # Fix permissions.
   kfile { "/etc/ssh/ssh_known_hosts":; }
 }
