@@ -1,0 +1,2 @@
+		<dt><a href='/<%= environment %>/<%= base_path %>/'><%= entry_name %></a></dt>
+		<dd><%= text %></dd>

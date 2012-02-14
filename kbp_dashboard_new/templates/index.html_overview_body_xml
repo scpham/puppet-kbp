@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<% eths = Array.new
+   used_ifs = Array.new
+   interfaces.split(',').each do |interface|
+     if interface.start_with?("eth")
+       eths[eths.length] = interface
+     end
+     if interface != "lo" and has_variable?("macaddress_".concat(interface)) and (has_variable?("ipaddress_".concat(interface)) or has_variable?("ipaddress_".concat(interface)))
+       used_ifs[used_ifs.length] = interface
+     end
+   end -%>
+  <server>
+<% if is_virtual=="true" -%>
+    <parent><%= parent %></parent>
+<% end -%>
+    <fqdn><%= fqdn %></fqdn>
+<% used_ifs.each do |used_if| -%>
+    <interface>
+      <name><%= used_if %></name>
+<%  if !used_if.start_with?("eth")
+      eths.each do | eth |
+        if eval("macaddress_".concat(used_if)) == eval("macaddress_".concat(eth))%>
+      <eth><%= eth %></eth>
+<%      end
+      end
+    end
+    used_ifs.each do |used_if|
+      if has_variable?("ipaddress_".concat(used_if)) -%>
+      <ipv4><%= eval("ipaddress_".concat(used_if)) %></ipv4>
+<%    else -%>
+      <ipv4>None</ipv4>
+<%    end
+      if has_variable?("ipaddress6_".concat(used_if)) -%>
+      <ipv6><%= eval("ipaddress6_".concat(used_if)) %></ipv6>
+<%    else -%>
+      <ipv6>None</ipv6>
+<%    end -%>
+      <mac><%= eval("macaddress_".concat(used_if)) %></mac>
+<%  end -%>
+    </interface>
+<% end -%>
+<% if has_variable?("ec2_public_ipv4") or has_variable?("ec2_public_ipv6") -%>
+    <interface>
+      <name>ec2</name>
+<%  if has_variable?("ec2_public_ipv4") -%>
+      <ipv4><%= ec2_public_ipv4 %></ipv4>
+<%  else -%>
+      <ipv4>None</ipv4>
+<%  end
+    if has_variable?("ec2_public_ipv6") -%>
+      <ipv6><%= ec2_public_ipv6 %></ipv6>
+<%  else -%>
+      <ipv6>None</ipv6>
+<%  end -%>
+      <mac>N/A</mac>
+    <% end -%>
+    </interface>
+<% end -%>
+    <proc_count><%= processorcount %></proc_count>
+    <mem_size><%= memorysize %></mem_size>
+  </server>

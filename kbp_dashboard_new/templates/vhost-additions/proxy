@@ -1,0 +1,17 @@
+<% if entry_url[/^https/] %>
+SSLProxyEngine On
+<% end %>
+ProxyPass /<%= environment %>/<%= base_path %> <%= entry_url %><% if add_environment %>/<%= environment %><% end %>
+ProxyPassReverse /<%= environment %>/<%= base_path %> <%= entry_url %><% if add_environment %>/<%= environment %><% end %>
+<% if extra_paths -%>
+<% extra_paths.each do |urlpath| -%>
+ProxyPass <% if add_environment %>/<%= environment %><% end %><%= urlpath %> <%= entry_url %><% if add_environment %>/<%= environment %><% end %>
+ProxyPassReverse <% if add_environment %>/<%= environment %><% end %><%= urlpath %> <%= entry_url %><% if add_environment %>/<%= environment %><% end %>
+<% end -%>
+<% end -%>
+<% if regex_paths -%>
+<% regex_paths.each do |urlpath| -%>
+ProxyPassMatch ^(<% if add_environment %>/<%= environment %><% end %><%= urlpath %>.*)$ <%= entry_url %>$1
+ProxyPassReverse <% if add_environment %>/<%= environment %><% end %><%= urlpath %> <%= entry_url %>
+<% end -%>
+<% end -%>
