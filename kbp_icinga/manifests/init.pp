@@ -1529,17 +1529,14 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
   }
 
   kbp_icinga::service { "vhost_${name}":
-    conf_dir             => $real_vhost ? {
-      false   => undef,
-      default => $confdir,
-    },
+    conf_dir             => $confdir,
     service_description  => $service_description ? {
       false   => "Vhost ${real_name}",
       default => $service_description,
     },
     host_name            => $real_vhost ? {
-      true    => undef,
-      default => $real_name,
+      true  => undef,
+      false => $real_name,
     },
     check_command        => $check_command,
     max_check_attempts   => $max_check_attempts ? {
