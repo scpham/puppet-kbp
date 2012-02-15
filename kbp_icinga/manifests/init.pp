@@ -1458,13 +1458,8 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     },
     default => $statuscode,
   }
-  if $address or $address6 or ! $vhost{
-    $real_vhost = false
-  } else {
-    $real_vhost = true
-  }
 
-  if ! $real_vhost {
+  if ! $vhost {
     $confdir = $conf_dir ? {
       false   => "${::environment}/${real_name}",
       default => "${conf_dir}/${real_name}",
@@ -1501,13 +1496,8 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       $check_command = "check_http_vhost_url_response"
       $arguments     = [$real_name,$path,$response,$real_statuscode]
     } elsif $ssl {
-      if $address == false or $address == "*" {
-        $check_command = "check_http_vhost_url_ssl"
-        $arguments     = [$real_name,$path,$real_statuscode]
-      } else {
-        $check_command = "check_http_vhost_url_ssl_address"
-        $arguments     = [$address,$real_name,$path,$real_statuscode]
-      }
+      $check_command = "check_http_vhost_url_ssl"
+      $arguments     = [$real_name,$path,$real_statuscode]
     } else {
       $check_command = "check_http_vhost_url"
       $arguments     = [$real_name,$path,$real_statuscode]
@@ -1516,16 +1506,19 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     $check_command = "check_http_vhost_response"
     $arguments     = [$real_name,$response,$real_statuscode]
   } elsif $ssl {
-    if $address == false or $address == "*" {
-      $check_command = "check_http_vhost_ssl"
-      $arguments     = [$real_name,$real_statuscode]
-    } else {
-      $check_command = "check_http_vhost_ssl_address"
-      $arguments     = [$address,$real_name,$real_statuscode]
-    }
+    $check_command = "check_http_vhost_ssl"
+    $arguments     = [$real_name,$real_statuscode]
   } else {
     $check_command = "check_http_vhost"
     $arguments     = [$real_name,$real_statuscode]
+  }
+
+  if $address == false or $address == "*" {
+    $real_check_command = $check_command
+    $real_arguments = $arguments
+  } else {
+    $real_check_command = "${check_command}_address"
+    $real_arguments = inline_template("<%= [address] + arguments %>")
   }
 
   kbp_icinga::service { "vhost_${name}":
@@ -1534,16 +1527,16 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       false   => "Vhost ${real_name}",
       default => $service_description,
     },
-    host_name            => $real_vhost ? {
+    host_name            => $vhost ? {
       true  => undef,
       false => $real_name,
     },
-    check_command        => $check_command,
+    check_command        => $real_check_command,
     max_check_attempts   => $max_check_attempts ? {
       false   => undef,
       default => $max_check_attempts,
     },
-    arguments            => $arguments,
+    arguments            => $real_arguments,
     preventproxyoverride => $preventproxyoverride;
   }
 }
