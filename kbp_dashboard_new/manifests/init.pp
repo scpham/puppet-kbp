@@ -46,9 +46,10 @@ class kbp_dashboard_new::client {
     memsize     => $memorysize;
   }
 
-  $interfaces = template("kbp_dashboard_new/interfaces")
+  $used_ifs_string = template("kbp_dashboard_new/interfaces")
+  $used_ifs = split($used_ifs_string, ",")
 
-  kbp_dashboard_new::server_interface::wrapper { $interfaces:; }
+  kbp_dashboard_new::server_interface::wrapper { $used_ifs:; }
 }
 
 define kbp_dashboard_new::environment($fullname) {
@@ -65,6 +66,11 @@ define kbp_dashboard_new::environment($fullname) {
       purge   => true,
       recurse => true,
       force   => true;
+    "/srv/www/${url}/${name}/overview/servers":
+      ensure  => directory,
+      purge   => true,
+      recurse => true,
+      force   => true;
   }
 
   concat {
@@ -75,13 +81,13 @@ define kbp_dashboard_new::environment($fullname) {
   }
 
   concat::add_content {
-    "0 index.html customer head for ${name}":
+    "0 index.html customer head for ${name}_new":
       content => template("kbp_dashboard_new/index.html_customer_head"),
       target  => "/srv/www/${url}/${name}/index.html";
-    "2 index.html customer tail for ${name}":
+    "2 index.html customer tail for ${name}_new":
       content => template("kbp_dashboard_new/index.html_customer_tail"),
       target  => "/srv/www/${url}/${name}/index.html";
-    "1 index.html base body for ${name}":
+    "1 index.html base body for ${name}_new":
       content => template("kbp_dashboard_new/index.html_base_body"),
       target  => "/srv/www/${url}/index.html";
   }
@@ -135,7 +141,7 @@ define kbp_dashboard_new::customer_entry($path, $extra_paths=false, $regex_paths
 define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
   $base_path = $path
 
-  concat::add_content { "1 index.html content for ${entry_name} for ${environment}":
+  concat::add_content { "1 index.html content for ${entry_name} for ${environment}_new":
     content => template("kbp_dashboard_new/index.html_customer_body"),
     target  => "/srv/www/${url}/${environment}/index.html";
   }
@@ -143,25 +149,25 @@ define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
 
 define kbp_dashboard_new::server_base($environment, $parent, $proccount, $memsize) {
   kaugeas { $name:
-    file    => "/srv/www/${url}/${environment}/servers/${fqdn}.xml",
+    file    => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml",
     lens    => "Xml.lns",
     changes => ["set server/fqdn '${name}'",
                 "set server/parent '${parent}'",
                 "set server/proccount '${proccount}'",
                 "set server/memsize '${memsize}'"],
-    notify  => Exec["reload-apache2"];
+    require => Kfile["/srv/www/${url}/${environment}/overview/servers"];
   }
 }
 
 define kbp_dashboard_new::server_interface($environment, $fqdn, $ipv4, $ipv6, $mac) {
   kaugeas { $name:
-    file    => "/srv/www/${url}/${environment}/servers/${fqdn}.xml",
+    file    => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml",
     lens    => "Xml.lns",
     changes => ["set server/interface '${name}'",
                 "set server/interface/${name}/ipv4 '${ipv4}'",
                 "set server/interface/${name}/ipv6 '${ipv6}'",
                 "set server/interface/${name}/mac '${mac}'"],
-    notify  => Exec["reload-apache2"];
+    require => Kfile["/srv/www/${url}/${environment}/overview/servers"];
   }
 }
 
