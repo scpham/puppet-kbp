@@ -159,25 +159,25 @@ define kbp_dashboard_new::server_base($environment, $parent, $proccount, $memsiz
   }
 }
 
-define kbp_dashboard_new::server_interface($environment, $fqdn, $ipv4, $ipv6, $mac) {
+define kbp_dashboard_new::server_interface($environment, $fqdn, $interface, $ipv4, $ipv6, $mac) {
   kaugeas { $name:
     file    => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml",
     lens    => "Xml.lns",
-    changes => ["set server/interface '${name}'",
-                "set server/interface/${name}/ipv4 '${ipv4}'",
-                "set server/interface/${name}/ipv6 '${ipv6}'",
-                "set server/interface/${name}/mac '${mac}'"],
+    changes => ["set server/interface '${interface}'",
+                "set server/interface/${interface}/ipv4 '${ipv4}'",
+                "set server/interface/${interface}/ipv6 '${ipv6}'",
+                "set server/interface/${interface}/mac '${mac}'"],
     require => Kfile["/srv/www/${url}/${environment}/overview/servers"];
   }
 }
 
 define kbp_dashboard_new::server_interface::wrapper() {
-  $interface_name = $name
-  $interface=inline_template("<%= interface_name.strip %>")
+  $interface = $name
 
-  @@kbp_dashboard_new::server_interface { $interface:
+  @@kbp_dashboard_new::server_interface { "${interface}_${fqdn}":
     environment => $environment,
     fqdn        => $fqdn,
+    interface   => $interface,
     ipv4        => template("kbp_dashboard_new/ipv4"),
     ipv6        => template("kbp_dashboard_new/ipv6"),
     mac         => template("kbp_dashboard_new/mac");
