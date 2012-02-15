@@ -48,13 +48,7 @@ class kbp_dashboard_new::client {
 
   $interfaces = template("kbp_dashboard_new/interfaces")
 
-  @@kbp_dashboard_new::server_interface { $interfaces:
-    environment => $environment,
-    fqdn        => $fqdn,
-    ipv4        => template("kbp_dashboard_new/ipv4"),
-    ipv6        => template("kbp_dashboard_new/ipv6"),
-    mac         => template("kbp_dashboard_new/mac");
-  }
+  kbp_dashboard_new::server_interface::wrapper { $interfaces:; }
 }
 
 define kbp_dashboard_new::environment($fullname) {
@@ -168,5 +162,18 @@ define kbp_dashboard_new::server_interface($environment, $fqdn, $ipv4, $ipv6, $m
                 "set server/interface/${name}/ipv6 '${ipv6}'",
                 "set server/interface/${name}/mac '${mac}'"],
     notify  => Exec["reload-apache2"];
+  }
+}
+
+define kbp_dashboard_new::server_interface::wrapper() {
+  $interface_name = $name
+  $interface=inline_template("<%= interface_name.strip %>")
+
+  @@kbp_dashboard_new::server_interface { $interface:
+    environment => $environment,
+    fqdn        => $fqdn,
+    ipv4        => template("kbp_dashboard_new/ipv4"),
+    ipv6        => template("kbp_dashboard_new/ipv6"),
+    mac         => template("kbp_dashboard_new/mac");
   }
 }
