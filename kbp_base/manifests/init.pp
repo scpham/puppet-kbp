@@ -24,6 +24,7 @@ class kbp_base {
   include kbp_time
   include kbp_vim
   include kbp_dashboard::client
+  include kbp_dashboard_new::client
   include kbp_munin::client
   include kbp_mcollective::server
   include kbp_ferm
@@ -190,8 +191,12 @@ class kbp_base::environment {
   include kbp_user::environment
 
   Kbp_dashboard::Customer_entry_export <<| |>>
+  Kbp_dashboard_new::Customer_entry_export <<| |>>
 
   @@kbp_dashboard::environment { $environment:
+    fullname => $customer_name;
+  }
+  @@kbp_dashboard_new::environment { $environment:
     fullname => $customer_name;
   }
 
