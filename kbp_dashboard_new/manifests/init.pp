@@ -34,8 +34,12 @@ class kbp_dashboard_new::server($url, $ssl=true) {
   Kbp_dashboard_new::Environment <<| |>>
   Kbp_dashboard_new::Customer_entry <<| |>>
   Kbp_dashboard_new::Base_entry <<| |>>
-  Kbp_dashboard_new::Server_base <<| |>>
-  Kbp_dashboard_new::Server_interface <<| |>>
+  Kbp_dashboard_new::Server_base <<| |>> {
+    url => $url,
+  }
+  Kbp_dashboard_new::Server_interface <<| |>> {
+    url => $url,
+  }
 }
 
 class kbp_dashboard_new::client {
@@ -147,7 +151,7 @@ define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
   }
 }
 
-define kbp_dashboard_new::server_base($environment, $parent=false, $proccount, $memsize) {
+define kbp_dashboard_new::server_base($environment, $parent=false, $proccount, $memsize, $url=false) {
   kaugeas { $name:
     file    => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml",
     lens    => "Xml.lns",
@@ -159,7 +163,7 @@ define kbp_dashboard_new::server_base($environment, $parent=false, $proccount, $
   }
 }
 
-define kbp_dashboard_new::server_interface($environment, $fqdn, $interface, $ipv4, $ipv6, $mac) {
+define kbp_dashboard_new::server_interface($environment, $fqdn, $interface, $ipv4, $ipv6, $mac, $url=false) {
   kaugeas { $name:
     file    => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml",
     lens    => "Xml.lns",
