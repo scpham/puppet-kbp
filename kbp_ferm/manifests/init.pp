@@ -98,6 +98,8 @@ class kbp_ferm::offenders {
       ips => "94.199.108.203";
     "20120130 Ssh brute force at timewax":
       ips => "210.71.234.67";
+    "20120216 Ssh brute force at Timewax":
+      ips => "(211.139.95.221 211.44.183.111 212.120.241.174)";
   }
 }
 
