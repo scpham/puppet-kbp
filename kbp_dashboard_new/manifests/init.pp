@@ -46,6 +46,7 @@ class kbp_dashboard_new::client {
   @@kbp_dashboard_new::server_base { $fqdn:
     environment => $environment,
     parent      => $parent,
+    fqdn        => $fqdn,
     proccount   => $processorcount,
     memsize     => $memorysize;
   }
@@ -151,7 +152,9 @@ define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
   }
 }
 
-define kbp_dashboard_new::server_base($environment, $parent=false, $proccount, $memsize, $url=false) {
+define kbp_dashboard_new::server_base($environment, $parent=false, $fqdn, $proccount, $memsize, $url=false) {
+  kfile { "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml":; }
+
   kaugeas { $name:
     file    => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml",
     lens    => "Xml.lns",
@@ -159,7 +162,7 @@ define kbp_dashboard_new::server_base($environment, $parent=false, $proccount, $
                 "set server/parent '${parent}'",
                 "set server/proccount '${proccount}'",
                 "set server/memsize '${memsize}'"],
-    require => Kfile["/srv/www/${url}/${environment}/overview/servers"];
+    require => Kfile["/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml"];
   }
 }
 
@@ -171,7 +174,7 @@ define kbp_dashboard_new::server_interface($environment, $fqdn, $interface, $ipv
                 "set server/interface/${interface}/ipv4 '${ipv4}'",
                 "set server/interface/${interface}/ipv6 '${ipv6}'",
                 "set server/interface/${interface}/mac '${mac}'"],
-    require => Kfile["/srv/www/${url}/${environment}/overview/servers"];
+    require => Kfile["/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml"];
   }
 }
 

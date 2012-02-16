@@ -181,13 +181,13 @@ class kbp_debian inherits kbp_base {
       sourcetype   => "deb",
       uri          => "http://ftp.nl.debian.org/debian/",
       distribution => "${lsbdistcodename}",
-      components   => "main non-free";
+      components   => "main contrib non-free";
     "${lsbdistcodename}-security":
       comment      => "Security updates for ${lsbdistcodename}.",
       sourcetype   => "deb",
       uri          => "http://security.debian.org/",
       distribution => "${lsbdistcodename}/updates",
-      components   => "main";
+      components   => "main contrib non-free";
     "${lsbdistcodename}-backports":
       comment      => "Repository for packages which have been backported to ${lsbdistcodename}.",
       sourcetype   => "deb",
