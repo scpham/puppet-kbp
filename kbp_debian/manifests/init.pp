@@ -181,7 +181,7 @@ class kbp_debian inherits kbp_base {
       sourcetype   => "deb",
       uri          => "http://ftp.nl.debian.org/debian/",
       distribution => "${lsbdistcodename}",
-      components   => "main non-free";
+      components   => "main contrib non-free";
     "${lsbdistcodename}-security":
       comment      => "Security updates for ${lsbdistcodename}.",
       sourcetype   => "deb",
