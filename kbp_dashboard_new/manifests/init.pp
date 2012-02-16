@@ -46,6 +46,7 @@ class kbp_dashboard_new::client {
   @@kbp_dashboard_new::server_base { $fqdn:
     environment => $environment,
     parent      => $parent,
+    fqdn        => $fqdn,
     proccount   => $processorcount,
     memsize     => $memorysize;
   }
@@ -151,7 +152,7 @@ define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
   }
 }
 
-define kbp_dashboard_new::server_base($environment, $parent=false, $proccount, $memsize, $url=false) {
+define kbp_dashboard_new::server_base($environment, $parent=false, $fqdn, $proccount, $memsize, $url=false) {
   kfile { "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml":; }
 
   kaugeas { $name:
