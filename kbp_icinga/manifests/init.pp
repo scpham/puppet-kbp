@@ -1526,7 +1526,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     $real_arguments = $arguments
   } else {
     $real_check_command = "${check_command}_address"
-    $real_arguments = inline_template("<%= [address] + arguments %>")
+    $real_arguments = split(inline_template("<% ([address] + arguments).flatten.join('|||') %>"),'|||')
   }
 
   kbp_icinga::service { "vhost_${name}":
