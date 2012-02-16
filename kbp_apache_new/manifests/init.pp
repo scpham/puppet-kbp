@@ -176,14 +176,15 @@ class kbp_apache_new::glassfish_domain_base {
 }
 
 define kbp_apache_new::php_cgi($documentroot) {
-  include gen_base::php5-cgi
-  include gen_base::php-apc
+  include gen_base::php5_cgi
+  include gen_base::php_apc
+  include gen_base::apache2_mpm_worker
 
   kbp_apache_new::cgi { $name:
     documentroot => $documentroot;
   }
 
-  Package <| title == "gen_base::libapache2-mod-php5" |> {
+  Package <| title == "libapache2-mod-php5" |> {
     ensure => purged,
     notify => Exec["reload-apache2"],
   }
