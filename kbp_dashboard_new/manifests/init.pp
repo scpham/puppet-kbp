@@ -158,10 +158,10 @@ define kbp_dashboard_new::server_base($environment, $parent=false, $fqdn, $procc
   kaugeas { $name:
     file    => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml",
     lens    => "Xml.lns",
-    changes => ["set server/fqdn '${name}'",
-                "set server/parent '${parent}'",
-                "set server/proccount '${proccount}'",
-                "set server/memsize '${memsize}'"],
+    changes => ["set server/fqdn/#text ${name}",
+                "set server/parent/#text ${parent}",
+                "set server/proccount/#text ${proccount}",
+                "set server/memsize/#text ${memsize}"],
     require => Kfile["/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml"];
   }
 }
@@ -170,10 +170,10 @@ define kbp_dashboard_new::server_interface($environment, $fqdn, $interface, $ipv
   kaugeas { $name:
     file    => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml",
     lens    => "Xml.lns",
-    changes => ["set server/interface '${interface}'",
-                "set server/interface/${interface}/ipv4 '${ipv4}'",
-                "set server/interface/${interface}/ipv6 '${ipv6}'",
-                "set server/interface/${interface}/mac '${mac}'"],
+    changes => ["set server/interface/name/#text ${interface}",
+                "set server/interface/ipv4/#text ${ipv4}",
+                "set server/interface/ipv6/#text ${ipv6}",
+                "set server/interface/mac/#text ${mac}"],
     require => Kfile["/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml"];
   }
 }
