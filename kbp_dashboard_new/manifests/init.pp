@@ -153,7 +153,10 @@ define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
 }
 
 define kbp_dashboard_new::server_base($environment, $parent=false, $fqdn, $proccount, $memsize, $url=false) {
-  kfile { "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml":; }
+  kfile { "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml":
+    content => "<server>\n</server>",
+    replace => false;
+  }
 
   kaugeas { $name:
     file    => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml",
