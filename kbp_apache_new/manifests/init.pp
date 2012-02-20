@@ -168,8 +168,8 @@ class kbp_apache_new::glassfish_domain_base {
 
 define kbp_apache_new::php_cgi($ensure="present", $documentroot) {
   if $ensure == "present" {
-    include gen_base::php5_cgi
-    include gen_base::php_apc
+    include gen_php5::cgi
+    include gen_php5::apc
     include gen_base::apache2_mpm_worker
 
     kbp_apache_new::cgi { $name:
