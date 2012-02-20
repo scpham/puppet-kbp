@@ -178,7 +178,7 @@ define kbp_apache_new::php_cgi($ensure="present", $documentroot) {
 
     Package <| title == "libapache2-mod-php5" |> {
       ensure => purged,
-      notify => Exec["reload-apache2"],
+      notify => Exec["force-reload-apache2"],
     }
   }
 }
