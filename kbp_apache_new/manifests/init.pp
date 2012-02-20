@@ -115,15 +115,6 @@ class kbp_apache_new::module::proxy_http {
   }
 }
 
-define kbp_apache_new::cgi($documentroot) {
-  include gen_base::libapache2-mod-fcgid
-
-  kfile { "/etc/apache2/vhost-additions/${name}/enable-cgi":
-    content => template("kbp_apache_new/vhost-additions/enable_cgi"),
-    notify  => Exec["reload-apache2"];
-  }
-}
-
 class kbp_apache_new::module::jk {
   include gen_apache::jk
 }
@@ -175,18 +166,20 @@ class kbp_apache_new::glassfish_domain_base {
   }
 }
 
-define kbp_apache_new::php_cgi($documentroot) {
-  include gen_base::php5_cgi
-  include gen_base::php_apc
-  include gen_base::apache2_mpm_worker
+define kbp_apache_new::php_cgi($ensure="present", $documentroot) {
+  if $ensure == "present" {
+    include gen_base::php5_cgi
+    include gen_base::php_apc
+    include gen_base::apache2_mpm_worker
 
-  kbp_apache_new::cgi { $name:
-    documentroot => $documentroot;
-  }
+    kbp_apache_new::cgi { $name:
+      documentroot => $documentroot;
+    }
 
-  Package <| title == "libapache2-mod-php5" |> {
-    ensure => purged,
-    notify => Exec["reload-apache2"],
+    Package <| title == "libapache2-mod-php5" |> {
+      ensure => purged,
+      notify => Exec["reload-apache2"],
+    }
   }
 }
 
@@ -397,5 +390,13 @@ define kbp_apache_new::glassfish_domain($site, $site_port, $connector_port) {
     "3 worker domain ${name} settings":
       content => template("kbp_apache_new/glassfish/workers.properties_settings"),
       target  => "/etc/apache2/workers.properties";
+  }
+}
+
+define kbp_apache_new::cgi($documentroot) {
+  include gen_base::libapache2-mod-fcgid
+
+  kbp_apache_new::vhost_addition { "${name}/enable-cgi":
+    content => template("kbp_apache_new/vhost-additions/enable_cgi");
   }
 }
