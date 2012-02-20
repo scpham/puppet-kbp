@@ -1,5 +1,5 @@
 class kbp_php5_xdebug {
-  include gen_base::php5_common
+  include gen_php5::common
 
   if $lsbmajdistrelease > 5 {
     $squeeze_or_newer = true
