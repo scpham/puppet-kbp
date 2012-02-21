@@ -328,8 +328,14 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     if ! $django_static_django {
       fail("${fullname} is defined as a Django site but \$django_static_django has not been set")
     }
+
     kbp_apache_new::vhost_addition { "${full_name}/django":
       content => template("kbp_apache_new/vhost-additions/django")
+    }
+
+    kfile { "/srv/django/${django_root_django}/dispatch.wsgi":
+      content => template("kbp_apache_new/django/dispatch.wsgi"),
+      mode    => 755;
     }
   }
 
