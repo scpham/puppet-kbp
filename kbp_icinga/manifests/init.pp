@@ -56,6 +56,9 @@ class kbp_icinga::client {
     "check_java_heap_usage":
       command   => "check_javaheapusage",
       arguments => '/etc/munin/plugins/jmx_$ARG1$_java_process_memory 96 93';
+    "check_ksplice":
+      command   => "check_uptrack_local",
+      arguments => "-w i -c o";
     "check_loadtrend":
       arguments => "-m 1.5 -c 5 -w 2.5";
     "check_local_smtp":
@@ -152,11 +155,6 @@ class kbp_icinga::client {
       check_command       => "check_disk_space",
       nrpe                => true,
       warnsms             => false;
-    "ksplice":
-      service_description => "Ksplice update status",
-      check_command       => "check_ksplice",
-      nrpe                => true,
-      sms                 => false;
     "puppet_dontrun":
       service_description => "Puppet dontrun",
       check_command       => "check_puppet_dontrun",
@@ -860,9 +858,12 @@ class kbp_icinga::ferm_config($filename) {
 #  gen_puppet
 #
 class kbp_icinga::ksplice {
-  kbp_icinga::service { "check_ksplice":
-    command   => "check_uptrack_local",
-    arguments => "-w i -c o";
+  kbp_icinga::service { "ksplice":
+    service_description => "Ksplice update status",
+    check_command       => "check_ksplice",
+    nrpe                => true,
+    sms                 => false,
+    customer_notify     => false;
   }
 }
 
