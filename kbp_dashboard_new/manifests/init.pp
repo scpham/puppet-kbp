@@ -153,31 +153,22 @@ define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
 }
 
 define kbp_dashboard_new::server_base($environment, $parent=false, $fqdn, $proccount, $memsize, $url=false) {
-  kfile { "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml":
-    content => "<server>\n</server>",
-    replace => false;
-  }
+  concat { "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml":; }
 
-  kaugeas { $name:
-    file    => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml",
-    lens    => "Xml.lns",
-    changes => ["set server/fqdn/#text ${name}",
-                "set server/parent/#text ${parent}",
-                "set server/proccount/#text ${proccount}",
-                "set server/memsize/#text ${memsize}"],
-    require => Kfile["/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml"];
+  concat::add_content {
+    "000_${fqdn}_base":
+      content => template("kbp_dashboard_new/overview/server_base_start"),
+      target  => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml";
+    "ZZZ_${fqdn}_base":
+      content => template("kbp_dashboard_new/overview/server_base_end"),
+      target  => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml";
   }
 }
 
 define kbp_dashboard_new::server_interface($environment, $fqdn, $interface, $ipv4, $ipv6, $mac, $url=false) {
-  kaugeas { $name:
-    file    => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml",
-    lens    => "Xml.lns",
-    changes => ["set server/interface/name/#text ${interface}",
-                "set server/interface/ipv4/#text ${ipv4}",
-                "set server/interface/ipv6/#text ${ipv6}",
-                "set server/interface/mac/#text ${mac}"],
-    require => Kfile["/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml"];
+  concat::add_content { "111_${fqdn}_${name}":
+    content => template("kbp_dashboard_new/overview/server_interface"),
+    target  => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml";
   }
 }
 
