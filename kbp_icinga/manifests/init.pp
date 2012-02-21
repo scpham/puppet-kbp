@@ -56,9 +56,6 @@ class kbp_icinga::client {
     "check_java_heap_usage":
       command   => "check_javaheapusage",
       arguments => '/etc/munin/plugins/jmx_$ARG1$_java_process_memory 96 93';
-    "check_ksplice":
-      command   => "check_uptrack_local",
-      arguments => "-w i -c o";
     "check_loadtrend":
       arguments => "-m 1.5 -c 5 -w 2.5";
     "check_local_smtp":
@@ -850,6 +847,22 @@ class kbp_icinga::ferm_config($filename) {
     arguments           => $filename,
     check_interval      => 900,
     nrpe                => true;
+  }
+}
+
+# Class: kbp_icinga::ferm_config
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_icinga::ksplice {
+  kbp_icinga::service { "check_ksplice":
+    command   => "check_uptrack_local",
+    arguments => "-w i -c o";
   }
 }
 
