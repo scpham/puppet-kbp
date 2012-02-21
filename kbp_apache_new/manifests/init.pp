@@ -204,7 +204,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     $port=false, $make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false, $wildcard=false,
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false,
     $monitor=true, $smokeping=true, $php=false, $glassfish_domain=false, $glassfish_connector_port=false, $django_root_path=false,
-    $django_root_django=false, $django_static_path=false, $django_static_django=false) {
+    $django_root_django=false, $django_static_path=false, $django_static_django=false, $django_settings=false) {
   include kbp_apache_new
   if $key or $cert or $intermediate or $wildcard or $ssl {
     include kbp_apache_new::ssl
@@ -313,7 +313,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
   }
 
-  if $django_root_path or $django_root_django or $django_static_path or $django_static_django {
+  if $django_root_path or $django_root_django or $django_static_path or $django_static_django or $django_settings {
     include kbp_django
 
     if ! $django_root_path {
@@ -327,6 +327,9 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
     if ! $django_static_django {
       fail("${fullname} is defined as a Django site but \$django_static_django has not been set")
+    }
+    if ! $django_settings {
+      fail("${fullname} is defined as a Django site but \$django_settings has not been set")
     }
 
     kbp_apache_new::vhost_addition { "${full_name}/django":
