@@ -333,7 +333,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       content => template("kbp_apache_new/vhost-additions/django")
     }
 
-    kfile { "/srv/django/${django_root_django}/dispatch.wsgi":
+    kfile { "/srv/django${django_root_django}/dispatch.wsgi":
       content => template("kbp_apache_new/django/dispatch.wsgi"),
       mode    => 755;
     }
