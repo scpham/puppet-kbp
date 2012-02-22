@@ -206,11 +206,12 @@ define kbp_glassfish_new::domain($portbase, ensure="present",
 # statuspath:
 #  a path to check om (e.g. /status.html)
 #
-define kbp_glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 80, $statuspath=false) {
+define kbp_glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 80, $statuspath=false, $ensure = "present") {
   kbp_apache_new::site { $name:
     glassfish_domain         => $glassfish_domain,
     glassfish_connector_port => $jkport,
-    create_documentroot      => false;
+    create_documentroot      => false,
+    ensure                   => $ensure;
   }
 }
 
