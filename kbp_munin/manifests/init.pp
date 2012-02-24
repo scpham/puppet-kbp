@@ -44,6 +44,24 @@ class kbp_munin::client::activemq {
   }
 }
 
+# Class: kbp_munin::client::drbd
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_munin::client::drbd {
+  include kbp_munin::client
+
+  munin::client::plugin { ["drbd_net_0", "drbd_disk_0"]:
+    script_path => "/usr/share/munin/plugins/kumina",
+    script      => "drbd_";
+  }
+}
+
 # Class: kbp_munin::client::apache
 #
 # Actions:
