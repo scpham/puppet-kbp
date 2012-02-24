@@ -13,6 +13,11 @@
 class kbp_kvm {
   include gen_kvm
   include gen_base::libcurl3_gnutls
+  include gen_base::qemu_utils
+
+  if $lsbmajdistrelease == 6 {
+    gen_apt::preference { "qemu-utils":; }
+  }
 
   # Enable KSM
   exec { "/bin/echo 1 > /sys/kernel/mm/ksm/run":
