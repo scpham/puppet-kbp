@@ -196,7 +196,7 @@ class kbp_icinga::client {
     "nrpe":
       service_description => "NRPE port",
       check_command       => "check_tcp",
-      arguments           => "5666",
+      argument            => "5666",
       customer_notify     => false;
     "ntp_offset":
       service_description => "NTP offset",
@@ -363,6 +363,11 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
     "return-ok":
       command_name  => "check_dummy",
       host_argument => false,
+      arguments     => "0";
+    "return-ok_nrpe":
+      command_name  => "check_dummy",
+      host_argument => false,
+      nrpe          => true,
       arguments     => "0";
     "check_drbd_mount":
       command_name  => "check_drbd_mount",
