@@ -46,6 +46,7 @@ class kbp_icinga::client {
       sudo      => true,
       command   => "check_file",
       arguments => '-f $ARG1$ -c $ARG2$';
+    "check_dummy":;
     "check_ferm_config":
       sudo      => true,
       arguments => '$ARG1$';
@@ -196,7 +197,7 @@ class kbp_icinga::client {
     "nrpe":
       service_description => "NRPE port",
       check_command       => "check_tcp",
-      argument            => "5666",
+      arguments           => "5666",
       customer_notify     => false;
     "ntp_offset":
       service_description => "NTP offset",
