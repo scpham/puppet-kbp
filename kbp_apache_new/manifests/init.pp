@@ -192,6 +192,8 @@ define kbp_apache_new::php_cgi($ensure="present", $documentroot) {
 #    Undocumented
 #  max_check_attempts
 #    For overriding the default max_check_attempts of the service
+#  log_vhost
+#    If set to true, it logs the serveralias from the request in the access log
 #
 # Actions:
 #  Undocumented
@@ -201,7 +203,7 @@ define kbp_apache_new::php_cgi($ensure="present", $documentroot) {
 #  gen_puppet
 #
 define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot=false, $create_documentroot=true, $address=false, $address6=false,
-    $port=false, $make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false, $wildcard=false,
+    $port=false, $make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false, $wildcard=false, $log_vhost=false,
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false,
     $monitor=true, $smokeping=true, $php=false, $glassfish_domain=false, $glassfish_connector_port=false, $django_root_path=false,
     $django_root_django=false, $django_static_path=false, $django_static_django=false, $django_settings=false) {
@@ -238,6 +240,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     address          => $address,
     address6         => $address6,
     port             => $port,
+    log_vhost        => $log_vhost,
     make_default     => $make_default,
     ssl              => $ssl,
     key              => $key,
