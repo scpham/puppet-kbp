@@ -13,9 +13,9 @@
 class kbp_kvm {
   include gen_kvm
   include gen_base::libcurl3_gnutls
-  include gen_base::qemu_utils
 
   if $lsbmajdistrelease == 6 {
+    include gen_base::qemu_utils
     gen_apt::preference { "qemu-utils":; }
   }
 
