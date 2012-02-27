@@ -1122,7 +1122,6 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     max_check_attempts           => $max_check_attempts,
     arguments                    => $arguments,
     register                     => $register,
-    nrpe                         => $nrpe,
     ensure                       => $ensure,
     proxy                        => $proxy;
   }
