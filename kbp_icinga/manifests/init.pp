@@ -219,7 +219,8 @@ class kbp_icinga::client {
       service_description => "Zombie processes",
       check_command       => "check_zombie_processes",
       nrpe                => true,
-      sms                 => false;
+      sms                 => false,
+      customer_notify     => false;
   }
 
   gen_icinga::servicedependency { "puppet_dependency_freshness_dontrun":
