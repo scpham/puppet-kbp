@@ -3,8 +3,12 @@
 class kbp_physical::bonding {
   include gen_base::ifenslave-2_6
 
-  kfile { "/etc/modprobe.d/bonding":
+  kfile { "/etc/modprobe.d/bonding.conf":
     content => template("kbp_physical/bonding");
+  }
+
+  kfile { "/etc/modprobe.d/bonding":
+    ensure => absent;
   }
 }
 
