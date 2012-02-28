@@ -196,8 +196,8 @@ class kbp_icinga::client {
       nrpe                => true;
     "nrpe":
       service_description => "NRPE port",
-      check_command       => "check_tcp",
-      arguments           => "5666",
+      check_command       => "return-ok_nrpe",
+      nrpe                => true,
       customer_notify     => false;
     "ntp_offset":
       service_description => "NTP offset",
