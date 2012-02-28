@@ -2,4 +2,4 @@
 <%= eval("ipaddress6_".concat(interface)) %>
 <% else -%>
 None
-<% end %>
+<% end -%>
