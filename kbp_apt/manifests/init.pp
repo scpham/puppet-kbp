@@ -77,3 +77,27 @@ class kbp_apt::kumina {
   }
 }
 
+# Class: kbp_apt::kumina
+#
+# Actions:
+#  Setup the APT source for the kumina repository, including keeping the key up-to-date and making sure we always prefer
+#  packages that we've packaged ourselves.
+#
+# Depends:
+#  gen_apt
+#  gen_puppet
+#
+class kbp_apt::kumina_non_free ($repopassword = "BOGUS"){
+  # Pull in the key and other stuff we need
+  include kbp_apt::kumina
+
+  gen_apt::source {
+    "kumina-non-free":
+      comment      => "Kumina non-free repository.",
+      sourcetype   => "deb",
+      uri          => "https://${environment}:${repopassword}@debian-non-free.kumina.nl/debian",
+      distribution => "${lsbdistcodename}-kumina",
+      components   => "non-free",
+      key          => "498B91E6";
+  }
+}
