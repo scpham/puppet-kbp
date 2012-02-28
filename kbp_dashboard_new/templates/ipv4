@@ -1,4 +1,3 @@
 <% if has_variable?("ipaddress_".concat(interface)) -%>
 <%= eval("ipaddress_".concat(interface)) -%>
-<% else -%>None
-<% end -%>
+<% else %>None<% end -%>
