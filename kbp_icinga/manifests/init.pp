@@ -46,7 +46,8 @@ class kbp_icinga::client {
       sudo      => true,
       command   => "check_file",
       arguments => '-f $ARG1$ -c $ARG2$';
-    "check_dummy":;
+    "check_dummy":
+      arguments => '$ARG1$';
     "check_ferm_config":
       sudo      => true,
       arguments => '$ARG1$';
