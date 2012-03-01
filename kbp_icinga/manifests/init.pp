@@ -368,7 +368,6 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       arguments     => "0";
     "return-ok_nrpe":
       command_name  => "check_dummy",
-      host_argument => false,
       nrpe          => true,
       arguments     => "0";
     "check_drbd_mount":
