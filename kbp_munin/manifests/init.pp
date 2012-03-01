@@ -320,8 +320,9 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
   }
 
   Kfile <| title == "/etc/send_nsca.cfg" |> {
-    mode  => 640,
-    group => "munin",
+    mode    => 640,
+    group   => "munin",
+    require +> Kpackage["munin"],
   }
 
   kpackage { "rsync":; }
