@@ -1095,6 +1095,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
   } else {
     gen_icinga::servicedependency { "nrpe_dependency_${real_name}_nrpe_port":
       ensure                        => absent,
+    }
   }
 
   gen_icinga::service { $real_name:
