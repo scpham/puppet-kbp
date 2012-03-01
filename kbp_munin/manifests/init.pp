@@ -298,7 +298,7 @@ define kbp_munin::client::jmxcheck {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_munin::server($port=443) inherits munin::server {
+class kbp_munin::server($site, $port=443) inherits munin::server {
   include kbp_nsca::client
 
   $ssl = $port ? {
@@ -359,12 +359,14 @@ class kbp_munin::server($port=443) inherits munin::server {
     text      => "Graphs of server usage and performance.";
   }
 
-  Kbp_munin::Environment <<| |>>
+  Kbp_munin::Environment <<| |>> {
+    site => $site,
+  }
   Kbp_munin::Alert <<| |>>
   Concat::Add_content <<| tag == "munin_client" |>>
 }
 
-define kbp_munin::environment {
+define kbp_munin::environment($site) {
   service { "munin-${name}":
     require => File["/etc/init.d/munin-${name}","/dev/shm/munin-${name}"];
   }
@@ -376,7 +378,7 @@ define kbp_munin::environment {
     ["/dev/shm/munin-${name}","/var/log/munin-${name}","/var/run/munin-${name}","/var/lib/munin-${name}"]:
       ensure  => directory,
       owner   => "munin";
-    "/srv/www/${fqdn}/${name}":
+    "/srv/www/${site}/${name}":
       ensure  => directory,
       group   => "www-data",
       owner   => "munin";
@@ -394,8 +396,8 @@ define kbp_munin::environment {
   concat {
     "/etc/munin/munin-${name}.conf":
       require => Package["munin"];
-    "/srv/www/${fqdn}/${name}/.htpasswd":
-      require => Kfile["/srv/www/${fqdn}/${name}"];
+    "/srv/www/${site}/${name}/.htpasswd":
+      require => Kfile["/srv/www/${site}/${name}"];
   }
 
   concat::add_content { "0 ${name} base":
@@ -403,12 +405,12 @@ define kbp_munin::environment {
     target  => "/etc/munin/munin-${name}.conf";
   }
 
-  kbp_apache_new::vhost_addition { "${fqdn}_${port}/access_${name}":
+  kbp_apache_new::vhost_addition { "${site}_${port}/access_${name}":
     content => template("kbp_munin/vhost-additions/access");
   }
 
   Concat::Add_content <<| tag == "htpasswd_${name}" |>> {
-    target => "/srv/www/${fqdn}/${name}/.htpasswd",
+    target => "/srv/www/${site}/${name}/.htpasswd",
   }
 }
 
