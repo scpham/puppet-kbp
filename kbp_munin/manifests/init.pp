@@ -319,6 +319,10 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
     ensure  => absent,
   }
 
+  Kfile <| title == "/etc/cron.d/munin" |> {
+    ensure  => absent,
+  }
+
   Kfile <| title == "/etc/send_nsca.cfg" |> {
     mode    => 640,
     group   => "munin",
