@@ -300,7 +300,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
   }
 
-  if ! ssl and ! defined(Gen_ferm::Rule["HTTP connections on ${real_port}"]) {
+  if ! $real_ssl and ! defined(Gen_ferm::Rule["HTTP connections on ${real_port}"]) {
     gen_ferm::rule { "HTTP connections on ${real_port}":
       proto  => "tcp",
       dport  => $real_port,
