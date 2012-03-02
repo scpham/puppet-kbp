@@ -210,7 +210,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   include kbp_apache_new
   if $key or $cert or $intermediate or $wildcard or $ssl {
     if ! $address and ! $address6 {
-      fail { "Kbp_apache_new::site(${name}) is an SSL site but no IP address has been set.":; }
+      fail("Kbp_apache_new::site(${name}) is an SSL site but no IP address has been set.")
     }
 
     include kbp_apache_new::ssl
