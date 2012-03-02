@@ -300,7 +300,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
   }
 
-  if ! defined(Gen_ferm::Rule["HTTP connections on ${real_port}"]) {
+  if ! ssl and ! defined(Gen_ferm::Rule["HTTP connections on ${real_port}"]) {
     gen_ferm::rule { "HTTP connections on ${real_port}":
       proto  => "tcp",
       dport  => $real_port,
@@ -373,6 +373,14 @@ define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=
     host_name           => $name,
     statuscode          => $statuscode,
     response            => $forward;
+  }
+
+  if ! defined(Gen_ferm::Rule["HTTP connections on ${real_port}"]) {
+    gen_ferm::rule { "HTTP connections on ${real_port}":
+      proto  => "tcp",
+      dport  => $real_port,
+      action => "ACCEPT";
+    }
   }
 }
 
