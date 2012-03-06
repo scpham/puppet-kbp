@@ -209,7 +209,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     $django_root_django=false, $django_static_path=false, $django_static_django=false, $django_settings=false) {
   include kbp_apache_new
   if $key or $cert or $intermediate or $wildcard or $ssl {
-    if ! $address and ! $address6 {
+    if ! $address and ! $address6 and ! $wildcard {
       fail("Kbp_apache_new::site(${name}) is an SSL site but no IP address has been set.")
     }
 
