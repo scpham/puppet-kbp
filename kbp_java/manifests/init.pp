@@ -20,5 +20,4 @@ class kbp_java::oracle_java7_jre_crypto_policy {
 
 class kbp_java::oracle_java7_jre {
   include gen_java::oracle_java7_jre
-  include kbp_apt::kumina_non_free
 }
