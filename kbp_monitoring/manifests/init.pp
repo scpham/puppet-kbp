@@ -550,52 +550,26 @@ define kbp_monitoring::java($package="icinga", $servicegroups=false, $sms=true) 
 #  Undocumented
 #  gen_puppet
 #
-define kbp_monitoring::site($package="icinga", $address=false, $address6=false, $conf_dir=$false, $parents=$false, $auth=false,
+define kbp_monitoring::site($package="icinga", $address=false, $address6=false, $conf_dir=$false, $parents=$fqdn, $auth=false,
     $max_check_attempts=false, $path=false, $response=false, $vhost=true, $statuscode=false, $ssl=false,
-    $host_name=false, $service_description=false) {
+    $host_name=false, $service_description=false, $check_interval=false) {
   case $package {
     "icinga": {
       kbp_icinga::site { $name:
-        address             => $address ? {
-          false   => undef,
-          default => $address,
-        },
-        address6            => $address6 ? {
-          false   => undef,
-          default => $address6,
-        },
-        conf_dir            => $conf_dir ? {
-          false   => undef,
-          default => $conf_dir,
-        },
-        parents             => $parents ? {
-          false   => undef,
-          default => $parents,
-        },
-        max_check_attempts  => $max_check_attempts ? {
-          false   => undef,
-          default => $max_check_attempts,
-        },
-        auth                => $auth ? {
-          false   => undef,
-          default => $auth,
-        },
-        path                => $path ? {
-          false   => undef,
-          default => $path,
-        },
-        response            => $response ? {
-          false   => undef,
-          default => $response,
-        },
-        vhost               => $vhost ? {
-          true    => undef,
-          default => false,
-        },
+        address             => $address,
+        address6            => $address6,
+        conf_dir            => $conf_dir,
+        parents             => $parents,
+        max_check_attempts  => $max_check_attempts,
+        auth                => $auth,
+        path                => $path,
+        response            => $response,
+        vhost               => $vhost,
         statuscode          => $statuscode,
         ssl                 => $ssl,
         host_name           => $host_name,
-        service_description => $service_description;
+        service_description => $service_description,
+        check_interval      => $check_interval;
       }
     }
   }
