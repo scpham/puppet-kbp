@@ -23,6 +23,19 @@ define kbp_drbd($location, $fstype=false, $mastermaster=true, $time_out=false, $
       use_ipaddress => $use_ipaddress,
       ocfs2_tag     => $name;
     }
+
+    mount { $location:
+      ensure   => mounted,
+      device   => "/dev/drbd1",
+      fstype   => "ocfs2",
+      options  => "nodev,nosuid,noatime",
+      dump     => "0",
+      pass     => "0",
+      remounts => true,
+      target   => "/etc/fstab",
+      require  => Gen_drbd[$name];
+    }
+
   }
 
   if ! $mastermaster and ! $fstype {
@@ -52,20 +65,6 @@ define kbp_drbd($location, $fstype=false, $mastermaster=true, $time_out=false, $
     action   => "ACCEPT",
     exported => true,
     tag      => "ferm_drbd_${environment}_${name}";
-  }
-
-  mount { $location:
-    ensure   => mounted,
-    device   => "/dev/drbd1",
-    fstype   => $mastermaster ? {
-      true    => "ocfs2",
-      default => $fstype,
-    },
-    options  => "nodev,nosuid,noatime",
-    dump     => "0",
-    pass     => "0",
-    remounts => true,
-    target   => "/etc/fstab",
   }
 
   kfile { "${location}/.monitoring":
