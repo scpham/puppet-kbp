@@ -1573,7 +1573,8 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     check_command        => $real_check_command,
     max_check_attempts   => $max_check_attempts,
     arguments            => $real_arguments,
-    preventproxyoverride => $preventproxyoverride;
+    preventproxyoverride => $preventproxyoverride,
+    check_interval       => $check_interval;
   }
 }
 
