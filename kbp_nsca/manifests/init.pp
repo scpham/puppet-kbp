@@ -41,11 +41,12 @@ class kbp_nsca::server($package="icinga") {
 class kbp_nsca::client($package="munin") {
   include gen_nsca::client
 
-  @@gen_ferm::rule { "NSCA connections from ${fqdn}":
-    saddr  => $fqdn,
-    proto  => "tcp",
-    dport  => 5667,
-    action => "ACCEPT",
-    tag    => "nsca_${environment}";
+  kbp_ferm::rule { "NSCA connections":
+    saddr    => $fqdn,
+    proto    => "tcp",
+    dport    => 5667,
+    action   => "ACCEPT",
+    exported => true,
+    tag      => "nsca_${environment}";
   }
 }
