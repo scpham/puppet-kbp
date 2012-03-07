@@ -238,19 +238,20 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   }
 
   gen_apache::site { $full_name:
-    ensure           => $ensure,
-    serveralias      => $serveralias,
-    documentroot     => $real_documentroot,
-    address          => $address,
-    address6         => $address6,
-    port             => $port,
-    log_vhost        => $log_vhost,
-    make_default     => $make_default,
-    ssl              => $ssl,
-    key              => $key,
-    cert             => $cert,
-    intermediate     => $intermediate,
-    wildcard         => $wildcard;
+    ensure              => $ensure,
+    serveralias         => $serveralias,
+    create_documentroot => $create_documentroot,
+    documentroot        => $real_documentroot,
+    address             => $address,
+    address6            => $address6,
+    port                => $port,
+    log_vhost           => $log_vhost,
+    make_default        => $make_default,
+    ssl                 => $ssl,
+    key                 => $key,
+    cert                => $cert,
+    intermediate        => $intermediate,
+    wildcard            => $wildcard;
   }
 
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
