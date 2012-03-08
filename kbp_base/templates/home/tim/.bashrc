@@ -73,7 +73,7 @@ if [ -f /etc/bash_completion ]; then
 fi
 
 # If we're on testpuppetmaster, I want to see the branch
-if [ `cat /etc/hostname` == "testpuppetmaster" ]; then
+if [ `cat /etc/hostname` == "puppet1" ]; then
 	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w $(__git_ps1 "(%s)")\[\033[00m\]\$ '
 else
 	PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h<%= "." << domain %> [<%= environment %>]\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
