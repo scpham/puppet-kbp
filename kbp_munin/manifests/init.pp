@@ -124,11 +124,8 @@ class kbp_munin::client::puppetmaster {
   include kbp_munin::client
 
   munin::client::plugin {
-    "puppet_nodes":
-      script_path => "/usr/local/share/munin/plugins",
-      script      => "puppet_";
-    "puppet_totals":
-      script_path => "/usr/local/share/munin/plugins",
+    ["puppet_nodes","puppet_totals"]:
+      script_path => "/usr/share/munin/plugins/kumina",
       script      => "puppet_";
   }
 
