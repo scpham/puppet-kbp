@@ -114,18 +114,18 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=fals
   }
 
   if $setup_backup {
-    kfile { "/etc/mysql/conf.d/expire_logs.cnf":
+    file { "/etc/mysql/conf.d/expire_logs.cnf":
       content => "[mysqld]\nexpire_logs_days = 7\n",
       notify  => Exec["reload-mysql"];
     }
   }
 
-  kfile { "/etc/mysql/conf.d/bind-address.cnf":
+  file { "/etc/mysql/conf.d/bind-address.cnf":
     content => "[mysqld]\nbind-address = ${bind_address}\n",
     notify  => Service["mysql"];
   }
 
-  kfile { "/etc/backup/prepare.d/mysql":
+  file { "/etc/backup/prepare.d/mysql":
     ensure  => link,
     target  => "/usr/share/backup-scripts/prepare/mysql",
     require => Kpackage["backup-scripts"];

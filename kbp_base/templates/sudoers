@@ -1,0 +1,9 @@
+# /etc/sudoers
+#
+# This file is maintained in puppet by Kumina. DO NOT change locally
+#
+
+Defaults	env_reset
+# Default rules
+root	ALL=(ALL) ALL
+%root	ALL=(ALL) PASSWD: ALL

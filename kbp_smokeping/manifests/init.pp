@@ -34,8 +34,8 @@ class kbp_smokeping::server($ssl=true) {
     waittime         => 1;
   }
 
-  kfile { "/etc/smokeping/basepage.html":
-    source  => "kbp_smokeping/basepage.html",
+  file { "/etc/smokeping/basepage.html":
+    content => template("kbp_smokeping/basepage.html"),
     require => Kpackage["smokeping"];
   }
 
@@ -77,7 +77,7 @@ define kbp_smokeping::environment($url, $owner="Kumina bv", $contact="support@ku
   }
 
   if $real_htpasswd {
-    kfile { "/etc/smokeping/config.d/${name}/.htpasswd":
+    file { "/etc/smokeping/config.d/${name}/.htpasswd":
       ensure => link,
       target => $real_htpasswd;
     }

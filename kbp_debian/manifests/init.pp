@@ -24,7 +24,7 @@ class kbp_debian::etch {
 class kbp_debian::lenny {
   # Don't pull in Recommends or Suggests dependencies when installing
   # packages with apt.
-  kfile {
+  file {
     "/etc/apt/apt.conf.d/no-recommends":
       content => "APT::Install-Recommends \"false\";\n";
     "/etc/apt/apt.conf.d/no-suggests":
@@ -63,7 +63,7 @@ class kbp_debian::lenny {
 class kbp_debian::squeeze {
   # Don't pull in Recommends or Suggests dependencies when installing
   # packages with apt.
-  kfile {
+  file {
     "/etc/apt/apt.conf.d/no-recommends":
       content => "APT::Install-Recommends \"false\";\n";
     "/etc/apt/apt.conf.d/no-suggests":
@@ -129,7 +129,7 @@ class kbp_debian inherits kbp_base {
     ensure => latest,
   }
 
-  kfile {
+  file {
     "/etc/timezone":
       content => "Europe/Amsterdam\n",
       require => Package["tzdata"];
@@ -142,7 +142,7 @@ class kbp_debian inherits kbp_base {
   # Ensure /tmp always has the correct permissions. (It's a common
   # mistake to forget to do a chmod 1777 /tmp when /tmp is moved to its
   # own filesystem.)
-  kfile { "/tmp":
+  file { "/tmp":
     mode => 1777,
   }
 
@@ -158,8 +158,8 @@ class kbp_debian inherits kbp_base {
     require => Package["pinfo"]
   }
 
-  kfile { "/etc/skel/.bash_profile":
-    source => "kbp_debian/skel/bash_profile";
+  file { "/etc/skel/.bash_profile":
+    content => template("kbp_debian/skel/bash_profile");
   }
 
   kpackage {
@@ -170,9 +170,9 @@ class kbp_debian inherits kbp_base {
       ensure       => installed;
   }
 
-  kfile {
+  file {
     "/var/cache/debconf/locales.preseed":
-      source => "kbp_debian/locales.preseed";
+      content => template("kbp_debian/locales.preseed");
   }
 
   gen_apt::source {

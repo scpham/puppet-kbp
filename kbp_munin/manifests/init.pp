@@ -76,7 +76,7 @@ class kbp_munin::client::apache {
   include kbp_munin::client
   include gen_base::libwww-perl
 
-  kfile { "/etc/apache2/conf.d/server-status":
+  file { "/etc/apache2/conf.d/server-status":
     content => template("kbp_munin/server-status"),
     require => Package["apache2"],
     notify  => Exec["reload-apache2"];
@@ -312,15 +312,15 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
     ferm_tag => "general_trending";
   }
 
-  Kfile <| title == "/etc/munin/munin.conf" |> {
+  File <| title == "/etc/munin/munin.conf" |> {
     ensure  => absent,
   }
 
-  Kfile <| title == "/etc/cron.d/munin" |> {
+  File <| title == "/etc/cron.d/munin" |> {
     ensure  => absent,
   }
 
-  Kfile <| title == "/etc/send_nsca.cfg" |> {
+  File <| title == "/etc/send_nsca.cfg" |> {
     mode    => 640,
     group   => "munin",
     require +> Kpackage["munin"],
@@ -330,8 +330,8 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
 
   # The RRD files for Munin are stored on a memory backed filesystem, so
   # sync it to disk on reboots.
-  kfile { "/etc/init.d/munin-server":
-    source  => "munin/server/init.d/munin-server",
+  file { "/etc/init.d/munin-server":
+    content => template("munin/server/init.d/munin-server"),
     mode    => 755,
     require => [Package["rsync"], Package["munin"]],
   }
@@ -347,8 +347,8 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
   }
 
   # Cron job which syncs the RRD files to disk every 30 minutes.
-  kfile { "/etc/cron.d/munin-sync":
-    source  => "munin/server/cron.d/munin-sync",
+  file { "/etc/cron.d/munin-sync":
+    content => template("munin/server/cron.d/munin-sync"),
     require => [Package["munin"], Package["rsync"]];
   }
 
@@ -373,7 +373,7 @@ define kbp_munin::environment($site) {
     require => File["/etc/init.d/munin-${name}","/dev/shm/munin-${name}"];
   }
 
-  kfile {
+  file {
     "/etc/init.d/munin-${name}":
       mode    => 755,
       content => template("kbp_munin/init-script");
@@ -399,7 +399,7 @@ define kbp_munin::environment($site) {
     "/etc/munin/munin-${name}.conf":
       require => Package["munin"];
     "/srv/www/${site}/${name}/.htpasswd":
-      require => Kfile["/srv/www/${site}/${name}"];
+      require => File["/srv/www/${site}/${name}"];
   }
 
   concat::add_content { "0 ${name} base":

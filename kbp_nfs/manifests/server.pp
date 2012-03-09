@@ -29,7 +29,7 @@ class kbp_nfs::server($need_gssd = "no", $need_idmapd = "no", $need_statd = "yes
 
   # We always keep the state in /srv/nfs, to make setting up failover NFS easier
   # make sure the directory exists.
-  kfile { "/srv/nfs":
+  file { "/srv/nfs":
     ensure => directory,
   }
 

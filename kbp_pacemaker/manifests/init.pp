@@ -93,8 +93,10 @@ class kbp_pacemaker::hetzner {
   include kbp_pacemaker
   include hetzner::failover_ip
 
+  fail("This class doesn't seem to be working")
+
   # Our custom ocf script
-  kfile {
+  file {
     "/usr/lib/ocf/resource.d/kumina/hetzner-failover-ip":
       ensure  => link,
       target  => "/usr/local/lib/hetzner/hetzner-failover-ip",
@@ -108,7 +110,7 @@ class kbp_pacemaker::hetzner {
   }
 
   define updatednsconfig($ipme, $ipother) {
-    kfile { "${name}":
+    file { "${name}":
       content => template("kbp_pacemaker/update-dns.erb");
     }
   }

@@ -69,11 +69,6 @@ class kbp_base {
     mode  => 0644,
   }
 
-  # Fix an oops..... remove this commit in 3 days
-  kfile { "/etc/default/rcS":
-      source => "kbp_base/rcS";
-  }
-
   # Force fsck on boot to repair the file system if it is inconsistent,
   # so we don't have to open the console and run fsck by hand
   #augeas { "/etc/default/rcS":
@@ -126,8 +121,8 @@ class kbp_base {
   }
 
   # Extra configuration for Tim
-  kfile { "/home/tim/.tmux.conf":
-    source => "kbp_base/home/tim/.tmux.conf",
+  file { "/home/tim/.tmux.conf":
+    content => template("kbp_base/home/tim/.tmux.conf"),
   }
 
   # Packages we like and want :)
@@ -152,11 +147,11 @@ class kbp_base {
     }
   }
 
-  kfile {
+  file {
     "/etc/motd.tail":
-      source   => "kbp_base/motd.tail";
+      content => template("kbp_base/motd.tail");
     "/etc/console-tools/config":
-      source  => "kbp_base/console-tools/config",
+      content => template("kbp_base/console-tools/config"),
       require => Package["console-tools"];
   }
 
@@ -242,7 +237,7 @@ define kbp_base::staff_user($ensure="present", $fullname, $uid, $password_hash, 
     }
 
     if $ensure == "present" {
-      kfile {
+      file {
         "/home/${name}":
           ensure  => directory,
           mode    => 750,
@@ -264,11 +259,11 @@ define kbp_base::staff_user($ensure="present", $fullname, $uid, $password_hash, 
           owner   => $name,
           group   => "kumina";
         "/home/${name}/.bash_profile":
-          source  => "kbp_base/home/${name}/.bash_profile",
+          content => template("kbp_base/home/${name}/.bash_profile"),
           owner   => $name,
           group   => "kumina";
         "/home/${name}/.bash_aliases":
-          source  => "kbp_base/home/${name}/.bash_aliases",
+          content => template("kbp_base/home/${name}/.bash_aliases"),
           owner   => $name,
           group   => "kumina";
         "/home/${name}/.tmp":
@@ -290,7 +285,7 @@ define kbp_base::staff_user($ensure="present", $fullname, $uid, $password_hash, 
         content => "# ${fullname} <${name}@kumina.nl>\n${sshkeys}";
       }
     } else {
-      kfile { "/home/${name}":
+      file { "/home/${name}":
         ensure  => absent,
         force   => true,
         recurse => true;

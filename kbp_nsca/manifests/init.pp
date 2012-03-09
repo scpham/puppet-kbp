@@ -17,8 +17,8 @@ class kbp_nsca::server($package="icinga") {
   include gen_nsca::server
 
   if $package == "icinga" {
-    Kfile <| title == "/etc/nsca/nsca.cfg" |> {
-      source => "kbp_nsca/nsca.cfg_icinga",
+    File <| title == "/etc/nsca/nsca.cfg" |> {
+      content => template("kbp_nsca/nsca.cfg_icinga"),
     }
   }
 

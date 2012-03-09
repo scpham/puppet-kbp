@@ -37,7 +37,7 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
   }
 
   if $ensure == "absent" {
-    kfile { "/etc/backup/includes":
+    file { "/etc/backup/includes":
       ensure  => $ensure;
     }
 
@@ -45,7 +45,7 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
       ensure  => $ensure;
     }
   } else {
-    kfile { "/etc/backup/includes":
+    file { "/etc/backup/includes":
       ensure  => $ensure,
       content => "/\n",
       require => Kpackage[$package];

@@ -14,13 +14,13 @@ class kbp_activemq {
   include kbp_ferm
   include kbp_trending::activemq
 
-  kfile {
+  file {
     "/etc/activemq/activemq.xml":
-      source  => "kbp_activemq/activemq.xml",
+      content => template("kbp_activemq/activemq.xml"),
       notify  => Exec["/bin/rm -Rf /var/lib/activemq/*"],
       require => Package["activemq"];
     "/etc/activemq/jetty.xml":
-      source  => "kbp_activemq/jetty.xml",
+      content => template("kbp_activemq/jetty.xml"),
       notify  => Exec["reload-activemq"],
       require => Package["activemq"];
   }

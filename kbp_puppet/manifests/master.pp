@@ -25,7 +25,7 @@ class kbp_puppet::master {
   }
 
   # Enforce Puppet modules directory permissions.
-  kfile {
+  file {
     "/srv/puppet":
       ensure  => directory,
       owner   => "puppet",
@@ -53,35 +53,35 @@ class kbp_puppet::master {
     "Directory permissions in /srv/puppet for group root":
       dir     => "/srv/puppet",
       acl     => "default:group:root:rwx",
-      require => Kfile["/srv/puppet"];
+      require => File["/srv/puppet"];
     "Directory permissions in /srv/puppet for user puppet":
       dir     => "/srv/puppet",
       acl     => "default:user:puppet:r-x",
-      require => Kfile["/srv/puppet"];
+      require => File["/srv/puppet"];
     "Directory permissions in /srv/puppet/env for group root":
       dir     => "/srv/puppet/env",
       acl     => "default:group:root:rwx",
-      require => Kfile["/srv/puppet/env"];
+      require => File["/srv/puppet/env"];
     "Directory permissions in /srv/puppet/env for user puppet":
       dir     => "/srv/puppet/env",
       acl     => "default:user:puppet:r-x",
-      require => Kfile["/srv/puppet/env"];
+      require => File["/srv/puppet/env"];
     "Directory permissions in /srv/puppet/generic for group root":
       dir     => "/srv/puppet/generic",
       acl     => "default:group:root:rwx",
-      require => Kfile["/srv/puppet/generic"];
+      require => File["/srv/puppet/generic"];
     "Directory permissions in /srv/puppet/generic for user puppet":
       dir     => "/srv/puppet/generic",
       acl     => "default:user:puppet:r-x",
-      require => Kfile["/srv/puppet/generic"];
+      require => File["/srv/puppet/generic"];
     "Directory permissions in /srv/puppet/kbp for group root":
       dir     => "/srv/puppet/kbp",
       acl     => "default:group:root:rwx",
-      require => Kfile["/srv/puppet/kbp"];
+      require => File["/srv/puppet/kbp"];
     "Directory permissions in /srv/puppet/kbp for user puppet":
       dir     => "/srv/puppet/kbp",
       acl     => "default:user:puppet:r-x",
-      require => Kfile["/srv/puppet/kbp"];
+      require => File["/srv/puppet/kbp"];
   }
 
   kbp_git::repo {
@@ -185,16 +185,16 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 
   # The vhost-addition should set the documentroot, the puppet directory,
   # the additional apache permissions and debugging options.
-  kfile {
+  file {
     "/etc/apache2/vhost-additions/${pname}/permissions.conf":
       notify  => Exec["reload-apache2"],
       content => template("kbp_puppet/master/apache2/vhost-additions/permissions.conf.erb");
     "/etc/apache2/vhost-additions/${pname}/rack.conf":
       notify  => Exec["reload-apache2"],
-      source  => "kbp_puppet/master/apache2/vhost-additions/rack.conf";
+      content => template("kbp_puppet/master/apache2/vhost-additions/rack.conf");
     "/etc/apache2/vhost-additions/${pname}/ssl.conf":
       notify  => Exec["reload-apache2"],
-      require => Kfile["${ssldir}/ca/ca_crt.pem","${ssldir}/ca/ca_crl.pem"],
+      require => File["${ssldir}/ca/ca_crt.pem","${ssldir}/ca/ca_crl.pem"],
       content => template("kbp_puppet/master/apache2/vhost-additions/ssl.conf.erb");
   }
 
@@ -435,7 +435,7 @@ define kbp_puppet::master::environment ($configfile = "/srv/puppet/puppet.conf")
 
   kbp_git::repo { "/srv/puppet/env/${name}":; }
 
-  kfile {
+  file {
     "/srv/puppet/env/${name}":
       mode    => 775,
       ensure  => directory;

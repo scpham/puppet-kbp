@@ -12,22 +12,22 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
   include gen_base::unzip
 
   # Create the directories needed for jira
-  kfile {
+  file {
     "${root}":
-      ensure => directory,
-      owner  => "tomcat6",
+      ensure  => directory,
+      owner   => "tomcat6",
       require => Package["tomcat6"];
     ["${root}/home",
      "${root}/home/installed-plugins"]:
-      ensure => directory,
-      owner  => "tomcat6",
+      ensure  => directory,
+      owner   => "tomcat6",
       require => [Package["tomcat6"], File["${root}"]];
     "${root}/source/atlassian_jira/edit-webapp/WEB-INF/classes/jira-application.properties":
-      content => "jira.home = ${root}/home",
+      content => template("jira.home = ${root}/home"),
       require => Exec["Get JIRA"],
       notify  => Exec["Build JIRA WAR"];
     "${root}/source/atlassian_jira/build.xml":
-      source  => "kbp_jira/build.xml",
+      content => template("kbp_jira/build.xml"),
       require => Exec["Get JIRA"],
       notify  => Exec["Build JIRA WAR"];
     "${root}/source/atlassian_jira/edit-webapp/WEB-INF/lib":
@@ -39,11 +39,11 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
       mode    => 600,
       owner   => "tomcat6";
     "/usr/local/bin/get_jira":
-      source => "kbp_jira/get_jira.sh",
-      mode   => 755;
+      content => template("kbp_jira/get_jira.sh"),
+      mode    => 755;
     "/usr/local/bin/build_war":
-      source => "kbp_jira/build_war.sh",
-      mode   => 755;
+      content => template("kbp_jira/build_war.sh"),
+      mode    => 755;
   }
 
   setfacl { "${root} tomcat6":

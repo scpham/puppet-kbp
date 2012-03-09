@@ -3,11 +3,11 @@
 class kbp_physical::bonding {
   include gen_base::ifenslave-2_6
 
-  kfile { "/etc/modprobe.d/bonding.conf":
+  file { "/etc/modprobe.d/bonding.conf":
     content => template("kbp_physical/bonding");
   }
 
-  kfile { "/etc/modprobe.d/bonding":
+  file { "/etc/modprobe.d/bonding":
     ensure => absent;
   }
 }
@@ -70,8 +70,8 @@ class kbp_physical {
   }
 
   # Backup the MBR
-  kfile { "/etc/backup/prepare.d/mbr":
-    source  => "kbp_physical/mbr",
+  file { "/etc/backup/prepare.d/mbr":
+    content => template("kbp_physical/mbr"),
     mode    => 700,
     require => Package["backup-scripts"];
   }

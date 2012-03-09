@@ -23,13 +23,13 @@ class kbp_apache inherits apache {
       action => "ACCEPT";
   }
 
-  kfile {
+  file {
     "/etc/apache2/mods-available/deflate.conf":
-      source => "kbp_apache/mods-available/deflate.conf",
+      content => template("kbp_apache/mods-available/deflate.conf"),
       require => Package["apache2"],
       notify => Exec["reload-apache2"];
     "/etc/apache2/conf.d/security":
-      source => "kbp_apache/conf.d/security",
+      content => template("kbp_apache/conf.d/security"),
       require => Package["apache2"],
       notify => Exec["reload-apache2"];
   }

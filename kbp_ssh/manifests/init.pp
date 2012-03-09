@@ -54,7 +54,7 @@ class kbp_ssh {
   }
 
   # Fix permissions.
-  kfile { "/etc/ssh/ssh_known_hosts":; }
+  file { "/etc/ssh/ssh_known_hosts":; }
 }
 
 # Class: kbp_ssh::permit_root_logins_with_forced_commands

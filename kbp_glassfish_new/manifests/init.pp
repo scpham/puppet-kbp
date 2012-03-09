@@ -26,7 +26,7 @@ class kbp_glassfish_new {
       require => File["/srv/glassfish"];
   }
 
-  kfile {
+  file {
     ["/srv/glassfish","/srv/glassfish/domains"]:
       ensure  => directory,
       owner   => "glassfish",
@@ -46,7 +46,7 @@ class kbp_glassfish_new {
 class kbp_glassfish_new::cluster {
   include kbp_glassfish_new
 
-  kfile {
+  file {
     "/srv/glassfish/nodes":
       ensure  => directory,
       owner   => "glassfish",
@@ -134,7 +134,7 @@ define kbp_glassfish_new::domain($portbase, ensure="present",
     creates => "/srv/glassfish/domains/${name}",
   }
 
-  kfile { "/srv/glassfish/domains/${name}":
+  file { "/srv/glassfish/domains/${name}":
     ensure  => directory,
     owner   => "glassfish",
     group   => "glassfish",

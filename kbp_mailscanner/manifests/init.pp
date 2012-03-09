@@ -15,8 +15,8 @@ class kbp_mailscanner {
   include kbp_mailscanner::spamchecker
   include kbp_mailscanner::virusscanner
 
-  kfile { "/etc/amavis/conf.d/40-kbp":
-    source => "kbp_mailscanner/amavis/conf.d/40-kbp",
+  file { "/etc/amavis/conf.d/40-kbp":
+    content => template("kbp_mailscanner/amavis/conf.d/40-kbp"),
     require => Package["amavisd-new"],
     notify => Service["amavis"],
   }
@@ -46,8 +46,8 @@ class kbp_mailscanner {
 #  gen_puppet
 #
 class kbp_mailscanner::spamchecker inherits spamassassin {
-  kfile { "/etc/spamassassin/local.cf":
-    source => "kbp_mailscanner/spamassassin/local.cf",
+  file { "/etc/spamassassin/local.cf":
+    content => template("kbp_mailscanner/spamassassin/local.cf"),
     notify => Service["amavis"],
   }
 

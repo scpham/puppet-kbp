@@ -4,7 +4,7 @@ class kbp_dashboard::server($url, $ssl=true) {
     true  => 443,
   }
 
-  kfile {
+  file {
     "/srv/www/${url}":
       ensure  => directory,
       purge   => true,
@@ -15,11 +15,11 @@ class kbp_dashboard::server($url, $ssl=true) {
     "/srv/www/${url}/.htpasswd":
       ensure  => link,
       target  => "/srv/www/${url}/kumina/.htpasswd",
-      require => Kfile["/srv/www/${url}"];
+      require => File["/srv/www/${url}"];
   }
 
   concat { "/srv/www/${url}/index.html":
-    require => Kfile["/srv/www/${url}"];
+    require => File["/srv/www/${url}"];
   }
 
   concat::add_content {
@@ -66,7 +66,7 @@ class kbp_dashboard::client {
 }
 
 define kbp_dashboard::environment($fullname) {
-  kfile {
+  file {
     "/srv/www/${url}/${name}":
       ensure  => directory,
       purge   => true,
@@ -85,11 +85,11 @@ define kbp_dashboard::environment($fullname) {
 
   concat {
     "/srv/www/${url}/${name}/index.html":
-      require => Kfile["/srv/www/${url}/${name}"];
+      require => File["/srv/www/${url}/${name}"];
     "/srv/www/${url}/${name}/.htpasswd":
-      require => Kfile["/srv/www/${url}/${name}"];
+      require => File["/srv/www/${url}/${name}"];
     "/srv/www/${url}/${name}/overview/index.html":
-      require => Kfile["/srv/www/${url}/${name}"];
+      require => File["/srv/www/${url}/${name}"];
   }
 
   concat::add_content {

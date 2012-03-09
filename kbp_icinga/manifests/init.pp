@@ -261,7 +261,7 @@ class kbp_icinga::proxyclient($proxy, $proxytag="proxy_${environment}", $saddr=f
 class kbp_icinga::proxy($proxytag="proxy_${environment}") {
   include gen_base::nagios-nrpe-plugin
 
-  kfile {
+  file {
     "/etc/nagios/nrpe.d/runcommand.cfg":
       content => 'command[runcommand]=$ARG1$';
     "/etc/default/openbsd-inetd":
@@ -289,7 +289,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
     logs => "/var/log/icinga/icinga.log";
   }
 
-  kfile {
+  file {
     "/etc/icinga/ido2db.cfg":
       content => template("kbp_icinga/ido2db.cfg"),
       owner   => "nagios",
@@ -475,13 +475,13 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       nrpe      => true;
   }
 
-  kfile {
+  file {
     "/etc/icinga/cgi.cfg":
-      source  => "kbp_icinga/server/cgi.cfg",
+      content => template("kbp_icinga/server/cgi.cfg"),
       notify  => Exec["reload-icinga"],
       require => Package["icinga"];
     "/etc/icinga/icinga.cfg":
-      source  => "kbp_icinga/server/icinga.cfg",
+      content => template("kbp_icinga/server/icinga.cfg"),
       notify  => Exec["reload-icinga"],
       require => Package["icinga"];
     "/etc/icinga/config":
@@ -492,7 +492,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       require => Package["icinga"],
       notify  => Exec["reload-icinga"];
     "/etc/icinga/config/generic/notify_commands.cfg":
-      source  => "kbp_icinga/server/config/generic/notify_commands.cfg",
+      content => template("kbp_icinga/server/config/generic/notify_commands.cfg"),
       notify  => Exec["reload-icinga"];
   }
 
@@ -665,13 +665,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
     target => "/etc/icinga/htpasswd.users",
   }
 
-  kfile {
-    # XXX: Please remove after 14-02-2012.
-    "/etc/cron.d/icinga-check-alive-cron":
-      ensure => absent;
+  file {
     "/usr/bin/icinga-check-alive":
-      source => "kbp_icinga/server/icinga-check-alive",
-      mode   => 755;
+      content => template("kbp_icinga/server/icinga-check-alive"),
+      mode    => 755;
   }
 
   kcron { "icinga-check-alive":
@@ -1014,7 +1011,7 @@ class kbp_icinga::asterisk {
 
 
 define kbp_icinga::clientcommand($sudo=false, $path=false, $command=false, $arguments=false) {
-  kfile { "/etc/nagios/nrpe.d/${name}.cfg":
+  file { "/etc/nagios/nrpe.d/${name}.cfg":
     content => template("kbp_icinga/clientcommand"),
     require => Package["nagios-nrpe-server"];
   }
@@ -1724,11 +1721,11 @@ define kbp_icinga::mbean_value($jmxport, $objectname, $attributename, $expectedv
   }
 
   if $attributekey {
-    kfile { "/etc/nagios/nrpe.d/mbean_${jmxport}_${attributename}_${expectedvalue}_${attributekey}.conf":
+    file { "/etc/nagios/nrpe.d/mbean_${jmxport}_${attributename}_${expectedvalue}_${attributekey}.conf":
       content => template("kbp_icinga/mbean_value.conf");
     }
   } else {
-    kfile { "/etc/nagios/nrpe.d/mbean_${jmxport}_${attributename}_${expectedvalue}.conf":
+    file { "/etc/nagios/nrpe.d/mbean_${jmxport}_${attributename}_${expectedvalue}.conf":
       content => template("kbp_icinga/mbean_value.conf");
     }
   }

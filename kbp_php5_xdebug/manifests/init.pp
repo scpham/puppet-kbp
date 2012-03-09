@@ -11,7 +11,7 @@ class kbp_php5_xdebug {
     ensure => latest;
   }
 
-  kfile { "/etc/php5/conf.d/xdebug.ini":
+  file { "/etc/php5/conf.d/xdebug.ini":
     content => $squeeze_or_newer ? {
       true  => "zend_extension=/usr/lib/php5/20090626/xdebug.so\nxdebug.remote_enable=On\nhtml_errors=On\n",
       false => "zend_extension=/usr/lib/php5/20060613/xdebug.so\nxdebug.remote_enable=On\nhtml_errors=On\n",

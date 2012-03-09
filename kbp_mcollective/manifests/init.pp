@@ -3,7 +3,7 @@ class kbp_mcollective::server {
 
   kbp_rabbitmq::client { "mcollective":; }
 
-  kfile { "/etc/mcollective/facts.yaml":
+  file { "/etc/mcollective/facts.yaml":
     content => template("kbp_mcollective/facts"),
     require => Package["mcollective-common"];
   }

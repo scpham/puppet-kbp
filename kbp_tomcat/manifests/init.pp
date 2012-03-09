@@ -23,8 +23,8 @@ class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $serveralias=false, $docu
   kbp_apache_new::module { "proxy_ajp":; }
 
   # Add /usr/share/java/*.jar to the tomcat classpath
-  kfile { "/srv/tomcat/conf/catalina.properties":
-    source  => "kbp_tomcat/catalina.properties",
+  file { "/srv/tomcat/conf/catalina.properties":
+    content => template("kbp_tomcat/catalina.properties"),
     require => [Package["tomcat6"], File["/srv/tomcat/conf"]];
   }
 

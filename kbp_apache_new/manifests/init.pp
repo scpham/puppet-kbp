@@ -13,13 +13,13 @@ class kbp_apache_new {
   include gen_apache
   include kbp_munin::client::apache
 
-  kfile {
+  file {
     "/etc/apache2/mods-available/deflate.conf":
-      source  => "kbp_apache_new/mods-available/deflate.conf",
+      content => template("kbp_apache_new/mods-available/deflate.conf"),
       require => Package["apache2"],
       notify  => Exec["reload-apache2"];
     "/etc/apache2/conf.d/security":
-      source  => "kbp_apache_new/conf.d/security",
+      content => template("kbp_apache_new/conf.d/security"),
       require => Package["apache2"],
       notify  => Exec["reload-apache2"];
     "/srv/www":
@@ -68,7 +68,7 @@ class kbp_apache_new::php {
 #  gen_puppet
 #
 class kbp_apache_new::ssl {
-  kfile { "/etc/apache2/ssl":
+  file { "/etc/apache2/ssl":
     ensure  => directory,
     require => Package["apache2"];
   }
@@ -125,22 +125,22 @@ class kbp_apache_new::module::headers {
 
 class kbp_apache_new::intermediate::rapidssl {
   kbp_ssl::public_key { "RapidSSL_CA_bundle":
-    source => "kbp_apache_new/ssl/RapidSSL_CA_bundle.pem",
-    notify => Exec["reload-apache2"];
+    content => template("kbp_apache_new/ssl/RapidSSL_CA_bundle.pem"),
+    notify  => Exec["reload-apache2"];
   }
 }
 
 class kbp_apache_new::intermediate::positivessl {
   kbp_ssl::public_key { "PositiveSSLCA":
-    source => "kbp_apache_new/ssl/PositiveSSLCA.pem",
-    notify => Exec["reload-apache2"];
+    content => template("kbp_apache_new/ssl/PositiveSSLCA.pem"),
+    notify  => Exec["reload-apache2"];
   }
 }
 
 class kbp_apache_new::intermediate::thawte {
   kbp_ssl::public_key { "Thawte_SSL_CA":
-    source => "kbp_apache_new/ssl/Thawte_SSL_CA.pem",
-    notify => Exec["reload-apache2"];
+    content => template("kbp_apache_new/ssl/Thawte_SSL_CA.pem"),
+    notify  => Exec["reload-apache2"];
   }
 }
 
@@ -161,7 +161,7 @@ class kbp_apache_new::glassfish_domain_base {
       target  => "/etc/apache2/workers.properties";
   }
 
-  kfile { "/etc/apache2/conf.d/jk":
+  file { "/etc/apache2/conf.d/jk":
     content => template("kbp_apache_new/conf.d/jk");
   }
 }
@@ -344,7 +344,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       content => template("kbp_apache_new/vhost-additions/django")
     }
 
-    kfile { "/srv/django${django_root_django}/dispatch.wsgi":
+    file { "/srv/django${django_root_django}/dispatch.wsgi":
       content => template("kbp_apache_new/django/dispatch.wsgi"),
       mode    => 755;
     }
@@ -385,7 +385,7 @@ define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=
   }
 }
 
-define kbp_apache_new::vhost_addition($ensure="present", $content=false, $source=false) {
+define kbp_apache_new::vhost_addition($ensure="present", $content=false) {
   $fullname = regsubst($name,'^(.*?)_.*$','\1')
   $port     = regsubst($name,'^.*_(.*?)/.*$','\1')
 
@@ -395,8 +395,7 @@ define kbp_apache_new::vhost_addition($ensure="present", $content=false, $source
 
   gen_apache::vhost_addition { $name:
     ensure  => $ensure,
-    content => $content,
-    source  => $source;
+    content => $content;
   }
 }
 

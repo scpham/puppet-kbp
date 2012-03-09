@@ -12,27 +12,27 @@
 class kbp_webalizer {
   include webalizer
 
-  Kfile <|  title == "/etc/cron.daily/webalizer" |> {
-    source  => "kbp_webalizer/cron.daily/webalizer",
+  File <|  title == "/etc/cron.daily/webalizer" |> {
+    content => template("kbp_webalizer/cron.daily/webalizer"),
   }
 
-  kfile {
+  file {
     "/etc/webalizer-multi.conf":
       group   => "staff",
       mode    => 755,
-      source  => "kbp_webalizer/webalizer-multi.conf";
+      content => template("kbp_webalizer/webalizer-multi.conf");
     "/usr/local/bin/webalizer-multi":
       group   => "staff",
       mode    => 755,
-      source  => "kbp_webalizer/webalizer-multi";
+      content => template("kbp_webalizer/webalizer-multi");
     "/srv/www/webalizer":
       ensure  => directory;
   }
 
   if tagged(apache) {
-    kfile {
+    file {
       "/etc/apache2/conf.d/webalizer":
-        source  => "kbp_webalizer/apache2/conf.d/webalizer",
+        content => template("kbp_webalizer/apache2/conf.d/webalizer"),
         require => Package["apache2"],
         notify  => Exec["reload-apache2"];
       "/var/log/apache2":

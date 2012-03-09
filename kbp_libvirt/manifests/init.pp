@@ -23,7 +23,7 @@ define kbp_libvirt ($on_crash="destroy", $on_reboot="restart") {
     action => "ACCEPT";
   }
 
-  kfile {
+  file {
     "/etc/libvirt/qemu/networks/default.xml":
       require => Kpackage["libvirt-bin"],
       ensure  => absent;
@@ -33,14 +33,14 @@ define kbp_libvirt ($on_crash="destroy", $on_reboot="restart") {
       mode    => 755;
     "/etc/libvirt/storage/autostart":
       ensure  => directory,
-      require => Kfile["/etc/libvirt/storage"],
+      require => File["/etc/libvirt/storage"],
       mode    => 755;
     "/etc/libvirt/storage/guest.xml":
-      source  => "kbp_libvirt/libvirt/storage/guest.xml",
-      require => Kfile["/etc/libvirt/storage"];
+      content => template("kbp_libvirt/guest.xml"),
+      require => File["/etc/libvirt/storage"];
     "/etc/libvirt/storage/autostart/guest.xml":
       ensure  => "/etc/libvirt/storage/guest.xml",
-      require => Kfile["/etc/libvirt/storage/autostart"];
+      require => File["/etc/libvirt/storage/autostart"];
   }
 
   if versioncmp($lsbdistrelease, "5.0") < 0 {

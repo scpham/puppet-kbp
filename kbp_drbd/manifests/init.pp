@@ -67,7 +67,7 @@ define kbp_drbd($location, $fstype=false, $mastermaster=true, $time_out=false, $
     tag      => "ferm_drbd_${environment}_${name}";
   }
 
-  kfile { "${location}/.monitoring":
+  file { "${location}/.monitoring":
     content => "DRBD_mount_ok",
     require => Mount[$location];
   }

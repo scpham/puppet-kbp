@@ -61,7 +61,7 @@ define kbp_nfs::client::export_opts($location, $options, client) {
         target  => "/etc/exports";
     }
 
-    kfile { "$location/.monitoring":
+    file { "$location/.monitoring":
       content => "NFS_mount_ok\n";
     }
   }

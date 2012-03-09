@@ -23,14 +23,14 @@ class kbp_localbackup {
   }
 
   file { "/usr/local/bin/rsnapshot_symlinks":
-    source => "puppet://puppet/kbp_localbackup/rsnapshot_symlinks",
+    content => template("kbp_localbackup/rsnapshot_symlinks"),
     owner => "root",
     group => "staff",
     mode => 755,
   }
 
   file { "/etc/cron.d/rsnapshot":
-    source => "puppet://puppet/kbp_localbackup/rsnapshot/cron.d/rsnapshot",
+    content => template("kbp_localbackup/rsnapshot/cron.d/rsnapshot"),
     owner => "root",
     group => "root",
     mode => 644,

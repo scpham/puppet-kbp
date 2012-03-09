@@ -12,8 +12,8 @@
 class kbp_arpwatch {
   include arpwatch
 
-  Kfile <| title == "/etc/default/arpwatch" |> {
-    source => "kbp_arpwatch/arpwatch",
+  File <| title == "/etc/default/arpwatch" |> {
+    content => template("kbp_arpwatch/arpwatch"),
   }
 
   kbp_icinga::service { "arpwatch":

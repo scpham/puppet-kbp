@@ -12,8 +12,8 @@
 class kbp_approx {
   include approx
 
-  Kfile <| title == "/etc/approx/approx.conf" |> {
-    source => "kbp_approx/approx.conf",
+  File <| title == "/etc/approx/approx.conf" |> {
+    content => template("kbp_approx/approx.conf"),
   }
 
   gen_ferm::rule { "APT proxy":

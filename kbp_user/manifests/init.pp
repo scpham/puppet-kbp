@@ -24,7 +24,7 @@ define kbp_user($ensure="present", $uid, $gid, $comment, $groups=false, $keys=fa
   }
 
   if $ensure == "absent" {
-    kfile { "/home/${name}":
+    file { "/home/${name}":
       ensure => "absent",
       force  => true;
     }

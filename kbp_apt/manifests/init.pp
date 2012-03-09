@@ -15,11 +15,11 @@ class kbp_apt {
   # Keys for ksplice, jenkins, rabbitmq (in this order)
   gen_apt::key {
     "B6D4038E":
-      source => "kbp_apt/keys/B6D4038E";
+      content => template("kbp_apt/keys/B6D4038E");
     "D50582E6":
-      source => "kbp_apt/keys/D50582E6";
+      content => template("kbp_apt/keys/D50582E6");
     "056E8E56":
-      source => "kbp_apt/keys/056E8E56";
+      content => template("kbp_apt/keys/056E8E56");
   }
 
   gen_apt::cron_apt::config {
@@ -52,7 +52,7 @@ class kbp_apt {
 #
 class kbp_apt::kumina {
   gen_apt::key { "498B91E6":
-    source => "kbp_apt/keys/498B91E6";
+    content => template("kbp_apt/keys/498B91E6");
   }
 
   gen_apt::source {
