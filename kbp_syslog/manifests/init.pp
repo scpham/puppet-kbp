@@ -111,7 +111,10 @@ class kbp_syslog::server::logrotate {
     postrotate => "invoke-rc.d rsyslog reload > /dev/null";
   }
 
-  include kbp_syslog::cleanup
+  # TODO
+  # Don't think this is needed anymore. Check after 2012-3-12 if there are still files like
+  # syslog.3.gz on servers. If so, find another solution for this.
+  #include kbp_syslog::cleanup
 }
 
 # Class: kbp_syslog::client::squeeze
@@ -199,7 +202,7 @@ class kbp_syslog::cleanup {
     $files = ["syslog.${name}","mail.info.${name}","mail.warn.${name}","mail.err.${name}","mail.log.${name}",
         "daemon.log.${name}","kern.log.${name}","auth.log.${name}","user.log.${name}","lpr.log.${name}",
         "cron.log.${name}","debug.log.${name}","messages.${name}"]
-    
+
     cleanup0 { $files:; }
   }
 
