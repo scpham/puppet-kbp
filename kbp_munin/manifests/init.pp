@@ -397,9 +397,10 @@ define kbp_munin::environment($site) {
 
   concat {
     "/etc/munin/munin-${name}.conf":
-      require => Package["munin"];
+      purge_on_pm => true,
+      require     => Package["munin"];
     "/srv/www/${site}/${name}/.htpasswd":
-      require => File["/srv/www/${site}/${name}"];
+      require     => File["/srv/www/${site}/${name}"];
   }
 
   concat::add_content { "0 ${name} base":
