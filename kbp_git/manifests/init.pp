@@ -38,13 +38,13 @@ class kbp_git {
 #  gen_git::repo
 #  gen_puppet
 #
-define kbp_git::repo ($branch = "master", $origin = false, $bare = false, $post_update_src = false) {
+define kbp_git::repo ($branch = "master", $origin = false, $bare = false, $post_update_content = false) {
   include kbp_git
 
   gen_git::repo { $name:
-    branch          => $branch,
-    origin          => $origin,
-    bare            => $bare,
-    post_update_src => $post_update_src;
+    branch              => $branch,
+    origin              => $origin,
+    bare                => $bare,
+    post_update_content => $post_update_content;
   }
 }
