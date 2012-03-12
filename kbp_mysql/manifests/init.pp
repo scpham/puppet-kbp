@@ -203,7 +203,7 @@ class kbp_mysql::puppetmaster {
 #  kbp_ferm
 #  gen_puppet
 #
-define kbp_mysql::client ($mysql_name, $address=$fqdn) {
+define kbp_mysql::client ($mysql_name, $address=$fqdn, $environment=$environment) {
   include gen_base::mysql_client
 
   kbp_ferm::rule { "MySQL connections for ${name}":
