@@ -42,7 +42,7 @@ class kbp_nsca::client($package="munin") {
   include gen_nsca::client
 
   kbp_ferm::rule { "NSCA connections":
-    saddr    => $fqdn,
+    saddr    => $source_ipaddress,
     proto    => "tcp",
     dport    => 5667,
     action   => "ACCEPT",
