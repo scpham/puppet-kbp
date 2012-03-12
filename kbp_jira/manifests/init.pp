@@ -23,7 +23,7 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
       owner   => "tomcat6",
       require => [Package["tomcat6"], File["${root}"]];
     "${root}/source/atlassian_jira/edit-webapp/WEB-INF/classes/jira-application.properties":
-      content => template("jira.home = ${root}/home"),
+      content => "jira.home = ${root}/home",
       require => Exec["Get JIRA"],
       notify  => Exec["Build JIRA WAR"];
     "${root}/source/atlassian_jira/build.xml":
