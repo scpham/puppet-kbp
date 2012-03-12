@@ -395,7 +395,10 @@ define kbp_apache_new::vhost_addition($ensure="present", $content=false) {
 
   gen_apache::vhost_addition { $name:
     ensure  => $ensure,
-    content => $content;
+    content => $content ? {
+      false   => undef,
+      default => $content,
+    };
   }
 }
 

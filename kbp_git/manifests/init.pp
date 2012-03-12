@@ -45,6 +45,9 @@ define kbp_git::repo ($branch = "master", $origin = false, $bare = false, $post_
     branch              => $branch,
     origin              => $origin,
     bare                => $bare,
-    post_update_content => $post_update_content;
+    post_update_content => $post_update_content ? {
+      false   => undef,
+      default => $post_update_content,
+    };
   }
 }
