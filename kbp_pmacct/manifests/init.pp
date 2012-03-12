@@ -21,12 +21,12 @@ define kbp_pmacct::config ($aggregates, $plugins = ["mysql"], $sql_host = "local
       address    => $ipaddress,
     }
 
-    @@mysql::server::db { $sql_db:
+    @@mysql::server::db { "${sql_db} for ${hostname}":
       tag => "mysql_${environment}_${mysql_name}",
     }
 
     # TODO Should be source_ipaddress?
-    @@mysql::server::grant { "${sql_user} on ${sql_db} for pmacct":
+    @@mysql::server::grant { "${sql_user} on ${sql_db} for pmacct on ${hostname}":
       password => $sql_passwd,
       hostname => $ipaddress,
       tag      => "mysql_${environment}_${mysql_name}",
