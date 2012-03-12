@@ -83,18 +83,20 @@ class kbp_ferm {
 class kbp_ferm::offenders {
   # Please add a comment describing when the IP was added and what for.
   kbp_ferm::block {
-    "20110823 Ssh brute force attacks on IQNOMY for several days":
+    "20110823 Ssh brute force attacks on customer for several days":
       ips => "(180.168.201.47 114.205.1.193 115.249.181.70 119.188.7.159 119.255.18.205 124.207.65.146 188.138.88.62 188.65.81.41 200.230.71.5 200.62.142.142 201.159.16.156 203.90.136.76 208.163.56.3 208.76.52.85 211.119.54.83 216.13.56.89 217.11.127.103 219.111.16.42 220.160.203.27 78.159.196.233 82.177.118.13 82.177.118.14 85.214.143.232 87.106.60.104 88.190.22.3 91.198.88.202)";
     "20110922 Ssh brute force attack on several machines":
       ips => "(109.74.195.29 121.101.219.231 129.21.143.91 173.213.103.90 184.107.179.50 18.85.28.253 190.154.164.177 208.66.100.188 216.163.33.20 216.18.216.132 61.131.208.105 69.93.40.75 78.41.201.145 85.251.7.29 85.25.191.144 91.185.197.35 98.207.90.250)";
     "20111116 Ssh brute force attack on several machines":
       ips => "(94.73.154.122 46.167.171.12 199.180.129.141 71.6.165.238 85.95.227.169)";
-    "20120130 Ssh brute force attack on doorenvoor":
+    "20120130 Ssh brute force attack on customer":
       ips => "94.199.108.203";
-    "20120130 Ssh brute force at timewax":
+    "20120130 Ssh brute force at customer":
       ips => "210.71.234.67";
-    "20120216 Ssh brute force at Timewax":
+    "20120216 Ssh brute force at customer":
       ips => "(211.139.95.221 211.44.183.111 212.120.241.174)";
+    "20120312 Port scans on entire range":
+      ips => "(208.80.127.4 222.124.21.98 212.70.217.216 77.95.229.72 80.152.154.224 199.15.252.136 140.206.35.27 212.198.163.71 219.232.244.89 222.186.24.13)";
   }
 }
 
