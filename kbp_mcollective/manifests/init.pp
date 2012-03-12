@@ -7,6 +7,12 @@ class kbp_mcollective::server {
     content => template("kbp_mcollective/facts"),
     require => Package["mcollective-common"];
   }
+
+  kbp_icinga::service { "mcollectived":
+    service_description => "MCollective daemon",
+    check_command       => "check_mcollective",
+    nrpe                => true;
+  }
 }
 
 class kbp_mcollective::client($pass_client, $pass_server) {
