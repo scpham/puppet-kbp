@@ -154,10 +154,15 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=fals
 #  gen_puppet
 #
 class kbp_mysql::monitoring::icinga::server($otherhost=false) {
-  kbp_icinga::service { "mysql":
-    service_description => "MySQL service",
-    check_command       => "check_mysql",
-    nrpe                => true;
+  kbp_icinga::service {
+    "mysql":
+      service_description => "MySQL service",
+      check_command       => "check_mysql",
+      nrpe                => true;
+    "mysql_connlimit":
+      service_description => "MySQL service connection limit",
+      check_command       => "check_mysql_connlimit",
+      nrpe                => true;
   }
 
   mysql::user { "monitoring":
