@@ -11,6 +11,7 @@ class kbp_mcollective::server {
   kbp_icinga::service { "mcollectived":
     service_description => "MCollective daemon",
     check_command       => "check_mcollective",
+    check_interval      => "1800",
     nrpe                => true;
   }
 }
