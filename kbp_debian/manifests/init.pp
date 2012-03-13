@@ -95,6 +95,7 @@ class kbp_debian::squeeze {
 #
 class kbp_debian inherits kbp_base {
   include "kbp_debian::$lsbdistcodename"
+  include gen_haveged
   include rng-tools
 
   define check_alternatives($linkto) {
