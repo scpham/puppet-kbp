@@ -67,6 +67,7 @@ class kbp_ferm {
   }
 }
 
+      
 # Class: kbp_ferm::offenders
 #
 # Parameters:
@@ -236,12 +237,11 @@ define kbp_ferm::rule($prio=500, $interface=false, $outerface=false, $saddr=fals
     if ! $saddr and ! $daddr {
       fail("Exported ferm rule ${name} has no \$saddr and no \$daddr")
     }
-    elsif {
-      fail("Exported ferm rule ${name} has both \$saddr and \$daddr")
-    }
-    if $saddr {
+    if $saddr and $daddr {
+      $real_name = "${name} (exported by ${fqdn})"
+    } elsif $saddr {
       $real_name = "${name} from ${fqdn}"
-    else {
+    } else {
       $real_name = "${name} to ${fqdn}"
     }
 
