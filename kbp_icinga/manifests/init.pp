@@ -73,7 +73,7 @@ class kbp_icinga::client {
       arguments => '$ARG1$ $ARG2$ $ARG3$ $ARG4$';
     "check_mcollective":
       command   => "check_procs",
-      arguments => "-c 1:1 -a /usr/sbin/mcollectived";
+      arguments => "-c 1:1 -C ruby -a /usr/sbin/mcollectived";
     "check_memory":
       arguments => "-w 6 -c 3";
     "check_mysql":
