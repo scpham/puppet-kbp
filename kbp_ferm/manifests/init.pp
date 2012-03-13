@@ -233,7 +233,19 @@ define kbp_ferm::rule($prio=500, $interface=false, $outerface=false, $saddr=fals
       ipaddress6 => $ipaddress6;
     }
   } else {
-    @@kbp_ferm::rule { "${name} from ${fqdn}":
+    if ! $saddr and ! $daddr {
+      fail("Exported ferm rule ${name} has no \$saddr and no \$daddr")
+    }
+    elsif {
+      fail("Exported ferm rule ${name} has both \$saddr and \$daddr")
+    }
+    if $saddr {
+      $real_name = "${name} from ${fqdn}"
+    else {
+      $real_name = "${name} to ${fqdn}"
+    }
+
+    @@kbp_ferm::rule { $real_name:
       prio       => $prio,
       interface  => $interface,
       outerface  => $outerface,
