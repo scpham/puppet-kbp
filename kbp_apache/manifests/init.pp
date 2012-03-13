@@ -45,7 +45,7 @@ class kbp_apache inherits apache {
     ensure => present,
   }
 
-  kbp_monitoring::http { "http_${fqdn}":; }
+  kbp_icinga::http { "http_${fqdn}":; }
 }
 
 # Class: kbp_apache::passenger
@@ -60,7 +60,7 @@ class kbp_apache inherits apache {
 class kbp_apache::passenger {
   include kbp_apache
   include kbp_apache::ssl
-  include kbp_monitoring::passenger::queue
+  include kbp_icinga::passenger::queue
 
   kpackage { "libapache2-mod-passenger":
     ensure => latest;
@@ -111,7 +111,7 @@ define kbp_apache::site($ensure="present", $priority="", $auth=false, $max_check
   $dontmonitor = ["default","default-ssl","localhost"]
 
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
-    kbp_monitoring::site { $name:
+    kbp_icinga::site { $name:
       max_check_attempts => $max_check_attempts ? {
         false   => undef,
         default => $max_check_attempts,

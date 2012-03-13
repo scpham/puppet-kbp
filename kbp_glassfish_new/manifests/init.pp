@@ -174,7 +174,7 @@ define kbp_glassfish_new::domain($portbase, ensure="present",
       require          => Augeas["JK listener for ${name}"];
     }
   } else {
-    kbp_monitoring::mbean_value { $name:
+    kbp_icinga::mbean_value { $name:
       jmxport       => $jmxport,
       objectname    => $mbean_objectname,
       attributename => $mbean_attributename,
@@ -234,7 +234,7 @@ define kbp_glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 8
 define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true, $java_servicegroups=false){
   $jmxport = $portbase+86
   if $java_monitoring {
-    kbp_monitoring::java { "${name}_${jmxport}":
+    kbp_icinga::java { "${name}_${jmxport}":
       servicegroups  => $java_servicegroups ? {
         false   => undef,
         default => $java_servicegroups,

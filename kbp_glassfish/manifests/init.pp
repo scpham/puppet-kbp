@@ -50,7 +50,7 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitor
   }
 
   if $java_monitoring {
-    kbp_monitoring::java { "${name}_${jmxport}":
+    kbp_icinga::java { "${name}_${jmxport}":
       servicegroups  => $java_servicegroups ? {
         false   => undef,
         default => $java_servicegroups,
@@ -60,7 +60,7 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitor
   }
 
   if $webport and !$objectname {
-    kbp_monitoring::glassfish { "${name}":
+    kbp_icinga::glassfish { "${name}":
       statuspath => $statuspath ? {
         false   => undef,
         default => $statuspath,
@@ -68,7 +68,7 @@ define kbp_glassfish::domain($adminport, $jmxport, $webport=false, $java_monitor
       webport    => $webport;
     }
   } elsif $objectname {
-    kbp_monitoring::mbean_value { "${name}":
+    kbp_icinga::mbean_value { "${name}":
       jmxport       => $jmxport,
       objectname    => $objectname,
       attributename => $attributename,

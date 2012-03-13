@@ -13,6 +13,9 @@ class kbp_icinga::client {
   include gen_icinga::client
   include gen_base::python-argparse
 
+  Kbp_ferm::Rule <<| tag == "general_monitoring" |>>
+  Kbp_ferm::Rule <<| tag == "general_monitoring_${environment}" |>>
+
   kbp_icinga::clientcommand {
     "check_3ware":
       sudo      => true;
@@ -259,6 +262,44 @@ class kbp_icinga::proxyclient($proxy, $proxytag="proxy_${environment}", $saddr=f
   Kbp_icinga::Host <| preventproxyoverride != true |> {
     proxy => $proxy,
   }
+
+  kbp_ferm::rule {
+    "NRPE monitoring":
+      saddr    => $saddr,
+      proto    => "tcp",
+      dport    => 5666,
+      action   => "ACCEPT";
+    "MySQL monitoring":
+      saddr    => $saddr,
+      proto    => "tcp",
+      dport    => 3306,
+      action   => "ACCEPT";
+    "Sphinxsearch monitoring":
+      saddr    => $saddr,
+      proto    => "tcp",
+      dport    => 3312,
+      action   => "ACCEPT";
+    "Cassandra monitoring":
+      saddr    => $saddr,
+      proto    => "tcp",
+      dport    => "(7000 8080 9160)",
+      action   => "ACCEPT";
+    "Glassfish monitoring":
+      saddr    => $saddr,
+      proto    => "tcp",
+      dport    => 80,
+      action   => "ACCEPT";
+    "NFS monitoring":
+      saddr    => $saddr,
+      proto    => "(tcp udp)",
+      dport    => "(111 2049)",
+      action   => "ACCEPT";
+    "DNS monitoring":
+      saddr    => $saddr,
+      proto    => "udp",
+      dport    => 53,
+      action   => "ACCEPT";
+  }
 }
 
 class kbp_icinga::proxy($proxytag="proxy_${environment}") {
@@ -354,6 +395,58 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
   }
 
   gen_apt::preference { ["icinga","icinga-core","icinga-cgi","icinga-common","icinga-doc","icinga-idoutils"]:; }
+
+  kbp_ferm::rule {
+    "NRPE monitoring":
+      saddr    => $source_ipaddress,
+      proto    => "tcp",
+      dport    => 5666,
+      action   => "ACCEPT",
+      exported => true,
+      ferm_tag => "general_monitoring";
+    "MySQL monitoring":
+      saddr    => $source_ipaddress,
+      proto    => "tcp",
+      dport    => 3306,
+      action   => "ACCEPT",
+      exported => true,
+      ferm_tag => "mysql_monitoring";
+    "Sphinxsearch monitoring":
+      saddr    => $source_ipaddress,
+      proto    => "tcp",
+      dport    => 3312,
+      action   => "ACCEPT",
+      exported => true,
+      ferm_tag => "sphinxsearch_monitoring";
+    "Cassandra monitoring":
+      saddr    => $source_ipaddress,
+      proto    => "tcp",
+      dport    => "(7000 8080 9160)",
+      action   => "ACCEPT",
+      exported => true,
+      ferm_tag => "cassandra_monitoring";
+    "Glassfish monitoring":
+      saddr    => $source_ipaddress,
+      proto    => "tcp",
+      dport    => 80,
+      action   => "ACCEPT",
+      exported => true,
+      ferm_tag => "glassfish_monitoring";
+    "NFS monitoring":
+      saddr    => $source_ipaddress,
+      proto    => "(tcp udp)",
+      dport    => "(111 2049)",
+      action   => "ACCEPT",
+      exported => true,
+      ferm_tag => "nfs_monitoring";
+    "DNS monitoring":
+      saddr    => $source_ipaddress,
+      proto    => "udp",
+      dport    => 53,
+      action   => "ACCEPT",
+      exported => true,
+      ferm_tag => "dns_monitoring";
+  }
 
   Gen_icinga::Servercommand <<| |>>
 
@@ -1226,6 +1319,28 @@ define kbp_icinga::ipsec ($monitoring_remote_ip) {
   }
 }
 
+# Class: kbp_icinga::pacemaker
+#
+# Actions:
+#  Set monitoring for pacemaker
+#
+# Depends:
+#  gen_puppet
+class kbp_icinga::pacemaker {
+  gen_sudo::rule { "pacemaker sudo rules":
+    entity => "nagios",
+    as_user => "root",
+    command => "/usr/sbin/crm_mon -s",
+    password_required => false;
+  }
+
+  kbp_icinga::service { "pacemaker":
+    service_description => "Pacemaker",
+    check_command       => "check_pacemaker",
+    nrpe                => true;
+  }
+}
+
 # Define: kbp_icinga::drbd
 #
 # Actions:
@@ -1290,7 +1405,16 @@ define kbp_icinga::nfs::client {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::sslcert($path) {
+define kbp_icinga::sslcert($path="/etc/ssl/certs/${name}.pem") {
+  if !defined(Gen_sudo::Rule["check_sslcert sudo rules"]) {
+    gen_sudo::rule { "check_sslcert sudo rules":
+      entity            => "nagios",
+      as_user           => "root",
+      password_required => false,
+      command           => "/usr/lib/nagios/plugins/check_sslcert";
+    }
+  }
+
   kbp_icinga::service { "ssl_cert_${name}":
     service_description => "SSL certificate in ${path}",
     check_command       => "check_sslcert",

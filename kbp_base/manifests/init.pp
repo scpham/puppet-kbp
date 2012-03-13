@@ -17,7 +17,7 @@ class kbp_base {
   include kbp_acpi
   include kbp_apt
   include kbp_apt::kumina
-  include kbp_monitoring::client
+  include kbp_icinga::client
   include kbp_puppet
   include kbp_ssh
   include kbp_sysctl
@@ -182,7 +182,7 @@ class kbp_base {
 #  gen_puppet
 #
 class kbp_base::environment {
-  include kbp_monitoring::environment
+  include kbp_icinga::environment
   include kbp_user::environment
 
   Kbp_dashboard::Customer_entry_export <<| |>>

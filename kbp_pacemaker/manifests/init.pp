@@ -18,7 +18,7 @@ class kbp_pacemaker ($customtag="pacemaker_${environment}") {
   class { "gen_pacemaker":
     customtag => $customtag;
   }
-  include kbp_monitoring::pacemaker
+  include kbp_icinga::pacemaker
 }
 
 define kbp_pacemaker::primitive ($provider, $location=false, $location_score="inf", $location_name=false, $start_timeout=false, $monitor_interval=false,

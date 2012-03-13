@@ -18,7 +18,7 @@ class kbp_dovecot::imap {
     action => "ACCEPT";
   }
 
-  kbp_monitoring::sslcert { "dovecot certs":
+  kbp_icinga::sslcert { "dovecot certs":
     path => "/etc/dovecot/";
   }
 }

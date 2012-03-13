@@ -40,12 +40,12 @@ class kbp_cassandra::client($customtag="cassandra_${environment}",$ferm_saddr=$e
 #  Undocumented
 #
 # Depends:
-#  kbp_monitoring::cassandra
+#  kbp_icinga::cassandra
 #  gen_cassandra
 #  gen_puppet
 #
 class kbp_cassandra::server($branch="07x", $customtag="cassandra_${environment}", $java_monitoring=false, $servicegroups=false, $sms=true, $use_ipaddress=$external_ipaddress) {
-  include kbp_monitoring::cassandra
+  include kbp_icinga::cassandra
   class { "gen_cassandra":
     branch => $branch;
   }
@@ -68,7 +68,7 @@ class kbp_cassandra::server($branch="07x", $customtag="cassandra_${environment}"
   Gen_ferm::Rule <<| tag == "cassandra_monitoring" |>>
 
   if $java_monitoring {
-    kbp_monitoring::java { "cassandra_8080":
+    kbp_icinga::java { "cassandra_8080":
       servicegroups  => $servicegroups ? {
         false   => undef,
         default => $servicegroups,

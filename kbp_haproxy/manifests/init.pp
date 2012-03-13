@@ -122,7 +122,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
   }
 
   if $monitor_site {
-    kbp_monitoring::haproxy { $name:
+    kbp_icinga::haproxy { $name:
       address              => $monitoring_address ? {
         false   => $listenaddress,
         default => $monitoring_address,

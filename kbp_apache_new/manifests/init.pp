@@ -35,7 +35,7 @@ class kbp_apache_new {
 
   kbp_apache_new::module { ["deflate","rewrite"]:; }
 
-  kbp_monitoring::http { "http_${fqdn}":; }
+  kbp_icinga::http { "http_${fqdn}":; }
 }
 
 # Class: kbp_apache::passenger
@@ -51,7 +51,7 @@ class kbp_apache_new::passenger {
   include kbp_apache_new
   include gen_base::libapache2-mod-passenger
   include kbp_apache_new::module::passenger
-  include kbp_monitoring::passenger::queue
+  include kbp_icinga::passenger::queue
 }
 
 class kbp_apache_new::php {
@@ -260,7 +260,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       $real_service_description = "Vhost ${real_name} SSL"
 
       if ! $wildcard {
-        kbp_monitoring::sslcert { $real_name:; }
+        kbp_icinga::sslcert { $real_name:; }
       }
 
       if $redirect_non_ssl {
@@ -275,7 +275,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       $real_service_description = "Vhost ${real_name}"
     }
 
-    kbp_monitoring::site { $monitor_name:
+    kbp_icinga::site { $monitor_name:
       service_description => $real_service_description,
       address             => $address,
       address6            => $address6,
@@ -369,7 +369,7 @@ define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=
     statuscode  => $statuscode;
   }
 
-  kbp_monitoring::site { "${name}_forward":
+  kbp_icinga::site { "${name}_forward":
     service_description => "Vhost ${name} forward",
     host_name           => $name,
     statuscode          => $statuscode,

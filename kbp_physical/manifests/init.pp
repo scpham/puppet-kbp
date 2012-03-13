@@ -32,14 +32,14 @@ class kbp_physical {
     "3w-9xxx": {
       kpackage { "3ware-cli-binary":; }
 
-      kbp_monitoring::raidcontroller { "controller0":
+      kbp_icinga::raidcontroller { "controller0":
         driver => "3ware";
       }
     }
     "aacraid": {
       kpackage { "arcconf":; }
 
-      kbp_monitoring::raidcontroller { "controller0":
+      kbp_icinga::raidcontroller { "controller0":
         driver => "adaptec";
       }
     }
@@ -61,7 +61,7 @@ class kbp_physical {
     }
 
     if !$consoleipmi {
-      kbp_monitoring::http { "http_${consolefqdn}":
+      kbp_icinga::http { "http_${consolefqdn}":
         customfqdn           => $consolefqdn,
         proxy                => $consoleproxy,
         preventproxyoverride => true;

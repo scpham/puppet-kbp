@@ -72,5 +72,5 @@ define kbp_drbd($location, $fstype=false, $mastermaster=true, $time_out=false, $
     require => Mount[$location];
   }
 
-  kbp_monitoring::drbd { $location:; }
+  kbp_icinga::drbd { $location:; }
 }

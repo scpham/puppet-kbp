@@ -62,7 +62,7 @@ class kbp_ferm {
       action   => "ACCEPT";
   }
 
-  class { "kbp_monitoring::ferm_config":
+  class { "kbp_icinga::ferm_config":
     filename => "/etc/ferm/ferm.conf";
   }
 }

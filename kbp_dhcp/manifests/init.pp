@@ -11,7 +11,7 @@
 #
 class kbp_dhcp::server {
   include dhcp::server
-  class { "kbp_monitoring::dhcp":; }
+  class { "kbp_icinga::dhcp":; }
 
   gen_ferm::rule { "DHCP requests_v4":
     proto  => "udp",

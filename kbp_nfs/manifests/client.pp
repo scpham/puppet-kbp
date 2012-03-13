@@ -31,7 +31,7 @@ define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024", $
     ferm_tag => $nfs_tag;
   }
 
-  kbp_monitoring::nfs::client { $name:; }
+  kbp_icinga::nfs::client { $name:; }
 
   gen_nfs::mount { $name:
     source  => "${server}:${real_serverpath}",

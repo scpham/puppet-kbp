@@ -32,7 +32,7 @@
 #  gen_puppet
 #
 class kbp_heartbeat($autojoin="none", $warntime=5, $deadtime=15, $initdead=60, $keepalive=2, $crm="respawn", $node_name=$hostname, $node_dev="eth0", $node_ip=$ipaddress_eth0, $customtag="heartbeat_${environment}") {
-  include kbp_monitoring::heartbeat
+  include kbp_icinga::heartbeat
   class { "gen_heartbeat":
     autojoin      => $autojoin,
     warntime      => $warntime,
