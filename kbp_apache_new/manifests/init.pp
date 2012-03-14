@@ -357,8 +357,10 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   }
 }
 
-define kbp_apache_new::module {
-  gen_apache::module { $name:; }
+define kbp_apache_new::module ($ensure = "enable") {
+  gen_apache::module { $name:
+    ensure => $ensure;
+  }
 }
 
 define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=false, $statuscode=301) {
