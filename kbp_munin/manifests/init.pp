@@ -10,6 +10,13 @@
 #  gen_puppet
 #
 class kbp_munin::client inherits munin::client {
+  if $munin_proxy and !$munin_proxy_port {
+    fail("Kbp_munin::Client: \$munin_proxy set but no \$munin_proxy_port in site.pp")
+  }
+  if !$munin_proxy and $munin_proxy_port {
+    fail("Kbp_munin::Client: \$munin_proxy_port set but no \$munin_proxy in site.pp")
+  }
+
   kpackage { "libnet-snmp-perl":; }
 
   munin::client::plugin::config { "files_user_plugin":
