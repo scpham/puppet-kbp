@@ -131,7 +131,7 @@ class kbp_munin::client::puppetmaster {
 
   munin::client::plugin::config { "puppet_":
     section => "puppet_*",
-    content => "user root";
+    content => "user root\nnum_minutes '60,180,360";
   }
 }
 
