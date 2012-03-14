@@ -68,16 +68,6 @@ class kbp_apache_new::php {
 #  gen_puppet
 #
 class kbp_apache_new::ssl {
-  file { "/etc/apache2/ssl":
-    ensure  => directory,
-    require => Package["apache2"];
-  }
-
-  gen_ferm::rule { "HTTPS connections":
-    proto  => "tcp",
-    dport  => "443",
-    action => "ACCEPT";
-  }
 
   kbp_apache_new::module { "ssl":; }
 }
@@ -208,6 +198,11 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     $monitor=true, $smokeping=true, $php=false, $glassfish_domain=false, $glassfish_connector_port=false, $django_root_path=false,
     $django_root_django=false, $django_static_path=false, $django_static_django=false, $django_settings=false) {
   include kbp_apache_new
+
+  $temp_name   = $port ? {
+    false   => $name,
+    default => "${name}_${port}",
+  }
   if $key or $cert or $intermediate or $wildcard or $ssl {
     if ! $address and ! $address6 and ! $wildcard {
       fail("Kbp_apache_new::site(${name}) is an SSL site but no IP address has been set.")
@@ -216,17 +211,9 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     include kbp_apache_new::ssl
 
     $real_ssl = true
-  } else {
-    $real_ssl = false
-  }
-
-  $temp_name   = $port ? {
-    false   => $name,
-    default => "${name}_${port}",
-  }
-  if $real_ssl {
     $full_name = regsubst($temp_name,'^([^_]*)$','\1_443')
   } else {
+    $real_ssl = false
     $full_name = regsubst($temp_name,'^([^_]*)$','\1_80')
   }
   $real_name   = regsubst($full_name,'^(.*)_(.*)$','\1')
@@ -301,8 +288,8 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
   }
 
-  if ! $real_ssl and ! defined(Gen_ferm::Rule["HTTP connections on ${real_port}"]) {
-    gen_ferm::rule { "HTTP connections on ${real_port}":
+  if ! defined(Gen_ferm::Rule["HTTP(S) connections on ${real_port}"]) {
+    gen_ferm::rule { "HTTP(S) connections on ${real_port}":
       proto  => "tcp",
       dport  => $real_port,
       action => "ACCEPT";
@@ -361,12 +348,13 @@ define kbp_apache_new::module {
   gen_apache::module { $name:; }
 }
 
-define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=false, $statuscode=301) {
+define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=false, $statuscode=301, $port=80) {
   gen_apache::forward_vhost { $name:
     forward     => $forward,
     ensure      => $ensure,
     serveralias => $serveralias,
-    statuscode  => $statuscode;
+    statuscode  => $statuscode,
+    port        => $port;
   }
 
   kbp_icinga::site { "${name}_forward":
@@ -376,10 +364,10 @@ define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=
     response            => $forward;
   }
 
-  if ! defined(Gen_ferm::Rule["HTTP connections on ${real_port}"]) {
-    gen_ferm::rule { "HTTP connections on ${real_port}":
+  if ! defined(Gen_ferm::Rule["HTTP(S) connections on ${port}"]) {
+    gen_ferm::rule { "HTTP(S) connections on ${port}":
       proto  => "tcp",
-      dport  => $real_port,
+      dport  => $port,
       action => "ACCEPT";
     }
   }
