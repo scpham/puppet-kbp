@@ -87,6 +87,10 @@ class kbp_apache_new::module::passenger {
   }
 }
 
+class kbp_apache_new::module::expires {
+  kbp_apache_new::module { "expires":; }
+}
+
 class kbp_apache_new::module::dav {
   kbp_apache_new::module { "dav":; }
 }
