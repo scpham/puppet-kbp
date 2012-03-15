@@ -231,7 +231,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
     # - dbserver is false or localhost (false implies localhost)
     # - dbserver is equal to local fqdn
 
-    if ((! $set_dbserver) or ($dbserver == 'localhost')) or ($dbserver == $fqdn) {
+    if ((! $set_dbserver) or ($set_dbserver == 'localhost')) or ($set_dbserver == $fqdn) {
       mysql::server::db { $real_dbname:; }
 
       mysql::server::grant { $real_dbname:
@@ -253,7 +253,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
         tag      => "${environment}_puppetmaster";
       }
 
-      kbp_mysql::client { "puppetmaster":
+      kbp_mysql::client { $pname:
         mysql_name => "puppetmaster",
       }
     }
