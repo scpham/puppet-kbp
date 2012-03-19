@@ -112,7 +112,7 @@ class kbp_base {
       uid           => 10004,
       password_hash => "BOGUS",
       shell         => "zsh",
-      sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCXah/YknMvN7CCOAK642FZfnXYVZ2uYZsy532v8pOISzH9W8mJ4FqBi0g1oAFhTZs0VNc9ouNfMDG178LSITL+ui/6T9exOEd4a0pCXuArVFmc5EVEUl3F+/qZPcOnWs7e3KaiV1dGLYDI0LhdG9ataHHR3sSPI/YAhroDLDTSVqFURXL7eyqR/aEv7nPEkY4zhQQzTECSQdadwEtGnovjNNL2aEj8rVVle5lVjbSk4N7x0ixyb4eTPB1z5FnwAlVkxHhTnsxTK28ulkrVCgKE30KS97dRG/EjA81pOzajRYTyLztqSkJnpKpL/lPfUCG7VkNfQKF+0O/KRhUfr2zb cardno:00050000057D\n";
+      sshkeys       => "";
     "thomas":
       fullname      => "Thomas Ronner",
       uid           => 10006,
