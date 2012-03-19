@@ -22,8 +22,14 @@ class kbp_apache_new {
       content => template("kbp_apache_new/conf.d/security"),
       require => Package["apache2"],
       notify  => Exec["reload-apache2"];
-    "/srv/www":
+  }
+
+  # There are classes that override /srv/www (think the NFS class), this makes sure
+  # that will work.
+  if ! defined(File["/srv/www"]) {
+    file { "/srv/www":
       ensure => directory;
+    }
   }
 
   gen_logrotate::rotate { "apache2":
