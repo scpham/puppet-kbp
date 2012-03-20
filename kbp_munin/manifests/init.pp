@@ -29,6 +29,11 @@ class kbp_munin::client inherits munin::client {
   if $munin_proxy {
     $munin_template = "kbp_munin/munin.conf_client_with_proxy"
   } else {
+    $real_ipaddress = $external_ipaddress ? {
+      undef => $ipaddress,
+      false => $ipaddress,
+      default => $external_ipaddress,
+    }
     $munin_template = "kbp_munin/munin.conf_client"
   }
 
