@@ -1,5 +1,5 @@
 [<%= sanitized_customer_name %>;<%= fqdn %>]
-<% if defined?(munin_proxy) -%>
+<% if scope.lookupvar('munin_proxy') -%>
   address <%= munin_proxy %>
   port <%= munin_proxy_port %>
 <% else -%>
