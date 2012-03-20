@@ -26,8 +26,14 @@ class kbp_munin::client inherits munin::client {
 
   Kbp_ferm::Rule <<| tag == "general_trending" |>>
 
+  if $munin_proxy {
+    $munin_template = "kbp_munin/munin.conf_client_with_proxy"
+  } else {
+    $munin_template = "kbp_munin/munin.conf_client"
+  }
+
   @@concat::add_content { "2 ${fqdn}":
-    content => template("kbp_munin/munin.conf_client"),
+    content => template($munin_template),
     target  => "/etc/munin/munin-${environment}.conf",
     tag     => "munin_client";
   }
