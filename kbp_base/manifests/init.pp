@@ -64,9 +64,10 @@ class kbp_base {
   }
 
   concat { "/etc/ssh/kumina.keys":
-    owner => "root",
-    group => "root",
-    mode  => 0644,
+    purge_on_pm => true,
+    owner       => "root",
+    group       => "root",
+    mode        => 0644,
   }
 
   # Force fsck on boot to repair the file system if it is inconsistent,
@@ -108,6 +109,7 @@ class kbp_base {
       password_hash => "BOGUS",
       sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCMZBz0sRqmfs4QT4dXVQeMIc+PdDChsjSUQv+SkN//z+igMw6qe5acC8EXUk5CR7VfaOjttp+sgoOxsvFPdFnrcozUsssnUynfVQ4GHCpDu0iOoUtz+WuGGonauAimhFsO2apkYLlO2qipt/z6B+bPQsbOxIVLpLLCa1kFKux7Td4vGddxbCxtFECd/4QUuS42G5q8nET3cdiqHM+QHXs1bnOqa6nxOxhnKX1jlqPT5nwdd8pI+RChGcjD4UofL9IYtz+Nd8wZi/h0tcOUh/ORV1bpJFwTCdWwaQ7Z7bf2Aanzn6iJz14nM0n19EOdvcB5NS/1mE54U9S3qJN+fQT3bOm47R07BIXmCEah6uZUAezkzsnXAsntgn2YDZFhjX+6Xd0iALAlhOyOMVfjJ0cq/qv1WhqScyOOETZhwOjLm4lewigpRnctJBt87p8MArPTBbJJA4TayC9eP6IfZ6plu0Be+W+xvrh/ga3oxMiyg6LWCf2yeTRUut7aIyswxY8= rutger@kumina.nl\n";
     "ed":
+      ensure        => absent,
       fullname      => "Ed Schouten",
       uid           => 10004,
       password_hash => "BOGUS",
