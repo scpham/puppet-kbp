@@ -3,7 +3,7 @@
   address <%= munin_proxy %>
   port <%= munin_proxy_port %>
 <% else -%>
-  address <%= ipaddress %>
+  address <%= source_ipaddress %>
 <% end -%>
   use_node_name yes
   df.notify_alias Filesystem usage

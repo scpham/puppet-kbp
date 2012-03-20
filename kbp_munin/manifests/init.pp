@@ -26,6 +26,9 @@ class kbp_munin::client inherits munin::client {
 
   Kbp_ferm::Rule <<| tag == "general_trending" |>>
 
+  # TODO Remove check when we know where this fails
+  if ! $source_ipaddress { fail("Kbp_munin::Client requires source_ipaddress to be set!") }
+
   @@concat::add_content { "2 ${fqdn}":
     content => template("kbp_munin/munin.conf_client"),
     target  => "/etc/munin/munin-${environment}.conf",
