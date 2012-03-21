@@ -18,7 +18,7 @@ define kbp_pmacct::config ($aggregates, $plugins = ["mysql"], $sql_host = "local
     # TODO Should be source_ipaddress?
     kbp_mysql::client { "Client for pmacct":
       mysql_name => $mysql_name,
-      address    => $ipaddress,
+      address    => $source_ipaddress,
     }
 
     @@mysql::server::db { "${sql_db} for ${hostname}":
@@ -28,7 +28,7 @@ define kbp_pmacct::config ($aggregates, $plugins = ["mysql"], $sql_host = "local
     # TODO Should be source_ipaddress?
     @@mysql::server::grant { "${sql_user} on ${sql_db} for pmacct on ${hostname}":
       password => $sql_passwd,
-      hostname => $ipaddress,
+      hostname => $source_ipaddress,
       tag      => "mysql_${environment}_${mysql_name}",
     }
   }
