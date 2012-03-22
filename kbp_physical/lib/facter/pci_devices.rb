@@ -57,6 +57,12 @@ if FileTest.exists?(lspci)
       add_fact("raidcontroller#{raid_counter}_vendor", "#{devices[a].fetch('Vendor')}")
       add_fact("raidcontroller#{raid_counter}_driver", "#{devices[a].fetch('Driver')}")
       raid_counter += 1
+    when /^SCSI/
+      if devices[a].fetch('Driver') == 'mptsas'
+        add_fact("raidcontroller#{raid_counter}_vendor", "#{devices[a].fetch('Vendor')}")
+        add_fact("raidcontroller#{raid_counter}_driver", "#{devices[a].fetch('Driver')}")
+        raid_counter += 1
+      end
     end
   end
 end
