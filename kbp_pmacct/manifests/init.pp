@@ -1,6 +1,8 @@
 define kbp_pmacct::config ($aggregates, $plugins = ["mysql"], $sql_host = "localhost", $sql_db = "pmacct", $sql_user = "pmacct", $sql_passwd = false,
                            $sql_history = "5m", $sql_history_roundoff = "m", $sql_refresh_time = "300", $sql_dont_try_update = true,
                            $mysql_name = "pmacct") {
+  include gen_base::python-mysqldb
+
   gen_pmacct::config { $name:
     aggregates           => $aggregates,
     plugins              => $plugins,
