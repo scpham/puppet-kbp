@@ -262,6 +262,29 @@ class kbp_munin::client::bind9 {
   }
 }
 
+# Class: kbp_munin::client::unbound
+#
+# Actions:
+#  setup trending for unbound
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_munin::client::unbound {
+  include kbp_munin::client
+
+  munin::client::plugin { ["unbound_hits", "unbound_queue", "unbound_memory", "unbound_by_type", "unbound_by_opcode", "unbound_by_rcode", "unbound_by_flags", "unbound_histogram"]:
+    script_path => "/usr/share/munin/plugins/kumina",
+    script      => "unbound_";
+  }
+
+  munin::client::plugin::config { "unbound":
+    section => "unbound*",
+    content => "user root\nenv.statefile /tmp/munin-unbound-state\nenv.unbound_conf /etc/unbound/unbound.conf\nenv.unbound_control /usr/sbin/unbound-control\nenv.spoof_warn 1000\nenv.spoof_crit 100000",
+  }
+}
+
 # Define: kbp_munin::client::glassfish
 #
 # Actions:
