@@ -124,9 +124,9 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=fals
     "/etc/mysql/conf.d/bind-address.cnf":
       content => "[mysqld]\nbind-address = ${bind_address}\n",
       notify  => Service["mysql"];
-    "/etc/mysql/conf.d/character-set-server.cnf":
-      content => "[mysqld]\ncharacter-set-server = 'utf8'\n",
-      notify  => Service["mysql"];
+#    "/etc/mysql/conf.d/character-set-server.cnf":
+#      content => "[mysqld]\ncharacter-set-server = 'utf8'\n",
+#      notify  => Service["mysql"];
   }
 
   file { "/etc/backup/prepare.d/mysql":
