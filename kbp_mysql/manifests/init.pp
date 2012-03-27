@@ -106,7 +106,7 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=false, $datadir=false) {
+class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=false, $datadir=false, $charset=false) {
   include kbp_trending::mysql
   include kbp_mysql::monitoring::icinga::server
   class { "mysql::server":
@@ -124,7 +124,8 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=fals
     "/etc/mysql/conf.d/bind-address.cnf":
       content => "[mysqld]\nbind-address = ${bind_address}\n",
       notify  => Service["mysql"];
-#    "/etc/mysql/conf.d/character-set-server.cnf":
+    "/etc/mysql/conf.d/character-set-server.cnf":
+      ensure  => absent;
 #      content => "[mysqld]\ncharacter-set-server = 'utf8'\n",
 #      notify  => Service["mysql"];
   }
