@@ -13,7 +13,10 @@
 class kbp_unbound {
   include gen_unbound
   # get the backports version
-  gen_apt::preference {["unbound", "libldns1", "libunbound2"]:;}
+  gen_apt::preference { ["unbound", "libunbound2", "unbound-anchor"]:
+    repo => "${lsbdistcodename}-kumina";
+  }
+  gen_apt::preference { "libldns1":; }
 
   kbp_icinga::service { "unbound":
     service_description => "Unbound daemon",
