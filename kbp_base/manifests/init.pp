@@ -169,6 +169,10 @@ class kbp_base {
 
 # Class: kbp_base::environment
 #
+# Parameters:
+#  munin_offset
+#    The offsite used by munin. Choose randomly an integer between 0 and 4 (inclusive). Defaults to 0.
+#
 # Actions:
 #  Undocumented
 #
@@ -176,7 +180,7 @@ class kbp_base {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_base::environment {
+class kbp_base::environment ($munin_offset=0) {
   include kbp_icinga::environment
   include kbp_user::environment
 
@@ -196,7 +200,9 @@ class kbp_base::environment {
 
   Kbp_munin::Alert_export <<| |>>
 
-  @@kbp_munin::environment { $environment:; }
+  @@kbp_munin::environment { $environment:
+    offset => $munin_offset;
+  }
 }
 
 class kbp_base::wanted_packages {
