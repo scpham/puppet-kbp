@@ -12,7 +12,31 @@
 class kbp_hetzner inherits hetzner {
   include munin::client
 
-  package { "lm-sensors":
+  gen_ferm::rule {
+    "Allow guests to connect to the internet":
+      chain     => "FORWARD",
+      interface => "ubr1",
+      outerface => "ubr0",
+      action    => "ACCEPT";
+    "Allow the internet to connect to guests":
+      chain     => "FORWARD",
+      interface => "ubr0",
+      outerface => "ubr1",
+      action    => "ACCEPT";
+  }
+}
+
+# Class: kbp_hetzner::sensors
+#
+# Actions:
+#  Configure sensors on Hetzner hosts
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_hetzner::sensors {
+  kpackage { "lm-sensors":
     ensure => "latest";
   }
 
@@ -30,18 +54,5 @@ class kbp_hetzner inherits hetzner {
     file    => "/etc/modules",
     ensure  => "present",
     content => "f71882fg";
-  }
-
-  gen_ferm::rule {
-    "Allow guests to connect to the internet":
-      chain     => "FORWARD",
-      interface => "ubr1",
-      outerface => "ubr0",
-      action    => "ACCEPT";
-    "Allow the internet to connect to guests":
-      chain     => "FORWARD",
-      interface => "ubr0",
-      outerface => "ubr1",
-      action    => "ACCEPT";
   }
 }
