@@ -132,6 +132,9 @@ class kbp_icinga::client {
       arguments => '$ARG1$';
     "check_swap":
       arguments => "-w 10 -c 5";
+    "check_unbound":
+      command   => "check_procs",
+      arguments => "-c 1:1 -C unbound";
     "check_zombie_processes":
       command   => "check_procs",
       arguments => "-w 5 -c 10 -s Z";
@@ -1422,6 +1425,28 @@ define kbp_icinga::sslcert($path="/etc/ssl/certs/${name}.pem") {
     service_description => "SSL certificate in ${path}",
     check_command       => "check_sslcert",
     arguments           => $path,
+    nrpe                => true;
+  }
+}
+
+# Class: kbp_icinga::unbound
+#
+# Parameters:
+#  namespace
+#    Namespace of the queues to check
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_icinga::unbound {
+  kbp_icinga::service { "unbound":
+    service_description => "Unbound daemon",
+    check_command       => "check_unbound",
+    sms                 => true,
     nrpe                => true;
   }
 }

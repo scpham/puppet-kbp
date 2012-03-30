@@ -12,20 +12,20 @@
 #
 class kbp_unbound {
   include gen_unbound
+  include kbp_icinga::unbound
+  include kbp_munin::client::unbound
+
   # get the backports version
   gen_apt::preference { ["unbound", "libunbound2", "unbound-anchor"]:
     repo => "${lsbdistcodename}-kumina";
   }
   gen_apt::preference { "libldns1":; }
 
-  kbp_icinga::service { "unbound":
-    service_description => "Unbound daemon",
-    check_command       => "check_unbound",
-    sms                 => false,
-    nrpe                => true;
+  # Our backported version supports status
+  Kservice <| title == "unbound" |> {
+    hasstatus => true,
+    hasreload => true,
   }
-
-  include kbp_munin::client::unbound
 
   concat::add_content { "80 unbound.conf settings for trending":
     # according to: http://www.unbound.net/documentation/howto_statistics.html
