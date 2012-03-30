@@ -172,7 +172,7 @@ class kbp_base {
 # Parameters:
 #  munin_offset
 #    The offsite used by munin. Choose randomly an integer between 0 and 4 (inclusive). Defaults to 0.
-#    An easy way to determine this number is running the following in a bash shell:  let a=$RANDOM%4; echo $a
+#    An easy way to determine this number is running the following in a bash shell:  let a=$RANDOM%5; echo $a
 #
 # Actions:
 #  Undocumented
