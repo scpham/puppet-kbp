@@ -28,6 +28,9 @@ class kbp_icinga::client {
       sudo      => true,
       command   => "check_asterisk",
       arguments => "signet";
+    "check_backup_status":
+      command   => "check_procs",
+      arguments => "-w 0 -C rdiff-backup";
     "check_cassandra":;
     "check_cpu":
       arguments => "-w 90 -c 95";
@@ -158,6 +161,13 @@ class kbp_icinga::client {
   }
 
   kbp_icinga::service {
+    "backup_status":
+      service_description => "Backup status",
+      check_command       => "check_backup_status",
+      retry_interval      => 28800,
+      nrpe                => true,
+      sms                 => false,
+      customer_notify     => false;
     "ssh":
       service_description => "SSH connectivity",
       check_command       => "check_ssh";
@@ -457,7 +467,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
     ["check_ssh","check_smtp"]:;
     ["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd",
      "check_pacemaker","check_mysql","check_mysql_connlimit","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp",
-     "check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_failures","check_nullmailer","check_passenger_queue","check_mcollective"]:
+     "check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_failures","check_nullmailer","check_passenger_queue","check_mcollective","check_backup_status"]:
       nrpe          => true;
     "return-ok":
       command_name  => "check_dummy",
