@@ -164,7 +164,7 @@ class kbp_icinga::client {
     "backup_status":
       service_description => "Backup status",
       check_command       => "check_backup_status",
-      retry_interval      => 28800,
+      max_check_attempts  => 8640,
       nrpe                => true,
       sms                 => false,
       customer_notify     => false;
