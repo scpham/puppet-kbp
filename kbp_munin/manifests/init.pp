@@ -409,9 +409,13 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
   Concat::Add_content <<| tag == "munin_client" |>>
 }
 
-define kbp_munin::environment($site) {
+define kbp_munin::environment($site,$offset=0) {
   service { "munin-${name}":
     require => File["/etc/init.d/munin-${name}","/dev/shm/munin-${name}"];
+  }
+
+  if $offset > 4 or $offset < 0 {
+    fail("Minute must be between 0 and 4.")
   }
 
   file {
