@@ -318,30 +318,31 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
   }
 
-  if $django_root_path or $django_root_django or $django_static_path or $django_static_django or $django_settings {
+  if $django_settings {
     include kbp_django
 
-    if ! $django_root_path {
-      fail("${fullname} is defined as a Django site but \$django_root_path has not been set")
+    $real_django_root_path = $django_root_path ? {
+      false   => '/',
+      default => $django_root_path,
     }
-    if ! $django_root_django {
-      fail("${fullname} is defined as a Django site but \$django_root_django has not been set")
+    $real_django_root_django = $django_root_django ? {
+      false   => "/${real_name}",
+      default => $django_root_django,
     }
-    if ! $django_static_path {
-      fail("${fullname} is defined as a Django site but \$django_static_path has not been set")
+    $real_django_static_path = $django_static_path ? {
+      false   => '/media',
+      default => $django_static_path,
     }
-    if ! $django_static_django {
-      fail("${fullname} is defined as a Django site but \$django_static_django has not been set")
-    }
-    if ! $django_settings {
-      fail("${fullname} is defined as a Django site but \$django_settings has not been set")
+    $real_django_static_django = $django_static_django ? {
+      false   => "/${real_name}/media",
+      default => $django_static_django,
     }
 
     kbp_apache_new::vhost_addition { "${full_name}/django":
       content => template("kbp_apache_new/vhost-additions/django")
     }
 
-    file { "/srv/django${django_root_django}/dispatch.wsgi":
+    file { "/srv/django${real_django_root_django}/dispatch.wsgi":
       content => template("kbp_apache_new/django/dispatch.wsgi"),
       mode    => 755;
     }
