@@ -1116,6 +1116,25 @@ class kbp_icinga::asterisk {
   }
 }
 
+# Class: kbp_icinga::mcollective
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_icinga::mcollective {
+  kbp_icinga::service { "mcollectived":
+    service_description => "MCollective daemon",
+    check_command       => "check_mcollective",
+    check_interval      => "1800",
+    sms                 => false,
+    nrpe                => true,
+    customer_notify     => false;
+  }
+}
 
 define kbp_icinga::clientcommand($sudo=false, $path=false, $command=false, $arguments=false) {
   file { "/etc/nagios/nrpe.d/${name}.cfg":

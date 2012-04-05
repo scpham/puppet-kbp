@@ -1,20 +1,12 @@
 class kbp_mcollective::server {
   include gen_mcollective::server
+  include kbp_icinga::mcollective
 
   kbp_rabbitmq::client { "mcollective":; }
 
   file { "/etc/mcollective/facts.yaml":
     content => template("kbp_mcollective/facts"),
     require => Package["mcollective-common"];
-  }
-
-  kbp_icinga::service { "mcollectived":
-    service_description => "MCollective daemon",
-    check_command       => "check_mcollective",
-    check_interval      => "1800",
-    sms                 => false,
-    nrpe                => true,
-    customer_notify     => false;
   }
 }
 
