@@ -114,6 +114,12 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=fals
   }
 
   if $setup_backup {
+    file { "/etc/backup/prepare.d/mysql":
+      ensure  => link,
+      target  => "/usr/share/backup-scripts/prepare/mysql",
+      require => Kpackage["backup-scripts"];
+    }
+
     file { "/etc/mysql/conf.d/expire_logs.cnf":
       content => "[mysqld]\nexpire_logs_days = 7\n",
       notify  => Exec["reload-mysql"];
@@ -128,12 +134,6 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=fals
       ensure  => absent;
 #      content => "[mysqld]\ncharacter-set-server = 'utf8'\n",
 #      notify  => Service["mysql"];
-  }
-
-  file { "/etc/backup/prepare.d/mysql":
-    ensure  => link,
-    target  => "/usr/share/backup-scripts/prepare/mysql",
-    require => Kpackage["backup-scripts"];
   }
 
   kbp_backup::exclude { "exclude_var_lib_mysql":
