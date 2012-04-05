@@ -106,7 +106,7 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=false, $datadir=false, $charset=false) {
+class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $charset=false) {
   include kbp_trending::mysql
   include kbp_mysql::monitoring::icinga::server
   class { "mysql::server":
@@ -121,8 +121,7 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=fals
     }
 
     file { "/etc/mysql/conf.d/expire_logs.cnf":
-      content => "[mysqld]\nexpire_logs_days = 7\n",
-      notify  => Exec["reload-mysql"];
+      content => "[mysqld]\nexpire_logs_days = 7\n";
     }
   }
 
