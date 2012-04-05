@@ -13,7 +13,8 @@ class kbp_mcollective::server {
     check_command       => "check_mcollective",
     check_interval      => "1800",
     sms                 => false,
-    nrpe                => true;
+    nrpe                => true,
+    customer_notify     => false;
   }
 }
 
