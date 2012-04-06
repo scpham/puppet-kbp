@@ -5,3 +5,9 @@ define kbp_ksplice($ensure=true) {
   }
   include kbp_icinga::ksplice
 }
+
+define kbp_ksplice::proxy ($proxy) {
+  ksplice::proxy { $name:
+    proxy => $proxy;
+  }
+}
