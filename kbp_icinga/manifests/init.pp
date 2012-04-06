@@ -167,7 +167,7 @@ class kbp_icinga::client {
     "backup_status":
       service_description => "Backup status",
       check_command       => "check_backup_status",
-      retry_interval      => 28800,
+      max_check_attempts  => 8640,
       nrpe                => true,
       sms                 => false,
       customer_notify     => false;
@@ -1119,6 +1119,25 @@ class kbp_icinga::asterisk {
   }
 }
 
+# Class: kbp_icinga::mcollective
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_icinga::mcollective {
+  kbp_icinga::service { "mcollectived":
+    service_description => "MCollective daemon",
+    check_command       => "check_mcollective",
+    check_interval      => "1800",
+    sms                 => false,
+    nrpe                => true,
+    customer_notify     => false;
+  }
+}
 
 define kbp_icinga::clientcommand($sudo=false, $path=false, $command=false, $arguments=false) {
   file { "/etc/nagios/nrpe.d/${name}.cfg":
