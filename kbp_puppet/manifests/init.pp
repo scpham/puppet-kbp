@@ -11,6 +11,7 @@
 #
 class kbp_puppet {
   include gen_puppet
+  include kbp_icinga::puppet_state
 
 #  exec { "Mount /var with acl":
 #    command => '/usr/bin/awk \'/var/ { if($4 !~ /acl/) $4 = $4",acl" } ; { print }\' /etc/fstab > /etc/fstab.net && mv /etc/fstab{.net,} && /bin/mount -o remount /var';

@@ -114,10 +114,6 @@ class kbp_icinga::client {
       sudo      => true,
       command   => "check_file",
       arguments => '-f $ARG1$ -n';
-    "check_puppet_state_freshness":
-      sudo      => true,
-      command   => "check_puppet",
-      arguments => "-w 25000 -c 50000";
     "check_puppet_failures":
       sudo      => true,
       command   => "check_puppet",
@@ -186,12 +182,6 @@ class kbp_icinga::client {
       nrpe                => true,
       sms                 => false,
       customer_notify     => false;
-    "puppet_state":
-      service_description => "Puppet state freshness",
-      check_command       => "check_puppet_state_freshness",
-      nrpe                => true,
-      sms                 => false,
-      customer_notify     => false;
     "puppet_failures":
       service_description => "Puppet failures",
       check_command       => "check_puppet_failures",
@@ -245,14 +235,6 @@ class kbp_icinga::client {
       nrpe                => true,
       sms                 => false,
       customer_notify     => false;
-  }
-
-  gen_icinga::servicedependency { "puppet_dependency_freshness_dontrun":
-    dependent_service_description => "Puppet state freshness",
-    host_name                     => $fqdn,
-    service_description           => "Puppet dontrun",
-    execution_failure_criteria    => "c",
-    notification_failure_criteria => "c";
   }
 
   gen_sudo::rule { "Icinga can run all plugins as root":
@@ -465,10 +447,12 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
   }
 
   Gen_icinga::Servercommand <<| |>>
+  Kbp_icinga::Clientcommand <<| |>>
+  Kbp_icinga::Servercommand <<| |>>
 
   kbp_icinga::servercommand {
     ["check_ssh","check_smtp"]:;
-    ["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd",
+    ["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_zombie_processes","check_local_smtp","check_drbd",
      "check_pacemaker","check_mysql","check_mysql_connlimit","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp",
      "check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_failures","check_nullmailer","check_passenger_queue","check_mcollective","check_backup_status"]:
       nrpe          => true;
@@ -943,6 +927,37 @@ class kbp_icinga::environment {
   }
 }
 
+# Class: kbp_icinga::puppet_state
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_icinga::puppet_state {
+  kbp_icinga::service { "puppet_state":
+    service_description => "Puppet state freshness",
+    check_command       => "check_puppet_state_freshness",
+    nrpe                => true,
+    sms                 => false,
+    customer_notify     => false,
+    new_style           => true,
+    sudo                => true,
+    client_command      => "check_puppet",
+    client_arguments    => "-w 25000 -c 50000";
+  }
+
+  gen_icinga::servicedependency { "puppet_dependency_freshness_dontrun":
+    dependent_service_description => "Puppet state freshness",
+    host_name                     => $fqdn,
+    service_description           => "Puppet dontrun",
+    execution_failure_criteria    => "c",
+    notification_failure_criteria => "c";
+  }
+}
+
 # Class: kbp_icinga::ferm_config
 #
 # Actions:
@@ -1139,13 +1154,6 @@ class kbp_icinga::mcollective {
   }
 }
 
-define kbp_icinga::clientcommand($sudo=false, $path=false, $command=false, $arguments=false) {
-  file { "/etc/nagios/nrpe.d/${name}.cfg":
-    content => template("kbp_icinga/clientcommand"),
-    require => Package["nagios-nrpe-server"];
-  }
-}
-
 # Define: kbp_icinga::service
 #
 # Parameters:
@@ -1162,7 +1170,8 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     $obsess_over_service=false, $check_freshness=false, $freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false,
     $process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false,
     $check_interval=false, $retry_interval=false, $notification_period=false, $notification_options=false, $max_check_attempts=false, $check_command=false,
-    $arguments=false, $register=false, $nrpe=false, $proxy=false, $customer_notify=true, $preventproxyoverride=false) {
+    $arguments=false, $register=false, $nrpe=false, $proxy=false, $customer_notify=true, $preventproxyoverride=false, $new_style=false, $sudo=false, $client_command=false,
+    $client_arguments=false) {
   $contacts = $register ? {
     0       => "devnull",
     default => false,
@@ -1204,6 +1213,18 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
   if $ha {
     Gen_icinga::Host <| title == $host_name |> {
       hostgroups => "ha_hosts",
+    }
+  }
+
+  if $new_style {
+    kbp_icinga::clientcommand { $check_command:
+      sudo      => $sudo,
+      command   => $client_command,
+      arguments => $client_arguments;
+    }
+
+    kbp_icinga::servercommand_export { "${check_command} ${fqdn}":
+      nrpe => $nrpe;
     }
   }
 
@@ -1323,6 +1344,13 @@ define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=fals
   }
 }
 
+define kbp_icinga::clientcommand($sudo=false, $path=false, $command=false, $arguments=false) {
+  file { "/etc/nagios/nrpe.d/${name}.cfg":
+    content => template("kbp_icinga/clientcommand"),
+    require => Package["nagios-nrpe-server"];
+  }
+}
+
 define kbp_icinga::servercommand($conf_dir="generic", $command_name=false, $host_argument='-H $HOSTADDRESS$', $arguments=false, $nrpe=false, $time_out=30) {
   gen_icinga::servercommand { $name:
     conf_dir      => $conf_dir,
@@ -1331,6 +1359,21 @@ define kbp_icinga::servercommand($conf_dir="generic", $command_name=false, $host
     arguments     => $arguments,
     nrpe          => $nrpe,
     time_out      => $time_out;
+  }
+}
+
+define kbp_icinga::servercommand_export($conf_dir='generic', $command_name=false, $host_argument='-H $HOSTADDRESS$', $arguments=false, $nrpe=false, $time_out=30) {
+  $check_command = regsubst($name,'^(.*?) (.*)$','\1')
+
+  if ! defined(Kbp_icinga::Servercommand[$check_command]) {
+    @@kbp_icinga::servercommand { $check_command:
+      conf_dir      => $conf_dir,
+      command_name  => $command_name,
+      host_argument => $host_argument,
+      arguments     => $arguments,
+      nrpe          => $nrpe,
+      time_out      => $time_out;
+    }
   }
 }
 
