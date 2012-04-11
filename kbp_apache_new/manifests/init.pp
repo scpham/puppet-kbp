@@ -352,8 +352,11 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   }
 
   if $php {
-    kbp_apache_new::php_cgi { $full_name:
-      documentroot => $real_documentroot;
+    case $php {
+      # Mod_php, I choose you!
+      'mod_php': { include kbp_apache_new::php }
+      # Default to CGI
+      default:   { kbp_apache_new::php_cgi { $full_name: documentroot => $real_documentroot; } }
     }
   }
 }
