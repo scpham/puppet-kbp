@@ -134,9 +134,6 @@ class kbp_icinga::client {
     "check_unbound":
       command   => "check_procs",
       arguments => "-c 1:1 -C unbound";
-    "check_zombie_processes":
-      command   => "check_procs",
-      arguments => "-w 5 -c 10 -s Z";
   }
 
   gen_icinga::configdir { "${::environment}/${fqdn}":; }
@@ -229,12 +226,6 @@ class kbp_icinga::client {
       check_command       => "check_swap",
       nrpe                => true,
       warnsms             => false;
-    "zombie_processes":
-      service_description => "Zombie processes",
-      check_command       => "check_zombie_processes",
-      nrpe                => true,
-      sms                 => false,
-      customer_notify     => false;
   }
 
   gen_sudo::rule { "Icinga can run all plugins as root":
@@ -452,7 +443,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
 
   kbp_icinga::servercommand {
     ["check_ssh","check_smtp"]:;
-    ["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_zombie_processes","check_local_smtp","check_drbd",
+    ["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_local_smtp","check_drbd",
      "check_pacemaker","check_mysql","check_mysql_connlimit","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp",
      "check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_failures","check_nullmailer","check_passenger_queue","check_mcollective","check_backup_status",
      "check_unbound"]:
@@ -942,12 +933,12 @@ class kbp_icinga::puppet_state {
     service_description => "Puppet state freshness",
     check_command       => "check_puppet_state_freshness",
     nrpe                => true,
-    sms                 => false,
-    customer_notify     => false,
-    new_style           => true,
     sudo                => true,
     client_command      => "check_puppet",
-    client_arguments    => "-w 25000 -c 50000";
+    client_arguments    => "-w 25000 -c 50000",
+    sms                 => false,
+    customer_notify     => false,
+    new_style           => true;
   }
 
   gen_icinga::servicedependency { "puppet_dependency_freshness_dontrun":
@@ -956,6 +947,28 @@ class kbp_icinga::puppet_state {
     service_description           => "Puppet dontrun",
     execution_failure_criteria    => "c",
     notification_failure_criteria => "c";
+  }
+}
+
+# Class: kbp_icinga::zombie_processes
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_icinga::zombie_processes {
+  kbp_icinga::service { "zombie_processes":
+    service_description => "Zombie processes",
+    check_command       => "check_zombie_processes",
+    nrpe                => true,
+    client_command      => "check_procs",
+    client_arguments    => "-w 5 -c 10 -s Z",
+    sms                 => false,
+    customer_notify     => false,
+    new_style           => true;
   }
 }
 
