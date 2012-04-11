@@ -12,6 +12,7 @@
 class kbp_icinga::client {
   include gen_icinga::client
   include gen_base::python-argparse
+  include kbp_icinga::zombie_processes
 
   Kbp_ferm::Rule <<| tag == "general_monitoring" |>>
   Kbp_ferm::Rule <<| tag == "general_monitoring_${environment}" |>>
