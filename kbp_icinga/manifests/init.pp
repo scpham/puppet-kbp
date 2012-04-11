@@ -448,7 +448,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
 
   Gen_icinga::Servercommand <<| |>>
   Kbp_icinga::Clientcommand <<| |>>
-  Kbp_icinga::Servercommand <<| |>>
+  Kbp_icinga::Servercommand_export <<| |>>
 
   kbp_icinga::servercommand {
     ["check_ssh","check_smtp"]:;
@@ -1223,7 +1223,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
       arguments => $client_arguments;
     }
 
-    kbp_icinga::servercommand_export { "${check_command} ${fqdn}":
+    @@kbp_icinga::servercommand_export { "${check_command} ${fqdn}":
       nrpe => $nrpe;
     }
   }
@@ -1366,7 +1366,7 @@ define kbp_icinga::servercommand_export($conf_dir='generic', $command_name=false
   $check_command = regsubst($name,'^(.*?) (.*)$','\1')
 
   if ! defined(Kbp_icinga::Servercommand[$check_command]) {
-    @@kbp_icinga::servercommand { $check_command:
+    kbp_icinga::servercommand { $check_command:
       conf_dir      => $conf_dir,
       command_name  => $command_name,
       host_argument => $host_argument,
