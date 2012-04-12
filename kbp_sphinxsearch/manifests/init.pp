@@ -14,8 +14,7 @@ class kbp_sphinxsearch::server {
   include kbp_sphinxsearch::monitoring::icinga::server
 
   Kbp_ferm::Rule <<| tag == "sphinxsearch_${environment}" |>>
-
-  Gen_ferm::Rule <<| tag == "sphinxsearch_monitoring" |>>
+  Kbp_ferm::Rule <<| tag == "sphinxsearch_monitoring" |>>
 
   kbp_backup::exclude { "sphinxsearch data":
     content => "/var/lib/sphinxsearch/data/*";
