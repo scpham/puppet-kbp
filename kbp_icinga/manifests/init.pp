@@ -112,10 +112,6 @@ class kbp_icinga::client {
       sudo      => true,
       command   => "check_file",
       arguments => '-f $ARG1$ -n';
-    "check_puppet_failures":
-      sudo      => true,
-      command   => "check_puppet",
-      arguments => "-f -w 1 -c 1";
     "check_rabbitmqctl":
       sudo      => true,
       arguments => '-p $ARG1$';
@@ -185,8 +181,12 @@ class kbp_icinga::client {
       check_command       => "check_puppet_failures",
       max_check_attempts  => 1440,
       nrpe                => true,
+      sudo                => true,
+      client_command      => "check_puppet",
+      client_arguments    => "-f -w 1 -c 1",
       sms                 => false,
-      customer_notify     => false;
+      customer_notify     => false,
+      new_style           => true;
     "cpu":
       ensure              => absent,
       service_description => "CPU usage",
@@ -446,7 +446,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
     ["check_ssh","check_smtp"]:;
     ["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_local_smtp","check_drbd",
      "check_pacemaker","check_mysql","check_mysql_connlimit","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp",
-     "check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_failures","check_nullmailer","check_passenger_queue","check_mcollective","check_unbound"]:
+     "check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_nullmailer","check_passenger_queue","check_mcollective","check_unbound"]:
       nrpe          => true;
     "return-ok":
       command_name  => "check_dummy",
@@ -930,23 +930,16 @@ class kbp_icinga::environment {
 #
 class kbp_icinga::puppet_state {
   kbp_icinga::service { "puppet_state":
-    service_description => "Puppet state freshness",
-    check_command       => "check_puppet_state_freshness",
-    nrpe                => true,
-    sudo                => true,
-    client_command      => "check_puppet",
-    client_arguments    => "-w 25000 -c 50000",
-    sms                 => false,
-    customer_notify     => false,
-    new_style           => true;
-  }
-
-  gen_icinga::servicedependency { "puppet_dependency_freshness_dontrun":
-    dependent_service_description => "Puppet state freshness",
-    host_name                     => $fqdn,
-    service_description           => "Puppet dontrun",
-    execution_failure_criteria    => "c",
-    notification_failure_criteria => "c";
+    service_description           => "Puppet state freshness",
+    check_command                 => "check_puppet_state_freshness",
+    nrpe                          => true,
+    sudo                          => true,
+    client_command                => "check_puppet",
+    client_arguments              => "-w 25000 -c 50000",
+    depend_service_description    => "Puppet dontrun",
+    sms                           => false,
+    customer_notify               => false,
+    new_style                     => true;
   }
 }
 
@@ -1185,7 +1178,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     $process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false,
     $check_interval=false, $retry_interval=false, $notification_period=false, $notification_options=false, $max_check_attempts=false, $check_command=false,
     $arguments=false, $register=false, $nrpe=false, $proxy=false, $customer_notify=true, $preventproxyoverride=false, $new_style=false, $sudo=false, $client_command=false,
-    $client_arguments=false) {
+    $client_arguments=false, $depend_service_description=false, $depend_host_name=$fqdn, $execution_failure_criteria='c', $notification_failure_criteria = 'c') {
   $contacts = $register ? {
     0       => "devnull",
     default => false,
@@ -1239,6 +1232,16 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
 
     @@kbp_icinga::servercommand_export { "${check_command} ${fqdn}":
       nrpe => $nrpe;
+    }
+  }
+
+  if $dependent_service_description {
+    gen_icinga::servicedependency { "${name}_on_${fqdn}_depends_on_${depend_service_description}_on_${depend_host_name}":
+      dependent_service_description => $service_description,
+      host_name                     => $depend_host_name,
+      service_description           => $depend_service_description,
+      execution_failure_criteria    => $execution_failure_criteria,
+      notification_failure_criteria => $notification_failure_criteria;
     }
   }
 
