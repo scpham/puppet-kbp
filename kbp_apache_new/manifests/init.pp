@@ -339,7 +339,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
 
     kbp_apache_new::vhost_addition { "${full_name}/django":
-      content => template("kbp_apache_new/vhost-additions/django")
+      content => template("kbp_apache_new/vhost-additions/django");
     }
 
     file {
@@ -348,6 +348,8 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       "/srv/django${real_django_root_django}/dispatch.wsgi":
         content => template("kbp_apache_new/django/dispatch.wsgi"),
         mode    => 755;
+      "/srv/django${real_django_static_django}":
+        ensure  => directory;
     }
   }
 
