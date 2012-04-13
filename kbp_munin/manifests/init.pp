@@ -406,7 +406,9 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
     site => $site,
   }
   Kbp_munin::Alert <<| |>>
-  Concat::Add_content <<| tag == "munin_client" |>>
+  Concat::Add_content <<| tag == "munin_client" |>> {
+    purge_on_pm => true,
+  }
 }
 
 define kbp_munin::environment($site,$offset=0) {
