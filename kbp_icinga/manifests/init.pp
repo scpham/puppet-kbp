@@ -528,6 +528,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
       arguments     => ['-H $ARG2$','-u $ARG3$','-e $ARG4$','-t 20'];
+    "check_http_vhost_url_login":
+      command_name  => "check_http",
+      host_argument => '-I $HOSTADDRESS$',
+      arguments     => ['-H $ARG1$','-u $ARG2$','-e $ARG3$', '-a $ARG4$', '-t 20'];
     "check_http_vhost_url_ssl":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
@@ -1158,7 +1162,7 @@ define kbp_icinga::clientcommand($sudo=false, $path=false, $command=false, $argu
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::service($ensure="present", $service_description=false, $use=false, $servicegroups=false, $passive=false, $ha=false, $sms=true,
+define kbp_icinga::service($ensure="present", $service_description, $use=false, $servicegroups=false, $passive=false, $ha=false, $sms=true,
     $warnsms=true, $conf_dir="${::environment}/${::fqdn}", $host_name=$::fqdn, $initial_state=false, $active_checks_enabled=false, $passive_checks_enabled=false,
     $obsess_over_service=false, $check_freshness=false, $freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false,
     $process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false,
@@ -1665,7 +1669,7 @@ define kbp_icinga::java($servicegroups=false, $sms=true) {
 #
 define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false,
       $max_check_attempts=false, $port=false, $path=false, $response=false, $statuscode=false, $vhost=true,
-      $ssl=false, $host_name=false, $preventproxyoverride=false, $check_interval=false) {
+      $ssl=false, $host_name=false, $preventproxyoverride=false, $check_interval=false, $credentials=false) {
   $real_name = $host_name ? {
     false   => $name,
     default => $host_name,
@@ -1711,7 +1715,10 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       $arguments     = [$real_name,$port,$real_statuscode]
     }
   } elsif $path {
-    if $response {
+    if $credentials {
+      $check_command = "check_http_vhost_url_login"
+      $arguments     = [$real_name,$path,$credentials,$real_statuscode]
+    } elsif $response {
       $check_command = "check_http_vhost_url_response"
       $arguments     = [$real_name,$path,$response,$real_statuscode]
     } elsif $ssl {
