@@ -144,6 +144,16 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
   Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
 }
 
+class kbp_mysql::server::ssl ($cert_dir="/etc/mysql/ssl") {
+  file {
+    $cert_dir:
+      ensure  => directory,
+      mode    => 750;
+    "/etc/mysql/conf.d/ssl.conf":
+      content => inline_template("[mysqld]\nssl\nssl-ca=${cert_dir}/cacert.pem\nssl-cert=${cert_dir}/${fqdn}.pem\nssl-key=${cert_dir}/serverkey.pem");
+  }
+}
+
 # Class: kbp_mysql::monitoring::icinga::server
 #
 # Parameters:
