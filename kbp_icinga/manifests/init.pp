@@ -1167,7 +1167,7 @@ define kbp_icinga::clientcommand($sudo=false, $path=false, $command=false, $argu
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::service($ensure="present", $service_description, $use=false, $servicegroups=false, $passive=false, $ha=false, $sms=true,
+define kbp_icinga::service($ensure="present", $service_description=false, $use=false, $servicegroups=false, $passive=false, $ha=false, $sms=true,
     $warnsms=true, $conf_dir="${::environment}/${::fqdn}", $host_name=$::fqdn, $initial_state=false, $active_checks_enabled=false, $passive_checks_enabled=false,
     $obsess_over_service=false, $check_freshness=false, $freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false,
     $process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false,
@@ -1209,6 +1209,9 @@ define kbp_icinga::service($ensure="present", $service_description, $use=false, 
     $real_notification_interval = $check_interval
   } else {
     $real_notification_interval = $notification_interval
+  }
+  if ! $service_description and $register > 0 {
+    fail("Missing parameter service_description.")
   }
 
   if $ha {
