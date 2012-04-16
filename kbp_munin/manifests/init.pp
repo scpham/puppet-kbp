@@ -260,6 +260,45 @@ class kbp_munin::client::postgresql {
   munin::client::plugin::config { "postgres_*":
     content => "user postgres",
   }
+
+  $dbs = split($psql_dbs, ';')
+  kbp_munin::client::postgresql_dbs { $dbs:; }
+}
+
+# Define: kbp_munin::client::postgresql_dbs
+#
+# Actions:
+#  Setup trending of PostgreSQL databases. Requires the settings from kbp_munin::client::postgresql.
+#
+# Parameters:
+#  name
+#   The database to setup trending for.
+#
+# Depends:
+#  kbp_munin::client::postgresql
+#  gen_puppet
+#
+define kbp_munin::client::postgresql_dbs {
+  include kbp_munin::client::postgresql
+
+  if $name != 'template0' and $name != 'template1' {
+    munin::client::plugin {
+      "postgres_cache_${name}":
+        script => "postgres_cache_";
+      "postgres_locks_${name}":
+        script => "postgres_locks_";
+      "postgres_querylength_${name}":
+        script => "postgres_querylength_";
+      "postgres_scans_${name}":
+        script => "postgres_scans_";
+      "postgres_size_${name}":
+        script => "postgres_size_";
+      "postgres_transactions_${name}":
+        script => "postgres_transactions_";
+      "postgres_tuples_${name}":
+        script => "postgres_tuples_";
+    }
+  }
 }
 
 # Class: kbp_munin::client::bind9
