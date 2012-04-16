@@ -6,5 +6,7 @@ class kbp_django {
     ensure => directory;
   }
 
-  kbp_apache_new::module { ["python","wsgi"]:; }
+  kbp_apache_new::module { "wsgi":
+    require => Kpackage["libapache2-mod-wsgi"];
+  }
 }
