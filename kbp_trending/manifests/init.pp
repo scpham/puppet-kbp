@@ -216,3 +216,23 @@ define kbp_trending::glassfish ($method="munin", $jmxport) {
     default: { fail("No trending for ${method}.") }
   }
 }
+
+# Class: kbp_trending::postgresql
+#
+# Parameters:
+#  method
+#    The trending method to use.
+#
+# Actions:
+#  Setup trending for PostgreSQL.
+#
+# Depends:
+#  gen_puppet
+#
+class kbp_trending::postgresql ($method="munin") {
+  case $method {
+    "munin": { include kbp_munin::client::postgresql }
+    default: { fail("No trending for ${method}.") }
+  }
+}
+

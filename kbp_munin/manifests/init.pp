@@ -243,6 +243,25 @@ class kbp_munin::client::ntpd {
   munin::client::plugin { ["ntp_kernel_err","ntp_kernel_pll_freq","ntp_kernel_pll_off","ntp_offset"]:; }
 }
 
+# Class: kbp_munin::client::postgresql
+#
+# Actions:
+#  Setup trending of PostgreSQL.
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_munin::client::postgresql {
+  include kbp_munin::client
+
+  munin::client::plugin { ["postgres_bgwriter","postgres_checkpoints","postgres_connections_db","postgres_users","postgres_xlog"]:; }
+
+  munin::client::plugin::config { "postgres_*":
+    content => "user postgres",
+  }
+}
+
 # Class: kbp_munin::client::bind9
 #
 # Actions:
