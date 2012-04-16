@@ -37,4 +37,11 @@ class kbp_solr ($tomcat_tag="tomcat_solr_${environment}"){
     notify  => Service["tomcat6"],
     require => File["/srv/tomcat/conf/Catalina/localhost/solr.xml"];
   }
+
+  # Set the correct permissions on the data store
+  file { "/var/lib/solr/data":
+    owner   => "tomcat6",
+    require => Kpackage["tomcat6","solr-tomcat"],
+    notify  => Service["tomcat6"],
+  }
 }
