@@ -261,8 +261,7 @@ class kbp_munin::client::postgresql {
     content => "user postgres",
   }
 
-  $dbs = split($psql_dbs, ';')
-  kbp_munin::client::postgresql_dbs { $dbs:; }
+  kbp_munin::client::postgresql_dbs { "ALL":; }
 }
 
 # Define: kbp_munin::client::postgresql_dbs
