@@ -533,10 +533,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
       arguments     => ['-H $ARG2$','-u $ARG3$','-e $ARG4$','-t 20'];
-    "check_http_vhost_url_login":
+    "check_http_vhost_url_login_address":
       command_name  => "check_http",
-      host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-H $ARG1$','-u $ARG2$','-e $ARG3$', '-a $ARG4$', '-t 20'];
+      host_argument => '-I $ARG1$',
+      arguments     => ['-H $ARG2$','-u $ARG3$','-e $ARG4$', '-a $ARG5$', '-t 20'];
     "check_http_vhost_url_ssl":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
