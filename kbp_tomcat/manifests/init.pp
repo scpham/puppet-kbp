@@ -86,7 +86,7 @@ class kbp_tomcat::mysql {
 #
 define kbp_tomcat::webapp($war="", $urlpath="/", $context_xml_content=false, $root_app=false, $tomcat_tag="tomcat_${environment}",
                           $additional_context_settings = false, $environment_settings = false, $valve_settings = false,
-                          $datasource_settings = false) {
+                          $datasource_settings = false, $leave_settings_alone=false) {
   gen_tomcat::context { $name:
     tomcat_tag          => $tomcat_tag,
     war                 => $war,
@@ -95,51 +95,53 @@ define kbp_tomcat::webapp($war="", $urlpath="/", $context_xml_content=false, $ro
     root_app            => $root_app;
   }
 
-  if $additional_context_settings {
-    # This is a very elaborate workaround for not being able to add an option
-    # to create_resources. Solved when puppet bug #9768 is fixed.
-    # This would then be enough:
-    #  - create_resources("gen_tomcat::additional_context_setting",$additional_context_settings, {context => $name})
-    $contextkeys = hash_keys($additional_context_settings)
-    kbp_tomcat::additional_context_setting { $contextkeys:
-      context => $name,
-      hash    => $additional_context_settings,
+  if ! $leave_settings_alone {
+    if $additional_context_settings {
+      # This is a very elaborate workaround for not being able to add an option
+      # to create_resources. Solved when puppet bug #9768 is fixed.
+      # This would then be enough:
+      #  - create_resources("gen_tomcat::additional_context_setting",$additional_context_settings, {context => $name})
+      $contextkeys = hash_keys($additional_context_settings)
+      kbp_tomcat::additional_context_setting { $contextkeys:
+        context => $name,
+        hash    => $additional_context_settings,
+      }
     }
-  }
 
-  if $environment_settings {
-    # This is a very elaborate workaround for not being able to add an option
-    # to create_resources. Solved when puppet bug #9768 is fixed.
-    # This would then be enough:
-    #  - create_resources("gen_tomcat::environment",$environment_settings, {context => $name})
-    $environmentkeys = hash_keys($environment_settings)
-    kbp_tomcat::environment_setting { $environmentkeys:
-      context => $name,
-      hash    => $environment_settings,
+    if $environment_settings {
+      # This is a very elaborate workaround for not being able to add an option
+      # to create_resources. Solved when puppet bug #9768 is fixed.
+      # This would then be enough:
+      #  - create_resources("gen_tomcat::environment",$environment_settings, {context => $name})
+      $environmentkeys = hash_keys($environment_settings)
+      kbp_tomcat::environment_setting { $environmentkeys:
+        context => $name,
+        hash    => $environment_settings,
+      }
     }
-  }
 
-  if $valve_settings {
-    # This is a very elaborate workaround for not being able to add an option
-    # to create_resources. Solved when puppet bug #9768 is fixed.
-    # This would then be enough:
-    #  - create_resources("gen_tomcat::valve",$valve_settings, {context => $name})
-    $valvekeys = hash_keys($valve_settings)
-    kbp_tomcat::valve_setting { $valvekeys:
-      context => $name,
-      hash    => $valve_settings,
+    if $valve_settings {
+      # This is a very elaborate workaround for not being able to add an option
+      # to create_resources. Solved when puppet bug #9768 is fixed.
+      # This would then be enough:
+      #  - create_resources("gen_tomcat::valve",$valve_settings, {context => $name})
+      $valvekeys = hash_keys($valve_settings)
+      kbp_tomcat::valve_setting { $valvekeys:
+        context => $name,
+        hash    => $valve_settings,
+      }
     }
-  }
 
-  if $datasource_settings {
-    # This is a very elaborate workaround for not being able to add an option
-    # to create_resources. Solved when puppet bug #9768 is fixed.
-    # This would then be enough:
-    #  - create_resources("gen_tomcat::datasource",$datasource_settings, {context => $name})
-    $datasourcekeys = hash_keys($datasource_settings)
-    kbp_tomcat::datasource_setting { $datasourcekeys:
-      context => $name,
-      hash    => $datasource_settings,
+    if $datasource_settings {
+      # This is a very elaborate workaround for not being able to add an option
+      # to create_resources. Solved when puppet bug #9768 is fixed.
+      # This would then be enough:
+      #  - create_resources("gen_tomcat::datasource",$datasource_settings, {context => $name})
+      $datasourcekeys = hash_keys($datasource_settings)
+      kbp_tomcat::datasource_setting { $datasourcekeys:
+        context => $name,
+        hash    => $datasource_settings,
+      }
     }
   }
 }
