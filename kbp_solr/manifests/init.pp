@@ -41,7 +41,7 @@ class kbp_solr ($tomcat_tag="tomcat_solr_${environment}"){
   # Set the correct permissions on the data store
   file { "/var/lib/solr/data":
     owner   => "tomcat6",
-    require => Kpackage["tomcat6","solr-tomcat"],
+    require => Kpackage["tomcat6","solr-common"],
     notify  => Service["tomcat6"],
   }
 }
