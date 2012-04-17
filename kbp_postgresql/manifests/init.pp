@@ -82,6 +82,13 @@ class kbp_postgresql::monitoring::icinga::server($otherhost=false) {
       check_command       => "check_pgsql",
       nrpe                => true;
   }
+
+  kbp_sudo::rule { "Allow user nagios to check postgresql as postgres user":
+    command           => "/usr/lib/nagios/plugins/check_pgsql",
+    as_user           => "postgres",
+    entity            => "nagios",
+    password_required => false;
+  }
 }
 
 # Define: kbp_postgresql::client

@@ -595,6 +595,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
     "check_rabbitmqctl":
       arguments => '$ARG1$',
       nrpe      => true;
+    "check_pgsql":
+      nrpe      => true;
   }
 
   file {
