@@ -65,8 +65,12 @@ class kbp_apt::kumina {
       key          => "498B91E6";
   }
 
+  # This needs to be a package because we cannot do an apt-get update when an https deb source is declared
+  package { "apt-transport-https":
+    ensure => latest;
+  }
   # This is the actual key, packaged.
-  kpackage { ["apt-transport-https","kumina-archive-keyring"]:
+  kpackage { "kumina-archive-keyring":
     ensure => latest,
   }
 
@@ -98,6 +102,7 @@ class kbp_apt::kumina_non_free ($repopassword = "BOGUS"){
       uri          => "https://${environment}:${repopassword}@debian-non-free.kumina.nl/debian",
       distribution => "${lsbdistcodename}-kumina",
       components   => "non-free",
-      key          => "498B91E6";
+      key          => "498B91E6",
+      require      => Package["apt-transport-https"];
   }
 }
