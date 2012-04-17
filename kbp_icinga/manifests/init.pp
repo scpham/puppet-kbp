@@ -107,6 +107,8 @@ class kbp_icinga::client {
       sudo      => true;
     "check_ping":
       arguments => '-w $ARG1$ -c $ARG2$ -p $ARG3$ -H $ARG4$';
+    "check_pgsql":
+      sudo      => "postgres";
     "check_proc_status":
       sudo      => true,
       arguments => '$ARG1$';

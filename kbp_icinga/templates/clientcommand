@@ -1,1 +1,1 @@
-command[<%= name %>]=<% if sudo %>/usr/bin/sudo <% end %><% if path %><%= path %><% else %>/usr/lib/nagios/plugins/<% end %><% if command %><%= command %><% else %><%= name %><% end %> <% if arguments %><%= arguments %><% end %>
+command[<%= name %>]=<% if sudo %>/usr/bin/sudo <% if sudo.instance_of?(String) %>-u <%= sudo %> <% end %><% end %><% if path %><%= path %><% else %>/usr/lib/nagios/plugins/<% end %><% if command %><%= command %><% else %><%= name %><% end %> <% if arguments %><%= arguments %><% end %>
