@@ -29,6 +29,7 @@ class kbp_base {
   include kbp_mcollective::server
   include kbp_ferm
   include kbp_nagios::nrpe
+  include kbp_user::admin_users
   if $is_virtual == "false" {
     include kbp_physical
   }
@@ -103,11 +104,11 @@ class kbp_base {
       uid           => 10005,
       password_hash => "BOGUS",
       sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCitP9QOGYxCEqueFl/FC+K7o4hjA5zqG+oMirkqxE0EOX6VgwbigvIfzHnUI/LPkDCinhZGnFyfrTkvepcf6Bhtml3ex3lU2HvAiwVfrf/PWeNeg+MUYo7QGpqRUpC+qE82Epe8f0CLpwYo9Bzk4k4Toc1ZMvHUFzSOEBSe9tUetGmP7AGK/WDGJ5hc07XYV1/W3CAGO8XnhIS3/WdDS8D65iOXNQbwrndIfDn2Y3bWfd4qtx+KdY3+LU+6QKPS9Pdl5iYpWw3gln6NMoG8VDCaCNsr9qFNPOD26ninAGkzv31l59xIS94knutgCsov5KdxEWkd49m0ts5L+H9kZ+sznCr4I1Ng3CghABSU9gK7qnQbQR8PlM+eetyzrEFqHYApioyC2xAYJ+D6f65E7WadZBX5DZpqVEYZmw3d3rN49JI9DYlimUKA0Mu7KVfAURZ/3uir3HPZ0tBcyfqKEfT50Nqew92idjnoO191+lyvXXoiAc65EC/y5Ze8ZZ3pfU= pieter@kumina.nl\n";
-    "rutger":
-      fullname      => "Rutger Spiertz",
-      uid           => 10003,
-      password_hash => "BOGUS",
-      sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCMZBz0sRqmfs4QT4dXVQeMIc+PdDChsjSUQv+SkN//z+igMw6qe5acC8EXUk5CR7VfaOjttp+sgoOxsvFPdFnrcozUsssnUynfVQ4GHCpDu0iOoUtz+WuGGonauAimhFsO2apkYLlO2qipt/z6B+bPQsbOxIVLpLLCa1kFKux7Td4vGddxbCxtFECd/4QUuS42G5q8nET3cdiqHM+QHXs1bnOqa6nxOxhnKX1jlqPT5nwdd8pI+RChGcjD4UofL9IYtz+Nd8wZi/h0tcOUh/ORV1bpJFwTCdWwaQ7Z7bf2Aanzn6iJz14nM0n19EOdvcB5NS/1mE54U9S3qJN+fQT3bOm47R07BIXmCEah6uZUAezkzsnXAsntgn2YDZFhjX+6Xd0iALAlhOyOMVfjJ0cq/qv1WhqScyOOETZhwOjLm4lewigpRnctJBt87p8MArPTBbJJA4TayC9eP6IfZ6plu0Be+W+xvrh/ga3oxMiyg6LWCf2yeTRUut7aIyswxY8= rutger@kumina.nl\n";
+#    "rutger":
+#      fullname      => "Rutger Spiertz",
+#      uid           => 10003,
+#      password_hash => "BOGUS",
+#      sshkeys       => "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCMZBz0sRqmfs4QT4dXVQeMIc+PdDChsjSUQv+SkN//z+igMw6qe5acC8EXUk5CR7VfaOjttp+sgoOxsvFPdFnrcozUsssnUynfVQ4GHCpDu0iOoUtz+WuGGonauAimhFsO2apkYLlO2qipt/z6B+bPQsbOxIVLpLLCa1kFKux7Td4vGddxbCxtFECd/4QUuS42G5q8nET3cdiqHM+QHXs1bnOqa6nxOxhnKX1jlqPT5nwdd8pI+RChGcjD4UofL9IYtz+Nd8wZi/h0tcOUh/ORV1bpJFwTCdWwaQ7Z7bf2Aanzn6iJz14nM0n19EOdvcB5NS/1mE54U9S3qJN+fQT3bOm47R07BIXmCEah6uZUAezkzsnXAsntgn2YDZFhjX+6Xd0iALAlhOyOMVfjJ0cq/qv1WhqScyOOETZhwOjLm4lewigpRnctJBt87p8MArPTBbJJA4TayC9eP6IfZ6plu0Be+W+xvrh/ga3oxMiyg6LWCf2yeTRUut7aIyswxY8= rutger@kumina.nl\n";
     "thomas":
       fullname      => "Thomas Ronner",
       uid           => 10006,
@@ -268,12 +269,12 @@ define kbp_base::staff_user($ensure="present", $fullname, $uid, $password_hash, 
           content => template("kbp_base/home/${name}/.bash_aliases"),
           owner   => $name,
           group   => "kumina";
+        "/home/${name}/.gitconfig":
+          content => template("kbp_base/git/.gitconfig"),
+          group   => "kumina";
         "/home/${name}/.tmp":
           ensure  => directory,
           owner   => $name,
-          group   => "kumina";
-        "/home/${name}/.gitconfig":
-          content => template("kbp_base/git/.gitconfig"),
           group   => "kumina";
         "/home/${name}/.reportbugrc":
           content => "REPORTBUGEMAIL=${name}@kumina.nl\n",
