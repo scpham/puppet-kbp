@@ -70,7 +70,7 @@ class kbp_apt::kumina {
     ensure => latest;
   }
   # This is the actual key, packaged.
-  kpackage { "kumina-archive-keyring":
+  package { "kumina-archive-keyring":
     ensure => latest,
   }
 

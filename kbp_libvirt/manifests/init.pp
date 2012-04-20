@@ -25,11 +25,11 @@ define kbp_libvirt ($on_crash="destroy", $on_reboot="restart") {
 
   file {
     "/etc/libvirt/qemu/networks/default.xml":
-      require => Kpackage["libvirt-bin"],
+      require => Package["libvirt-bin"],
       ensure  => absent;
     "/etc/libvirt/storage":
       ensure  => directory,
-      require => Kpackage["libvirt-bin"],
+      require => Package["libvirt-bin"],
       mode    => 755;
     "/etc/libvirt/storage/autostart":
       ensure  => directory,
@@ -50,7 +50,7 @@ define kbp_libvirt ($on_crash="destroy", $on_reboot="restart") {
     }
 
     include gen_base::python-libvirt
-    kpackage { "python-libxml2":
+    package { "python-libxml2":
       ensure => latest;
     }
   } else {

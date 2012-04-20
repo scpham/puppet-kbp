@@ -34,13 +34,13 @@ class kbp_postgresql::server($postgresql_name, $bind_address="0.0.0.0", $setup_b
   if $lsbmajdistrelease < 7 and versioncmp($version,'8.4') > 0 {
     gen_apt::preference { ["postgresql-${version}","libpq5","postgresql-client-9.1","postgresql-common","postgresql-client-common"]:; }
 
-    kpackage {
+    package {
       "postgresql-client-${version}":
-        require => Kpackage["postgresql-common","postgresql-client-common"],
-        notify  => Kpackage["postgresql-server"];
+        require => Package["postgresql-common","postgresql-client-common"],
+        notify  => Package["postgresql-server"];
       "postgresql-common":
-        require => Kpackage["postgresql-client-common"],
-        notify  => Kpackage["postgresql-server"];
+        require => Package["postgresql-client-common"],
+        notify  => Package["postgresql-server"];
       "postgresql-client-common":;
     }
   }
@@ -49,7 +49,7 @@ class kbp_postgresql::server($postgresql_name, $bind_address="0.0.0.0", $setup_b
     file { "/etc/backup/prepare.d/postgresql":
       ensure  => link,
       target  => "/usr/share/backup-scripts/prepare/postgresql",
-      require => Kpackage["backup-scripts"];
+      require => Package["backup-scripts"];
     }
   }
 

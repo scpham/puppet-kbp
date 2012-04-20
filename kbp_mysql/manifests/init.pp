@@ -117,7 +117,7 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
     file { "/etc/backup/prepare.d/mysql":
       ensure  => link,
       target  => "/usr/share/backup-scripts/prepare/mysql",
-      require => Kpackage["backup-scripts"];
+      require => Package["backup-scripts"];
     }
 
     file { "/etc/mysql/conf.d/expire_logs.cnf":

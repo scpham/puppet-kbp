@@ -122,7 +122,7 @@ class kbp_base {
 #  }
 
   # Packages we like and want :)
-  kpackage {
+  package {
     ["bash","binutils","console-tools","zsh"]:
       ensure => installed;
     ["hidesvn","bash-completion","bc","tcptraceroute","diffstat","host","whois","pwgen"]:
@@ -138,7 +138,7 @@ class kbp_base {
   include gen_base::base-files
 
   if versioncmp($lsbdistrelease, 6.0) < 0 {
-    kpackage { "tcptrack":
+    package { "tcptrack":
       ensure => latest,
     }
   }

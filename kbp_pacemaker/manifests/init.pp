@@ -103,7 +103,7 @@ class kbp_pacemaker::hetzner {
       require => File["/usr/local/lib/hetzner/hetzner-failover-ip"];
     "/usr/lib/ocf/resource.d/kumina":
       ensure => directory,
-      require => Kpackage["pacemaker"];
+      require => Package["pacemaker"];
     "/usr/lib/ocf/resource.d/kumina/update-dns":
       source => "pacemaker/update-dns",
       mode => 755;

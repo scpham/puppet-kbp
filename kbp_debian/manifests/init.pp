@@ -41,13 +41,13 @@ class kbp_debian::lenny {
       components   => "main";
   }
 
-  kpackage { "mailx":
+  package { "mailx":
     ensure => installed
   }
 
   # Package which makes sure the installed Backports.org repository key is
   # up-to-date.
-  kpackage { "debian-backports-keyring":
+  package { "debian-backports-keyring":
     ensure => installed,
   }
 }
@@ -80,7 +80,7 @@ class kbp_debian::squeeze {
           components   => "main";
   }
 
-  kpackage { "bsd-mailx":
+  package { "bsd-mailx":
     ensure => installed;
   }
 }
@@ -109,11 +109,11 @@ class kbp_debian inherits kbp_base {
   $wantedpackages = ["openssh-server", "less", "lftp", "screen", "file", "debsums", "dlocate", "gnupg",
     "ucf", "reportbug", "tree", "netcat", "openssh-client", "tcpdump", "iproute", "acl", "tmux",
     "psmisc", "udev", "lsof", "strace", "pinfo", "lsb-release", "ethtool", "socat", "make"]
-  kpackage { $wantedpackages:
+  package { $wantedpackages:
     ensure => installed;
   }
 
-  kpackage { "ca-certificates":
+  package { "ca-certificates":
     ensure => latest;
   }
 
@@ -122,12 +122,12 @@ class kbp_debian inherits kbp_base {
     "iamerican", "ibritish", "ispell", "laptop-detect", "libident", "mpack", "mtools", "popularity-contest", "procmail", "tcsh",
     "w3m", "wamerican", "ppp", "pppoe", "pppoeconf", "at", "mdetect", "tasksel", "aptitude"]
 
-  kpackage { $unwantedpackages:
+  package { $unwantedpackages:
     ensure => absent;
   }
 
   # Local timezone
-  kpackage { "tzdata":
+  package { "tzdata":
     ensure => latest,
   }
 
@@ -164,7 +164,7 @@ class kbp_debian inherits kbp_base {
     content => template("kbp_debian/skel/bash_profile");
   }
 
-  kpackage {
+  package {
     "adduser":;
     "locales":
       require      => File["/var/cache/debconf/locales.preseed"],

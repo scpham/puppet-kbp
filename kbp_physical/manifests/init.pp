@@ -30,14 +30,14 @@ class kbp_physical {
 
   case $raidcontroller0_driver {
     "3w-9xxx": {
-      kpackage { "3ware-cli-binary":; }
+      package { "3ware-cli-binary":; }
 
       kbp_icinga::raidcontroller { "controller0":
         driver => "3ware";
       }
     }
     "aacraid": {
-      kpackage { "arcconf":; }
+      package { "arcconf":; }
 
       kbp_icinga::raidcontroller { "controller0":
         driver => "adaptec";

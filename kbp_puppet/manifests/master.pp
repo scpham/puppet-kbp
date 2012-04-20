@@ -20,7 +20,7 @@ class kbp_puppet::master {
 
   gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
 
-  @kpackage { "puppetstoredconfigcleanhenker":
+  @package { "puppetstoredconfigcleanhenker":
     ensure => latest;
   }
 
@@ -30,22 +30,22 @@ class kbp_puppet::master {
       ensure  => directory,
       owner   => "puppet",
       mode    => 2770,
-      require => Kpackage["puppetmaster"];
+      require => Package["puppetmaster"];
     "/srv/puppet/env":
       ensure  => directory,
       owner   => "puppet",
       mode    => 2770,
-      require => Kpackage["puppetmaster"];
+      require => Package["puppetmaster"];
     "/srv/puppet/generic":
       ensure  => directory,
       owner   => "puppet",
       mode    => 2770,
-      require => Kpackage["puppetmaster"];
+      require => Package["puppetmaster"];
     "/srv/puppet/kbp":
       ensure  => directory,
       owner   => "puppet",
       mode    => 2770,
-      require => Kpackage["puppetmaster"];
+      require => Package["puppetmaster"];
   }
 
   # Enforce ownership and permissions
@@ -173,7 +173,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
   line { "Make Apache listen to port ${port} for puppetmaster ${name}.":
     content => "Listen ${port}",
     file    => "/etc/apache2/ports.conf",
-    require => Kpackage["apache2"],
+    require => Package["apache2"],
   }
 
   # Open the firewall for our puppetmaster
@@ -284,7 +284,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
         var        => 'storeconfigs',
         value      => 'true',
         section    => 'main',
-        require    => Kpackage["libactiverecord-ruby1.8"];
+        require    => Package["libactiverecord-ruby1.8"];
       "Set thin_storeconfigs for ${name}.":
         configfile => $configfile,
         var        => 'thin_storeconfigs',
@@ -327,7 +327,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
         var        => 'storeconfigs',
         value      => 'true',
         section    => 'master',
-        require    => Kpackage["libactiverecord-ruby1.8"];
+        require    => Package["libactiverecord-ruby1.8"];
       "Set thin_storeconfigs for ${name} in master.":
         configfile => $configfile,
         var        => 'thin_storeconfigs',
@@ -390,7 +390,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
           var        => 'queue_type',
           value      => 'stomp',
           section    => 'main',
-          require    => Kpackage["libstomp-ruby"];
+          require    => Package["libstomp-ruby"];
         "Set queue source for ${name}.":
           configfile => $configfile,
           var        => "queue_source",

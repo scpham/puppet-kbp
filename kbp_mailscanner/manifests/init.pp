@@ -21,7 +21,7 @@ class kbp_mailscanner {
     notify => Service["amavis"],
   }
 
-  kpackage { ["zoo", "arj", "cabextract"]:
+  package { ["zoo", "arj", "cabextract"]:
     notify => Service["amavis"],
   }
 
@@ -55,7 +55,7 @@ class kbp_mailscanner::spamchecker inherits spamassassin {
   # spam), but the details differ.
   # http://spamassassinbook.packtpub.com/chapter11.htm has a good
   # description on the differences.
-  kpackage { ["pyzor", "razor"]:; }
+  package { ["pyzor", "razor"]:; }
 }
 
 # Class: kbp_mailscanner::virusscanner

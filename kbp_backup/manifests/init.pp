@@ -48,12 +48,12 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
     file { "/etc/backup/includes":
       ensure  => $ensure,
       content => "/\n",
-      require => Kpackage[$package];
+      require => Package[$package];
     }
 
     concat { "/etc/backup/excludes":
       ensure  => $ensure,
-      require => Kpackage[$package];
+      require => Package[$package];
     }
   }
 

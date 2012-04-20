@@ -51,7 +51,7 @@ class kbp_cassandra::server($branch="07x", $customtag="cassandra_${environment}"
   }
 
   # Make sure we use the Sun Java package
-  Kpackage <| title == "cassandra" |> {
+  Package <| title == "cassandra" |> {
     require => Package["sun-java6-jdk"],
   }
 

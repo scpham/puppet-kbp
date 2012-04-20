@@ -36,7 +36,7 @@ class kbp_smokeping::server($ssl=true) {
 
   file { "/etc/smokeping/basepage.html":
     content => template("kbp_smokeping/basepage.html"),
-    require => Kpackage["smokeping"];
+    require => Package["smokeping"];
   }
 
   @@kbp_dashboard::customer_entry_export { "Smokeping":

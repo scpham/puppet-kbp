@@ -8,6 +8,6 @@ class kbp_django {
   }
 
   kbp_apache_new::module { "wsgi":
-    require => Kpackage["libapache2-mod-wsgi"];
+    require => Package["libapache2-mod-wsgi"];
   }
 }

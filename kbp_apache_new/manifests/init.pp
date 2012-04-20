@@ -89,7 +89,7 @@ class kbp_apache_new::ssl {
 #
 class kbp_apache_new::module::passenger {
   kbp_apache_new::module { "passenger":
-    require => Kpackage["libapache2-mod-passenger"];
+    require => Package["libapache2-mod-passenger"];
   }
 }
 

@@ -36,7 +36,7 @@ class kbp_hetzner inherits hetzner {
 #  gen_puppet
 #
 class kbp_hetzner::sensors {
-  kpackage { "lm-sensors":
+  package { "lm-sensors":
     ensure => "latest";
   }
 

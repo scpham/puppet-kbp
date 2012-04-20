@@ -350,7 +350,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
   include gen_icinga::server
   include kbp_nsca::server
 
-  kpackage { "icinga-web":;}
+  package { "icinga-web":;}
 
   gen_logrotate::rotate { "icinga":
     logs => "/var/log/icinga/icinga.log";

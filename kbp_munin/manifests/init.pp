@@ -17,7 +17,7 @@ class kbp_munin::client inherits munin::client {
     fail("Kbp_munin::Client: \$munin_proxy_port set but no \$munin_proxy in site.pp")
   }
 
-  kpackage { "libnet-snmp-perl":; }
+  package { "libnet-snmp-perl":; }
 
   munin::client::plugin::config { "files_user_plugin":
     section => "files_user_*",
@@ -166,7 +166,7 @@ class kbp_munin::client::mysql {
   include kbp_munin::client
 
   if versioncmp($lsbdistrelease, 6) >= 0 {
-    kpackage {"libcache-cache-perl":
+    package {"libcache-cache-perl":
       ensure => latest;
     }
 
@@ -421,10 +421,10 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
   File <| title == "/etc/send_nsca.cfg" |> {
     mode    => 640,
     group   => "munin",
-    require +> Kpackage["munin"],
+    require +> Package["munin"],
   }
 
-  kpackage { "rsync":; }
+  package { "rsync":; }
 
   # The RRD files for Munin are stored on a memory backed filesystem, so
   # sync it to disk on reboots.

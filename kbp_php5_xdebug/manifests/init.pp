@@ -7,7 +7,7 @@ class kbp_php5_xdebug {
     $squeeze_or_newer = false
   }
 
-  kpackage { "php5-xdebug":
+  package { "php5-xdebug":
     ensure => latest;
   }
 

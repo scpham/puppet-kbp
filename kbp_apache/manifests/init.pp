@@ -62,12 +62,12 @@ class kbp_apache::passenger {
   include kbp_apache::ssl
   include kbp_icinga::passenger::queue
 
-  kpackage { "libapache2-mod-passenger":
+  package { "libapache2-mod-passenger":
     ensure => latest;
   }
 
   apache::module { "passenger":
-    require => Kpackage["libapache2-mod-passenger"],
+    require => Package["libapache2-mod-passenger"],
   }
 }
 
