@@ -65,9 +65,10 @@ class kbp_apt::kumina {
       key          => "498B91E6";
   }
 
-  # This needs to be a package because we cannot do an apt-get update when an https deb source is declared
+  # This mustn't depend on apt-get update, as we cannot do that when an https deb source is declared and this package isn't installed
   package { "apt-transport-https":
-    ensure => latest;
+    ensure  => latest,
+    require => undef;
   }
   # This is the actual key, packaged.
   package { "kumina-archive-keyring":
