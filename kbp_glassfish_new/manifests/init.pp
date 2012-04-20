@@ -249,6 +249,17 @@ define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true,
   kbp_trending::glassfish { "${name}":
       jmxport => $jmxport;
   }
+
+  file { "/etc/init.d/glassfish-instance-${name}" :
+    content => template('kbp_glassfish_new/instance.init'),
+    mode    => 770,
+    notify  => Exec["update-rc.d glassfish-instance-${name}"];
+  }
+
+  exec { "update-rc.d glassfish-instance-${name}":
+    command     => "/usr/sbin/update-rc.d glassfish-instance-${name} defaults",
+    creates     => "/etc/rc2.d/S21glassfish-instance-${name}";
+  }
 }
 
 # Define: kbp_glassfish_new::patch
