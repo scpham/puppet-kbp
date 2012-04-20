@@ -199,7 +199,7 @@ case "$1" in
 
 	status)
 		LOG=$LOGROOT/$INSTANCE
-		echo -n "Glassfish domain $INSTANCE is "
+		echo -n "Glassfish instance $INSTANCE is "
 		if glassfishIsRunning $INSTANCE; then
 			echo "running"
 			exit 0
