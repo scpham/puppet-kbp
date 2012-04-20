@@ -68,7 +68,7 @@ do_start()
 			return 1
 		else
 			/bin/su -c "$GLASSFISH_CMD --port $DOMAIN_PORT start-instance $1 &" $GLASSFISH_USER >> $LOG 2>&1
-			sleep 10
+			sleep 20
 			if glassfishIsRunning $1; then
 				echo "OK" | tee -a $LOG
 				return 0
