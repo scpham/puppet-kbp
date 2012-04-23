@@ -44,6 +44,23 @@ class kbp_apache_new {
   kbp_icinga::http { "http_${fqdn}":; }
 }
 
+# Class: kbp_apache_new::global_umask_007
+#
+# Actions:
+#  Set the umask of the Apache process to 007, for broken scripts that otherwise create files
+#  world-readable/writable.
+#
+# Depends:
+#  kbp_apache_new
+#
+class kbp_apache_new::global_umask_007 {
+  line { "Set Apache's umask":
+    file    => "/etc/apache2/envvars",
+    content => "umask 007",
+    require => Package["apache2"]
+  }
+}
+
 # Class: kbp_apache::passenger
 #
 # Actions:
