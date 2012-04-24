@@ -20,7 +20,7 @@ class kbp_ocfs2($ocfs2_tag="", $use_ipaddress=$external_ipaddress) {
   $real_tag = "ferm_ocfs2_${environment}_${ocfs2_tag}"
 
   concat { "/etc/ocfs2/cluster.conf":
-    notify => Service["o2cb"];
+    notify => Kservice["o2cb"];
   }
 
   concat::add_content { "Ocfs2 cluster basic config":
