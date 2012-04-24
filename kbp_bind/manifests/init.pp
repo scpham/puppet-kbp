@@ -20,11 +20,12 @@ class kbp_bind inherits bind {
     action => "ACCEPT";
   }
 
-  @@gen_ferm::rule { "Allow AXFR transfers from ${fqdn}":
-    saddr  => $fqdn,
-    proto  => "(tcp udp)",
-    dport  => 53,
-    action => "ACCEPT",
-    tag    => "bind_${environment}";
+  kbp_ferm::rule { "Allow AXFR transfers":
+    saddr    => $fqdn,
+    proto    => "(tcp udp)",
+    dport    => 53,
+    action   => "ACCEPT",
+    exported => true,
+    ferm_tag => "bind_${environment}";
   }
 }
