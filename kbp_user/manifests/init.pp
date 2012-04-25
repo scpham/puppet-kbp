@@ -79,6 +79,10 @@ define kbp_user::admin_user($comment, $uid, $gid, $groups=false, $shell, $passwo
     target  => "/etc/ssh/kumina.keys",
     content => "# ${comment} <${name}@kumina.nl>\n${key_type} ${key}";
   }
+
+  if $files {
+    create_resources(file, $files)
+  }
 }
 
 define kbp_user::expand_keys($user, type='ssh-rsa') {
