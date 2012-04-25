@@ -183,14 +183,15 @@ class kbp_apache_new::glassfish_domain_base {
   }
 }
 
-define kbp_apache_new::php_cgi($ensure="present", $documentroot) {
+define kbp_apache_new::php_cgi($ensure="present", $documentroot, $custom_php_ini=false) {
   if $ensure == "present" {
     include gen_php5::cgi
     include gen_php5::apc
     include gen_base::apache2_mpm_worker
 
     kbp_apache_new::cgi { $name:
-      documentroot => $documentroot;
+      documentroot   => $documentroot,
+      custom_php_ini => $custom_php_ini;
     }
 
     Package <| title == "libapache2-mod-php5" |> {
@@ -222,7 +223,7 @@ define kbp_apache_new::php_cgi($ensure="present", $documentroot) {
 define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot=false, $create_documentroot=true, $address=false, $address6=false,
     $port=false, $make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false, $wildcard=false, $log_vhost=false, $access_logformat="combined",
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor_creds=false,
-    $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $glassfish_domain=false, $glassfish_connector_port=false,
+    $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $glassfish_domain=false, $glassfish_connector_port=false,
     $django_root_path=false,$django_root_django=false, $django_static_path=false, $django_static_django=false, $django_settings=false) {
   include kbp_apache_new
 
@@ -375,9 +376,16 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   if $php {
     case $php {
       # Mod_php, I choose you!
-      'mod_php': { include kbp_apache_new::php }
+      'mod_php': {
+        include kbp_apache_new::php
+      }
       # Default to CGI
-      default:   { kbp_apache_new::php_cgi { $full_name: documentroot => $real_documentroot; } }
+      default:   {
+        kbp_apache_new::php_cgi { $full_name:
+          documentroot   => $real_documentroot,
+          custom_php_ini => $custom_php_ini;
+        }
+      }
     }
   }
 }
@@ -448,7 +456,7 @@ define kbp_apache_new::glassfish_domain($site, $site_port, $connector_port) {
   }
 }
 
-define kbp_apache_new::cgi($documentroot) {
+define kbp_apache_new::cgi($documentroot, $custom_php_ini=false) {
   include gen_base::libapache2-mod-fcgid
 
   kbp_apache_new::vhost_addition { "${name}/enable-cgi":

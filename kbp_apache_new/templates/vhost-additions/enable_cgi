@@ -1,6 +1,10 @@
 <Directory <%= documentroot %>>
   AddHandler fcgid-script .php
+<% if custom_php_ini -%>
+  FCGIWrapper '/usr/lib/cgi-bin/php5 -c /etc/php5/conf.d/<%= name %>/php.ini' .php
+<% else -%>
   FCGIWrapper /usr/lib/cgi-bin/php5 .php
+<% end -%>
   Options ExecCGI Indexes FollowSymLinks MultiViews
   AllowOverride All
   Order allow,deny
