@@ -796,7 +796,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
   }
 
   kcron { "icinga-check-alive":
-    minute => "*/5",
+    mailto  => "root",
+    minute  => "*/5",
     command => "/usr/bin/icinga-check-alive";
   }
 
