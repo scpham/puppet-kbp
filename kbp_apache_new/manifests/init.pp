@@ -271,8 +271,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
     if $real_ssl {
-      $monitor_name             = "${real_name}_SSL"
-      $real_service_description = "Vhost ${real_name} SSL"
+      $monitor_name = "${real_name}_SSL"
 
       if ! $wildcard {
         kbp_icinga::sslcert { $real_name:; }
@@ -286,12 +285,11 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         }
       }
     } else {
-      $monitor_name             = $real_name
-      $real_service_description = "Vhost ${real_name}"
+      $monitor_name = $real_name
     }
 
     kbp_icinga::site { $monitor_name:
-      service_description => $real_service_description,
+      service_description => $service_description,
       address             => $address,
       address6            => $address6,
       host_name           => $real_name,

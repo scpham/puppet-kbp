@@ -1762,7 +1762,10 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
   kbp_icinga::service { "vhost_${name}":
     conf_dir             => $confdir,
     service_description  => $service_description ? {
-      false   => "Vhost ${real_name}",
+      false   => $ssl ? {
+        false => "Vhost ${real_name}",
+        true  => "Vhost ${real_name} SSL",
+      },
       default => $service_description,
     },
     host_name            => $vhost ? {
