@@ -134,6 +134,13 @@ class kbp_apache_new::module::proxy_http {
 
 class kbp_apache_new::module::jk {
   include gen_apache::jk
+
+  file { "/var/cache/apache2/jk":
+    ensure  => directory,
+    owner   => "www-data",
+    group   => "www-data",
+    require => Package["apache2"],
+  }
 }
 
 class kbp_apache_new::module::headers {
