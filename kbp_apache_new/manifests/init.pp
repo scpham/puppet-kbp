@@ -438,11 +438,11 @@ define kbp_apache_new::vhost_addition($ensure="present", $content=false) {
   }
 }
 
-define kbp_apache_new::glassfish_domain($site, $site_port, $connector_port) {
+define kbp_apache_new::glassfish_domain($site, $site_port, $connector_port, $connector_loglevel="info") {
   include kbp_apache_new::glassfish_domain_base
 
   kbp_apache_new::vhost_addition { "${site}_${site_port}/glassfish-jk":
-    content => "JkMount /* ${name}";
+    content => "JkLogLevel ${connector_loglevel}\nJkMount /* ${name}\n";
   }
 
   concat::add_content {
