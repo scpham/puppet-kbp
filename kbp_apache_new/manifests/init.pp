@@ -224,7 +224,8 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     $port=false, $make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false, $wildcard=false, $log_vhost=false, $access_logformat="combined",
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor_creds=false,
     $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $glassfish_domain=false, $glassfish_connector_port=false,
-    $django_root_path=false,$django_root_django=false, $django_static_path=false, $django_static_django=false, $django_settings=false) {
+    $glassfish_connector_loglevel="info", $django_root_path=false,$django_root_django=false, $django_static_path=false, $django_static_django=false,
+    $django_settings=false) {
   include kbp_apache_new
 
   $temp_name   = $port ? {
@@ -331,9 +332,10 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
 
     kbp_apache_new::glassfish_domain { $glassfish_domain:
-      site           => $real_name,
-      site_port      => $real_port,
-      connector_port => $glassfish_connector_port;
+      site               => $real_name,
+      site_port          => $real_port,
+      connector_loglevel => $glassfish_connector_loglevel,
+      connector_port     => $glassfish_connector_port;
     }
   }
 
