@@ -28,7 +28,7 @@ define kbp_drbd($location, $fstype=false, $mastermaster=true, $time_out=false, $
       ensure   => mounted,
       device   => "/dev/drbd1",
       fstype   => "ocfs2",
-      options  => "nodev,nosuid,noatime",
+      options  => "nodev,nosuid,noatime,acl",
       dump     => "0",
       pass     => "0",
       remounts => true,
