@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # A wrapper script for webalizer, to generate webalizer reports for multiple
 # sites.
