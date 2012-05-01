@@ -232,7 +232,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor_creds=false,
     $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $glassfish_domain=false, $glassfish_connector_port=false,
     $glassfish_connector_loglevel="info", $django_root_path=false,$django_root_django=false, $django_static_path=false, $django_static_django=false,
-    $django_settings=false) {
+    $django_settings=false, $phpmyadmin=false) {
   include kbp_apache_new
 
   $temp_name   = $port ? {
@@ -395,6 +395,20 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
           custom_php_ini => $custom_php_ini;
         }
       }
+    }
+  }
+
+  if $phpmyadmin {
+    case $php {
+      'mod_php': { include kbp_phpmyadmin      }
+      default:   { include kbp_phpmyadmin::cgi }
+    }
+
+    file { "/etc/apache2/vhost-additions/${full_name}/phpmyadmin":
+      ensure  => link,
+      target  => "/etc/phpmyadmin/apache.conf",
+      notify  => Exec["reload-apache2"],
+      require => Package["phpmyadmin"],
     }
   }
 }
