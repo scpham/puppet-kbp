@@ -80,7 +80,7 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
     mysql_name => "jira";
   }
 
-  kbp_tomcat::apache_proxy_ajp_site { "jira.informatm.com":
+  kbp_tomcat::apache_proxy_ajp_site { $domain:
     port         => 8009,
     monitor_path => "/jira/secure/Dashboard.jspa";
   }
