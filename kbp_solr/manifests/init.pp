@@ -44,4 +44,6 @@ class kbp_solr ($tomcat_tag="tomcat_solr_${environment}"){
     require => Package["tomcat6","solr-common"],
     notify  => Service["tomcat6"],
   }
+
+  Kbp_ferm::Rule <<| tag == "solr_monitoring" |>>
 }

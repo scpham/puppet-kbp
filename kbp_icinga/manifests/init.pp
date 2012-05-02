@@ -469,6 +469,13 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       action   => "ACCEPT",
       exported => true,
       ferm_tag => "dns_monitoring";
+    "Solr monitoring":
+      saddr    => $source_ipaddress,
+      proto    => "tcp",
+      dport    => 8983,
+      action   => "ACCEPT",
+      exported => true,
+      ferm_tag => "solr_monitoring";
   }
 
   Gen_icinga::Servercommand <<| |>>
