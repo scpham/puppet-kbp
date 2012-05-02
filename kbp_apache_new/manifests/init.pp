@@ -372,12 +372,14 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
     file {
       "/srv/django${real_django_root_django}":
+        mode    => 775,
         ensure  => directory;
       "/srv/django${real_django_root_django}/dispatch.wsgi":
         content => template("kbp_apache_new/django/dispatch.wsgi"),
         replace => false,
-        mode    => 755;
+        mode    => 775;
       "/srv/django${real_django_static_django}":
+        mode    => 775,
         ensure  => directory;
     }
   }
