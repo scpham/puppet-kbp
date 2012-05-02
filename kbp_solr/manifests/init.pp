@@ -23,11 +23,6 @@ class kbp_solr ($tomcat_tag="tomcat_solr_${environment}"){
     tomcat_tag                  => $tomcat_tag;
   }
 
-  kbp_tomcat::apache_proxy_ajp_site { "${fqdn}":
-    tomcat_tag => $tomcat_tag,
-    port       => 8009;
-  }
-
   # Setup the ability to use symlinks
   kaugeas { "Context resource to allow sym-linking for solr":
     file    => "/srv/tomcat/conf/Catalina/localhost/solr.xml",
