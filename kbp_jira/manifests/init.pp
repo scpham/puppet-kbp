@@ -16,27 +16,32 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
     "${root}":
       ensure  => directory,
       owner   => "tomcat6",
+      mode    => 775,
       require => Package["tomcat6"];
     ["${root}/home",
      "${root}/home/installed-plugins"]:
       ensure  => directory,
       owner   => "tomcat6",
+      mode    => 775,
       require => [Package["tomcat6"], File["${root}"]];
     "${root}/source/atlassian_jira/edit-webapp/WEB-INF/classes/jira-application.properties":
       content => "jira.home = ${root}/home",
+      mode    => 674,
       require => Exec["Get JIRA"],
       notify  => Exec["Build JIRA WAR"];
     "${root}/source/atlassian_jira/build.xml":
       content => template("kbp_jira/build.xml"),
+      mode    => 674,
       require => Exec["Get JIRA"],
       notify  => Exec["Build JIRA WAR"];
     "${root}/source/atlassian_jira/edit-webapp/WEB-INF/lib":
       ensure  => directory,
+      mode    => 775,
       require => Exec["Get JIRA"],
       notify  => Exec["Get extra JIRA jars"];
     "${root}/home/dbconfig.xml":
       content => template("kbp_jira/dbconfig.xml"),
-      mode    => 600,
+      mode    => 670,
       owner   => "tomcat6";
     "/usr/local/bin/get_jira":
       content => template("kbp_jira/get_jira.sh"),
