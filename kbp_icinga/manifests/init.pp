@@ -634,6 +634,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
   setfacl { "Allow www-data to read the command file":
     dir          => "/var/lib/icinga/rw",
     acl          => "group:www-data:rw-",
+    mask         => "rw-",
     make_default => true;
   }
 
