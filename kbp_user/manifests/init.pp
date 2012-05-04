@@ -85,7 +85,7 @@ define kbp_user::admin_user($comment, $uid, $gid, $groups=false, $shell, $passwo
   }
 }
 
-define kbp_user::expand_keys($user, type='ssh-rsa') {
+define kbp_user::expand_keys($user, $type='ssh-rsa') {
   ssh_authorized_key { "${user}_${name}":
     user => $user,
     key  => $name,
