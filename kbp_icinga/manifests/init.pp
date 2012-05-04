@@ -400,17 +400,24 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
 
   @@mysql::server::grant {
     "icinga on icinga for ${fqdn}":
-      user     => "icinga",
-      db       => "icinga",
-      password => $dbpassword,
-      hostname => "%",
-      tag      => "mysql_kumina";
+      user        => "icinga",
+      db          => "icinga",
+      password    => $dbpassword,
+      hostname    => "%",
+      tag         => "mysql_kumina";
     "icinga on icinga_web for ${fqdn}":
-      user     => "icinga",
-      db       => "icinga_web",
-      password => $dbpassword,
-      hostname => "%",
-      tag      => "mysql_kumina";
+      user        => "icinga",
+      db          => "icinga_web",
+      password    => $dbpassword,
+      hostname    => "%",
+      tag         => "mysql_kumina";
+    "icinga on puppet for ${fqdn}":
+      user        => 'icinga',
+      db          => 'puppet',
+      password    => $dbpassword,
+      hostname    => $fqdn,
+      permissions => 'SELECT',
+      tag         => 'mysql_kumina';
   }
 
   kbp_mysql::client { "icinga":
