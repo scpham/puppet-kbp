@@ -223,6 +223,7 @@ class kbp_base::wanted_packages {
   include gen_base::perl
   include gen_base::module_init_tools
   include gen_base::sysstat
+  include gen_base::file
 }
 
 #define kbp_base::staff_user($ensure="present", $fullname, $uid, $password_hash, $sshkeys="", $shell="bash") {
