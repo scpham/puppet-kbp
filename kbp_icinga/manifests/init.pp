@@ -1621,6 +1621,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_n
       default => $host_name,
     },
     vhost                => false,
+    ha                   => $ha,
     preventproxyoverride => $preventproxyoverride;
   }
 
@@ -1637,6 +1638,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_n
         default => $host_name,
       },
       vhost                => false,
+      ha                   => $ha,
       preventproxyoverride => $preventproxyoverride;
     }
   }
@@ -1696,7 +1698,7 @@ define kbp_icinga::java($servicegroups=false, $sms=true) {
 #  gen_puppet
 #
 define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false,
-      $max_check_attempts=false, $port=false, $path=false, $response=false, $statuscode=false, $vhost=true,
+      $max_check_attempts=false, $port=false, $path=false, $response=false, $statuscode=false, $vhost=true, $ha=false,
       $ssl=false, $host_name=false, $preventproxyoverride=false, $check_interval=false, $credentials=false) {
   $real_name = $host_name ? {
     false   => $name,
@@ -1791,6 +1793,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     check_command        => $real_check_command,
     max_check_attempts   => $max_check_attempts,
     arguments            => $real_arguments,
+    ha                   => $ha,
     preventproxyoverride => $preventproxyoverride,
     check_interval       => $check_interval;
   }
