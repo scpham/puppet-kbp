@@ -102,8 +102,6 @@ while True:
         break
 f.close()
 datapoints.append(datapoint_current)
-for datapoint in datapoints:
-    print(str(datapoint.time))
 # Check if there is a datapoint to compare with
 interval = datetime.timedelta(seconds = args.interval)
 points = datapoints[:]
