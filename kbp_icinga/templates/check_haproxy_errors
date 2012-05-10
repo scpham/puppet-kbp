@@ -116,8 +116,6 @@ for i in range(len(points)):
     if delta > datetime.timedelta():
         datapoint_compare = points[i]
     break
-if datapoint_compare is not None:
-    print('comparing with: '+str(datapoint_compare.time))
 
 # Write the new list of datapoints to the file
 try:
