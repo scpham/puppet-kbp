@@ -16,6 +16,11 @@ class kbp_icinga::client {
   Kbp_ferm::Rule <<| tag == "general_monitoring" |>>
   Kbp_ferm::Rule <<| tag == "general_monitoring_${environment}" |>>
 
+  file { '/usr/lib/nagios/plugins/check_haproxy_errors':
+    content => template('kbp_icinga/check_haproxy_errors'),
+    mode    => 755;
+  }
+
   kbp_icinga::clientcommand {
     "check_3ware":
       sudo      => true;
@@ -57,6 +62,9 @@ class kbp_icinga::client {
     "check_ferm_config":
       sudo      => true,
       arguments => '$ARG1$';
+    'check_haproxy_errors':
+      sudo      => true,
+      arguments => '-i $ARGS1$ -w $ARGS2$ -c $ARGS3$';
     "check_heartbeat":;
     "check_icinga_config":
       sudo      => true,
@@ -514,6 +522,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       nrpe          => true;
     "check_ferm_config":
       arguments     => ['$ARG1$'],
+      nrpe          => true;
+    'check_haproxy_erros':
+      arguments     => ['$ARGS1$', '$ARGS2$', '$ARGS3$'],
       nrpe          => true;
     "check_http":
       arguments     => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20'];
