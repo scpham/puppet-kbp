@@ -64,7 +64,7 @@ class kbp_icinga::client {
       arguments => '$ARG1$';
     'check_haproxy_errors':
       sudo      => true,
-      arguments => '-i $ARGS1$ -w $ARGS2$ -c $ARGS3$';
+      arguments => '-i $ARG1$ -w $ARG2$ -c $ARG3$';
     "check_heartbeat":;
     "check_icinga_config":
       sudo      => true,
@@ -524,7 +524,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       arguments     => ['$ARG1$'],
       nrpe          => true;
     'check_haproxy_errors':
-      arguments     => ['$ARGS1$', '$ARGS2$', '$ARGS3$'],
+      arguments     => ['$ARG1$', '$ARG2$', '$ARG3$'],
       nrpe          => true;
     "check_http":
       arguments     => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20'];
