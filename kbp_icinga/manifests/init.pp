@@ -523,7 +523,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
     "check_ferm_config":
       arguments     => ['$ARG1$'],
       nrpe          => true;
-    'check_haproxy_erros':
+    'check_haproxy_errors':
       arguments     => ['$ARGS1$', '$ARGS2$', '$ARGS3$'],
       nrpe          => true;
     "check_http":
