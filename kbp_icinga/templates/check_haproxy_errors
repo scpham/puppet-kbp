@@ -139,28 +139,31 @@ data_current = datapoint_current.data
 time_current = datapoint_current.time
 data_compare = datapoint_compare.data
 time_compare = datapoint_compare.time
+errs_for_warn = args.warn_amount / float(args.interval)
+errs_for_crit = args.crit_amount / float(args.interval)
 for name in data_current.keys():
     if name not in data_compare.keys():
         continue
     value_delta = data_current[name] - data_compare[name]
     td = time_current - time_compare
     time_delta = (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
-    if round(value_delta / float(time_delta), 4) >= args.crit_amount / float(args.interval):
+    errs_per_sec = value_delta / float(time_delta)
+    if errs_per_sec >= errs_for_crit:
         if errors == '':
-            errors = name + ': ' + str(round(value_delta / float(time_delta), 4))
+            errors = name + ': ' + str(round(errs_per_sec, 4))
         else:
-            errors = errors + ', ' + name + ': ' + str(round(value_delta / float(time_delta), 4))
+            errors = errors + ', ' + name + ': ' + str(round(errs_per_sec, 4))
         crit = True
-    elif round(value_delta / float(time_delta), 4) >= args.warn_amount / float(args.interval):
+    elif errs_per_sec >= errs_for_warn:
         if errors == '':
-            errors = name + ': ' + str(round(value_delta / float(time_delta), 4))
+            errors = name + ': ' + str(round(errs_per_sec, 4))
         else:
-            errors = errors + ', ' + name + ': ' + str(round(value_delta / float(time_delta), 4))
+            errors = errors + ', ' + name + ': ' + str(round(errs_per_sec, 4))
         warn = True
     elif string:
-        string = string + ', ' + name + ': ' + str(round(value_delta / float(time_delta), 4))
+        string = string + ', ' + name + ': ' + str(round(errs_per_sec, 4))
     else:
-        string = name + ': ' + str(round(value_delta / float(time_delta), 4))
+        string = name + ': ' + str(round(errs_per_sec, 4))
 
 # Return the message
 if crit:
