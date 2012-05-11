@@ -40,7 +40,13 @@ class kbp_glassfish_new {
       group   => "glassfish",
       force   => true,
       require => [File["/srv/glassfish/domains"],Package["glassfish"]];
-    }
+  }
+
+  # Patches to work around glassfish 3.1.2 http/ajp bugs
+  # see http://java.net/jira/browse/GLASSFISH-18446
+  kbp_glassfish_new::patch {
+    ["grizzly-http.jar","grizzly-http-ajp.jar"]:;
+  }
 }
 
 class kbp_glassfish_new::cluster {
@@ -95,13 +101,13 @@ class kbp_glassfish_new::cluster {
 #  monitoring_statuspath
 #   Where can we find status.html
 #  mbean_objectname
-#   
+#
 #  mbean_attributename
-#   
+#
 #  mbean_expectedvalue
-#   
+#
 #  mbean_attributekey
-#   
+#
 #
 # Depends:
 #  gen_puppet
@@ -276,7 +282,7 @@ define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true,
 define kbp_glassfish_new::patch ($ensure = present, $destdir="/opt/glassfish/modules"){
   file { "${destdir}/${name}":
     ensure  => $ensure,
-    source  => "/srv/glassfish/patches/${name}",
+    source  => "puppet:///modules/kbp_glassfish_new/patches/${name}",
     owner   => "root",
     group   => "root",
     mode    => 644,
