@@ -182,7 +182,10 @@ class kbp_base {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_base::environment ($munin_offset=0) {
+class kbp_base::environment ($munin_offset=false) {
+  # TODO Remove munin_offset from config.
+  if $munin_offset { notify{ "Please remove the munin_offset variable from this enviroment.":; } }
+
   include kbp_icinga::environment
   include kbp_user::environment
 
@@ -202,8 +205,12 @@ class kbp_base::environment ($munin_offset=0) {
 
   Kbp_munin::Alert_export <<| |>>
 
+  $offset = fqdn_rand(5)
+  $sync_offset = fqdn_rand(30)
+
   @@kbp_munin::environment { $environment:
-    offset => $munin_offset;
+    offset      => $offset,
+    sync_offset => $sync_offset;
   }
 }
 
