@@ -466,13 +466,33 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
   Concat::Add_content <<| tag == "munin_client" |>>
 }
 
-define kbp_munin::environment($site,$offset=0) {
+define kbp_munin::environment($site,$offset=false,$sync_offset=false) {
   service { "munin-${name}":
     require => File["/etc/init.d/munin-${name}","/dev/shm/munin-${name}"];
   }
 
-  if $offset > 4 or $offset < 0 {
-    fail("Minute must be between 0 and 4.")
+  if $offset {
+    $real_offset = $offset
+  } else {
+    $real_offset = fqdn_rand(5)
+  }
+
+  # Additional check
+  if $real_offset > 4 or $real_offset < 0 {
+    fail("Offset minute must be between 0 and 4.")
+  }
+
+  if $sync_offset {
+    $real_sync_offset1 = $sync_offset
+    $real_sync_offset2 = $sync_offset+30
+  } else {
+    $real_sync_offset1 = fqdn_rand(30)
+    $real_sync_offset2 = $real_sync_offset1+30
+  }
+
+  # Additional check
+  if $real_sync_offset1 > 29 or $real_sync_offset1 < 0 {
+    fail("Sync offset minute must be between 0 and 4.")
   }
 
   file {
