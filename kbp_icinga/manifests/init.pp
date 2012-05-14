@@ -1251,20 +1251,8 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     }
   }
 
-  if $nrpe and $register != 0 and $service_description != "NRPE port" {
+  if $ensure == 'present' and $nrpe and $register != 0 and $service_description != "NRPE port" {
     gen_icinga::servicedependency { "nrpe_dependency_${real_name}_nrpe_port":
-      ensure                        => $ensure,
-      dependent_host_name           => $host_name,
-      conf_dir                      => $conf_dir,
-      dependent_service_description => $service_description,
-      host_name                     => $host_name,
-      service_description           => "NRPE port",
-      execution_failure_criteria    => "c",
-      notification_failure_criteria => "c";
-    }
-  } else {
-    gen_icinga::servicedependency { "nrpe_dependency_${real_name}_nrpe_port":
-      ensure                        => absent,
       dependent_host_name           => $host_name,
       conf_dir                      => $conf_dir,
       dependent_service_description => $service_description,
