@@ -113,12 +113,16 @@ class kbp_glassfish_new::cluster {
 #  gen_puppet
 #  gen_glassfish::domain
 #
-define kbp_glassfish_new::domain($portbase, ensure="present",
+define kbp_glassfish_new::domain($portbase, $ensure="present", $jmx_port = false,
     $web_servername=false, $web_serveralias = [], $web_port = "80", $web_sslport = false, $web_redundant=false,
     $java_monitoring=false, $java_servicegroups=false, $monitoring_sms=true, $monitoring_statuspath=false,
     $mbean_objectname=false, $mbean_attributename=false, $mbean_expectedvalue=false, $mbean_attributekey=false) {
 
-  $jmxport   = $portbase + 86
+  if $jmx_port {
+    $jmxport = $jmx_port
+  } else {
+    $jmxport = $portbase + 86
+  }
 
   # Whether the domain should be auto started (the customer can put an 'autostart' file in the root of the domain/<name> directory
   $autostart = $name in split($glassfish_autostart_domains, ',')
@@ -241,8 +245,13 @@ define kbp_glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 8
 #  java_servicegroups:
 #   which Icinga servicegroup should receive notifications?
 #
-define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true, $java_servicegroups=false){
-  $jmxport = $portbase+86
+define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true, $java_servicegroups=false, $jmx_port = false){
+  if $jmx_port {
+    $jmxport = $jmx_port
+  } else {
+    $jmxport = $portbase+86
+  }
+
   if $java_monitoring {
     kbp_icinga::java { "${name}_${jmxport}":
       servicegroups  => $java_servicegroups ? {
