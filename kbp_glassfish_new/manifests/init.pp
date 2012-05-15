@@ -269,7 +269,8 @@ define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true,
   file { "/etc/init.d/glassfish-instance-${name}" :
     content => template('kbp_glassfish_new/instance.init'),
     mode    => 770,
-    notify  => Exec["update-rc.d glassfish-instance-${name}"];
+    notify  => Exec["update-rc.d glassfish-instance-${name}"],
+    require => Package['glassfish'];
   }
 
   exec { "update-rc.d glassfish-instance-${name}":
