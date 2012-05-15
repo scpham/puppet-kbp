@@ -7,7 +7,7 @@ JkLogLevel info
 # Select the log format
 JkLogStampFormat "[%a %b %d %H:%M:%S %Y] "
 # JkOptions indicate to send SSL KEY SIZE,
-JkOptions +ForwardKeySize +ForwardURICompat -ForwardDirectories
+JkOptions +ForwardKeySize +ForwardURICompat -ForwardDirectories +DisableReuse
 # JkRequestLogFormat set the request format
 JkRequestLogFormat "%w %V %T"
 # Location of shm file
