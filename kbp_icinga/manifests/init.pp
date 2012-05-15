@@ -869,7 +869,7 @@ class kbp_icinga::environment {
     cg_alias => "${::environment} contacts";
   }
 
-  gen_icinga::contact { "${::environment}":
+  kbp_icinga::contact { "${::environment}":
     conf_dir      => "${::environment}/generic",
     c_alias       => "${::environment} email",
     contactgroups => "${::environment}_email",
