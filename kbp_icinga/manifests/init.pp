@@ -16,11 +16,6 @@ class kbp_icinga::client {
   Kbp_ferm::Rule <<| tag == "general_monitoring" |>>
   Kbp_ferm::Rule <<| tag == "general_monitoring_${environment}" |>>
 
-  file { '/usr/lib/nagios/plugins/check_haproxy_errors':
-    content => template('kbp_icinga/check_haproxy_errors'),
-    mode    => 755;
-  }
-
   kbp_icinga::clientcommand {
     "check_3ware":
       sudo      => true;
