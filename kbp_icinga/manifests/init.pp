@@ -794,7 +794,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       cg_alias => "Generic contacts";
   }
 
-  gen_icinga::contact {
+  kbp_icinga::contact {
     "devnull":
       conf_dir                      => "generic",
       c_alias                       => "No notify contact",
@@ -803,10 +803,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       service_notifications_enabled => 0,
       contact_data                  => false;
     "generic_email":
-      conf_dir      => "generic",
-      c_alias       => "Generic email",
-      contactgroups => "generic_email",
-      contact_data  => false;
+      conf_dir                      => "generic",
+      c_alias                       => "Generic email",
+      contactgroups                 => "generic_email",
+      contact_data                  => false;
   }
 
   concat { "/etc/icinga/htpasswd.users":; }
@@ -1982,5 +1982,41 @@ define kbp_icinga::dnszone($master, $sms=true) {
     check_interval      => 60,
     retry_interval      => 60,
     sms                 => $sms;
+  }
+}
+
+define kbp_icinga::contact($c_alias, $contact_data=false, $notification_type=false, $conf_dir="${environment}/${fqdn}", $timeperiod="24x7", $contactgroups=false,
+    $host_notifications_enabled=1, $service_notifications_enabled=1, $ensure='present', $service_notification_options='w,u,c,r', $host_notification_options='d,u,r') {
+  $real_notification_type = $contact_data ? {
+    false   => "no-notify",
+    default => $notification_type ? {
+      false   => "email",
+      default => $notification_type,
+    },
+  }
+
+  if $::monitoring == "true" {
+    gen_icinga::contact { $name:
+      c_alias                       => $c_alias,
+      contact_data                  => $contact_data,
+      notification_type             => $real_notification_type,
+      conf_dir                      => $conf_dir,
+      timeperiod                    => $timeperiod,
+      contactgroups                 => $contactgroups,
+      service_notification_options  => $service_notification_options,
+      host_notification_options     => $host_notification_options,
+      host_notification_period      => $timeperiod,
+      service_notification_period   => $timeperiod,
+      service_notification_commands => "notify-service-by-${real_notification_type}",
+      host_notification_commands    => "notify-host-by-${real_notification_type}",
+      pager                         => $notification_type ? {
+        'sms' => $contact_data,
+        false => false,
+      },
+      email                         => $notification_type ? {
+        'sms' => false,
+        false => $contact_data,
+      };
+    }
   }
 }
