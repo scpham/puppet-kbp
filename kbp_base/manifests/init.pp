@@ -171,9 +171,7 @@ class kbp_base {
 # Class: kbp_base::environment
 #
 # Parameters:
-#  munin_offset
-#    The offsite used by munin. Choose randomly an integer between 0 and 4 (inclusive). Defaults to 0.
-#    An easy way to determine this number is running the following in a bash shell:  let a=$RANDOM%5; echo $a
+#  None.
 #
 # Actions:
 #  Undocumented
@@ -182,7 +180,7 @@ class kbp_base {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_base::environment ($munin_offset=0) {
+class kbp_base::environment {
   include kbp_icinga::environment
   include kbp_user::environment
 
@@ -202,8 +200,13 @@ class kbp_base::environment ($munin_offset=0) {
 
   Kbp_munin::Alert_export <<| |>>
 
+  # Create random offsets for Munin cronjob, to spread the load.
+  $offset = fqdn_rand(5)
+  $sync_offset = fqdn_rand(30)
+
   @@kbp_munin::environment { $environment:
-    offset => $munin_offset;
+    offset      => $offset,
+    sync_offset => $sync_offset;
   }
 }
 
