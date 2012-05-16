@@ -224,6 +224,7 @@ define kbp_glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 8
     glassfish_connector_port     => $jkport,
     glassfish_connector_loglevel => $connector_loglevel,
     create_documentroot          => false,
+    documentroot                 => "/srv/www",
     access_logformat             => $access_logformat,
     ensure                       => $ensure;
   }
