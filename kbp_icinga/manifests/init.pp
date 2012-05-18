@@ -488,7 +488,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       ferm_tag => "solr_monitoring";
   }
 
-  Gen_icinga::Servercommand <<| |>>
+  Kbp_icinga::Servercommand <<| |>>
 
   kbp_icinga::servercommand {
     ["check_ssh","check_smtp"]:;
