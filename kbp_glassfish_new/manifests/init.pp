@@ -49,6 +49,14 @@ class kbp_glassfish_new {
   }
 }
 
+class kbp_glassfish_new::patch::jmx {
+  # Patches to work around glassfish 3.1.2 JMX bugs
+  # see http://java.net/jira/browse/GLASSFISH-18450
+  kbp_glassfish_new::patch {
+    ["container-common.jar", "glassfish-mbeanserver.jar", "internal-api.jar", "rest-service.jar"]:;
+  }
+}
+
 class kbp_glassfish_new::cluster {
   include kbp_glassfish_new
 
