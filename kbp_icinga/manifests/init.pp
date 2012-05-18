@@ -162,15 +162,6 @@ class kbp_icinga::client {
       nrpe                => true,
       warnsms             => false;
     }
-  } else {
-    kbp_icinga::service { "memory":
-      service_description => "Memory usage",
-      check_command       => "check_memory",
-      max_check_attempts  => 30,
-      nrpe                => true,
-      warnsms             => false,
-      ensure              => absent;
-    }
   }
 
   kbp_icinga::service {
@@ -209,12 +200,6 @@ class kbp_icinga::client {
       nrpe                => true,
       sms                 => false,
       customer_notify     => false;
-    "cpu":
-      ensure              => absent,
-      service_description => "CPU usage",
-      check_command       => "check_cpu",
-      max_check_attempts  => 30,
-      nrpe                => true;
     "loadtrend":
       service_description => "Load trend",
       check_command       => "check_loadtrend",
