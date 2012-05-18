@@ -1345,8 +1345,8 @@ define kbp_icinga::servercommand($conf_dir="generic", $command_name=$name, $host
     default => inline_template('<%= temp_command_line + [arguments].flatten().join(" ") %>'),
   }
   $proxy = $command_name ? {
-    'check_ping' => '_HOSTPROXY',
-    default      => '_SERVICEPROXY',
+    'check_ping' => '$_HOSTPROXY$',
+    default      => '$_SERVICEPROXY$',
   }
   $proxy_command_line = "/usr/lib/nagios/plugins/check_nrpe -u -t ${time_out} -H ${proxy} -c runcommand -a '${command_line}'"
 
