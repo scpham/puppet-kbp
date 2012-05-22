@@ -11,6 +11,12 @@
 #
 class kbp_proftpd {
   include gen_proftpd
+
+  kbp_ferm::rule { "Allow connections to FTP from everywhere.":
+    proto  => "tcp",
+    dport  => 21,
+    action => "ACCEPT",
+  }
 }
 
 # Class: kbp_proftpd::mysql
