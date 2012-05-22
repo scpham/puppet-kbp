@@ -288,10 +288,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
       "Set thin_storeconfigs for ${name}.":
         configfile => $configfile,
         var        => 'thin_storeconfigs',
-        value      => $queue ? {
-          true    => 'false',
-          default => 'true'
-        },
+        value      => 'true',
         section    => 'main';
       "Set dbmigrate for ${name}.":
         configfile => $configfile,
@@ -331,10 +328,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
       "Set thin_storeconfigs for ${name} in master.":
         configfile => $configfile,
         var        => 'thin_storeconfigs',
-        value      => $queue ? {
-          true    => 'false',
-          default => 'true'
-        },
+        value      => 'true',
         section    => 'master';
       "Set dbmigrate for ${name} in master.":
         configfile => $configfile,
