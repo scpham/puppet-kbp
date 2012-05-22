@@ -72,6 +72,9 @@ class kbp_puppet::default_config {
     "splay":
       value   => 'true',
       section => "agent";
+    "splaylimit":
+      value   => 10800,
+      section => "agent";
     "server":
       value   => 'puppet1.kumina.nl',
       section => "agent";
