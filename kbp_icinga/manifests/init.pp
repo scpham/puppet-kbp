@@ -1229,6 +1229,9 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     Kbp_icinga::Host <| title == $host_name |> {
       hostgroups => "ha_hosts",
     }
+    Gen_icinga::Host <| title == $host_name |> {
+      hostgroups => "ha_hosts",
+    }
   }
 
   if $ensure == 'present' and $nrpe and $register != 0 and $service_description != "NRPE port" {
