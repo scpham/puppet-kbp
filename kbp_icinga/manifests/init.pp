@@ -1678,6 +1678,7 @@ define kbp_icinga::java($servicegroups=false, $sms=true, $username=false, $passw
     check_command       => $username ? {
       false   => "check_java_heap_usage",
       default => 'check_java_heap_usage_auth',
+    },
     max_check_attempts  => 12,
     arguments           => $username ? {
       false   => $name,
