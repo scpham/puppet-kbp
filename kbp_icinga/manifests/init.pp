@@ -67,6 +67,9 @@ class kbp_icinga::client {
     "check_java_heap_usage":
       command   => "check_javaheapusage",
       arguments => '/etc/munin/plugins/jmx_$ARG1$_java_process_memory 96 93';
+    "check_java_heap_usage_auth":
+      command   => "check_javaheapusage_auth",
+      arguments => '/etc/munin/plugins/jmx_$ARG1$_java_process_memory 96 93 $ARG2$ $ARG3$';
     "check_ksplice":
       command   => "check_uptrack_local",
       arguments => "-w i -c o";
@@ -590,6 +593,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       arguments     => ["-t 20",'-H $ARG1$',"-C 30"];
     "check_java_heap_usage":
       arguments     => '$ARG1$',
+      nrpe          => true;
+    "check_java_heap_usage_auth":
+      arguments     => ['$ARG1$','$ARG2$','$ARG3$'],
       nrpe          => true;
     "check_imaps":
       command_name  => "check_imap",
@@ -1666,12 +1672,17 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_n
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::java($servicegroups=false, $sms=true) {
+define kbp_icinga::java($servicegroups=false, $sms=true, $username=false, $password=false) {
   kbp_icinga::service { "java_heap_usage_${name}":
     service_description => "Java heap usage ${name}",
-    check_command       => "check_java_heap_usage",
+    check_command       => $username ? {
+      false   => "check_java_heap_usage",
+      default => 'check_java_heap_usage_auth',
     max_check_attempts  => 12,
-    arguments           => $name,
+    arguments           => $username ? {
+      false   => $name,
+      default => [$name, $username, $password],
+    },
     servicegroups       => $servicegroups ? {
       false   => undef,
       default => $servicegroups,
