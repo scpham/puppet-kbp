@@ -12,17 +12,6 @@
 class kbp_puppet {
   include gen_puppet
 
-#  exec { "Mount /var with acl":
-#    command => '/usr/bin/awk \'/var/ { if($4 !~ /acl/) $4 = $4",acl" } ; { print }\' /etc/fstab > /etc/fstab.net && mv /etc/fstab{.net,} && /bin/mount -o remount /var';
-#  }
-
-#  setfacl { "/var/lib/puppet_group":
-#    dir          => "/var/lib/puppet",
-#    acl          => "group:kumina:rwx",
-#    make_default => true,
-#    require      => Exec["Mount /var with acl"];
-#  }
-
   # We backport the squeeze-backports versions to lenny-kumina
   gen_apt::preference { ["puppet","puppet-common","facter"]:
     repo => $lsbdistcodename ? {
@@ -93,6 +82,13 @@ class kbp_puppet::default_config {
     command => "/bin/sleep ${sleep}; /usr/bin/test ! -f /etc/puppet/dontrunpuppetd && /usr/bin/puppet agent --onetime --no-daemonize --no-splay --color false --logdest console --logdest syslog > /dev/null",
     hour    => $hours,
     minute  => "0",
+  }
+
+  # Make sure we're not starting puppet at a reboot
+  exec { "Disable puppet on boot":
+    command => "/bin/sed -i 's/START=.*$/START=no/' /etc/default/puppet",
+    onlyif  => "/bin/grep -q 'START=yes' /etc/default/puppet",
+    require => Package["puppet"],
   }
 }
 
