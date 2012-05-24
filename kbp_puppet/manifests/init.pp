@@ -86,7 +86,7 @@ class kbp_puppet::default_config {
 
   # Make sure we're not starting puppet at a reboot
   exec { "Disable puppet on boot":
-    command => "/bin/sed -i 's/START=.*$/START=no/' /etc/default/puppet",
+    command => "/bin/sed -i 's/START=.*$/START=no/' /etc/default/puppet && /etc/init.d/puppet stop",
     onlyif  => "/bin/grep -q 'START=yes' /etc/default/puppet",
     require => Package["puppet"],
   }
