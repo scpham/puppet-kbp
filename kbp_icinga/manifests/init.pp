@@ -1673,6 +1673,8 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_n
 #  gen_puppet
 #
 define kbp_icinga::java($servicegroups=false, $sms=true, $username=false, $password=false) {
+  $jmx_port = regsubst($name,^[^_]*_,"")
+
   kbp_icinga::service { "java_heap_usage_${name}":
     service_description => "Java heap usage ${name}",
     check_command       => $username ? {
@@ -1682,7 +1684,7 @@ define kbp_icinga::java($servicegroups=false, $sms=true, $username=false, $passw
     max_check_attempts  => 12,
     arguments           => $username ? {
       false   => $name,
-      default => [$name, $username, $password],
+      default => [$jmx_port, $username, $password],
     },
     servicegroups       => $servicegroups ? {
       false   => undef,
