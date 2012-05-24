@@ -70,10 +70,7 @@ class kbp_puppet::default_config {
       value   => 10800,
       section => "agent";
     "splay":
-      value   => 'true',
-      section => "agent";
-    "splaylimit":
-      value   => 10800,
+      value   => 'false',
       section => "agent";
     "server":
       value   => 'puppet1.kumina.nl',
@@ -81,6 +78,21 @@ class kbp_puppet::default_config {
     "report":
       value   => 'false',
       section => "agent";
+  }
+
+  # We're trying to create the numbers so we only need to set one to change the runinterval.
+  # We limit ourselves to only allow full hour intervals.
+  $runinterval_in_hours = 3
+
+  # Don't change these values
+  $hours = inline_template("<%= (0..23).step(runinterval_in_hours.to_i).to_a.join(',') %>")
+  $sleep = fqdn_rand(3*3600)
+
+  kcron { "run-puppet":
+    mailto  => "reports@kumina.nl",
+    command => "sleep $sleep && /usr/bin/puppet agent --onetime --no-daemonize --no-splay --color false --logdest console --logdest syslog > /dev/null",
+    hour    => $hours,
+    minute  => "0",
   }
 }
 
