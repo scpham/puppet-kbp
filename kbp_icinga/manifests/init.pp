@@ -69,7 +69,7 @@ class kbp_icinga::client {
       arguments => '/etc/munin/plugins/jmx_$ARG1$_java_process_memory 96 93';
     "check_java_heap_usage_auth":
       command   => "check_javaheapusage_auth",
-      arguments => '/etc/munin/plugins/jmx_$ARG1$_java_process_memory 96 93 $ARG2$ $ARG3$';
+      arguments => '$ARG1$ 96 93 $ARG2$ $ARG3$';
     "check_ksplice":
       command   => "check_uptrack_local",
       arguments => "-w i -c o";
