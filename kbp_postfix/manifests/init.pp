@@ -13,14 +13,15 @@ class kbp_postfix::mailgraph {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_postfix($relayhost=false, $myhostname=$fqdn, $mynetworks="127.0.0.0/8 [::1]/128", $mydestination=false, $mode=false, $mailname=false, $active=false, $incoming=false) {
+define kbp_postfix($relayhost=false, $myhostname=$fqdn, $mynetworks="127.0.0.0/8 [::1]/128", $mydestination=false, $mode=false, $mailname=false, $active=false, $incoming=false, $always_bcc=false) {
   if $active {
     class { "postfix":
       relayhost     => $relayhost,
       myhostname    => $myhostname,
       mynetworks    => $mynetworks,
       mydestination => $mydestination,
-      mode          => $mode;
+      mode          => $mode,
+      always_bcc    => $always_bcc;
     }
     include munin::client
     include kbp_openssl::common
