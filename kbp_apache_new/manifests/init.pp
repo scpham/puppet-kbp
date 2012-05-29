@@ -81,6 +81,25 @@ class kbp_apache_new::php {
   include gen_base::libapache2_mod_php5
 }
 
+# Class: kbp_apache_new::mem_cache
+#
+# Actions:
+#  Enables the mem_cache module, but disables the default config, since we don't want it for all sites.
+#
+# Depends:
+#  kbp_apache_new::module
+#
+class kbp_apache_new::mem_cache {
+  kbp_apache_new::module { "mem_cache":; }
+
+  # We do not like the default config for all sites
+  file { "/etc/apache2/mods-enabled/mem_cache.conf":
+    ensure  => absent,
+    require => Kbp_apache_new::Module["mem_cache"],
+    notify  => Exec["force-reload-apache2"];
+  }
+}
+
 # Class: kbp_apache::ssl
 #
 # Actions:
