@@ -11,11 +11,16 @@ class kbp_backup::disable {
 define kbp_backup::client($ensure="present", $method="offsite", $backup_server="backup.kumina.nl", $backup_home="/backup/${environment}", $backup_user=$environment, $backup_remove_older_than="30B") {
   $real_method = $ensure ? {
     "absent" => "absent",
+    absent   => "absent",
     default  => $method,
   }
 
   case $real_method {
-    "absent": {}
+    "absent": {
+      package { ["offsite-backup","localbackup"]:
+        ensure => purged;
+      }
+    }
     "offsite": {
       $package = "offsite-backup"
 
