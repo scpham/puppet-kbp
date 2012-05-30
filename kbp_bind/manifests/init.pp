@@ -21,7 +21,7 @@ class kbp_bind inherits bind {
   }
 
   kbp_ferm::rule { "Allow AXFR transfers":
-    saddr    => $fqdn,
+    saddr    => $source_ipaddress,
     proto    => "(tcp udp)",
     dport    => 53,
     action   => "ACCEPT",
