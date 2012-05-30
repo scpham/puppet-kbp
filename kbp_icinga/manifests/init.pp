@@ -348,6 +348,11 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
   }
 
   file {
+    '/dev/shm/icinga':
+      ensure  => directory,
+      owner   => 'nagios',
+      group   => 'nagios',
+      mode    => 640;
     "/etc/icinga/ido2db.cfg":
       content => template("kbp_icinga/ido2db.cfg"),
       owner   => "nagios",
