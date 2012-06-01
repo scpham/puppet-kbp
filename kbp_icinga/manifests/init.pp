@@ -1360,7 +1360,7 @@ define kbp_icinga::servercommand($conf_dir="generic", $command_name=$name, $host
   }
   $temp_proxy_command_line = $arguments ? {
     false   => $temp_command_line,
-    default => inline_template('<%= temp_command_line + " -a " + [arguments].flatten().join(" ") %>'),
+    default => inline_template('<%= temp_command_line + [arguments].flatten().join(" ") %>'),
   }
   $proxy = $command_name ? {
     'check_ping' => '$_HOSTPROXY$',
