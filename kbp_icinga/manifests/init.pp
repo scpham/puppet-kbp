@@ -154,106 +154,108 @@ class kbp_icinga::client {
       arguments => "-w 5 -c 10 -s Z";
   }
 
-  gen_icinga::configdir { "${::environment}/${fqdn}":; }
+  if $monitoring {
+    gen_icinga::configdir { "${::environment}/${fqdn}":; }
 
-  kbp_icinga::host { "${fqdn}":
-    parents => $parent;
-  }
-
-  if $is_virtual == "true" {
-    kbp_icinga::service { "memory":
-      service_description => "Memory usage",
-      check_command       => "check_memory",
-      max_check_attempts  => 30,
-      nrpe                => true,
-      warnsms             => false;
+    kbp_icinga::host { "${fqdn}":
+      parents => $parent;
     }
-  }
 
-  kbp_icinga::service {
-    "backup_status":
-      service_description => "Backup status",
-      check_command       => "check_backup_status",
-      max_check_attempts  => 8640,
-      nrpe                => true,
-      sms                 => false,
-      customer_notify     => false;
-    "ssh":
-      service_description => "SSH connectivity",
-      check_command       => "check_ssh";
-    "disk_space":
-      service_description => "Disk space",
-      check_command       => "check_disk_space",
-      nrpe                => true,
-      warnsms             => false;
-    "puppet_dontrun":
-      service_description => "Puppet dontrun",
-      check_command       => "check_puppet_dontrun",
-      arguments           => ["/etc/puppet/dontrunpuppetd"],
-      nrpe                => true,
-      sms                 => false,
-      customer_notify     => false;
-    "puppet_state":
-      service_description => "Puppet state freshness",
-      check_command       => "check_puppet_state_freshness",
-      nrpe                => true,
-      sms                 => false,
-      customer_notify     => false;
-    "puppet_failures":
-      service_description => "Puppet failures",
-      check_command       => "check_puppet_failures",
-      max_check_attempts  => 1440,
-      nrpe                => true,
-      sms                 => false,
-      customer_notify     => false;
-    "loadtrend":
-      service_description => "Load trend",
-      check_command       => "check_loadtrend",
-      check_interval      => 300,
-      retry_interval      => 60,
-      max_check_attempts  => 5,
-      nrpe                => true,
-      sms                 => false;
-    "open_files":
-      service_description => "Open files",
-      check_command       => "check_open_files",
-      nrpe                => true;
-    "nrpe":
-      service_description => "NRPE port",
-      check_command       => "return-ok_nrpe",
-      nrpe                => true,
-      customer_notify     => false;
-    "ntp_offset":
-      service_description => "NTP offset",
-      check_command       => "check_remote_ntp",
-      nrpe                => true,
-      check_interval      => 14400,
-      retry_interval      => 1800,
-      sms                 => false;
-    "ntpd":
-      service_description => "NTPD",
-      check_command       => "check_ntpd",
-      nrpe                => true,
-      sms                 => false;
-    "swap":
-      service_description => "Swap usage",
-      check_command       => "check_swap",
-      nrpe                => true,
-      warnsms             => false;
-    "zombie_processes":
-      service_description => "Zombie processes",
-      check_command       => "check_zombie_processes",
-      nrpe                => true,
-      sms                 => false,
-      customer_notify     => false;
-  }
+    if $is_virtual == "true" {
+      kbp_icinga::service { "memory":
+        service_description => "Memory usage",
+        check_command       => "check_memory",
+        max_check_attempts  => 30,
+        nrpe                => true,
+        warnsms             => false;
+      }
+    }
 
-  gen_icinga::servicedependency { "puppet_dependency_freshness_dontrun":
-    dependent_service_description => "Puppet state freshness",
-    host_name                     => $fqdn,
-    service_description           => "Puppet dontrun",
-    execution_failure_criteria    => "c",
-    notification_failure_criteria => "c";
+    kbp_icinga::service {
+      "backup_status":
+        service_description => "Backup status",
+        check_command       => "check_backup_status",
+        max_check_attempts  => 8640,
+        nrpe                => true,
+        sms                 => false,
+        customer_notify     => false;
+      "ssh":
+        service_description => "SSH connectivity",
+        check_command       => "check_ssh";
+      "disk_space":
+        service_description => "Disk space",
+        check_command       => "check_disk_space",
+        nrpe                => true,
+        warnsms             => false;
+      "puppet_dontrun":
+        service_description => "Puppet dontrun",
+        check_command       => "check_puppet_dontrun",
+        arguments           => ["/etc/puppet/dontrunpuppetd"],
+        nrpe                => true,
+        sms                 => false,
+        customer_notify     => false;
+      "puppet_state":
+        service_description => "Puppet state freshness",
+        check_command       => "check_puppet_state_freshness",
+        nrpe                => true,
+        sms                 => false,
+        customer_notify     => false;
+      "puppet_failures":
+        service_description => "Puppet failures",
+        check_command       => "check_puppet_failures",
+        max_check_attempts  => 1440,
+        nrpe                => true,
+        sms                 => false,
+        customer_notify     => false;
+      "loadtrend":
+        service_description => "Load trend",
+        check_command       => "check_loadtrend",
+        check_interval      => 300,
+        retry_interval      => 60,
+        max_check_attempts  => 5,
+        nrpe                => true,
+        sms                 => false;
+      "open_files":
+        service_description => "Open files",
+        check_command       => "check_open_files",
+        nrpe                => true;
+      "nrpe":
+        service_description => "NRPE port",
+        check_command       => "return-ok_nrpe",
+        nrpe                => true,
+        customer_notify     => false;
+      "ntp_offset":
+        service_description => "NTP offset",
+        check_command       => "check_remote_ntp",
+        nrpe                => true,
+        check_interval      => 14400,
+        retry_interval      => 1800,
+        sms                 => false;
+      "ntpd":
+        service_description => "NTPD",
+        check_command       => "check_ntpd",
+        nrpe                => true,
+        sms                 => false;
+      "swap":
+        service_description => "Swap usage",
+        check_command       => "check_swap",
+        nrpe                => true,
+        warnsms             => false;
+      "zombie_processes":
+        service_description => "Zombie processes",
+        check_command       => "check_zombie_processes",
+        nrpe                => true,
+        sms                 => false,
+        customer_notify     => false;
+    }
+
+    gen_icinga::servicedependency { "puppet_dependency_freshness_dontrun":
+      dependent_service_description => "Puppet state freshness",
+      host_name                     => $fqdn,
+      service_description           => "Puppet dontrun",
+      execution_failure_criteria    => "c",
+      notification_failure_criteria => "c";
+    }
   }
 
   gen_sudo::rule { "Icinga can run all plugins as root":
