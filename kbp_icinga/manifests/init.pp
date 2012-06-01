@@ -1241,14 +1241,17 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
   if ! $service_description and $register > 0 {
     fail("Missing parameter service_description.")
   }
-  $full_check_command = $proxy ? {
-    false   => $arguments ? {
-      false   => $check_command,
-      default => inline_template('<%= check_command + "!" + [arguments].flatten().join("!") %>'),
-    },
-    default => $arguments ? {
-      false   => "proxy_${check_command}",
-      default => inline_template('<%= "proxy_" + check_command + "!" + [arguments].flatten().join("!") %>'),
+  $full_check_command = $check_command ? {
+    false   => false,
+    default => $proxy ? {
+      false   => $arguments ? {
+        false   => $check_command,
+        default => inline_template('<%= check_command + "!" + [arguments].flatten().join("!") %>'),
+      },
+      default => $arguments ? {
+        false   => "proxy_${check_command}",
+        default => inline_template('<%= "proxy_" + check_command + "!" + [arguments].flatten().join("!") %>'),
+      },
     },
   }
 
