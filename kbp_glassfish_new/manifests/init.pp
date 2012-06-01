@@ -254,7 +254,7 @@ define kbp_glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 8
 #  java_servicegroups:
 #   which Icinga servicegroup should receive notifications?
 #
-define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true, $java_servicegroups=false, $jmx_port = false, $username=false, $password=false){
+define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true, $java_servicegroups=false, $jmx_port = false, $username=false, $password=false, $autostart_path=false){
   if $jmx_port {
     $jmxport = $jmx_port
   } else {
@@ -269,7 +269,8 @@ define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true,
       },
       sms            => $sms,
       username       => $username,
-      password       => $password;
+      password       => $password,
+      autostart_path => $autostart_path;
     }
   }
 

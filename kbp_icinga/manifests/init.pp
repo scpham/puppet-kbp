@@ -70,6 +70,9 @@ class kbp_icinga::client {
     "check_java_heap_usage_auth":
       command   => "check_javaheapusage_auth",
       arguments => '$ARG1$ 96 93 $ARG2$ $ARG3$';
+    "check_java_heap_usage_auth_autostart":
+      command   => "check_javaheapusage_auth_autostart",
+      arguments => '$ARG1$ $ARG2$ 96 93 $ARG3$ $ARG4$';
     "check_ksplice":
       command   => "check_uptrack_local",
       arguments => "-w i -c o";
@@ -601,6 +604,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       nrpe          => true;
     "check_java_heap_usage_auth":
       arguments     => ['$ARG1$','$ARG2$','$ARG3$'],
+      nrpe          => true;
+    "check_java_heap_usage_auth_autostart":
+      arguments     => ['$ARG1$','$ARG2$','$ARG3$','$ARG4$'],
       nrpe          => true;
     "check_imaps":
       command_name  => "check_imap",
@@ -1709,19 +1715,29 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_n
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::java($servicegroups=false, $sms=true, $username=false, $password=false) {
-  $jmx_port = regsubst($name, '^[^_]*_', '')
+define kbp_icinga::java($servicegroups=false, $sms=true, $username=false, $password=false, $autostart_path=false) {
+  if $autostart_path {
+    $autostart="_autostart"
+  } else {
+    $autostart=""
+  }
+
+  if $username {
+    $auth="_auth"
+  } else {
+    $auth=""
+  }
 
   kbp_icinga::service { "java_heap_usage_${name}":
     service_description => "Java heap usage ${name}",
-    check_command       => $username ? {
-      false   => "check_java_heap_usage",
-      default => 'check_java_heap_usage_auth',
-    },
+    check_command       => "check_java_heap_usage${auth}${autostart}",
     max_check_attempts  => 12,
     arguments           => $username ? {
       false   => $name,
-      default => [$jmx_port, $username, $password],
+      default => $autostart_path ? {
+        false   => [$name, $username, $password],
+        default => [$name, $autostart_path, $username, $password],
+      },
     },
     servicegroups       => $servicegroups ? {
       false   => undef,
