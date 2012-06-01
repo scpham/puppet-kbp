@@ -1351,8 +1351,14 @@ define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=fals
 
 define kbp_icinga::servercommand($conf_dir="generic", $command_name=$name, $host_argument='-H $HOSTADDRESS$', $arguments=false, $nrpe=false, $time_out=30) {
   $temp_command_line = $nrpe ? {
-    true  => "/usr/lib/nagios/plugins/check_nrpe -u -t ${time_out} ${host_argument} -c ${command_name}",
-    false => "/usr/lib/nagios/plugins/${command_name} ${host_argument}",
+    true  => $host_argument ? {
+      false   => "/usr/lib/nagios/plugins/check_nrpe -u -t ${time_out} -c ${command_name}",
+      default => "/usr/lib/nagios/plugins/check_nrpe -u -t ${time_out} ${host_argument} -c ${command_name}",
+    },
+    false => $host_argument ? {
+      default => "/usr/lib/nagios/plugins/${command_name}",
+      default => "/usr/lib/nagios/plugins/${command_name} ${host_argument}",
+    },
   }
   $command_line = $arguments ? {
     false   => $temp_command_line,
