@@ -154,7 +154,7 @@ class kbp_icinga::client {
       arguments => "-w 5 -c 10 -s Z";
   }
 
-  if $monitoring {
+  if $monitoring == 'true' {
     gen_icinga::configdir { "${::environment}/${fqdn}":; }
 
     kbp_icinga::host { "${fqdn}":
