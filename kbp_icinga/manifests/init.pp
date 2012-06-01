@@ -631,7 +631,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       force   => true,
       require => Package["icinga"],
       notify  => Exec["reload-icinga"];
-    "/etc/icinga/config/generic/notify_commands.cfg":
+    "/etc/icinga/notify_commands.cfg":
       content => template("kbp_icinga/server/config/generic/notify_commands.cfg"),
       notify  => Exec["reload-icinga"];
   }
