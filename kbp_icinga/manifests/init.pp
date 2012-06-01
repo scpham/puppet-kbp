@@ -1356,17 +1356,23 @@ define kbp_icinga::servercommand($conf_dir="generic", $command_name=$name, $host
       default => "/usr/lib/nagios/plugins/check_nrpe -u -t ${time_out} ${host_argument} -c ${command_name}",
     },
     false => $host_argument ? {
-      default => "/usr/lib/nagios/plugins/${command_name}",
+      false   => "/usr/lib/nagios/plugins/${command_name}",
       default => "/usr/lib/nagios/plugins/${command_name} ${host_argument}",
     },
   }
   $command_line = $arguments ? {
     false   => $temp_command_line,
-    default => inline_template('<%= temp_command_line + " -a " + [arguments].flatten().join(" ") %>'),
+    default => $nrpe ? {
+      true  => inline_template('<%= temp_command_line + " -a " + [arguments].flatten().join(" ") %>'),
+      false => inline_template('<%= temp_command_line + " " + [arguments].flatten().join(" ") %>'),
+    },
   }
   $temp_proxy_command_line = $arguments ? {
     false   => $temp_command_line,
-    default => inline_template('<%= temp_command_line + [arguments].flatten().join(" ") %>'),
+    default => $nrpe ? {
+      true  => inline_template('<%= temp_command_line + " -a " + [arguments].flatten().join(" ") %>'),
+      false => inline_template('<%= temp_command_line + " " + [arguments].flatten().join(" ") %>'),
+    },
   }
   $proxy = $command_name ? {
     'check_ping' => '$_HOSTPROXY$',
