@@ -1235,6 +1235,16 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
   if ! $service_description and $register > 0 {
     fail("Missing parameter service_description.")
   }
+  $full_check_command = $proxy ? {
+    false   => $arguments ? {
+      false   => $check_command,
+      default => inline_template('<%= check_command + "!" + [arguments].flatten().join("!") %>'),
+    },
+    default => $arguments ? {
+      false   => "proxy_${check_command}",
+      default => inline_template('<%= "proxy_" + check_command + "!" + [arguments].flatten().join("!") %>'),
+    },
+  }
 
   if $ha {
     Kbp_icinga::Host <| title == $host_name |> {
@@ -1262,7 +1272,8 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     use                          => $real_use,
     servicegroups                => $servicegroups,
     service_description          => $service_description,
-    check_command                => $check_command,
+    check_command                => $full_check_command,
+    base_check_command           => $check_command,
     host_name                    => $register ? {
       0       => undef,
       default => $host_name,
@@ -1322,6 +1333,10 @@ define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=fals
     " "     => false,
     default => $use,
   }
+  $full_check_command = $proxy ? {
+    false   => $check_command,
+    default => "proxy_${check_command}",
+  }
 
   gen_icinga::host { $name:
     ensure                       => $ensure,
@@ -1337,7 +1352,8 @@ define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=fals
     process_perf_data            => $process_perf_data,
     retain_status_information    => $retain_status_information,
     retain_nonstatus_information => $retain_nonstatus_information,
-    check_command                => $check_command,
+    check_command                => $full_check_command,
+    base_check_command           => $check_command,
     check_interval               => $check_interval,
     notification_period          => $notification_period,
     notification_interval        => $notification_interval,
