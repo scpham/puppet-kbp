@@ -393,9 +393,11 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       mode    => 770;
   }
 
-  exec { 'update_icinga_config':
-    onlyif  => '/etc/icinga/build_icinga_config',
-    command => '/etc/icinga/update_icinga_config';
+  exec { 'build_icinga_config':
+    onlyif  => "/etc/icinga/build_icinga_config -s ${dbhost} -p ${dbpassword} && /usr/sbin/icinga -v /etc/icinga/tmp_icinga.cfg",
+    command => '/etc/icinga/update_icinga_config',
+    require => File['/etc/icinga/build_icinga_config','/etc/icinga/update_icinga_config'],
+    notify  => Exec['reload-icinga'];
   }
 
   exec { "clearcache_icinga-web":
@@ -643,6 +645,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       content => template("kbp_icinga/server/icinga.cfg"),
       notify  => Exec["reload-icinga"],
       require => Package["icinga"];
+    '/etc/icinga/tmp_icinga.cfg':
+      content => template('kbp_icinga/server/tmp_icinga.cfg'),
+      require => Package['icinga'];
     "/etc/icinga/notify_commands.cfg":
       content => template("kbp_icinga/server/config/generic/notify_commands.cfg"),
       notify  => Exec["reload-icinga"];

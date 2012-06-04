@@ -20,7 +20,7 @@ import shutil
 parser = argparse.ArgumentParser(description='This script builds Icinga config from resources pulled from a Puppet database.')
 parser.add_argument('-s', '--server', action='store', default='localhost', help='The host of the Puppet database.')
 parser.add_argument('-d', '--database', action='store', default='puppet', help='The name of the Puppet database.')
-parser.add_argument('-u', '--username', action='store', default='puppet', help='The user for the Puppet database.')
+parser.add_argument('-u', '--username', action='store', default='icinga', help='The user for the Puppet database.')
 parser.add_argument('-p', '--password', action='store', required=True, help='The password for the Puppet database.')
 parser.add_argument('-c', '--configdir', action='store', default='/etc/icinga/config', help='The directory the Icinga config is in.')
 
@@ -36,7 +36,8 @@ if path.isfile(basedir):
     print 'Base dir ' + basedir + ' is a file, not creating config.'
     sys.exit(1)
 else:
-    shutil.rmtree(basedir)
+    if path.isdir(basedir):
+        shutil.rmtree(basedir)
     try:
         os.mkdir(basedir, 0755)
     except OSError:
