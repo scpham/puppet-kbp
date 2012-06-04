@@ -385,6 +385,17 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
     "/etc/default/icinga":
       content => template("kbp_icinga/default_icinga"),
       notify  => Exec["reload-icinga"];
+    '/etc/icinga/build_icinga_config':
+      content => template('kbp_icinga/server/build_icinga_config');
+      mode    => 770;
+    '/etc/icinga/update_icinga_config':
+      content => template('kbp_icinga/server/update_icinga_config');
+      mode    => 770;
+  }
+
+  exec { 'update_icinga_config':
+    onlyif  => '/etc/icinga/build_icinga_config',
+    command => '/etc/icinga/update_icinga_config';
   }
 
   exec { "clearcache_icinga-web":

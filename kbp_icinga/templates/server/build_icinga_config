@@ -1,0 +1,312 @@
+#!/usr/bin/env python
+"""
+This script builds Icinga config from resources pulled from a Puppet database.
+
+REQUIREMENTS
+This script requires python-argparse and is meant to be run on *nix-systems.
+
+COPYRIGHT
+Copyright 2012 - Kumina B.V./Rutger Spiertz (rutger@kumina.nl), this script is licensed under the GNU GPL version 3 or higher.
+
+"""
+#Import the classes needed
+import argparse
+from os import path
+import os
+import MySQLdb
+import sys
+import shutil
+
+parser = argparse.ArgumentParser(description='This script builds Icinga config from resources pulled from a Puppet database.')
+parser.add_argument('-s', '--server', action='store', default='localhost', help='The host of the Puppet database.')
+parser.add_argument('-d', '--database', action='store', default='puppet', help='The name of the Puppet database.')
+parser.add_argument('-u', '--username', action='store', default='puppet', help='The user for the Puppet database.')
+parser.add_argument('-p', '--password', action='store', required=True, help='The password for the Puppet database.')
+parser.add_argument('-c', '--configdir', action='store', default='/etc/icinga/config', help='The directory the Icinga config is in.')
+
+# Script starts here...
+args = parser.parse_args()
+
+basedir = '/tmp/icinga'
+
+db = MySQLdb.connect(host = args.server, db = args.database, user = args.username, passwd=args.password)
+c = db.cursor()
+
+if path.isfile(basedir):
+    print 'Base dir ' + basedir + ' is a file, not creating config.'
+    sys.exit(1)
+else:
+    shutil.rmtree(basedir)
+    try:
+        os.mkdir(basedir, 0755)
+    except OSError:
+        print 'Error creating base dir ' + basedir + '.'
+        sys.exit(1)
+
+class Resource:
+    def __init__(self, name, rname):
+        self.name = name
+        self.rname = rname
+        self.max_param_len = 0
+        self.params = []
+        self.add_param('conf_dir', False)
+
+    def add_param(self, name, string = None, cust_name_str = None, ignore_if = 'false', cust_value_str = None, value = None):
+        if string is None:
+            string = name
+        if string:
+            self.max_param_len = max(self.max_param_len, len(name))
+        self.params.append({'name': name, 'string': string, 'cust_name_str': cust_name_str, 'ignore_if': ignore_if, 'cust_value_str': cust_value_str, 'value': value})
+
+    def set_param(self, name, value):
+        for param in self.params:
+            if param['name'] == name:
+                if isinstance(param['value'], list):
+                    param['value'].append(value)
+                else:
+                    param['value'] = value
+
+    def create(self):
+        stringl = [basedir, '/']
+        for param in self.params:
+            if param['name'] == 'conf_dir':
+                stringl.append(param['value'])
+        stringl.extend(['/', self.rname, '_', self.name, '.cfg'])
+        filename = ''.join(stringl)
+        f = open(filename, 'w')
+        f.write(self.__str__())
+        f.close()
+
+    def __str__(self):
+        stringl = ['define %s {\n' % self.rname]
+        for param in self.params:
+            if param['string'] and param['value'] is not None and param['value'] != param['ignore_if']:
+                name_str = param['string']
+                if param['cust_name_str'] is not None:
+                    name_str = getattr(self, param['cust_name_str'])()
+                value_str = param['value']
+                if param['cust_value_str'] is not None:
+                    value_str = getattr(self, param['cust_value_str'])()
+                stringl.append('  %s  %s\n' % (name_str.ljust(self.max_param_len), value_str))
+        stringl.append('}\n')
+        return ''.join(stringl)
+
+# Configdirs
+class Configdir(Resource):
+    restype = 'Gen_icinga::Configdir'
+
+    def __init__(self, name):
+        self.name = name
+        self.params = []
+
+    def create(self):
+        if not path.isdir(basedir + '/' + self.name):
+            os.mkdir(basedir + '/' + self.name, 0755)
+            return self.name
+
+# Servicegroups
+class Servicegroup(Resource):
+    restype = 'Gen_icinga::Servicegroup'
+
+    def __init__(self, name):
+        Resource.__init__(self, name, 'servicegroup')
+        self.add_param('name', 'servicegroup_name', value = name)
+        self.add_param('sg_alias', 'alias')
+
+# Services
+class Service(Resource):
+    restype = 'Gen_icinga::Service'
+
+    def __init__(self, name):
+        Resource.__init__(self, name, 'service')
+        self.add_param('name', value = name)
+        self.add_param('service_description')
+        self.add_param('servicegroups')
+        self.add_param('host_name')
+        self.add_param('hostgroup_name')
+        self.add_param('initial_state')
+        self.add_param('active_checks_enabled')
+        self.add_param('passive_checks_enabled')
+        self.add_param('obsess_over_service')
+        self.add_param('check_freshness')
+        self.add_param('freshness_threshold')
+        self.add_param('notifications_enabled')
+        self.add_param('event_handler_enabled')
+        self.add_param('flap_detection_enabled')
+        self.add_param('process_perf_data')
+        self.add_param('retain_status_information')
+        self.add_param('retain_nonstatus_information')
+        self.add_param('notification_interval')
+        self.add_param('is_volatile')
+        self.add_param('check_period')
+        self.add_param('check_interval')
+        self.add_param('retry_interval')
+        self.add_param('notification_period')
+        self.add_param('notification_options')
+        self.add_param('use')
+        self.add_param('contact_groups')
+        self.add_param('contacts')
+        self.add_param('max_check_attempts')
+        self.add_param('check_command')
+        self.add_param('arguments', False, value = [])
+        self.add_param('proxy', '_PROXY')
+        self.add_param('register')
+
+# Serviceescalations
+class Serviceescalation(Resource):
+    restype = 'Gen_icinga::Serviceescalation'
+
+    def __init__(self, name):
+        Resource.__init__(self, name, 'serviceescalation')
+        self.add_param('host_name')
+        self.add_param('hostgroup_name')
+        self.add_param('servicegroup_name')
+        self.add_param('service_description')
+        self.add_param('first_notification')
+        self.add_param('last_notification')
+        self.add_param('notification_interval')
+        self.add_param('escalation_period')
+        self.add_param('escalation_options')
+        self.add_param('contact_groups')
+        self.add_param('contacts')
+
+# Servicedependencies
+class Servicedependency(Resource):
+    restype = 'Gen_icinga::Servicedependency'
+
+    def __init__(self, name):
+        Resource.__init__(self, name, 'servicedependency')
+        self.add_param('dependent_host_name')
+        self.add_param('dependent_service_description')
+        self.add_param('host_name')
+        self.add_param('service_description')
+        self.add_param('execution_failure_criteria')
+        self.add_param('notification_failure_criteria')
+
+# Hostgroups
+class Hostgroup(Resource):
+    restype = 'Gen_icinga::Hostgroup'
+
+    def __init__(self, name):
+        Resource.__init__(self, name, 'hostgroup')
+        self.add_param('name', 'hostgroup_name', value = name)
+        self.add_param('hg_alias', 'alias')
+        self.add_param('members')
+
+# Hosts
+class Host(Resource):
+    restype = 'Gen_icinga::Host'
+
+    def __init__(self, name):
+        Resource.__init__(self, name, 'host')
+        self.add_param('use')
+        self.add_param('name', cust_name_str = 'get_name_str', value = name)
+        self.add_param('hostgroups')
+        self.add_param('address')
+        self.add_param('parents')
+        self.add_param('initial_state')
+        self.add_param('notifications_enabled')
+        self.add_param('event_handler_enabled')
+        self.add_param('flap_detection_enabled')
+        self.add_param('process_perf_data')
+        self.add_param('retain_status_information')
+        self.add_param('retain_nonstatus_information')
+        self.add_param('check_command')
+        self.add_param('proxy', '_PROXY')
+        self.add_param('check_interval')
+        self.add_param('notification_period')
+        self.add_param('notification_interval')
+        self.add_param('contact_groups')
+        self.add_param('contacts')
+        self.add_param('max_check_attempts')
+        self.add_param('register')
+
+    def get_name_str(self):
+        for param in self.params:
+            if param['name'] == 'register':
+                if param['value'] == '0':
+                    return 'name'
+                else:
+                    return 'host_name'
+
+# Hostescalations
+class Hostescalation(Resource):
+    restype = 'Gen_icinga::Hostescalation'
+
+    def __init__(self, name):
+        Resource.__init__(self, name, 'hostescalation')
+        self.add_param('name', 'host_name')
+        self.add_param('hostgroup_name')
+        self.add_param('first_notification')
+        self.add_param('last_notification')
+        self.add_param('notification_interval')
+        self.add_param('escalation_period')
+        self.add_param('escalation_options')
+        self.add_param('contact_groups')
+        self.add_param('contacts')
+
+# Contactgroups
+class Contactgroup(Resource):
+    restype = 'Gen_icinga::Contactgroup'
+
+    def __init__(self, name):
+        Resource.__init__(self, name, 'contactgroup')
+        self.add_param('name', 'contactgroup_name', value=name)
+        self.add_param('cg_alias', 'alias')
+
+# Contacts
+class Contact(Resource):
+    restype = 'Gen_icinga::Contact'
+
+    def __init__(self, name):
+        Resource.__init__(self, name, 'contact')
+        self.add_param('name', 'contact_name', value=name)
+        self.add_param('c_alias', 'alias')
+        self.add_param('service_notifications_enabled')
+        self.add_param('host_notifications_enabled')
+        self.add_param('service_notification_options')
+        self.add_param('host_notification_options')
+        self.add_param('host_notification_period')
+        self.add_param('service_notification_period')
+        self.add_param('service_notification_commands')
+        self.add_param('host_notification_commands')
+        self.add_param('contactgroups')
+        self.add_param('pager')
+        self.add_param('email')
+
+# Timeperiods
+class Timeperiod(Resource):
+    restype = 'Gen_icinga::Timeperiod'
+
+    def __init__(self, name):
+        Resource.__init__(self, name, 'timeperiod')
+        self.add_param('name', 'timeperiod_name', value=name)
+        self.add_param('tp_alias', 'alias')
+        self.add_param('monday')
+        self.add_param('tuesday')
+        self.add_param('wednesday')
+        self.add_param('thursday')
+        self.add_param('friday')
+        self.add_param('saturday')
+        self.add_param('sunday')
+
+# Servercommands
+class Servercommand(Resource):
+    restype = 'Gen_icinga::Servercommand'
+
+    def __init__(self, name):
+        Resource.__init__(self, name, 'command')
+        self.add_param('name', 'command_name', value=name)
+        self.add_param('command_line')
+
+resource_types = [Configdir, Servicegroup, Service, Serviceescalation, Servicedependency, Hostgroup, Host, Hostescalation, Contactgroup, Contact, Timeperiod, Servercommand]
+for resource_type in resource_types:
+    c.execute("select title, id from resources where restype='%s';" % resource_type.restype)
+    resources = c.fetchall()
+    for resource in resources:
+        res = resource_type(resource[0])
+        c.execute("select a.name, b.value from param_names as a, param_values as b where b.param_name_id = a.id and b.resource_id = %s", resource[1])
+        params = c.fetchall()
+        for param in params:
+            res.set_param(*param)
+        res.create()
