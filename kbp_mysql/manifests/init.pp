@@ -89,7 +89,8 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
     service_description => "MySQL slaving",
     check_command       => "check_mysql_slave",
     nrpe                => true,
-    ha                  => $monitoring_ha;
+    ha                  => $monitoring_ha,
+    check_interval      => 60;
   }
 }
 
