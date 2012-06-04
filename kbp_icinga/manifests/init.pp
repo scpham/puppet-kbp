@@ -386,10 +386,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
       content => template("kbp_icinga/default_icinga"),
       notify  => Exec["reload-icinga"];
     '/etc/icinga/build_icinga_config':
-      content => template('kbp_icinga/server/build_icinga_config');
+      content => template('kbp_icinga/server/build_icinga_config'),
       mode    => 770;
     '/etc/icinga/update_icinga_config':
-      content => template('kbp_icinga/server/update_icinga_config');
+      content => template('kbp_icinga/server/update_icinga_config'),
       mode    => 770;
   }
 
