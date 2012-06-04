@@ -1266,55 +1266,57 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     }
   }
 
-  if $ensure == 'present' and $nrpe and $register != 0 and $service_description != "NRPE port" {
-    gen_icinga::servicedependency { "nrpe_dependency_${real_name}_nrpe_port":
-      dependent_host_name           => $host_name,
-      conf_dir                      => $conf_dir,
-      dependent_service_description => $service_description,
-      host_name                     => $host_name,
-      service_description           => "NRPE port",
-      execution_failure_criteria    => "c",
-      notification_failure_criteria => "c";
+  if $monitoring == 'true' {
+    if $ensure == 'present' and $nrpe and $register != 0 and $service_description != "NRPE port" {
+      gen_icinga::servicedependency { "nrpe_dependency_${real_name}_nrpe_port":
+        dependent_host_name           => $host_name,
+        conf_dir                      => $conf_dir,
+        dependent_service_description => $service_description,
+        host_name                     => $host_name,
+        service_description           => "NRPE port",
+        execution_failure_criteria    => "c",
+        notification_failure_criteria => "c";
+      }
     }
-  }
 
-  gen_icinga::service { $real_name:
-    conf_dir                     => $conf_dir,
-    use                          => $real_use,
-    servicegroups                => $servicegroups,
-    service_description          => $service_description,
-    check_command                => $full_check_command,
-    base_check_command           => $check_command,
-    host_name                    => $register ? {
-      0       => undef,
-      default => $host_name,
-    },
-    initial_state                => $initial_state,
-    active_checks_enabled        => $active_checks_enabled,
-    passive_checks_enabled       => $passive_checks_enabled,
-    obsess_over_service          => $obsess_over_service,
-    check_freshness              => $check_freshness,
-    freshness_threshold          => $freshness_threshold,
-    notifications_enabled        => $notifications_enabled,
-    event_handler_enabled        => $event_handler_enabled,
-    flap_detection_enabled       => $flap_detection_enabled,
-    process_perf_data            => $process_perf_data,
-    retain_status_information    => $retain_status_information,
-    retain_nonstatus_information => $retain_nonstatus_information,
-    notification_interval        => $real_notification_interval,
-    is_volatile                  => $is_volatile,
-    check_period                 => $check_period,
-    check_interval               => $check_interval,
-    retry_interval               => $retry_interval,
-    notification_period          => $notification_period,
-    notification_options         => $notification_options,
-    contact_groups               => false,
-    contacts                     => $contacts,
-    max_check_attempts           => $max_check_attempts,
-    arguments                    => $arguments,
-    register                     => $register,
-    ensure                       => $ensure,
-    proxy                        => $proxy;
+    gen_icinga::service { $real_name:
+      conf_dir                     => $conf_dir,
+      use                          => $real_use,
+      servicegroups                => $servicegroups,
+      service_description          => $service_description,
+      check_command                => $full_check_command,
+      base_check_command           => $check_command,
+      host_name                    => $register ? {
+        0       => undef,
+        default => $host_name,
+      },
+      initial_state                => $initial_state,
+      active_checks_enabled        => $active_checks_enabled,
+      passive_checks_enabled       => $passive_checks_enabled,
+      obsess_over_service          => $obsess_over_service,
+      check_freshness              => $check_freshness,
+      freshness_threshold          => $freshness_threshold,
+      notifications_enabled        => $notifications_enabled,
+      event_handler_enabled        => $event_handler_enabled,
+      flap_detection_enabled       => $flap_detection_enabled,
+      process_perf_data            => $process_perf_data,
+      retain_status_information    => $retain_status_information,
+      retain_nonstatus_information => $retain_nonstatus_information,
+      notification_interval        => $real_notification_interval,
+      is_volatile                  => $is_volatile,
+      check_period                 => $check_period,
+      check_interval               => $check_interval,
+      retry_interval               => $retry_interval,
+      notification_period          => $notification_period,
+      notification_options         => $notification_options,
+      contact_groups               => false,
+      contacts                     => $contacts,
+      max_check_attempts           => $max_check_attempts,
+      arguments                    => $arguments,
+      register                     => $register,
+      ensure                       => $ensure,
+      proxy                        => $proxy;
+    }
   }
 }
 
@@ -1349,30 +1351,32 @@ define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=fals
     default => "proxy_${check_command}",
   }
 
-  gen_icinga::host { $name:
-    ensure                       => $ensure,
-    conf_dir                     => $conf_dir,
-    use                          => $real_use,
-    hostgroups                   => $hostgroups,
-    parents                      => $parents,
-    address                      => $address,
-    initial_state                => $initial_state,
-    notifications_enabled        => $notifications_enabled,
-    event_handler_enabled        => $event_handler_enabled,
-    flap_detection_enabled       => $flap_detection_enabled,
-    process_perf_data            => $process_perf_data,
-    retain_status_information    => $retain_status_information,
-    retain_nonstatus_information => $retain_nonstatus_information,
-    check_command                => $full_check_command,
-    base_check_command           => $check_command,
-    check_interval               => $check_interval,
-    notification_period          => $notification_period,
-    notification_interval        => $notification_interval,
-    contact_groups               => false,
-    contacts                     => $contacts,
-    max_check_attempts           => $max_check_attempts,
-    register                     => $register,
-    proxy                        => $proxy;
+  if $monitoring == 'true' {
+    gen_icinga::host { $name:
+      ensure                       => $ensure,
+      conf_dir                     => $conf_dir,
+      use                          => $real_use,
+      hostgroups                   => $hostgroups,
+      parents                      => $parents,
+      address                      => $address,
+      initial_state                => $initial_state,
+      notifications_enabled        => $notifications_enabled,
+      event_handler_enabled        => $event_handler_enabled,
+      flap_detection_enabled       => $flap_detection_enabled,
+      process_perf_data            => $process_perf_data,
+      retain_status_information    => $retain_status_information,
+      retain_nonstatus_information => $retain_nonstatus_information,
+      check_command                => $full_check_command,
+      base_check_command           => $check_command,
+      check_interval               => $check_interval,
+      notification_period          => $notification_period,
+      notification_interval        => $notification_interval,
+      contact_groups               => false,
+      contacts                     => $contacts,
+      max_check_attempts           => $max_check_attempts,
+      register                     => $register,
+      proxy                        => $proxy;
+    }
   }
 }
 
