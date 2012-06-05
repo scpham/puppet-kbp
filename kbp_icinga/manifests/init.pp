@@ -19,6 +19,9 @@ class kbp_icinga::client {
   kbp_icinga::clientcommand {
     "check_3ware":
       sudo      => true;
+    "check_activemq":
+      command   => "check_procs",
+      arguments => "-c 1: -C java -a activemq";
     "check_adaptec":
       sudo      => true;
     "check_arpwatch":
@@ -540,7 +543,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     ["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd",
      "check_pacemaker","check_mysql","check_mysql_connlimit","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp",
      "check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_failures","check_nullmailer","check_passenger_queue","check_mcollective","check_backup_status",
-     'check_unbound']:
+     'check_unbound', 'check_activemq']:
       nrpe          => true;
     "return-ok":
       command_name  => "check_dummy",
@@ -993,6 +996,23 @@ class kbp_icinga::environment {
       use                          => "mail_host",
       hostgroups                   => "mail_hosts,${::environment}_hosts",
       register                     => "0";
+  }
+}
+
+# Class: kbp_icinga:activemq
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_icinga::activemq {
+  kbp_icinga::service { "activemq":
+    service_description => "ActiveMQ status",
+    check_command       => "check_activemq",
+    nrpe                => true;
   }
 }
 
