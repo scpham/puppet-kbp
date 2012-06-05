@@ -342,9 +342,43 @@ class kbp_icinga::proxy($proxytag="proxy_${environment}") {
   }
 }
 
-class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true) {
+class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorized_users=false) {
   include gen_icinga::server
   include kbp_nsca::server
+
+  # icinga.cfg options
+  $object_cache_file                        = '/dev/shm/icinga/objects.cache'
+  $status_file                              = '/dev/shm/icinga/status.dat'
+  $status_update_interval                   = 2
+  $check_external_commands                  = 1
+  $log_rotation_method                      = 'n'
+  $use_syslog                               = 0
+  $check_result_reaper_frequency            = 1
+  $soft_state_dependencies                  = 1
+  $interval_length                          = 1
+  $enable_event_handlers                    = 0
+  $allow_empty_hostgroup_assignment         = 1
+  $check_service_freshness                  = 0
+  $use_large_installation_tweaks            = 1
+  $enable_environment_macros                = 0
+  $debug_verbosity                          = 1
+  # cgi.cfg options
+  $url_html_path                            = '/'
+  $url_stylesheets_path                     = '/stylesheets'
+  $show_context_help                        = 1
+  $authorized_for_system_information        = $authorized_users
+  $authorized_for_configuration_information = $authorized_users
+  $authorized_for_full_command_resolution   = $authorized_users
+  $authorized_for_system_commands           = $authorized_users
+  $authorized_for_all_services              = $authorized_users
+  $authorized_for_all_hosts                 = $authorized_users
+  $authorized_for_all_service_commands      = $authorized_users
+  $authorized_for_all_host_commands         = $authorized_users
+  $show_partial_hostgroups                  = 1
+  $refresh_rate                             = 20
+  $default_downtime_duration                = 3600
+  $display_status_totals                    = 1
+  $suppress_maintenance_downtime            = 1
 
   package { "icinga-web":;}
 
