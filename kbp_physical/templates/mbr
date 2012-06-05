@@ -2,16 +2,21 @@
 #
 # Save the current master boot records
 logfile="/var/backups/dd.log"
-touch $logfile
+/bin/rm -f $logfile
+/bin/touch $logfile
+has_error=0
 
-/bin/dd if=/dev/sda of=/var/backups/MBR.bin bs=512 count=1 2> $logfile
-exit=$?
+/bin/ls /sys/block | /bin/grep -Ev '^ram[0-9]+' | /bin/grep -Ev '^loop[0-9]+' | /bin/grep -Ev '^dm-[0-9]+' | /bin/grep -Ev '^md[0-9]+$' | while read blockdev; do
+	/bin/dd if=/dev/$blockdev of=/var/backups/$blockdev-MBR.bin bs=512 count=1 2> $logfile
+	if [ $? -ne 0 ]; then
+		has_error=1
+	fi
+done
 
-if [ $exit -eq 0 ]; then
-	rm $logfile
-	exit 0
-else
-	echo "`cat $logfile`" >&2
-	rm #logfile
-	exit $exit
+if [ $has_error -eq 1 ]; then
+	/bin/cat $logfile >&2
+	/bin/rm -f $logfile
+	exit 1
 fi
+
+exit 0
