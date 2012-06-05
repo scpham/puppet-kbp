@@ -1302,7 +1302,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     }
   }
 
-  if $monitoring == 'true' {
+  if $::monitoring == 'true' {
     if $ensure == 'present' and $nrpe and $register != 0 and $service_description != "NRPE port" {
       gen_icinga::servicedependency { "nrpe_dependency_${real_name}_nrpe_port":
         dependent_host_name           => $host_name,
