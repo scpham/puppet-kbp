@@ -215,6 +215,7 @@ class Host(Resource):
         self.add_param('check_command')
         self.add_param('proxy', '_PROXY')
         self.add_param('check_interval')
+        self.add_param('retry_interval')
         self.add_param('notification_period')
         self.add_param('notification_interval')
         self.add_param('contact_groups')

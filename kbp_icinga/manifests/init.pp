@@ -1377,7 +1377,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
 define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=false,$hostgroups=false,$parents=false,$address=$external_ipaddress,$ensure=present,
     $initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
     $retain_nonstatus_information=false, $check_command="check_ping", $check_interval=false, $notification_period=false, $notification_interval=false, $max_check_attempts=false,
-    $register=1, $proxy=false, $preventproxyoverride=false) {
+    $register=1, $proxy=false, $preventproxyoverride=false, $retry_interval=false) {
   $contacts = $register ? {
     0       => "devnull",
     default => false,
@@ -1416,6 +1416,7 @@ define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=fals
       check_command                => $full_check_command,
       base_check_command           => $check_command,
       check_interval               => $check_interval,
+      retry_interval               => $retry_interval,
       notification_period          => $notification_period,
       notification_interval        => $notification_interval,
       contact_groups               => false,
