@@ -1239,9 +1239,12 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
   }
   $real_use = $temp_use ? {
     false   => false,
-    default => $customer_notify ? {
-      true  => "${temp_use}_${::environment}",
-      false => $temp_use,
+    default => $register ? {
+      1       => $customer_notify ? {
+        true  => "${temp_use}_${::environment}",
+        false => $temp_use,
+      },
+      default => $temp_use,
     },
   }
   $real_name = $conf_dir ? {
