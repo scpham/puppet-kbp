@@ -952,76 +952,45 @@ class kbp_icinga::environment {
   kbp_icinga::service {
     "ha_service_${::environment}":
       conf_dir                     => "${::environment}/generic",
+      use                          => 'ha_service',
       servicegroups                => "ha_services,${::environment}_services",
-      initial_state                => "u",
-      obsess_over_service          => "0",
-      check_freshness              => "0",
-      notifications_enabled        => "1",
-      event_handler_enabled        => "0",
-      retain_status_information    => "1",
-      retain_nonstatus_information => "1",
-      is_volatile                  => "0",
-      notification_period          => "24x7",
-      active_checks_enabled        => "1",
-      passive_checks_enabled       => "0",
-      flap_detection_enabled       => "1",
-      process_perf_data            => "1",
-      notification_interval        => "600",
-      check_period                 => "24x7",
-      check_interval               => "10",
-      retry_interval               => "10",
-      max_check_attempts           => "3",
-      notification_options         => "w,u,c,r",
       register                     => "0";
     "critsms_service_${::environment}":
       conf_dir                     => "${::environment}/generic",
-      use                          => "ha_service",
+      use                          => "critsms_service",
       servicegroups                => "wh_services_critsms,${::environment}_services",
       register                     => "0";
     "warnsms_service_${::environment}":
       conf_dir                     => "${::environment}/generic",
-      use                          => "ha_service",
+      use                          => "warnsms_service",
       servicegroups                => "wh_services_warnsms,${::environment}_services",
       register                     => "0";
     "mail_service_${::environment}":
       conf_dir                     => "${::environment}/generic",
-      use                          => "ha_service",
+      use                          => "mail_service",
       servicegroups                => "mail_services,${::environment}_services",
       register                     => "0";
     "passive_service_${::environment}":
       conf_dir                     => "${::environment}/generic",
-      use                          => "ha_service",
+      use                          => "passive_service",
       servicegroups                => "mail_services,${::environment}_services",
-      active_checks_enabled        => "0",
-      passive_checks_enabled       => "1",
-      check_command                => "return-ok",
       register                     => "0";
   }
 
   kbp_icinga::host {
     "ha_host_${::environment}":
       conf_dir                     => "${::environment}/generic",
+      use                          => 'ha_host',
       hostgroups                   => "ha_hosts,${::environment}_hosts",
-      initial_state                => "u",
-      notifications_enabled        => "1",
-      event_handler_enabled        => "0",
-      flap_detection_enabled       => "1",
-      process_perf_data            => "1",
-      retain_status_information    => "1",
-      retain_nonstatus_information => "1",
-      check_interval               => "10",
-      notification_period          => "24x7",
-      notification_interval        => "600",
-      max_check_attempts           => "3",
       register                     => "0";
     "wh_host_${::environment}":
       conf_dir                     => "${::environment}/generic",
-      use                          => "ha_host",
+      use                          => "wh_host",
       hostgroups                   => "wh_hosts,${::environment}_hosts",
       register                     => "0";
     "mail_host_${::environment}":
       conf_dir                     => "${::environment}/generic",
-      use                          => "ha_host",
+      use                          => "mail_host",
       hostgroups                   => "mail_hosts,${::environment}_hosts",
       register                     => "0";
   }
