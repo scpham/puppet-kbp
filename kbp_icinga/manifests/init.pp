@@ -706,48 +706,48 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       use                          => " ",
       servicegroups                => "ha_services",
       initial_state                => "u",
-      obsess_over_service          => "0",
-      check_freshness              => "0",
-      notifications_enabled        => "1",
-      event_handler_enabled        => "0",
-      retain_status_information    => "1",
-      retain_nonstatus_information => "1",
-      is_volatile                  => "0",
+      obsess_over_service          => 0,
+      check_freshness              => 0,
+      notifications_enabled        => 1,
+      event_handler_enabled        => 0,
+      retain_status_information    => 1,
+      retain_nonstatus_information => 1,
+      is_volatile                  => 0,
       notification_period          => "24x7",
-      active_checks_enabled        => "1",
-      passive_checks_enabled       => "0",
-      flap_detection_enabled       => "1",
-      process_perf_data            => "1",
-      notification_interval        => "600",
+      active_checks_enabled        => 1,
+      passive_checks_enabled       => 0,
+      flap_detection_enabled       => 1,
+      process_perf_data            => 1,
+      notification_interval        => 600,
       check_period                 => "24x7",
-      check_interval               => "30",
-      retry_interval               => "10",
-      max_check_attempts           => "3",
+      check_interval               => 20,
+      retry_interval               => 20,
+      max_check_attempts           => 3,
       notification_options         => "w,u,c,r",
-      register                     => "0";
+      register                     => 0;
     "critsms_service":
-      conf_dir      => "generic",
-      use           => "ha_service",
-      servicegroups => "wh_services_critsms",
-      register      => "0";
+      conf_dir                     => "generic",
+      use                          => "ha_service",
+      servicegroups                => "wh_services_critsms",
+      register                     => 0;
     "warnsms_service":
-      conf_dir      => "generic",
-      use           => "ha_service",
-      servicegroups => "wh_services_warnsms",
-      register      => "0";
+      conf_dir                     => "generic",
+      use                          => "ha_service",
+      servicegroups                => "wh_services_warnsms",
+      register                     => 0;
     "mail_service":
-      conf_dir      => "generic",
-      use           => "ha_service",
-      servicegroups => "mail_services",
-      register      => "0";
+      conf_dir                     => "generic",
+      use                          => "ha_service",
+      servicegroups                => "mail_services",
+      register                     => 0;
     "passive_service":
-      conf_dir               => "generic",
-      use                    => "ha_service",
-      servicegroups          => "mail_services",
-      active_checks_enabled  => "0",
-      passive_checks_enabled => "1",
-      check_command          => "return-ok",
-      register               => "0";
+      conf_dir                     => "generic",
+      use                          => "ha_service",
+      servicegroups                => "mail_services",
+      active_checks_enabled        => 0,
+      passive_checks_enabled       => 1,
+      check_command                => "return-ok",
+      register                     => 0;
   }
 
   kbp_icinga::host {
@@ -756,27 +756,28 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       use                          => " ",
       hostgroups                   => "ha_hosts",
       initial_state                => "u",
-      notifications_enabled        => "1",
-      event_handler_enabled        => "0",
-      flap_detection_enabled       => "1",
-      process_perf_data            => "1",
-      retain_status_information    => "1",
-      retain_nonstatus_information => "1",
-      check_interval               => "20",
+      notifications_enabled        => 1,
+      event_handler_enabled        => 0,
+      flap_detection_enabled       => 1,
+      process_perf_data            => 1,
+      retain_status_information    => 1,
+      retain_nonstatus_information => 1,
+      check_interval               => 20,
+      retry_interval               => 20,
       notification_period          => "24x7",
-      notification_interval        => "600",
-      max_check_attempts           => "3",
-      register                     => "0";
+      notification_interval        => 600,
+      max_check_attempts           => 3,
+      register                     => 0;
     "wh_host":
       conf_dir   => "generic",
       use        => "ha_host",
       hostgroups => "wh_hosts",
-      register   => "0";
+      register   => 0;
     "mail_host":
       conf_dir   => "generic",
       use        => "ha_host",
       hostgroups => "mail_hosts",
-      register   => "0";
+      register   => 0;
   }
 
   gen_icinga::timeperiod {
@@ -1401,7 +1402,10 @@ define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=fals
       use                          => $real_use,
       hostgroups                   => $hostgroups,
       parents                      => $parents,
-      address                      => $address,
+      address                      => $register ? {
+        0       => undef,
+        default => $address,
+      },
       initial_state                => $initial_state,
       notifications_enabled        => $notifications_enabled,
       event_handler_enabled        => $event_handler_enabled,
