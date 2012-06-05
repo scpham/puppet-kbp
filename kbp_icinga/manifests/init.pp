@@ -762,7 +762,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       process_perf_data            => "1",
       retain_status_information    => "1",
       retain_nonstatus_information => "1",
-      check_interval               => "10",
+      check_interval               => "20",
       notification_period          => "24x7",
       notification_interval        => "600",
       max_check_attempts           => "3",
