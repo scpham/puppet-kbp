@@ -72,7 +72,7 @@ class kbp_puppet::default_config {
 
   # Don't change these values
   $hours = inline_template("<%= (0..23).step(runinterval_in_hours.to_i).to_a.join(',') %>")
-  $sleep = fqdn_rand(3*3600)
+  $sleep = fqdn_rand($runinterval_in_hours*3600)
 
   kcron { "run-puppet":
     mailto  => "reports@kumina.nl",
