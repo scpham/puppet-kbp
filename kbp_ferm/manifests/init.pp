@@ -13,15 +13,6 @@ class kbp_ferm {
   include kbp_ferm::offenders
   include gen_ferm
 
-  @gen_ferm::chain {
-    ["PREROUTING_v4","PREROUTING_v6"]:
-      table => "nat";
-    ["POSTROUTING_v4","POSTROUTING_v6"]:
-      table  => "nat",
-      policy => "ACCEPT";
-    ["ACCOUNTING_v4","ACCOUNTING_v6"]:;
-  }
-
   # Basic rules
   gen_ferm::rule {
     "Respond to ICMP packets_v4":
