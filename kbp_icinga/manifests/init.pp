@@ -1876,10 +1876,10 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
   }
   if $response {
     $check_command_response = "${check_command_path}_response"
-    $arguments_reponse      = "${arguments_path}|${response}"
+    $arguments_response      = "${arguments_path}|${response}"
   } else {
     $check_command_response = $check_command_path
-    $arguments_reponse      = $arguments_path
+    $arguments_response      = $arguments_path
   }
   if $credentials {
     $check_command_creds = "${check_command_response}_login"
