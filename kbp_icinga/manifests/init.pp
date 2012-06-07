@@ -1876,10 +1876,10 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
   }
   if $response {
     $check_command_response = "${check_command_path}_response"
-    $arguments_response      = "${arguments_path}|${response}"
+    $arguments_response     = "${arguments_path}|${response}"
   } else {
     $check_command_response = $check_command_path
-    $arguments_response      = $arguments_path
+    $arguments_response     = $arguments_path
   }
   if $credentials {
     $check_command_creds = "${check_command_response}_login"
@@ -1897,7 +1897,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
   }
   if $address == false or $address == '*' {
     $real_check_command = $check_command_ssl
-    $real_arguments     = $arguments_ssl
+    $real_arguments     = split("${arguments_ssl}|${real_statuscode}", '[|]')
   } else {
     $real_check_command = "${check_command_ssl}_address"
     $real_arguments     = split("${address}|${arguments_ssl}|${real_statuscode}", '[|]')
