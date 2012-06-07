@@ -1854,50 +1854,49 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     }
   }
 
+  $check_command_vhost = 'check_http_vhost'
+  $arguments_vhost     = $real_name
   if $port and $port != 80 {
-    if $path {
-      if $response {
-        $check_command = "check_http_vhost_port_url_response"
-        $arguments     = [$real_name,$port,$path,$response,$real_statuscode]
-      } else {
-        $check_command = "check_http_vhost_port_url"
-        $arguments     = [$real_name,$port,$path,$real_statuscode]
-      }
-    } else {
-      $check_command = "check_http_vhost_port"
-      $arguments     = [$real_name,$port,$real_statuscode]
-    }
-  } elsif $path {
-    if $credentials {
-      $check_command = "check_http_vhost_url_login"
-      $arguments     = [$real_name,$path,$credentials,$real_statuscode]
-    } elsif $response {
-      $check_command = "check_http_vhost_url_response"
-      $arguments     = [$real_name,$path,$response,$real_statuscode]
-    } elsif $ssl {
-      $check_command = "check_http_vhost_url_ssl"
-      $arguments     = [$real_name,$path,$real_statuscode]
-    } else {
-      $check_command = "check_http_vhost_url"
-      $arguments     = [$real_name,$path,$real_statuscode]
-    }
-  } elsif $response {
-    $check_command = "check_http_vhost_response"
-    $arguments     = [$real_name,$response,$real_statuscode]
-  } elsif $ssl {
-    $check_command = "check_http_vhost_ssl"
-    $arguments     = [$real_name,$real_statuscode]
+    $check_command_port = "${check_command_vhost}_port"
+    $arguments_port     = "${arguments_vhost}|${port}"
   } else {
-    $check_command = "check_http_vhost"
-    $arguments     = [$real_name,$real_statuscode]
+    $check_command_port = $check_command_vhost
+    $arguments_port     = $arguments_vhost
   }
-
-  if $address == false or $address == "*" {
-    $real_check_command = $check_command
-    $real_arguments = $arguments
+  if $path {
+    $check_command_path = "${check_command_port}_url"
+    $arguments_path     = "${arguments_port}|${path}"
   } else {
-    $real_check_command = "${check_command}_address"
-    $real_arguments = split(inline_template("<%= ([address] + arguments).join('|') %>"),'[|]')
+    $check_command_path = $check_command_port
+    $arguments_path     = $arguments_port
+  }
+  if $response {
+    $check_command_response = "${check_command_path}_response"
+    $arguments_reponse      = "${arguments_path}|${response}"
+  } else {
+    $check_command_response = $check_command_path
+    $arguments_reponse      = $arguments_path
+  }
+  if $credentials {
+    $check_command_creds = "${check_command_response}_login"
+    $arguments_creds     = "${arguments_response}|${credentials}"
+  } else {
+    $check_command_creds = $check_command_response
+    $arguments_creds     = $arguments_response
+  }
+  if $ssl {
+    $check_command_ssl = "${check_command_creds}_ssl"
+    $arguments_ssl     = $arguments_creds
+  } else {
+    $check_command_ssl = $check_command_creds
+    $arguments_ssl     = $arguments_creds
+  }
+  if $address == false or $address == '*' {
+    $real_check_command = $check_command_ssl
+    $real_arguments     = $arguments_ssl
+  } else {
+    $real_check_command = "${check_command_ssl}_address"
+    $real_arguments     = split("${address}|${arguments_ssl}|${real_statuscode}", '[|]')
   }
 
   kbp_icinga::service { "vhost_${name}":
