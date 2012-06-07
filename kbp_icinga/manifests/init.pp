@@ -2000,10 +2000,14 @@ define kbp_icinga::http($customfqdn=$::fqdn, $auth=false, $proxy=false, $prevent
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::proc_status {
+define kbp_icinga::proc_status ($servicegroups=false) {
   kbp_icinga::service { "proc_status_${name}":
     service_description => "Process status for ${name}",
     check_command       => "check_proc_status",
+    servicegroups       => $servicegroups ? {
+      false   => undef,
+      default => $servicegroups,
+    },
     arguments           => $name,
     nrpe                => true;
   }
