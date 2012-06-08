@@ -17,6 +17,10 @@ class kbp_proftpd {
     dport  => 21,
     action => "ACCEPT",
   }
+
+  gen_linux::kmod { "nf_conntrack_ftp":
+    ensure => present;
+  }
 }
 
 # Class: kbp_proftpd::mysql
