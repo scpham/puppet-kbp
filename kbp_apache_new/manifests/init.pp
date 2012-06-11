@@ -187,6 +187,13 @@ class kbp_apache_new::intermediate::thawte {
   }
 }
 
+class kbp_apache_new::intermediate::verisign {
+  kbp_ssl::public_key { "Verisign_SSL_CA":
+    content => template("kbp_apache_new/ssl/verisign_bundle.pem"),
+    notify  => Exec["reload-apache2"];
+  }
+}
+
 class kbp_apache_new::glassfish_domain_base {
   include kbp_apache_new::module::jk
 
