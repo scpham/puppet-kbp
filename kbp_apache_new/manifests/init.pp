@@ -247,7 +247,7 @@ define kbp_apache_new::php_cgi($ensure="present", $documentroot, $custom_php_ini
 #  gen_puppet
 #
 define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot=false, $create_documentroot=true, $address=false, $address6=false,
-    $port=false, $make_default=false, $ssl=false, $key=false, $cert=false, $intermediate=false, $wildcard=false, $log_vhost=false, $access_logformat="combined",
+    $port=false, $make_default=false, $ssl=false, $non_ssl=true, $key=false, $cert=false, $intermediate=false, $wildcard=false, $log_vhost=false, $access_logformat="combined",
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor_creds=false,
     $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $glassfish_domain=false, $glassfish_connector_port=false,
     $glassfish_connector_loglevel="info", $django_root_path=false,$django_root_django=false, $django_static_path=false, $django_static_django=false,
@@ -297,20 +297,35 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     wildcard            => $wildcard;
   }
 
+  if $real_ssl and $non_ssl {
+    if $redirect_non_ssl {
+      kbp_apache_new::forward_vhost { $real_name:
+        ensure      => $ensure,
+        forward     => "https://${real_name}",
+        serveralias => $serveralias;
+      }
+    } else {
+      gen_apache::site { "${real_name}_80":
+        ensure              => $ensure,
+        serveralias         => $serveralias,
+        create_documentroot => $create_documentroot,
+        documentroot        => $real_documentroot,
+        address             => $address,
+        address6            => $address6,
+        port                => $port,
+        log_vhost           => $log_vhost,
+        access_logformat    => $access_logformat,
+        make_default        => $make_default;
+      }
+    }
+  }
+
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
     if $real_ssl {
       $monitor_name = "${real_name}_SSL"
 
       if ! $wildcard {
         kbp_icinga::sslcert { $real_name:; }
-      }
-
-      if $redirect_non_ssl {
-        kbp_apache_new::forward_vhost { $real_name:
-          ensure      => $ensure,
-          forward     => "https://${real_name}",
-          serveralias => $serveralias;
-        }
       }
     } else {
       $monitor_name = $real_name
