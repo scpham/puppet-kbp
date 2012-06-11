@@ -1116,8 +1116,8 @@ class kbp_icinga::nfs::server ($failover_ip = false, $failover_name = "nfs") {
   kbp_icinga::service { "nfs_daemon":
     service_description => "NFS daemon",
     host_name           => $failover_ip ? {
-      true  => $fqdn,
-      false => "${failover_name}.${domain}",
+      default => $fqdn,
+      false   => "${failover_name}.${domain}",
     },
     check_command       => "check_nfs_server";
   }
