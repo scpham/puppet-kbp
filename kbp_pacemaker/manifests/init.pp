@@ -47,7 +47,7 @@ define kbp_pacemaker::master_slave ($primitive, $meta, $customtag="pacemaker_${e
   }
 }
 
-define kbp_pacemaker::clone ($primitive, $meta, $customtag="pacemaker_${environment}") {
+define kbp_pacemaker::clone ($primitive, $meta=false, $customtag="pacemaker_${environment}") {
   gen_pacemaker::clone { "$name":
     primitive => $primitive,
     meta      => $meta,
