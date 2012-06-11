@@ -13,9 +13,8 @@
 #  Undocumented
 #  gen_puppet
 #
-define kbp_drbd($location, $fstype=false, $mastermaster=true, $time_out=false, $connect_int=false, $ping_int=false, $ping_timeout=false, $after_sb_0pri="discard-younger-primary",
+define kbp_drbd($location, $mastermaster=true, $time_out=false, $connect_int=false, $ping_int=false, $ping_timeout=false, $after_sb_0pri="discard-younger-primary",
     $after_sb_1pri="discard-secondary", $after_sb_2pri="call-pri-lost-after-sb", $rate="5M", $verify_alg="md5", $use_ipaddress=$external_ipaddress) {
-
   include kbp_trending::drbd
 
   if $mastermaster {
@@ -35,11 +34,6 @@ define kbp_drbd($location, $fstype=false, $mastermaster=true, $time_out=false, $
       target   => "/etc/fstab",
       require  => Gen_drbd[$name];
     }
-
-  }
-
-  if ! $mastermaster and ! $fstype {
-    fail { "fstype must be specified when not in mastermaster":; }
   }
 
   gen_drbd { $name:
