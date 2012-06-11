@@ -34,6 +34,13 @@ define kbp_drbd($location, $mastermaster=true, $time_out=false, $connect_int=fal
       target   => "/etc/fstab",
       require  => Gen_drbd[$name];
     }
+
+    file { "${location}/.monitoring":
+      content => "DRBD_mount_ok",
+      require => Mount[$location];
+    }
+
+    kbp_icinga::drbd { $location:; }
   }
 
   gen_drbd { $name:
@@ -60,11 +67,4 @@ define kbp_drbd($location, $mastermaster=true, $time_out=false, $connect_int=fal
     exported => true,
     tag      => "ferm_drbd_${environment}_${name}";
   }
-
-  file { "${location}/.monitoring":
-    content => "DRBD_mount_ok",
-    require => Mount[$location];
-  }
-
-  kbp_icinga::drbd { $location:; }
 }
