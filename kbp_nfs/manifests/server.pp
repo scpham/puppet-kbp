@@ -26,7 +26,7 @@ class kbp_nfs::server($need_gssd = "no", $need_idmapd = "no", $need_statd = "yes
     "kbp_icinga::nfs::server":
       failover_ip   => $failover_ip;
     "gen_nfs::server":
-      failover_ip   => $failover_ip;
+      failover_ip   => $failover_ip,
       incoming_port => $incoming_port,
       outgoing_port => $outgoing_port,
       mountd_port   => $mountd_port,
