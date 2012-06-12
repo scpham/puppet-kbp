@@ -142,7 +142,11 @@ class kbp_apache_new::module::dav_fs {
 }
 
 class kbp_apache_new::module::auth_mysql {
-  kbp_apache_new::module { "auth_mysql":; }
+  include gen_base::libapache2-mod-auth-mysql
+
+  kbp_apache_new::module { "auth_mysql":
+    require => Package["libapache2-mod-auth-mysql"],
+  }
 }
 
 class kbp_apache_new::module::proxy_http {
