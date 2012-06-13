@@ -1517,7 +1517,9 @@ define kbp_icinga::servercommand($conf_dir="generic", $command_name=$name, $host
 #  gen_puppet
 #
 define kbp_icinga::icinga_config {
-  kbp_icinga::service { "icinga_config_${name}":
+  $sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
+
+  kbp_icinga::service { "icinga_config_${sanitized_name}":
     service_description => "Icinga configuration ${name}",
     check_command       => "check_icinga_config",
     arguments           => $name,
