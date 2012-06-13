@@ -1491,7 +1491,7 @@ define kbp_icinga::servercommand($conf_dir="generic", $command_name=$name, $host
 #  gen_puppet
 #
 define kbp_icinga::icinga_config {
-  kbp_icinga::service { "icinga_config":
+  kbp_icinga::service { "icinga_config_${name}":
     service_description => "Icinga configuration ${name}",
     check_command       => "check_icinga_config",
     arguments           => $name,
