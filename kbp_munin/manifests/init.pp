@@ -377,9 +377,14 @@ class kbp_munin::client::unbound {
 define kbp_munin::client::glassfish ($jmxport, $jmxuser=false, $jmxpass=false) {
   include kbp_munin::client
 
-  kbp_munin::client::jmxcheck { ["${name}_${jmxport}_java_threads", "${name}_${jmxport}_java_process_memory", "${name}_${jmxport}_java_cpu", "${name}_${jmxport}_gc_collectioncount", "${name}_${jmxport}_gc_collectiontime"]:
+  kbp_munin::client::jmxcheck { ["${name}_${jmxport}_java_threads", "${name}_${jmxport}_java_process_memory", "${name}_${jmxport}_java_cpu"]:
       jmxuser => $jmxuser,
       jmxpass => $jmxpass;
+  }
+
+  # GC plugin doesn't work glassfish
+  file { ["/etc/munin/plugins/${name}_${jmxport}_gc_collectioncount", "/etc/munin/plugins/${name}_${jmxport}_gc_collectiontime"]:
+    ensure => absent;
   }
 }
 
@@ -407,8 +412,6 @@ define kbp_munin::client::jmxcheck ($jmxuser=false, jmxpass=false){
     }
   }
 }
-
-
 
 # Class: kbp_munin::server
 #
