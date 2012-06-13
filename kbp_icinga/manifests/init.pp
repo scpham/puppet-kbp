@@ -1104,11 +1104,20 @@ class kbp_icinga::icinga_config($filename) {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_icinga::nfs::server ($failover_ip = false, $failover_name = "nfs") {
+class kbp_icinga::nfs::server ($failover_ip = false, $failover_name = "nfs.${domain}") {
   if $failover_ip {
-    if !defined(Kbp_icinga::Host["${failover_name}.${domain}"]) {
-      kbp_icinga::host { "${failover_name}.${domain}":
-        address  => $failover_ip;
+    $conf_dir = "${environment}/${failover_name}"
+
+    if !defined(Gen_icinga::Configdir[$conf_dir]) {
+      gen_icinga::configdir { $conf_dir:
+        ensure => $ensure;
+      }
+    }
+
+    if !defined(Kbp_icinga::Host[$failover_name]) {
+      kbp_icinga::host { $failover_name:
+        address  => $failover_ip,
+        conf_dir => $conf_dir;
       }
     }
   }
@@ -1117,7 +1126,7 @@ class kbp_icinga::nfs::server ($failover_ip = false, $failover_name = "nfs") {
     service_description => "NFS daemon",
     host_name           => $failover_ip ? {
       false   => $fqdn,
-      default => "${failover_name}.${domain}",
+      default => $failover_name,
     },
     check_command       => "check_nfs_server";
   }
