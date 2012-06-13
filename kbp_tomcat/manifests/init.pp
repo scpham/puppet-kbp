@@ -238,7 +238,7 @@ define kbp_tomcat::apache_proxy_ajp_site($ensure="present", $port=8009, $ssl=fal
       content => template("kbp_tomcat/apache/tomcat_proxy");
     }
   }
-  if $ssl {
+  if $ssl or $intermediate {
     kbp_apache_new::vhost_addition { "${name}_443/tomcat_proxy":
       content => template("kbp_tomcat/apache/tomcat_proxy");
     }
