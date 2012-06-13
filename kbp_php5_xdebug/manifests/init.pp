@@ -8,12 +8,13 @@ class kbp_php5_xdebug {
   }
 
   package { "php5-xdebug":
+    notify => Exec["reload-apache2"],
     ensure => latest;
   }
 
-  file { "/etc/php5/conf.d/xdebug.ini":
-    content => "zend_extension=${file_location}\nxdebug.remote_enable=On\nhtml_errors=On\n",
-    require => Package["php5-common"],
-    notify  => Exec["reload-apache2"];
+  gen_php5::common::config {
+    "zend_extension":       value => $file_location;
+    "xdebug.remote_enable": value => "On";
+    "html_errors":          value => "On";
   }
 }
