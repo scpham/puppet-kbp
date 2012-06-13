@@ -14,7 +14,7 @@
 #  gen_puppet
 #
 define kbp_drbd($location, $mastermaster=true, $time_out=false, $connect_int=false, $ping_int=false, $ping_timeout=false, $after_sb_0pri="discard-younger-primary",
-    $after_sb_1pri="discard-secondary", $after_sb_2pri="call-pri-lost-after-sb", $rate="5M", $verify_alg="md5", $use_ipaddress=$external_ipaddress) {
+    $after_sb_1pri="discard-secondary", $after_sb_2pri="call-pri-lost-after-sb", $rate="5M", $verify_alg="md5", $use_ipaddress=$external_ipaddress, $device_name=false) {
   include kbp_trending::drbd
 
   if $mastermaster {
@@ -54,7 +54,8 @@ define kbp_drbd($location, $mastermaster=true, $time_out=false, $connect_int=fal
     after_sb_1pri => $after_sb_1pri,
     after_sb_2pri => $after_sb_2pri,
     rate          => $rate,
-    verify_alg    => $verify_alg;
+    verify_alg    => $verify_alg,
+    device_name   => $device_name;
   }
 
   Kbp_ferm::Rule <<| tag == "ferm_drbd_${environment}_${name}" |>>
