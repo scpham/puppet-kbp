@@ -348,6 +348,7 @@ class kbp_icinga::proxy($proxytag="proxy_${environment}") {
 class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorized_users=false) {
   include gen_icinga::server
   include kbp_nsca::server
+  include kbp_munin::client::icinga
 
   # icinga.cfg options
   $object_cache_file                        = '/dev/shm/icinga/objects.cache'

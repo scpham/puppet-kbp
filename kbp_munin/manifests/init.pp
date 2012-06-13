@@ -120,12 +120,35 @@ class kbp_munin::client::haproxy {
   include kbp_munin::client
 
   munin::client::plugin { ["haproxy_check_duration","haproxy_errors","haproxy_sessions","haproxy_volume"]:
-    script_path => "/usr/local/share/munin/plugins",
+    script_path => "/usr/share/munin/plugins/kumina",
   }
 
   munin::client::plugin::config { "haproxy_":
     section => "haproxy_*",
     content => "user root\nenv.socket /var/run/haproxy.sock";
+  }
+}
+
+# Class: kbp_munin::client::icinga
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_munin::client::icinga {
+  include kbp_munin::client
+
+  munin::client::plugin { ["icinga_multi_hosts","icinga_multi_services","icinga_multi_checks"]:
+    script_path => "/usr/share/munin/plugins/kumina",
+    script      => "icinga_multi_";
+  }
+
+  munin::client::plugin::config { "icinga_multi_":
+    section => "icinga_multi_*",
+    content => "user root";
   }
 }
 
