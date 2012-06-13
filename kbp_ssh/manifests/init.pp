@@ -45,12 +45,20 @@ class kbp_ssh {
   }
 
   # Enable ClientAliveInterval messages
-  kaugeas {
-    "sshd_config ClientAliveInterval":
+  kaugeas { "sshd_config ClientAliveInterval":
+    lens    => 'Sshd.lns',
+    file    => "/etc/ssh/sshd_config",
+    changes => "set ClientAliveInterval 60",
+    notify  => Service["ssh"];
+   }
+
+  if versioncmp($lsbmajdistrelease,6) >= 0 {
+    kaugeas { "sshd_config DebianBanner":
       lens    => 'Sshd.lns',
       file    => "/etc/ssh/sshd_config",
-      changes => "set ClientAliveInterval 60",
+      changes => "set DebianBanner no",
       notify  => Service["ssh"];
+    }
   }
 
   # Fix permissions.
