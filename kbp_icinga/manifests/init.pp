@@ -1116,13 +1116,14 @@ class kbp_icinga::nfs::server ($failover_ip = false, $failover_name = "nfs.${dom
 
     if !defined(Kbp_icinga::Host[$failover_name]) {
       kbp_icinga::host { $failover_name:
-        address  => $failover_ip,
-        conf_dir => $conf_dir;
+        conf_dir => $conf_dir,
+        address  => $failover_ip;
       }
     }
   }
 
   kbp_icinga::service { "nfs_daemon":
+    conf_dir            => $conf_dir,
     service_description => "NFS daemon",
     host_name           => $failover_ip ? {
       false   => $fqdn,
