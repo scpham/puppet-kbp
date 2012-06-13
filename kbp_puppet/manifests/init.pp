@@ -68,7 +68,7 @@ class kbp_puppet::default_config {
 
   # We're trying to create the numbers so we only need to set one to change the runinterval.
   # We limit ourselves to only allow full hour intervals.
-  $runinterval_in_hours = 2
+  $runinterval_in_hours = 1
 
   # Don't change these values
   $hours = inline_template("<%= (0..23).step(runinterval_in_hours.to_i).to_a.join(',') %>")
