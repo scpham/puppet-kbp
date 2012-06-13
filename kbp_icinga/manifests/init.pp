@@ -700,7 +700,6 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   }
 
   kbp_icinga::icinga_config { ['/etc/icinga/icinga.cfg', '/etc/icinga/tmp_icinga.cfg']:; }
-  }
 
   setfacl { "Allow www-data to read the command file":
     dir          => "/var/lib/icinga/rw",
