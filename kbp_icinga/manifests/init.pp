@@ -103,6 +103,10 @@ class kbp_icinga::client {
       sudo      => true,
       command   => "check_file",
       arguments => '-f $ARG1$ -c $ARG2$';
+    "check_nomonitoring":
+      sudo      => true,
+      command   => "check_file",
+      arguments => '-f $ARG1$ -n';
     "check_ntpd":
       command   => "check_procs",
       arguments => "-c 1: -C ntpd";
@@ -157,13 +161,26 @@ class kbp_icinga::client {
       arguments => "-w 5 -c 10 -s Z";
   }
 
+  kbp_icinga::configdir { "${::environment}/${fqdn}":
+    override_nomonitoring => true;
+  }
+
+  kbp_icinga::host { $fqdn:
+    parents               => $parent,
+    override_nomonitoring => true;
+  }
+
+  kbp_icinga::service { "puppet_nomonitoring":
+    service_description   => "Nomonitoring exists",
+    check_command         => "check_nomonitoring",
+    arguments             => ["/etc/puppet/nomonitoring"],
+    nrpe                  => true,
+    sms                   => false,
+    customer_notify       => false,
+    override_nomonitoring => true;
+  }
+
   if $monitoring == 'true' {
-    gen_icinga::configdir { "${::environment}/${fqdn}":; }
-
-    kbp_icinga::host { "${fqdn}":
-      parents => $parent;
-    }
-
     if $is_virtual == "true" {
       kbp_icinga::service { "memory":
         service_description => "Memory usage",
@@ -637,6 +654,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       nrpe          => true;
     "check_mbean_value":
       arguments     => ['$ARG1$','$ARG2$','$ARG3$','$ARG4$'],
+      nrpe          => true;
+    "check_nomonitoring":
+      arguments     => ['$ARG1$'],
       nrpe          => true;
     "check_puppet_dontrun":
       arguments     => ['$ARG1$'],
@@ -1228,6 +1248,12 @@ define kbp_icinga::clientcommand($sudo=false, $path=false, $command=false, $argu
   }
 }
 
+define kbp_icinga::configdir($override_nomonitoring=false) {
+  if $::monitoring == 'true' or $override_nomonitoring {
+    gen_icinga::configdir { $name:; }
+  }
+}
+
 # Define: kbp_icinga::service
 #
 # Parameters:
@@ -1244,7 +1270,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     $obsess_over_service=false, $check_freshness=false, $freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false,
     $process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false,
     $check_interval=false, $retry_interval=false, $notification_period=false, $notification_options=false, $max_check_attempts=false, $check_command=false,
-    $arguments=false, $register=false, $nrpe=false, $proxy=false, $customer_notify=true, $preventproxyoverride=false) {
+    $arguments=false, $register=false, $nrpe=false, $proxy=false, $customer_notify=true, $preventproxyoverride=false, $override_nomonitoring=false) {
   $contacts = $register ? {
     0       => "devnull",
     default => false,
@@ -1311,7 +1337,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     }
   }
 
-  if $::monitoring == 'true' {
+  if $::monitoring == 'true' or $override_nomonitoring {
     if $ensure == 'present' and $nrpe and $register != 0 and $service_description != "NRPE port" {
       gen_icinga::servicedependency { "nrpe_dependency_${real_name}_nrpe_port":
         dependent_host_name           => $host_name,
@@ -1378,7 +1404,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
 define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=false,$hostgroups=false,$parents=false,$address=$external_ipaddress,$ensure=present,
     $initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
     $retain_nonstatus_information=false, $check_command="check_ping", $check_interval=false, $notification_period=false, $notification_interval=false, $max_check_attempts=false,
-    $register=1, $proxy=false, $preventproxyoverride=false, $retry_interval=false) {
+    $register=1, $proxy=false, $preventproxyoverride=false, $retry_interval=false, $override_nomonitoring=false) {
   $contacts = $register ? {
     0       => "devnull",
     default => false,
@@ -1396,7 +1422,7 @@ define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=fals
     default => "proxy_${check_command}",
   }
 
-  if $monitoring == 'true' {
+  if $monitoring == 'true' or $override_nomonitoring {
     gen_icinga::host { $name:
       ensure                       => $ensure,
       conf_dir                     => $conf_dir,
