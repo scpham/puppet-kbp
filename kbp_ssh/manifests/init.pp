@@ -51,6 +51,11 @@ class kbp_ssh {
       file    => "/etc/ssh/sshd_config",
       changes => "set ClientAliveInterval 60",
       notify  => Service["ssh"];
+    "sshd_config DebianBanner":
+      lens    => 'Sshd.lns',
+      file    => "/etc/ssh/sshd_config",
+      changes => "set DebianBanner no",
+      notify  => Service["ssh"];
   }
 
   # Fix permissions.
