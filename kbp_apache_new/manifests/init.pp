@@ -328,6 +328,21 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         access_logformat    => $access_logformat,
         make_default        => $make_default;
       }
+
+      kbp_icinga::site { $real_name:
+        service_description => $service_description,
+        address             => $real_monitor_ip,
+        address6            => $address6,
+        host_name           => $real_name,
+        max_check_attempts  => $max_check_attempts,
+        auth                => $auth,
+        path                => $monitor_path,
+        response            => $monitor_response,
+        credentials         => $monitor_creds,
+        check_interval      => $monitor_check_interval,
+        ha                  => $ha,
+        ssl                 => false;
+      }
     }
 
     if ! $wildcard {
