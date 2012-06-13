@@ -699,8 +699,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       notify  => Exec["reload-icinga"];
   }
 
-  class { "kbp_icinga::icinga_config":
-    filename => "/etc/icinga/icinga.cfg";
+  kbp_icinga::icinga_config { ['/etc/icinga/icinga.cfg', '/etc/icinga/tmp_icinga.cfg']:; }
   }
 
   setfacl { "Allow www-data to read the command file":
@@ -1077,26 +1076,6 @@ class kbp_icinga::heartbeat {
     service_description => "Heartbeat",
     check_command       => "check_heartbeat",
     nrpe                => true;
-  }
-}
-
-# Class: kbp_icinga::icinga_config
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_icinga::icinga_config($filename) {
-  kbp_icinga::service { "icinga_config":
-    service_description => "Icinga configuration ${filename}",
-    check_command       => "check_icinga_config",
-    arguments           => $filename,
-    check_interval      => 900,
-    nrpe                => true,
-    sms                 => false;
   }
 }
 
@@ -1500,6 +1479,26 @@ define kbp_icinga::servercommand($conf_dir="generic", $command_name=$name, $host
       nrpe          => $nrpe,
       time_out      => $time_out,
       proxy         => true;
+  }
+}
+
+# Define: kbp_icinga::icinga_config
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+define kbp_icinga::icinga_config {
+  kbp_icinga::service { "icinga_config":
+    service_description => "Icinga configuration ${name}",
+    check_command       => "check_icinga_config",
+    arguments           => $name,
+    check_interval      => 900,
+    nrpe                => true,
+    sms                 => false;
   }
 }
 
