@@ -329,15 +329,19 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         make_default        => $make_default;
       }
     }
+
+    if ! $wildcard {
+      if $cert {
+        kbp_icinga::sslcert { $cert:; }
+      } else {
+        kbp_icinga::sslcert { $real_name:; }
+      }
+    }
   }
 
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
     if $real_ssl {
       $monitor_name = "${real_name}_SSL"
-
-      if ! $wildcard {
-        kbp_icinga::sslcert { $real_name:; }
-      }
     } else {
       $monitor_name = $real_name
     }
