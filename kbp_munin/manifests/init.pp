@@ -351,15 +351,12 @@ class kbp_munin::client::unbound {
 #  kbp_munin::client
 #  gen_puppet
 #
-define kbp_munin::client::glassfish ($jmxport) {
+define kbp_munin::client::glassfish ($jmxport, $jmxuser=false, $jmxpass=false) {
   include kbp_munin::client
 
-  kbp_munin::client::jmxcheck {
-    "${name}_${jmxport}_java_threads":;
-    "${name}_${jmxport}_java_process_memory":;
-    "${name}_${jmxport}_java_cpu":;
-    "${name}_${jmxport}_gc_collectioncount":;
-    "${name}_${jmxport}_gc_collectiontime":;
+  kbp_munin::client::jmxcheck { ["${name}_${jmxport}_java_threads", "${name}_${jmxport}_java_process_memory", "${name}_${jmxport}_java_cpu", "${name}_${jmxport}_gc_collectioncount", "${name}_${jmxport}_gc_collectiontime"]:
+      jmxuser => $jmxuser,
+      jmxpass => $jmxpass;
   }
 }
 
@@ -372,13 +369,19 @@ define kbp_munin::client::glassfish ($jmxport) {
 #  gen_puppet
 #  munin::client
 #
-define kbp_munin::client::jmxcheck {
+define kbp_munin::client::jmxcheck ($jmxuser=false, jmxpass=false){
   include gen_base::jmxquery
 
   munin::client::plugin { "jmx_${name}":
-    script_path => "/usr/bin",
+    script_path => "/usr/share/munin/plugins/kumina",
     script      => "jmx_",
-    require     => Package["jmxquery"];
+    require     => Package["jmxquery","munin-plugins-kumina"];
+  }
+
+  if $jmxuser {
+    munin::client::plugin::config { "jmx_${name}":
+      content => "env.jmxuser ${jmxuser}\nenv.jmxpass ${jmxpass}";
+    }
   }
 }
 

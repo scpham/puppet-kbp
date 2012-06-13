@@ -275,8 +275,10 @@ define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true,
     }
   }
 
-  kbp_trending::glassfish { "${name}":
-      jmxport => $jmxport;
+  kbp_munin::client::glassfish { "${name}":
+      jmxport => $jmxport,
+      jmxuser => $username,
+      jmxpass => $password;
   }
 
   file { "/etc/init.d/glassfish-instance-${name}" :
