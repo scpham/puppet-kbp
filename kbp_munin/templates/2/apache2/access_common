@@ -1,0 +1,15 @@
+<Location />
+Order allow,deny
+allow from all
+<% if allowed_access_to_root %>
+AuthName "Authorized Personnel ONLY"
+AuthType Basic
+AuthUserFile /srv/www/<%= site %>/.htpasswd_<%= allowed_access_to_root %>
+require valid-user
+<% end %>
+</Location>
+
+<Location /static/>
+Order allow,deny
+Allow from all
+</Location>

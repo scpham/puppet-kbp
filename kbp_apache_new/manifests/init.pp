@@ -556,7 +556,7 @@ define kbp_apache_new::glassfish_domain($site, $site_port, $connector_port, $con
   }
 }
 
-define kbp_apache_new::cgi($documentroot, $custom_php_ini=false) {
+define kbp_apache_new::cgi($documentroot=false, $custom_php_ini=false) {
   include gen_base::libapache2-mod-fcgid
 
   kbp_apache_new::vhost_addition { "${name}/enable-cgi":
