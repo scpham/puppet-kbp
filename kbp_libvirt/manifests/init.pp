@@ -10,7 +10,6 @@
 #  gen_puppet
 #
 define kbp_libvirt ($on_crash="destroy", $on_reboot="restart") {
-  include munin::client
   class { "libvirt":
     on_crash  => $on_crash,
     on_reboot => $on_reboot;

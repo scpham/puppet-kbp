@@ -10,8 +10,6 @@
 #  gen_puppet
 #
 class kbp_openvpn::server inherits openvpn::server {
-  include munin::client
-
   munin::client::plugin { "openvpn":
     require => File["/etc/openvpn/openvpn-status.log"],
   }

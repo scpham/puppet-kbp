@@ -23,7 +23,6 @@ define kbp_postfix($relayhost=false, $myhostname=$fqdn, $mynetworks="127.0.0.0/8
       mode          => $mode,
       always_bcc    => $always_bcc;
     }
-    include munin::client
     include kbp_openssl::common
 
     $real_mailname = $mailname ? {

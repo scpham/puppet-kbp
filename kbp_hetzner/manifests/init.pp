@@ -10,8 +10,6 @@
 #  gen_puppet
 #
 class kbp_hetzner inherits hetzner {
-  include munin::client
-
   gen_ferm::rule {
     "Allow guests to connect to the internet":
       chain     => "FORWARD",
