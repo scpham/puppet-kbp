@@ -459,11 +459,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     refreshonly => true;
   }
 
-  @@mysql::server::db {
-    "icinga for ${fqdn}":
-        tag => "mysql_kumina";
-    "icinga_web for ${fqdn}":
-        tag => "mysql_kumina";
+  @@mysql::server::db { ["icinga for ${fqdn}", "icinga_web for ${fqdn}"]:
+    tag => "mysql_kumina";
   }
 
   @@mysql::server::grant {
