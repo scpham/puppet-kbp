@@ -428,6 +428,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       mode    => 600,
       require => Package["icinga-web"],
       notify  => Exec["clearcache_icinga-web"];
+    "/etc/icinga-web/auth.xml":
+      content => template("kbp_icinga/icinga-web/auth.xml"),
+      require => Package["icinga-web"],
+      notify  => Exec["clearcache_icinga-web"];
     "/etc/icinga-web/translation.xml":
       content => template("kbp_icinga/icinga-web/translation.xml"),
       require => Package["icinga-web"],
