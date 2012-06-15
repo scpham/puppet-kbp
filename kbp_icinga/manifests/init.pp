@@ -400,7 +400,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   $display_status_totals                    = 1
   $suppress_maintenance_downtime            = 1
 
-  package { "icinga-web":;}
+  package { ["icinga-web", 'icinga-mobile']:;}
 
   gen_logrotate::rotate { "icinga":
     logs => "/var/log/icinga/icinga.log";
