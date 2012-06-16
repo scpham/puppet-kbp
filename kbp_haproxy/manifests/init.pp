@@ -40,6 +40,12 @@ class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $lo
 #    The port to check on whether the backendserver is running
 #  httpcheck_interval
 #    The interval in ms, determines how often the check should run
+#  httpcheck_fall
+#    The number of times a check should fail before the resource is considered down
+#  httpcheck_rise
+#    The number of times a check should succeed after downtime before the resource is considered up
+#  backupserver
+#    Whether this server is a backupserver or a normal one
 #  servername
 #    The hostname(or made up name) for the backend server
 #  serverport
@@ -64,7 +70,7 @@ class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $lo
 #  Undocumented
 #  gen_puppet
 #
-define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=false, $monitoring_hostname=false, $cookie=false, $make_lbconfig, $httpcheck_uri=false, $httpcheck_port=false, $httpcheck_interval=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s", $timeout_http_request="10s", $tcp_sslport=false, $haproxy_tag="haproxy_${environment}") {
+define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=false, $monitoring_hostname=false, $cookie=false, $make_lbconfig, $httpcheck_uri=false, $httpcheck_port=false, $httpcheck_interval=false, $httpcheck_fall=false, $httpcheck_rise=false, backupserver=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s", $timeout_http_request="10s", $tcp_sslport=false, $haproxy_tag="haproxy_${environment}") {
   $safe_name=regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
 
   gen_ferm::rule { "HAProxy forward for ${name}":
@@ -87,6 +93,9 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
       httpcheck_uri         => $httpcheck_uri,
       httpcheck_port        => $httpcheck_port,
       httpcheck_interval    => $httpcheck_interval,
+      httpcheck_fall        => $httpcheck_fall,
+      httpcheck_rise        => $httpcheck_rise,
+      backupserver          => $backupserver,
       balance               => $balance,
       servername            => $servername,
       serverip              => $serverip,
