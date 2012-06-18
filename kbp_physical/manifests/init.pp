@@ -69,7 +69,7 @@ class kbp_physical {
         }
       } else {
         kbp_icinga::site { "http_${consolefqdn}":
-          customfqdn           => $consolefqdn,
+          host_name            => $consolefqdn,
           proxy                => $consoleproxy,
           ssl                  => $consolessl,
           path                 => $consolepath,

@@ -1880,7 +1880,7 @@ define kbp_icinga::java($servicegroups=false, $sms=true, $username=false, $passw
 #
 define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false,
       $max_check_attempts=false, $port=false, $path=false, $response=false, $statuscode=false, $vhost=true, $ha=false,
-      $ssl=false, $host_name=false, $preventproxyoverride=false, $check_interval=false, $credentials=false) {
+      $ssl=false, $host_name=false, $preventproxyoverride=false, $check_interval=false, $credentials=false, $proxy=false) {
   $real_name = $host_name ? {
     false   => $name,
     default => $host_name,
@@ -1974,6 +1974,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     max_check_attempts   => $max_check_attempts,
     arguments            => $real_arguments,
     ha                   => $ha,
+    proxy                => $proxy,
     preventproxyoverride => $preventproxyoverride,
     check_interval       => $check_interval;
   }
