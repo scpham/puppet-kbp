@@ -1107,7 +1107,7 @@ class kbp_icinga::heartbeat {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_icinga::nfs::server ($failover_ip = false, $failover_name = "nfs.${domain}") {
+class kbp_icinga::nfs::server ($failover_ip=false, $failover_name="nfs.${domain}", $ip_proxy=false) {
   if $failover_ip {
     $conf_dir = "${environment}/${failover_name}"
 
@@ -1120,7 +1120,8 @@ class kbp_icinga::nfs::server ($failover_ip = false, $failover_name = "nfs.${dom
     if !defined(Kbp_icinga::Host[$failover_name]) {
       kbp_icinga::host { $failover_name:
         conf_dir => $conf_dir,
-        address  => $failover_ip;
+        address  => $failover_ip,
+        proxy    => $ip_proxy;
       }
     }
   }

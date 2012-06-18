@@ -20,11 +20,12 @@
 #
 class kbp_nfs::server($need_gssd = "no", $need_idmapd = "no", $need_statd = "yes", $need_svcgssd = "no", $mountd_port = 4002, $incoming_port = 4000,
     $outgoing_port = 4001, $lock_port = 4003, $rpcnfsdcount = "8", $rpcnfsdpriority = "0", $rpcmountdopts = "", $rpcsvcgssdopts = "",
-    $statdopts = "", $nfs_tag = "nfs_${environment}", $failover_ip = false) {
+    $statdopts = "", $nfs_tag = "nfs_${environment}", $failover_ip = false, $monitor_ip_proxy = false) {
   include kbp_trending::nfsd
   class {
     "kbp_icinga::nfs::server":
-      failover_ip   => $failover_ip;
+      failover_ip   => $failover_ip,
+      ip_proxy      => $monitor_ip_proxy;
     "gen_nfs::server":
       failover_ip   => $failover_ip,
       incoming_port => $incoming_port,
