@@ -61,10 +61,21 @@ class kbp_physical {
     }
 
     if !$consoleipmi {
-      kbp_icinga::http { "http_${consolefqdn}":
-        customfqdn           => $consolefqdn,
-        proxy                => $consoleproxy,
-        preventproxyoverride => true;
+      if ! $consolessl and ! $consolepath and ! $consolestatus {
+        kbp_icinga::http { "http_${consolefqdn}":
+          customfqdn           => $consolefqdn,
+          proxy                => $consoleproxy,
+          preventproxyoverride => true;
+        }
+      } else {
+        kbp_icinga::site { "http_${consolefqdn}":
+          customfqdn           => $consolefqdn,
+          proxy                => $consoleproxy,
+          ssl                  => $consolessl,
+          path                 => $consolepath,
+          statuscode           => $consolestatus,
+          preventproxyoverride => true;
+        }
       }
     }
   }
