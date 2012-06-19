@@ -74,6 +74,7 @@ class kbp_physical {
           ssl                  => $consolessl,
           path                 => $consolepath,
           statuscode           => $consolestatus,
+          vhost                => false,
           preventproxyoverride => true;
         }
       }
