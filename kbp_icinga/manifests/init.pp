@@ -267,7 +267,7 @@ class kbp_icinga::client {
       customer_notify     => false;
   }
 
-  gen_icinga::servicedependency { "puppet_dependency_freshness_dontrun":
+  kbp_icinga::servicedependency { "puppet_dependency_freshness_dontrun":
     dependent_service_description => "Puppet state freshness",
     host_name                     => $fqdn,
     service_description           => "Puppet dontrun",
@@ -1338,7 +1338,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
 
   if $::monitoring == 'true' or ($override_nomonitoring and $::monitoring != 'force_off') {
     if $ensure == 'present' and $nrpe and $register != 0 and $service_description != "NRPE port" {
-      gen_icinga::servicedependency { "nrpe_dependency_${real_name}_nrpe_port":
+      kbp_icinga::servicedependency { "nrpe_dependency_${real_name}_nrpe_port":
         dependent_host_name           => $host_name,
         conf_dir                      => $conf_dir,
         dependent_service_description => $service_description,
@@ -1386,6 +1386,22 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
       register                     => $register,
       ensure                       => $ensure,
       proxy                        => $proxy;
+    }
+  }
+}
+
+define kbp_icinga::servicedependency($ensure="present", $dependent_service_description, $host_name=$fqdn, $service_description, $conf_dir="${environment}/${fqdn}", $dependent_host_name=$fqdn,
+    $execution_failure_criteria=false, $notification_failure_criteria="o") {
+  if $::monitoring == 'true' or ($override_nomonitoring and $::monitoring != 'force_off') {
+    gen_icinga::servicedependency { $name:
+      ensure                        => $ensure,
+      dependent_service_description => $dependent_service_description,
+      host_name                     => $host_name,
+      service_description           => $service_description,
+      conf_dir                      => $conf_dir,
+      dependent_host_name           => $dependent_host_name,
+      execution_failure_criteria    => $execution_failure_criteria,
+      notification_failure_criteria => $notification_failure_criteria;
     }
   }
 }
