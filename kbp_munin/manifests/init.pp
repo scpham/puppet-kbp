@@ -623,11 +623,14 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
 
   file {
     '/etc/munin/munin.conf':
-      content => template('kbp_munin/2/munin.conf');
+      content => template('kbp_munin/2/munin.conf'),
+      require => Package['munin'];
     '/etc/munin/conf':
-      ensure => directory;
+      ensure => directory,
+      require => Package['munin'];
     '/etc/apache2/conf.d/munin':
       ensure => absent,
+      require => Package['munin'],
       notify => Exec['reload-apache2'];
   }
 
