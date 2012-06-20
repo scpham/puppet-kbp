@@ -1,3 +1,4 @@
+<% if documentroot -%>
 <Directory <%= documentroot %>>
   AddHandler fcgid-script .php
 <% if custom_php_ini -%>
@@ -10,6 +11,7 @@
   Order allow,deny
   Allow from all
 </Directory>
+<% end -%>
 
 ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
 
