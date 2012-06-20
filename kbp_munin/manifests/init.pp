@@ -710,7 +710,7 @@ define kbp_munin::two::environment ($site,$port,$prettyname=false) {
     target => "/srv/www/${site}/.htpasswd_${name}",
   }
 
-  kbp_ferm::rule { "Munin connections":
+  kbp_ferm::rule { "Munin connections for ${name}":
     saddr    => $ipaddress,
     proto    => "tcp",
     dport    => "4949",
