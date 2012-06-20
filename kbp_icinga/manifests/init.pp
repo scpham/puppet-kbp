@@ -1131,7 +1131,8 @@ class kbp_icinga::nfs::server ($failover_ip=false, $failover_name="nfs.${domain}
       false   => $fqdn,
       default => $failover_name,
     },
-    check_command       => "check_nfs_server";
+    check_command       => "check_nfs_server",
+    proxy               => $ip_proxy;
   }
 }
 
