@@ -55,8 +55,6 @@ class kbp_munin::client {
 #  gen_puppet
 #
 class kbp_munin::client::activemq {
-  include kbp_munin::client
-
   gen_munin::client::plugin { ["activemq_size", "activemq_subscribers", "activemq_traffic"]:
     script_path => "/usr/share/munin/plugins/kumina",
     script      => "activemq_";
@@ -73,8 +71,6 @@ class kbp_munin::client::activemq {
 #  gen_puppet
 #
 class kbp_munin::client::drbd {
-  include kbp_munin::client
-
   gen_munin::client::plugin { ["drbd_net_0", "drbd_disk_0"]:
     script_path => "/usr/share/munin/plugins/kumina",
     script      => "drbd_";
@@ -92,7 +88,6 @@ class kbp_munin::client::drbd {
 #
 class kbp_munin::client::apache {
   # This class is should be included in kbp_apache to collect apache data for munin
-  include kbp_munin::client
   include gen_base::libwww-perl
 
   file { "/etc/apache2/conf.d/server-status":
@@ -118,8 +113,6 @@ class kbp_munin::client::apache {
 #  gen_puppet
 #
 class kbp_munin::client::haproxy {
-  include kbp_munin::client
-
   gen_munin::client::plugin { ["haproxy_check_duration","haproxy_errors","haproxy_sessions","haproxy_volume"]:
     script_path => "/usr/share/munin/plugins/kumina",
   }
@@ -140,8 +133,6 @@ class kbp_munin::client::haproxy {
 #  gen_puppet
 #
 class kbp_munin::client::icinga {
-  include kbp_munin::client
-
   gen_munin::client::plugin { ["icinga_multi_hosts","icinga_multi_services","icinga_multi_checks"]:
     script_path => "/usr/share/munin/plugins/kumina",
     script      => "icinga_multi_";
@@ -163,8 +154,6 @@ class kbp_munin::client::icinga {
 #  gen_puppet
 #
 class kbp_munin::client::puppetmaster {
-  include kbp_munin::client
-
   gen_munin::client::plugin {
     ["puppet_nodes","puppet_totals"]:
       script_path => "/usr/share/munin/plugins/kumina",
@@ -187,8 +176,6 @@ class kbp_munin::client::puppetmaster {
 #  gen_puppet
 #
 class kbp_munin::client::mysql {
-  include kbp_munin::client
-
   if versioncmp($lsbdistrelease, 6) >= 0 {
     package {"libcache-cache-perl":
       ensure => latest;
@@ -231,8 +218,6 @@ class kbp_munin::client::mysql {
 #  gen_puppet
 #
 class kbp_munin::client::nfs {
-  include kbp_munin::client
-
   gen_munin::client::plugin { "nfs_client":; }
 }
 
@@ -246,8 +231,6 @@ class kbp_munin::client::nfs {
 #  gen_puppet
 #
 class kbp_munin::client::nfsd {
-  include kbp_munin::client
-
   gen_munin::client::plugin { "nfsd":; }
 }
 
@@ -262,8 +245,6 @@ class kbp_munin::client::nfsd {
 #  gen_puppet
 #
 class kbp_munin::client::ntpd {
-  include kbp_munin::client
-
   gen_munin::client::plugin { ["ntp_kernel_err","ntp_kernel_pll_freq","ntp_kernel_pll_off","ntp_offset"]:; }
 }
 
@@ -277,8 +258,6 @@ class kbp_munin::client::ntpd {
 #  gen_puppet
 #
 class kbp_munin::client::postgresql {
-  include kbp_munin::client
-
   gen_munin::client::plugin { ["postgres_bgwriter","postgres_checkpoints","postgres_connections_db","postgres_users","postgres_xlog"]:; }
 
   gen_munin::client::plugin::config { "postgres_*":
@@ -302,8 +281,6 @@ class kbp_munin::client::postgresql {
 #  gen_puppet
 #
 define kbp_munin::client::postgresql_dbs {
-  include kbp_munin::client::postgresql
-
   if $name != 'template0' and $name != 'template1' {
     gen_munin::client::plugin {
       "postgres_cache_${name}":
@@ -334,8 +311,6 @@ define kbp_munin::client::postgresql_dbs {
 #  gen_puppet
 #
 class kbp_munin::client::bind9 {
-  include kbp_munin::client
-
   gen_munin::client::plugin { "bind9_rndc":; }
 
   gen_munin::client::plugin::config { "bind9_rndc":
@@ -353,8 +328,6 @@ class kbp_munin::client::bind9 {
 #  gen_puppet
 #
 class kbp_munin::client::unbound {
-  include kbp_munin::client
-
   gen_munin::client::plugin { ["unbound_hits", "unbound_queue", "unbound_memory", "unbound_by_type", "unbound_by_opcode", "unbound_by_rcode", "unbound_by_flags", "unbound_histogram"]:
     script_path => "/usr/share/munin/plugins/kumina",
     script      => "unbound_";
@@ -376,8 +349,6 @@ class kbp_munin::client::unbound {
 #  gen_puppet
 #
 define kbp_munin::client::glassfish ($jmxport, $jmxuser=false, $jmxpass=false) {
-  include kbp_munin::client
-
   kbp_munin::client::jmxcheck { ["${name}_${jmxport}_java_threads", "${name}_${jmxport}_java_process_memory", "${name}_${jmxport}_java_cpu"]:
       jmxuser => $jmxuser,
       jmxpass => $jmxpass;
