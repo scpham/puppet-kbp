@@ -10,7 +10,7 @@
 #  gen_puppet
 #
 class kbp_varnish inherits varnish {
-  munin::client::plugin { "varnish_ratio":
+  gen_munin::client::plugin { "varnish_ratio":
     script_path => "/usr/local/share/munin/plugins",
     script => "varnish_",
   }

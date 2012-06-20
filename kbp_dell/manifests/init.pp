@@ -30,7 +30,7 @@ class kbp_dell::poweredge {
     }
   }
 
-  munin::client::plugin {
+  gen_munin::client::plugin {
     # Graph the IPMI sensors for temperature
     "ipmi_sensor_u_degrees_c":
       ensure => present;
@@ -39,7 +39,7 @@ class kbp_dell::poweredge {
       ensure => absent;
   }
 
-  munin::client::plugin::config { "ipmi_sensor_":
+  gen_munin::client::plugin::config { "ipmi_sensor_":
     section => "ipmi_sensor_*",
     content => "user root",
   }
@@ -88,7 +88,7 @@ class kbp_dell::pe1955 inherits kbp_dell::poweredge {
 class kbp_dell::pe1950 inherits kbp_dell::poweredge {
   include kbp_dell::perc
 
-  munin::client::plugin { "ipmi_sensor_u_rpm":
+  gen_munin::client::plugin { "ipmi_sensor_u_rpm":
     script_path => "/usr/local/share/munin/plugins",
     script => "ipmi_sensor_",
   }
@@ -106,7 +106,7 @@ class kbp_dell::pe1950 inherits kbp_dell::poweredge {
 class kbp_dell::pe2950 inherits kbp_dell::poweredge {
   include kbp_dell::perc
 
-  munin::client::plugin { "ipmi_sensor_u_rpm":
+  gen_munin::client::plugin { "ipmi_sensor_u_rpm":
     script_path => "/usr/local/share/munin/plugins",
     script => "ipmi_sensor_",
   }

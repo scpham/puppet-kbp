@@ -24,12 +24,12 @@ class kbp_mailscanner {
     notify => Service["amavis"],
   }
 
-  munin::client::plugin { ["amavis_time", "amavis_cache", "amavis_content"]:
+  gen_munin::client::plugin { ["amavis_time", "amavis_cache", "amavis_content"]:
     script => "amavis_",
     script_path => "/usr/local/share/munin/plugins",
   }
 
-  munin::client::plugin::config { "amavis_":
+  gen_munin::client::plugin::config { "amavis_":
     section => "amavis_*",
     content => "env.amavis_db_home /var/lib/amavis/db\nuser amavis",
   }

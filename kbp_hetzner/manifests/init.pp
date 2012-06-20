@@ -38,7 +38,7 @@ class kbp_hetzner::sensors {
     ensure => "latest";
   }
 
-  munin::client::plugin { "sensors_temp":
+  gen_munin::client::plugin { "sensors_temp":
     require => Package["lm-sensors"],
     script  => "sensors_",
     notify  => Exec["/sbin/modprobe f71882fg"];

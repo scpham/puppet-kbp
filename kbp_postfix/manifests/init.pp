@@ -38,9 +38,9 @@ define kbp_postfix($relayhost=false, $myhostname=$fqdn, $mynetworks="127.0.0.0/8
       require => Package["postfix"];
     }
 
-    munin::client::plugin { ["postfix_mailqueue", "postfix_mailstats", "postfix_mailvolume"]:; }
+    gen_munin::client::plugin { ["postfix_mailqueue", "postfix_mailstats", "postfix_mailvolume"]:; }
 
-    munin::client::plugin { ["exim_mailstats"]:
+    gen_munin::client::plugin { ["exim_mailstats"]:
       ensure => absent;
     }
 
