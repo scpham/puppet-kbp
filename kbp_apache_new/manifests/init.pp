@@ -110,12 +110,7 @@ class kbp_apache_new::mem_cache {
 #  gen_puppet
 #
 class kbp_apache_new::ssl {
-
   kbp_apache_new::module { "ssl":; }
-
-  Kbp_icinga::Http <| title == "http_${fqdn}" |> {
-    ssl => true,
-  }
 }
 
 # Class: kbp_apache::module::passenger
@@ -282,6 +277,12 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
     $real_ssl = true
     $full_name = regsubst($temp_name,'^([^_]*)$','\1_443')
+
+    if $make_default and ! $non_ssl {
+      Kbp_icinga::Http <| title == "http_${fqdn}" |> {
+        ssl => true,
+      }
+    }
   } else {
     $real_ssl = false
     $full_name = regsubst($temp_name,'^([^_]*)$','\1_80')
