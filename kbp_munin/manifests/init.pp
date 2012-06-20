@@ -692,8 +692,8 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
 #
 define kbp_munin::two::environment ($site,$port,$prettyname=false) {
   $pretty_name = $prettyname ? {
-    false   => $sanitized_customer_name
-    default => $prettyname
+    false   => $sanitized_customer_name,
+    default => $prettyname,
   }
 
   gen_munin::environment{$name:;}
