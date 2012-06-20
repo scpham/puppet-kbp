@@ -1795,7 +1795,7 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_n
     max_check_attempts   => $max_check_attempts,
     statuscode           => $ssl ? {
       false => $statuscode,
-      true  => "${statuscode}, 301",
+      true  => "${statuscode},301",
     },
     host_name            => $host_name ? {
       false   => $name,
