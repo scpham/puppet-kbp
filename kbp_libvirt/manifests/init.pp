@@ -44,7 +44,7 @@ define kbp_libvirt ($on_crash="destroy", $on_reboot="restart") {
 
   if versioncmp($lsbdistrelease, "5.0") < 0 {
     gen_munin::client::plugin { ["libvirt-blkstat", "libvirt-cputime", "libvirt-ifstat", "libvirt-mem"]:
-      require     => [Package["python-libvirt", "python-libxml2"],Munin::Client::Plugin::Config["libvirt"]],
+      require     => [Package["python-libvirt", "python-libxml2"],Gen_munin::Client::Plugin::Config["libvirt"]],
       script_path => "/usr/local/share/munin/plugins";
     }
 
@@ -56,7 +56,7 @@ define kbp_libvirt ($on_crash="destroy", $on_reboot="restart") {
     include gen_base::munin-libvirt-plugins
 
     gen_munin::client::plugin { ["libvirt-blkstat", "libvirt-cputime", "libvirt-ifstat", "libvirt-mem"]:
-      require     => [Package["munin-libvirt-plugins"],Munin::Client::Plugin::Config["libvirt"]],
+      require     => [Package["munin-libvirt-plugins"],Gen_munin::Client::Plugin::Config["libvirt"]],
       script_path => "/usr/share/munin/plugins";
     }
   }
