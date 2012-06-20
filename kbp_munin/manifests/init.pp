@@ -651,6 +651,10 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
       require => Package["rrdcached"],
       notify  => Exec["reload-rrdcached"];
     }
+
+    gen_munin::client::plugin { 'rrdcached':
+      script_path => '/usr/share/munin/plugins/kumina';
+    }
   }
 }
 
