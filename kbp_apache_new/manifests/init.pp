@@ -112,6 +112,10 @@ class kbp_apache_new::mem_cache {
 class kbp_apache_new::ssl {
 
   kbp_apache_new::module { "ssl":; }
+
+  Kbp_icinga::Http <| title == "http_${fqdn}" |> {
+    ssl => true,
+  }
 }
 
 # Class: kbp_apache::module::passenger

@@ -587,6 +587,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       nrpe          => true;
     "check_http":
       arguments     => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20'];
+    "check_http_ssl":
+      command_name  => "check_http",
+      arguments     => ['-S', '-I $HOSTADDRESS$', '-e $ARG1$', '-t 20'];
     "check_http_vhost":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
@@ -2052,12 +2055,15 @@ define kbp_icinga::raidcontroller($driver) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::http($customfqdn=$::fqdn, $auth=false, $proxy=false, $preventproxyoverride=false) {
+define kbp_icinga::http($customfqdn=$::fqdn, $auth=false, $proxy=false, $preventproxyoverride=false, $ssl = false) {
   kbp_icinga::service { "http_${customfqdn}":
     conf_dir             => "${::environment}/${customfqdn}",
     service_description  => "HTTP",
     host_name            => $customfqdn,
-    check_command        => "check_http",
+    check_command        => $ssl ? {
+      false   => "check_http",
+      default => 'check_http_ssl',
+    },
     arguments            => "200,301,302,401,403,404",
     proxy                => $proxy,
     preventproxyoverride => $preventproxyoverride;
