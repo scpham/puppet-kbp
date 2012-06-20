@@ -655,7 +655,8 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
   setfacl { "/srv/www/${site} munin access":
     acl          => "group:munin:rwx",
     dir          => "/srv/www/${site}",
-    make_default => true;
+    make_default => true,
+    require      => [Kbp_apache_new::Site[$site],Package['munin']];
   }
 
   if $use_rrdcached {
