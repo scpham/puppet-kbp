@@ -204,6 +204,10 @@ case "$1" in
 			echo "running"
 			exit 0
 		else
+			if [ ! -f $GLASSFISH_HOME/nodes/$NODE/$INSTANCE/autostart ]; then
+				echo "not running and is not configured to start"
+				exit 0
+			fi
 			echo "not running"
 			exit 3
 		fi
