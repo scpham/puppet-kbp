@@ -425,8 +425,6 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
     require +> Package["munin"],
   }
 
-  package { "rsync":; }
-
   # The RRD files for Munin are stored on a memory backed filesystem, so
   # sync it to disk on reboots.
   file { "/etc/init.d/munin-server":
