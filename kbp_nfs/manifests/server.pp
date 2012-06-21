@@ -44,7 +44,7 @@ class kbp_nfs::server($need_gssd = "no", $need_idmapd = "no", $need_statd = "yes
 
   concat { "/etc/exports":
     force  => true,
-    notify => Service["nfs-kernel-server"];
+    notify => Exec["export-nfsd"];
   }
 
   Kbp_ferm::Rule <<| tag == $nfs_tag |>> {
