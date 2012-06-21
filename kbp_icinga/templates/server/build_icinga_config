@@ -52,12 +52,12 @@ class Resource:
         self.params = []
         self.add_param('conf_dir', False)
 
-    def add_param(self, name, string = None, cust_name_str = None, ignore_if = 'false', cust_value_str = None, value = None):
+    def add_param(self, name, string = None, cust_name_str = None, ignore_if = 'false', value = None):
         if string is None:
             string = name
         if string:
             self.max_param_len = max(self.max_param_len, len(name))
-        self.params.append({'name': name, 'string': string, 'cust_name_str': cust_name_str, 'ignore_if': ignore_if, 'cust_value_str': cust_value_str, 'value': value})
+        self.params.append({'name': name, 'string': string, 'cust_name_str': cust_name_str, 'ignore_if': ignore_if, 'value': value})
 
     def set_param(self, name, value):
         for param in self.params:
@@ -85,10 +85,7 @@ class Resource:
                 name_str = param['string']
                 if param['cust_name_str'] is not None:
                     name_str = getattr(self, param['cust_name_str'])()
-                value_str = param['value']
-                if param['cust_value_str'] is not None:
-                    value_str = getattr(self, param['cust_value_str'])()
-                stringl.append('  %s  %s\n' % (name_str.ljust(self.max_param_len), value_str))
+                stringl.append('  %s  %s\n' % (name_str.ljust(self.max_param_len), param['value']))
         stringl.append('}\n')
         return ''.join(stringl)
 
