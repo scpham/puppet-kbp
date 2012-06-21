@@ -655,6 +655,10 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
     gen_munin::client::plugin { 'rrdcached':
       script_path => '/usr/share/munin/plugins/kumina';
     }
+
+    gen_munin::client::plugin::config { 'rrdcached':
+      content => 'user munin';
+    }
   }
 }
 
