@@ -17,13 +17,20 @@ class kbp_dashboard_new::server($url, $ssl=true, $mysql_name=$environment, $dbpa
     tag => "mysql_${kumina}_dashboard";
   }
 
-  @@mysql::server::grant { "dashboard on puppet for ${fqdn}":
-    user        => 'icinga',
-    db          => 'puppet',
-    hostname    => $fqdn,
-    password    => $dbpassword,
-    permissions => 'SELECT',
-    tag         => "mysql_${kumina}_dashboard";
+  @@mysql::server::grant {
+    "dashboard on puppet for ${fqdn}":
+      user        => 'dashboard',
+      db          => 'puppet',
+      hostname    => $fqdn,
+      password    => $dbpassword,
+      permissions => 'SELECT',
+      tag         => "mysql_${kumina}_dashboard";
+    "dashboard on dashboard for ${fqdn}":
+      user        => 'dashboard',
+      db          => 'dashboard',
+      hostname    => $fqdn,
+      password    => $dbpassword,
+      tag         => "mysql_${kumina}_dashboard";
   }
 }
 
