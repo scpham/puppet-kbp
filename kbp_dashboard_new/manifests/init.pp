@@ -10,7 +10,7 @@ class kbp_dashboard_new::server($url, $ssl=true, $mysql_name=$environment, $dbpa
 #  }
 
   kbp_mysql::client { 'dashboard':
-    $mysql_name => 'dashboard';
+    mysql_name => 'dashboard';
   }
 
   @@mysql::server::db { "dashboard for ${fqdn}":
