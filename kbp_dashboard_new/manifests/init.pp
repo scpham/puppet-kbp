@@ -20,6 +20,7 @@ class kbp_dashboard_new::server($url, $ssl=true, $mysql_name=$environment, $dbpa
   @@mysql::server::grant { "dashboard on puppet for ${fqdn}":
     user        => 'icinga',
     db          => 'puppet',
+    hostname    => $fqdn,
     password    => $dbpassword,
     permissions => 'SELECT',
     tag         => "mysql_${kumina}_dashboard";
