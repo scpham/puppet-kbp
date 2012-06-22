@@ -1,44 +1,28 @@
-class kbp_dashboard_new::server($url, $ssl=true) {
+class kbp_dashboard_new::server($url, $ssl=true, $mysql_name=$environment, $dbpassword) {
   $port = $ssl ? {
     false => 80,
     true  => 443,
   }
 
-  file {
-    "/srv/www/${url}":
-      ensure  => directory,
-      purge   => true,
-      recurse => true,
-      force   => true;
-    "/srv/www/${url}/style.css":
-      content => template("kbp_dashboard_new/style.css");
-    "/srv/www/${url}/.htpasswd":
-      ensure  => link,
-      target  => "/srv/www/${url}/kumina/.htpasswd",
-      require => File["/srv/www/${url}"];
+#  file { "/srv/www/${url}/.htpasswd":
+#    ensure  => link,
+#    target  => "/srv/www/${url}/kumina/.htpasswd";
+#  }
+
+  kbp_mysql::client { 'dashboard':
+    $mysql_name => 'dashboard';
   }
 
-  concat { "/srv/www/${url}/index.html":
-    require => File["/srv/www/${url}"];
+  @@mysql::server::db { "dashboard for ${fqdn}":
+    tag => "mysql_${kumina}_dashboard";
   }
 
-  concat::add_content {
-    "0 index.html base head for kumina_new":
-      content => template("kbp_dashboard/index.html_base_head"),
-      target  => "/srv/www/${url}/index.html";
-    "2 index.html base tail for kumina_new":
-      content => template("kbp_dashboard/index.html_customer_tail"),
-      target  => "/srv/www/${url}/index.html";
-  }
-
-  Kbp_dashboard_new::Environment <<| |>>
-  Kbp_dashboard_new::Customer_entry <<| |>>
-  Kbp_dashboard_new::Base_entry <<| |>>
-  Kbp_dashboard_new::Server_base <<| |>> {
-    url => $url,
-  }
-  Kbp_dashboard_new::Server_interface <<| |>> {
-    url => $url,
+  @@mysql::server::grant { "dashboard on puppet for ${fqdn}":
+    user        => 'icinga',
+    db          => 'puppet',
+    password    => $dbpassword,
+    permissions => 'SELECT',
+    tag         => "mysql_${kumina}_dashboard";
   }
 }
 
