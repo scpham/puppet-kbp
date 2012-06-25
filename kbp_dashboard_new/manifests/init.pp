@@ -50,43 +50,15 @@ class kbp_dashboard_new::client {
 }
 
 define kbp_dashboard_new::environment($fullname) {
-  file {
-    "/srv/www/${url}/${name}":
-      ensure  => directory,
-      purge   => true,
-      recurse => true,
-      force   => true;
-    "/srv/www/${url}/${name}/style.css":
-      content => template("kbp_dashboard_new/style.css");
-    "/srv/www/${url}/${name}/overview":
-      ensure  => directory,
-      purge   => true,
-      recurse => true,
-      force   => true;
-    "/srv/www/${url}/${name}/overview/servers":
-      ensure  => directory,
-      purge   => true,
-      recurse => true,
-      force   => true;
+  file { "/srv/www/${url}/${name}":
+    ensure  => directory,
+    purge   => true,
+    recurse => true,
+    force   => true;
   }
 
-  concat {
-    "/srv/www/${url}/${name}/index.html":
-      require => File["/srv/www/${url}/${name}"];
-    "/srv/www/${url}/${name}/.htpasswd":
-      require => File["/srv/www/${url}/${name}"];
-  }
-
-  concat::add_content {
-    "0 index.html customer head for ${name}_new":
-      content => template("kbp_dashboard_new/index.html_customer_head"),
-      target  => "/srv/www/${url}/${name}/index.html";
-    "2 index.html customer tail for ${name}_new":
-      content => template("kbp_dashboard_new/index.html_customer_tail"),
-      target  => "/srv/www/${url}/${name}/index.html";
-    "1 index.html base body for ${name}_new":
-      content => template("kbp_dashboard_new/index.html_base_body"),
-      target  => "/srv/www/${url}/index.html";
+  concat { "/srv/www/${url}/${name}/.htpasswd":
+    require => File["/srv/www/${url}/${name}"];
   }
 
   Concat::Add_content <<| tag == "htpasswd_${name}" |>> {
@@ -96,13 +68,9 @@ define kbp_dashboard_new::environment($fullname) {
   kbp_apache_new::vhost_addition { "${url}_${port}/access_${name}":
     content => template("kbp_dashboard_new/vhost-additions/access");
   }
+}
 
-  @@kbp_dashboard_new::base_entry { "Overview for ${name}":
-    path        => "overview",
-    text        => "Machine overview",
-    entry_name  => "Overview",
-    environment => $name;
-  }
+define kbp_dashboard_new::dcenv($fullname) {
 }
 
 define kbp_dashboard_new::customer_entry_export($path, $extra_paths=false, $regex_paths=false, $entry_url, $text, $add_environment=true) {
