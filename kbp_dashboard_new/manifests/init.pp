@@ -35,7 +35,7 @@ class kbp_dashboard_new::site($url, $ssl=true, $mysql_name=$environment, $dbpass
 }
 
 class kbp_dashboard_new::client {
-  @@kbp_dashboard_new::server { $fqdn:
+  @@kbp_dashboard_new::server_raw { $fqdn:
     environment => $environment,
     dcenv       => $dcenv,
     parent      => $parent,
@@ -109,8 +109,17 @@ define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
   }
 }
 
-define kbp_dashboard_new::server($environment, $dcenv, $proccount, $memsize, $parent=false) {
+define kbp_dashboard_new::server_raw($environment, $dcenv, $proccount, $memsize, $parent=false) {
+  kbp_dashboard_new::server { $name:
+    environment => $environment,
+    dcenv       => $dcenv,
+    proccount   => $proccount,
+    memsize     => regsubst($memsize, ' .*', 'G'),
+    parent      => $parent;
+  }
 }
+
+define kbp_dashboard_new::server($environment, $dcenv, $proccount, $memsize, $parent=false) {}
 
 define kbp_dashboard_new::server_interface($environment, $fqdn, $interface, $ipv4, $ipv6, $mac, $url=false) {
   concat::add_content { "111_${fqdn}_${name}":
