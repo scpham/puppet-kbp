@@ -70,9 +70,6 @@ define kbp_dashboard_new::environment($fullname) {
   }
 }
 
-define kbp_dashboard_new::dcenv($fullname) {
-}
-
 define kbp_dashboard_new::customer_entry_export($path, $extra_paths=false, $regex_paths=false, $entry_url, $text, $add_environment=true) {
   $entry_name = regsubst($name,'^(.*?) (.*)$','\1')
 
