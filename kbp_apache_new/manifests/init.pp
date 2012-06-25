@@ -256,7 +256,7 @@ define kbp_apache_new::php_cgi($ensure="present", $documentroot, $custom_php_ini
 #  Undocumented
 #  gen_puppet
 #
-define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot=false, $create_documentroot=true, $address=false, $address6=false,
+define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot=false, $create_documentroot=true, $address='*', $address6='::',
     $port=false, $make_default=false, $ssl=false, $non_ssl=true, $key=false, $cert=false, $intermediate=false, $wildcard=false, $log_vhost=false, $access_logformat="combined",
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor_creds=false,
     $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $glassfish_domain=false, $glassfish_connector_port=false,
@@ -264,14 +264,6 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     $django_settings=false, $phpmyadmin=false, $ha=false, $monitor_ip=false) {
   include kbp_apache_new
 
-  $real_address = $address ? {
-    false   => $ipaddress,
-    default => $address,
-  }
-  $real_address6 = $address6 ? {
-    false   => $ipaddress6,
-    default => $address6,
-  }
   $temp_name   = $port ? {
     false   => $name,
     default => "${name}_${port}",
@@ -304,8 +296,8 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     serveralias         => $serveralias,
     create_documentroot => $create_documentroot,
     documentroot        => $real_documentroot,
-    address             => $real_address,
-    address6            => $real_address6,
+    address             => $address,
+    address6            => $address6,
     port                => $port,
     log_vhost           => $log_vhost,
     access_logformat    => $access_logformat,
@@ -325,14 +317,14 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
 
     $real_monitor_ip = $monitor_ip ? {
-      false   => $real_address,
+      false   => $address,
       default => $monitor_ip,
     }
 
     kbp_icinga::site { $monitor_name:
       service_description => $service_description,
       address             => $real_monitor_ip,
-      address6            => $real_address6,
+      address6            => $address6,
       host_name           => $real_name,
       max_check_attempts  => $max_check_attempts,
       auth                => $auth,
@@ -362,8 +354,8 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     if $redirect_non_ssl {
       kbp_apache_new::forward_vhost { $real_name:
         ensure      => $ensure,
-        address     => $real_address,
-        address6    => $real_address6,
+        address     => $address,
+        address6    => $address6,
         forward     => "https://${real_name}",
         serveralias => $serveralias;
       }
@@ -373,8 +365,8 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         serveralias         => $serveralias,
         create_documentroot => $create_documentroot,
         documentroot        => $real_documentroot,
-        address             => $real_address,
-        address6            => $real_address6,
+        address             => $address,
+        address6            => $address6,
         port                => $port,
         log_vhost           => $log_vhost,
         access_logformat    => $access_logformat,
@@ -384,7 +376,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       kbp_icinga::site { $real_name:
         service_description => $service_description,
         address             => $real_monitor_ip,
-        address6            => $real_address6,
+        address6            => $address6,
         host_name           => $real_name,
         max_check_attempts  => $max_check_attempts,
         auth                => $auth,
