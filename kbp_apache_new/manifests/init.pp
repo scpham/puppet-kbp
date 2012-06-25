@@ -264,15 +264,19 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     $django_settings=false, $phpmyadmin=false, $ha=false, $monitor_ip=false) {
   include kbp_apache_new
 
+  $real_address = $address ? {
+    false   => $ipaddress,
+    default => $address,
+  }
+  $real_address6 = $address6 ? {
+    false   => $ipaddress6,
+    default => $address6,
+  }
   $temp_name   = $port ? {
     false   => $name,
     default => "${name}_${port}",
   }
   if $key or $cert or $intermediate or $wildcard or $ssl {
-    if ! $address and ! $address6 and ! $wildcard {
-      fail("Kbp_apache_new::site(${name}) is an SSL site but no IP address has been set.")
-    }
-
     include kbp_apache_new::ssl
 
     $real_ssl = true
@@ -300,8 +304,8 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     serveralias         => $serveralias,
     create_documentroot => $create_documentroot,
     documentroot        => $real_documentroot,
-    address             => $address,
-    address6            => $address6,
+    address             => $real_address,
+    address6            => $real_address6,
     port                => $port,
     log_vhost           => $log_vhost,
     access_logformat    => $access_logformat,
@@ -313,52 +317,6 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     wildcard            => $wildcard;
   }
 
-  if $real_ssl and $non_ssl {
-    if $redirect_non_ssl {
-      kbp_apache_new::forward_vhost { $real_name:
-        ensure      => $ensure,
-        forward     => "https://${real_name}",
-        serveralias => $serveralias;
-      }
-    } else {
-      gen_apache::site { "${real_name}_80":
-        ensure              => $ensure,
-        serveralias         => $serveralias,
-        create_documentroot => $create_documentroot,
-        documentroot        => $real_documentroot,
-        address             => $address,
-        address6            => $address6,
-        port                => $port,
-        log_vhost           => $log_vhost,
-        access_logformat    => $access_logformat,
-        make_default        => $make_default;
-      }
-
-      kbp_icinga::site { $real_name:
-        service_description => $service_description,
-        address             => $real_monitor_ip,
-        address6            => $address6,
-        host_name           => $real_name,
-        max_check_attempts  => $max_check_attempts,
-        auth                => $auth,
-        path                => $monitor_path,
-        response            => $monitor_response,
-        credentials         => $monitor_creds,
-        check_interval      => $monitor_check_interval,
-        ha                  => $ha,
-        ssl                 => false;
-      }
-    }
-
-    if ! $wildcard {
-      if $cert {
-        kbp_icinga::sslcert { $cert:; }
-      } else {
-        kbp_icinga::sslcert { $real_name:; }
-      }
-    }
-  }
-
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
     if $real_ssl {
       $monitor_name = "${real_name}_SSL"
@@ -367,14 +325,14 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
 
     $real_monitor_ip = $monitor_ip ? {
-      false   => $address,
+      false   => $real_address,
       default => $monitor_ip,
     }
 
     kbp_icinga::site { $monitor_name:
       service_description => $service_description,
       address             => $real_monitor_ip,
-      address6            => $address6,
+      address6            => $real_address6,
       host_name           => $real_name,
       max_check_attempts  => $max_check_attempts,
       auth                => $auth,
@@ -396,6 +354,54 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
           default => $monitor_probe,
         },
         path  => $monitor_path;
+      }
+    }
+  }
+
+  if $real_ssl and $non_ssl {
+    if $redirect_non_ssl {
+      kbp_apache_new::forward_vhost { $real_name:
+        ensure      => $ensure,
+        address     => $real_address,
+        address6    => $real_address6,
+        forward     => "https://${real_name}",
+        serveralias => $serveralias;
+      }
+    } else {
+      gen_apache::site { "${real_name}_80":
+        ensure              => $ensure,
+        serveralias         => $serveralias,
+        create_documentroot => $create_documentroot,
+        documentroot        => $real_documentroot,
+        address             => $real_address,
+        address6            => $real_address6,
+        port                => $port,
+        log_vhost           => $log_vhost,
+        access_logformat    => $access_logformat,
+        make_default        => $make_default;
+      }
+
+      kbp_icinga::site { $real_name:
+        service_description => $service_description,
+        address             => $real_monitor_ip,
+        address6            => $real_address6,
+        host_name           => $real_name,
+        max_check_attempts  => $max_check_attempts,
+        auth                => $auth,
+        path                => $monitor_path,
+        response            => $monitor_response,
+        credentials         => $monitor_creds,
+        check_interval      => $monitor_check_interval,
+        ha                  => $ha,
+        ssl                 => false;
+      }
+    }
+
+    if ! $wildcard {
+      if $cert {
+        kbp_icinga::sslcert { $cert:; }
+      } else {
+        kbp_icinga::sslcert { $real_name:; }
       }
     }
   }
@@ -496,9 +502,11 @@ define kbp_apache_new::module ($ensure = "enable") {
   }
 }
 
-define kbp_apache_new::forward_vhost ($forward, $ensure="present", $serveralias=false, $statuscode=301, $port=80) {
+define kbp_apache_new::forward_vhost ($forward, $address = $ipaddress, $address6 = $ipaddress6, $ensure="present", $serveralias=false, $statuscode=301, $port=80) {
   gen_apache::forward_vhost { $name:
     forward     => $forward,
+    address     => $address,
+    address6    => $address6,
     ensure      => $ensure,
     serveralias => $serveralias,
     statuscode  => $statuscode,
