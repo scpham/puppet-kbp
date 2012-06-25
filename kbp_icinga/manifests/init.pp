@@ -587,6 +587,15 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       nrpe          => true;
     "check_http":
       arguments     => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20'];
+    "check_http_port_url":
+      command_name  => "check_http",
+      host_argument => '-I $HOSTADDRESS$',
+      arguments     => ['-p $ARG1$','-u $ARG2$','-e $ARG3$','-t 20'];
+    "check_http_port_url_nrpe":
+      command_name  => "check_http",
+      host_argument => '-I 127.0.0.1',
+      arguments     => ['-p $ARG1$','-u $ARG2$','-e $ARG3$','-t 20'],
+      nrpe          => true;
     "check_http_ssl":
       command_name  => "check_http",
       arguments     => ['-S', '-I $HOSTADDRESS$', '-e $ARG1$', '-t 20'];
@@ -2095,10 +2104,7 @@ define kbp_icinga::proc_status ($servicegroups=false) {
   kbp_icinga::service { "proc_status_${name}":
     service_description => "Process status for ${name}",
     check_command       => "check_proc_status",
-    servicegroups       => $servicegroups ? {
-      false   => undef,
-      default => $servicegroups,
-    },
+    servicegroups       => $servicegroups,
     arguments           => $name,
     nrpe                => true;
   }
@@ -2119,18 +2125,22 @@ define kbp_icinga::proc_status ($servicegroups=false) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::glassfish($webport, $statuspath=false) {
+define kbp_icinga::glassfish::status_page($port, $statuspath=false, $response='200', $check_on_localhost=false, $servicegroups=false) {
   $realpath = $statuspath ? {
     false   => "/${name}/status.jsp",
-    default => "${statuspath}/status.jsp",
+    default => $statuspath,
   }
 
-  kbp_icinga::site { $name:
-    service_description => "Glassfish ${name} status",
-    host_name           => $fqdn,
-    port                => $webport,
-    path                => $realpath,
-    response            => "RUNNING";
+  $nrpe = $check_on_localhost ? {
+    false   => '',
+    default => '_nrpe',
+  }
+
+  kbp_icinga::service { "glassfish_instance_${name}_status_page":
+    service_description => "Glassfish instance ${name} status page",
+    check_command       => "check_http_port_url${nrpe}",
+    servicegroups       => $servicegroups,
+    arguments           => [$port,$realpath,$response];
   }
 }
 
