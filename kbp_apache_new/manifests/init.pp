@@ -508,6 +508,9 @@ define kbp_apache_new::forward_vhost ($forward, $address = '*', $address6 = '::'
   kbp_icinga::site { "${name}_forward":
     service_description => "Vhost ${name} forward",
     host_name           => $name,
+    address             => $address ? {
+      '*'     => false,
+      default => $address
     statuscode          => $statuscode,
     response            => $forward;
   }
