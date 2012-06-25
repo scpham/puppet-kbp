@@ -89,6 +89,8 @@ class kbp_glassfish_new::cluster {
 #   Either running or stopped (for now...)
 #  autostart
 #   Should this domain bestarted on boot and when invoking /etc/init.d/glassfish start
+#  web_address
+#   The address apache should bind on. Defaults to "*".
 #  web_servername
 #   Set this to the server name if you need an apache in front of this glassfish
 #  web_serveralias
@@ -121,7 +123,7 @@ class kbp_glassfish_new::cluster {
 #  gen_puppet
 #  gen_glassfish::domain
 #
-define kbp_glassfish_new::domain($portbase, $ensure="present", $jmx_port = false,
+define kbp_glassfish_new::domain($portbase, $ensure="present", $jmx_port = false, $web_address = "*",
     $web_servername=false, $web_serveralias = [], $web_port = "80", $web_sslport = false, $web_redundant=false,
     $java_monitoring=false, $java_servicegroups=false, $monitoring_sms=true, $monitoring_statuspath=false,
     $mbean_objectname=false, $mbean_attributename=false, $mbean_expectedvalue=false, $mbean_attributekey=false) {
@@ -186,6 +188,7 @@ define kbp_glassfish_new::domain($portbase, $ensure="present", $jmx_port = false
     }
 
     kbp_glassfish_new::domain::site { $web_servername:
+      webaddress       => $web_address,
       glassfish_domain => $name,
       jkport           => $jkport,
       webport          => $web_port,
@@ -218,16 +221,19 @@ define kbp_glassfish_new::domain($portbase, $ensure="present", $jmx_port = false
 #   Name of the domain (to connect to)
 #  jkport:
 #   The port to connect to
-# webport:
-#  External port to listen on for HTTP traffic
+#  webaddress
+#   The address Apache should listen to. Defaults to "*".
+#  webport:
+#   External port to listen on for HTTP traffic
 #  TODO ssl options
-# statuspath:
-#  a path to check om (e.g. /status.html)
-# access_logformat
-#  The logformat that Apache should use.
+#  statuspath:
+#   a path to check om (e.g. /status.html)
+#  access_logformat
+#   The logformat that Apache should use.
 #
-define kbp_glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 80, $statuspath=false, $ensure = "present", $access_logformat="combined", $connector_loglevel="info", $serveralias=false) {
+define kbp_glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 80, $statuspath=false, $ensure = "present", $access_logformat="combined", $connector_loglevel="info", $serveralias=false, $webaddress="*") {
   kbp_apache_new::site { $name:
+    address                      => $webaddress,
     glassfish_domain             => $glassfish_domain,
     glassfish_connector_port     => $jkport,
     glassfish_connector_loglevel => $connector_loglevel,
