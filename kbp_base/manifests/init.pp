@@ -24,7 +24,7 @@ class kbp_base {
   include kbp_time
   include kbp_vim
   include kbp_dashboard::client
-#  include kbp_dashboard_new::client
+  include kbp_dashboard_new::client
   include kbp_mcollective::server
   include kbp_ferm
   include kbp_nagios::nrpe

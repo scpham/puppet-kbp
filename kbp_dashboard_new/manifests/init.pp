@@ -1,4 +1,4 @@
-class kbp_dashboard_new::server($url, $ssl=true, $mysql_name=$environment, $dbpassword) {
+class kbp_dashboard_new::site($url, $ssl=true, $mysql_name=$environment, $dbpassword) {
   $port = $ssl ? {
     false => 80,
     true  => 443,
@@ -35,10 +35,10 @@ class kbp_dashboard_new::server($url, $ssl=true, $mysql_name=$environment, $dbpa
 }
 
 class kbp_dashboard_new::client {
-  @@kbp_dashboard_new::server_base { $fqdn:
+  @@kbp_dashboard_new::server { $fqdn:
     environment => $environment,
+    dcenv       => $dcenv,
     parent      => $parent,
-    fqdn        => $fqdn,
     proccount   => $processorcount,
     memsize     => $memorysize;
   }
@@ -109,17 +109,7 @@ define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
   }
 }
 
-define kbp_dashboard_new::server_base($environment, $parent=false, $fqdn, $proccount, $memsize, $url=false) {
-  concat { "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml":; }
-
-  concat::add_content {
-    "000_${fqdn}_base":
-      content => template("kbp_dashboard_new/overview/server_base_start"),
-      target  => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml";
-    "ZZZ_${fqdn}_base":
-      content => template("kbp_dashboard_new/overview/server_base_end"),
-      target  => "/srv/www/${url}/${environment}/overview/servers/${fqdn}.xml";
-  }
+define kbp_dashboard_new::server($environment, $dcenv, $proccount, $memsize, $parent=false) {
 }
 
 define kbp_dashboard_new::server_interface($environment, $fqdn, $interface, $ipv4, $ipv6, $mac, $url=false) {
