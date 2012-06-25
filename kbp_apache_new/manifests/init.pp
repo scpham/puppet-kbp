@@ -510,7 +510,8 @@ define kbp_apache_new::forward_vhost ($forward, $address = '*', $address6 = '::'
     host_name           => $name,
     address             => $address ? {
       '*'     => false,
-      default => $address
+      default => $address,
+    },
     statuscode          => $statuscode,
     response            => $forward;
   }
