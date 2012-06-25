@@ -494,7 +494,7 @@ define kbp_apache_new::module ($ensure = "enable") {
   }
 }
 
-define kbp_apache_new::forward_vhost ($forward, $address = $ipaddress, $address6 = $ipaddress6, $ensure="present", $serveralias=false, $statuscode=301, $port=80) {
+define kbp_apache_new::forward_vhost ($forward, $address = '*', $address6 = '::', $ensure="present", $serveralias=false, $statuscode=301, $port=80) {
   gen_apache::forward_vhost { $name:
     forward     => $forward,
     address     => $address,
