@@ -604,7 +604,6 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
   }
 
   kbp_apache_new::site { $site:
-    address      => $ipaddress,
     make_default => true,
     wildcard     => $wildcard,
     intermediate => $intermediate;
