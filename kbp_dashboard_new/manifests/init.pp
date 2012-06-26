@@ -120,7 +120,7 @@ define kbp_dashboard_new::server_raw($environment, $dcenv, $proccount, $memsize,
   }
 }
 
-define kbp_dashboard_new::server($environment, $dcenv, $proccount, $memsize, $parent=false) {}
+define kbp_dashboard_new::server($environment, $dcenv, $proccount, $memsize, $memtype, $parent=false) {}
 
 define kbp_dashboard_new::server_interface($environment, $fqdn, $interface, $ipv4, $ipv6, $mac, $url=false) {
   concat::add_content { "111_${fqdn}_${name}":
