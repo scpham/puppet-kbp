@@ -111,12 +111,13 @@ define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
 
 define kbp_dashboard_new::server_raw($environment, $dcenv, $dcenv_fullname, $proccount, $memsize, $parent=false) {
   @@kbp_dashboard_new::server { $name:
-    environment => $environment,
-    dcenv       => $dcenv,
-    proccount   => $proccount,
-    memsize     => regsubst($memsize, '^(.*) .*$', '\1'),
-    memtype     => regsubst($memsize, '^.* (.*)$', '\1'),
-    parent      => $parent;
+    environment    => $environment,
+    dcenv          => $dcenv,
+    dcenv_fullname => $dcenv_fullname,
+    proccount      => $proccount,
+    memsize        => regsubst($memsize, '^(.*) .*$', '\1'),
+    memtype        => regsubst($memsize, '^.* (.*)$', '\1'),
+    parent         => $parent;
   }
 }
 
