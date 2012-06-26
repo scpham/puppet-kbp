@@ -36,11 +36,12 @@ class kbp_dashboard_new::site($url, $ssl=true, $mysql_name=$environment, $dbpass
 
 class kbp_dashboard_new::client {
   kbp_dashboard_new::server_raw { $fqdn:
-    environment => $environment,
-    dcenv       => $dcenv,
-    parent      => $parent,
-    proccount   => $processorcount,
-    memsize     => $memorysize;
+    environment    => $environment,
+    dcenv          => $dcenv,
+    dcenv_fullname => $dcenv_fullname,
+    parent         => $parent,
+    proccount      => $processorcount,
+    memsize        => $memorysize;
   }
 
   $used_ifs_string = template("kbp_dashboard_new/interfaces")
