@@ -64,6 +64,9 @@ class kbp_icinga::client {
       sudo      => true,
       arguments => '-i $ARG1$ -w $ARG2$ -c $ARG3$';
     "check_heartbeat":;
+    'check_http_port_url':
+      command   => 'check_http',
+      arguments => ['-I 127.0.0.1 -p $ARG1$ -u $ARG2$ -e $ARG3$ -t 20'];
     "check_icinga_config":
       sudo      => true,
       arguments => '$ARG1$';
@@ -592,9 +595,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ['-p $ARG1$','-u $ARG2$','-e $ARG3$','-t 20'];
     "check_http_port_url_nrpe":
-      command_name  => "check_http",
-      host_argument => '-I 127.0.0.1',
-      arguments     => ['-p $ARG1$','-u $ARG2$','-e $ARG3$','-t 20'],
+      command_name  => "check_http_port_url",
+      arguments     => ['$ARG1$','$ARG2$','$ARG3$'],
       nrpe          => true;
     "check_http_ssl":
       command_name  => "check_http",
