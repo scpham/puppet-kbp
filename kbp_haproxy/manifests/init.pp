@@ -1,14 +1,15 @@
 # Author: Kumina bv <support@kumina.nl>
 
 
-class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $loglevel="warning", $forwardfor=false) {
+class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $loglevel="warning", $forwardfor=false, $tcp_smart_connect=true) {
   include kbp_trending::haproxy
 
   class { "gen_haproxy":
-    failover  => $failover,
-    loglevel  => $loglevel,
-    haproxy_tag => $haproxy_tag,
-    forwardfor => $forwardfor;
+    failover          => $failover,
+    loglevel          => $loglevel,
+    haproxy_tag       => $haproxy_tag,
+    forwardfor        => $forwardfor,
+    tcp_smart_connect => $tcp_smart_connect;
   }
 
   # These exported kfiles contain the firewall fragments
