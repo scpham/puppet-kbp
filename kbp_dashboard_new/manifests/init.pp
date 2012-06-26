@@ -115,6 +115,7 @@ define kbp_dashboard_new::server_raw($environment, $dcenv, $proccount, $memsize,
     dcenv       => $dcenv,
     proccount   => $proccount,
     memsize     => regsubst($memsize, '^(.*) .*$', '\1'),
+    memtype     => regsubst($memsize, '^.* (.*)$', '\1'),
     parent      => $parent;
   }
 }
