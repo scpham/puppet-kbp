@@ -109,7 +109,7 @@ define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
   }
 }
 
-define kbp_dashboard_new::server_raw($environment, $dcenv, $proccount, $memsize, $parent=false) {
+define kbp_dashboard_new::server_raw($environment, $dcenv, $dcenv_fullname, $proccount, $memsize, $parent=false) {
   @@kbp_dashboard_new::server { $name:
     environment => $environment,
     dcenv       => $dcenv,
@@ -120,7 +120,7 @@ define kbp_dashboard_new::server_raw($environment, $dcenv, $proccount, $memsize,
   }
 }
 
-define kbp_dashboard_new::server($environment, $dcenv, $proccount, $memsize, $memtype, $parent=false) {}
+define kbp_dashboard_new::server($environment, $dcenv, $dcenv_fullname, $proccount, $memsize, $memtype, $parent=false) {}
 
 define kbp_dashboard_new::server_interface($environment, $fqdn, $interface, $ipv4, $ipv6, $mac, $url=false) {
   concat::add_content { "111_${fqdn}_${name}":
