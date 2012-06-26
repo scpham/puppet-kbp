@@ -38,7 +38,6 @@ class kbp_dashboard_new::client {
   kbp_dashboard_new::server_raw { $fqdn:
     environment    => $environment,
     dcenv          => $dcenv,
-    dcenv_fullname => $dcenv_fullname,
     parent         => $parent,
     proccount      => $processorcount,
     memsize        => $memorysize;
@@ -70,6 +69,8 @@ define kbp_dashboard_new::environment($fullname) {
     content => template("kbp_dashboard_new/vhost-additions/access");
   }
 }
+
+define kbp_dashboard_new::dcenv($fullname) {}
 
 define kbp_dashboard_new::customer_entry_export($path, $extra_paths=false, $regex_paths=false, $entry_url, $text, $add_environment=true) {
   $entry_name = regsubst($name,'^(.*?) (.*)$','\1')
@@ -110,11 +111,10 @@ define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
   }
 }
 
-define kbp_dashboard_new::server_raw($environment, $dcenv, $dcenv_fullname, $proccount, $memsize, $parent=false) {
+define kbp_dashboard_new::server_raw($environment, $dcenv, $proccount, $memsize, $parent=false) {
   @@kbp_dashboard_new::server { $name:
     environment    => $environment,
     dcenv          => $dcenv,
-    dcenv_fullname => $dcenv_fullname,
     proccount      => $proccount,
     memsize        => regsubst($memsize, '^(.*) .*$', '\1'),
     memtype        => regsubst($memsize, '^.* (.*)$', '\1'),
@@ -122,7 +122,7 @@ define kbp_dashboard_new::server_raw($environment, $dcenv, $dcenv_fullname, $pro
   }
 }
 
-define kbp_dashboard_new::server($environment, $dcenv, $dcenv_fullname, $proccount, $memsize, $memtype, $parent=false) {}
+define kbp_dashboard_new::server($environment, $dcenv, $proccount, $memsize, $memtype, $parent=false) {}
 
 define kbp_dashboard_new::server_interface($environment, $fqdn, $interface, $ipv4, $ipv6, $mac, $url=false) {
   concat::add_content { "111_${fqdn}_${name}":
