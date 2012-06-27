@@ -36,11 +36,12 @@ class kbp_dashboard_new::site($url, $ssl=true, $mysql_name=$environment, $dbpass
 
 class kbp_dashboard_new::client {
   kbp_dashboard_new::server_raw { $fqdn:
-    environment    => $environment,
-    dcenv          => $dcenv,
-    parent         => $parent,
-    proccount      => $processorcount,
-    memsize        => $memorysize;
+    environment => $environment,
+    dcenv       => $dcenv,
+    is_virtual  => $is_virtual,
+    parent      => $parent,
+    proccount   => $processorcount,
+    memsize     => $memorysize;
   }
 
   $used_ifs_string = template("kbp_dashboard_new/interfaces")
@@ -111,18 +112,19 @@ define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
   }
 }
 
-define kbp_dashboard_new::server_raw($environment, $dcenv, $proccount, $memsize, $parent=false) {
+define kbp_dashboard_new::server_raw($environment, $dcenv, $is_virtual, $proccount, $memsize, $parent=false) {
   @@kbp_dashboard_new::server { $name:
-    environment    => $environment,
-    dcenv          => $dcenv,
-    proccount      => $proccount,
-    memsize        => regsubst($memsize, '^(.*) .*$', '\1'),
-    memtype        => regsubst($memsize, '^.* (.*)$', '\1'),
-    parent         => $parent;
+    environment => $environment,
+    dcenv       => $dcenv,
+    is_virtual  => $is_virtual,
+    proccount   => $proccount,
+    memsize     => regsubst($memsize, '^(.*) .*$', '\1'),
+    memtype     => regsubst($memsize, '^.* (.*)$', '\1'),
+    parent      => $parent;
   }
 }
 
-define kbp_dashboard_new::server($environment, $dcenv, $proccount, $memsize, $memtype, $parent=false) {}
+define kbp_dashboard_new::server($environment, $dcenv, $is_virtual, $proccount, $memsize, $memtype, $parent=false) {}
 
 define kbp_dashboard_new::server_interface($environment, $fqdn, $interface, $ipv4, $ipv6, $mac, $url=false) {
   concat::add_content { "111_${fqdn}_${name}":
