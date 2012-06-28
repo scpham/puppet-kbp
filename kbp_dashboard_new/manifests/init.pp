@@ -46,8 +46,13 @@ class kbp_dashboard_new::client {
   $used_ifs        = split($used_ifs_string, ",")
 
   @@kbp_dashboard_new::server { $fqdn:
+    environment => $environment,
+    dcenv       => $dcenv,
+    is_virtual  => $is_virtual,
+    proccount   => $processorcount,
     memsize     => regsubst($memsize, '^(.*) .*$', '\1'),
     memtype     => regsubst($memsize, '^.* (.*)$', '\1'),
+    parent      => $parent;
   }
 
   kbp_dashboard_new::interface::wrapper { $used_ifs:; }
@@ -76,7 +81,7 @@ define kbp_dashboard_new::environment($fullname, $url, $port) {
 
 define kbp_dashboard_new::dcenv($fullname) {}
 
-define kbp_dashboard_new::server($environment = $environment, $dcenv = $dcenv, $is_virtual = $is_virtual, $proccount = $processorcount, $memsize, $memtype, $parent = $parent) {}
+define kbp_dashboard_new::server($environment, $dcenv, $is_virtual, $proccount, $memsize, $memtype, $parent) {}
 
 define kbp_dashboard_new::interface::wrapper($server = fqdn) {
   @@kbp_dashboard_new::interface { $name:
