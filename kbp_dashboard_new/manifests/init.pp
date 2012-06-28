@@ -92,7 +92,7 @@ define kbp_dashboard_new::interface::wrapper($fqdn = $fqdn) {
   }
 }
 
-define kbp_dashboard_new::interface($server, $ipv4, $ipv6, $mac) {}
+define kbp_dashboard_new::interface($fqdn, $ipv4, $ipv6, $mac) {}
 
 define kbp_dashboard_new::customer_entry_export($path, $extra_paths=false, $regex_paths=false, $entry_url, $text, $add_environment=true) {
   $entry_name = regsubst($name,'^(.*?) (.*)$','\1')
