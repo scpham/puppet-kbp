@@ -4,10 +4,15 @@ class kbp_dashboard_new::site($url, $ssl=true, $mysql_name=$environment, $dbpass
     true  => 443,
   }
 
-#  file { "/srv/www/${url}/.htpasswd":
-#    ensure  => link,
-#    target  => "/srv/www/${url}/kumina/.htpasswd";
-#  }
+  file { "/srv/www/${url}/.htpasswd":
+    ensure  => link,
+    target  => "/srv/www/${url}/kumina/.htpasswd";
+  }
+
+  Kbp_dashboard_new::Environment <<| |>> {
+    url  => $url,
+    port => $port,
+  }
 
   kbp_mysql::client { 'dashboard':
     mysql_name => 'dashboard';
@@ -46,7 +51,7 @@ class kbp_dashboard_new::client {
   kbp_dashboard_new::interface::wrapper { $used_ifs:; }
 }
 
-define kbp_dashboard_new::environment($fullname) {
+define kbp_dashboard_new::environment($fullname, $url, $port) {
   file { "/srv/www/${url}/${name}":
     ensure  => directory,
     purge   => true,
