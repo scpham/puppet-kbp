@@ -52,12 +52,12 @@ class kbp_dashboard_new::client {
 
 define kbp_dashboard_new::environment::wrapper($fullname) {
   @@kbp_dashboard_new::environment { $name:
-    name     => $name,
+    env_name => $name,
     fullname => $fullname;
   }
 }
 
-define kbp_dashboard_new::environment($name, $fullname, $url, $port) {
+define kbp_dashboard_new::environment($env_name, $fullname, $url, $port) {
   file { "/srv/www/${url}/${name}":
     ensure  => directory,
   }
@@ -77,12 +77,12 @@ define kbp_dashboard_new::environment($name, $fullname, $url, $port) {
 
 define kbp_dashboard_new::dcenv::wrapper($fullname) {
   @@kbp_dashboard_new::dcenv { $name:
-    name     => $name,
-    fullname => $fullname;
+    dcenv_name => $name,
+    fullname   => $fullname;
   }
 }
 
-define kbp_dashboard_new::dcenv($fullname) {}
+define kbp_dashboard_new::dcenv($dcenv_name, $fullname) {}
 
 define kbp_dashboard_new::server::wrapper() {
   @@kbp_dashboard_new::server { $name:
