@@ -52,7 +52,10 @@ class kbp_dashboard_new::client {
     proccount   => $processorcount,
     memsize     => regsubst($memorysize, '^(.*) .*$', '\1'),
     memtype     => regsubst($memorysize, '^.* (.*)$', '\1'),
-    parent      => $parent;
+    parent      => $parent ? {
+      undef   => false,
+      default => $parent,
+    };
   }
 
   kbp_dashboard_new::interface::wrapper { $used_ifs:; }
