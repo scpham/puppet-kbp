@@ -161,7 +161,7 @@ class kbp_base::environment {
   @@kbp_dashboard::environment { $environment:
     fullname => $customer_name;
   }
-  @@kbp_dashboard_new::environment { $environment:
+  kbp_dashboard_new::environment::wrapper { $environment:
     fullname => $customer_name;
   }
 

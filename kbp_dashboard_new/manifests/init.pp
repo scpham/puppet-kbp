@@ -45,23 +45,19 @@ class kbp_dashboard_new::client {
   $used_ifs_string = template("kbp_dashboard_new/interfaces")
   $used_ifs        = split($used_ifs_string, ",")
 
-  @@kbp_dashboard_new::server { $fqdn:
-    environment => $environment,
-    dcenv       => $dcenv,
-    is_virtual  => $is_virtual,
-    proccount   => $processorcount,
-    memsize     => regsubst($memorysize, '^(.*) .*$', '\1'),
-    memtype     => regsubst($memorysize, '^.* (.*)$', '\1'),
-    parent      => $parent ? {
-      undef   => false,
-      default => $parent,
-    };
-  }
+  kbp_dashboard_new::server::wrapper { $fqdn:; }
 
   kbp_dashboard_new::interface::wrapper { $used_ifs:; }
 }
 
-define kbp_dashboard_new::environment($fullname, $url, $port) {
+define kbp_dashboard_new::environment::wrapper($fullname) {
+  @@kbp_dashboard_new::environment { $name:
+    name => $name,
+    fullname => $fullname;
+  }
+}
+
+define kbp_dashboard_new::environment($name, $fullname, $url, $port) {
   file { "/srv/www/${url}/${name}":
     ensure  => directory,
   }
@@ -79,20 +75,43 @@ define kbp_dashboard_new::environment($fullname, $url, $port) {
   }
 }
 
-define kbp_dashboard_new::dcenv($fullname) {}
-
-define kbp_dashboard_new::server($environment, $dcenv, $is_virtual, $proccount, $memsize, $memtype, $parent) {}
-
-define kbp_dashboard_new::interface::wrapper($fqdn = $fqdn) {
-  @@kbp_dashboard_new::interface { $name:
-    fqdn => $fqdn,
-    ipv4 => template("kbp_dashboard_new/ipv4"),
-    ipv6 => template("kbp_dashboard_new/ipv6"),
-    mac  => template("kbp_dashboard_new/mac");
+define kbp_dashboard_new::dcenv::wrapper($fullname) {
+  @@kbp_dashboard_new::dcenv { $name:
+    name     => $name,
+    fullname => $fullname;
   }
 }
 
-define kbp_dashboard_new::interface($fqdn, $ipv4, $ipv6, $mac) {}
+define kbp_dashboard_new::dcenv($fullname) {}
+
+define kbp_dashboard_new::server::wrapper() {
+  @@kbp_dashboard_new::server { $name:
+    fqdn        => $fqdn,
+    environment => $environment,
+    dcenv       => $dcenv,
+    is_virtual  => $is_virtual,
+    proccount   => $processorcount,
+    memsize     => regsubst($memorysize, '^(.*) .*$', '\1'),
+    memtype     => regsubst($memorysize, '^.* (.*)$', '\1'),
+    parent      => $parent ? {
+      undef   => false,
+      default => $parent,
+    };
+  }
+}
+
+define kbp_dashboard_new::server($fqdn, $environment, $dcenv, $is_virtual, $proccount, $memsize, $memtype, $parent) {}
+
+define kbp_dashboard_new::interface::wrapper() {
+  @@kbp_dashboard_new::interface { $name:
+    server => $fqdn,
+    ipv4   => template("kbp_dashboard_new/ipv4"),
+    ipv6   => template("kbp_dashboard_new/ipv6"),
+    mac    => template("kbp_dashboard_new/mac");
+  }
+}
+
+define kbp_dashboard_new::interface($name, $server, $ipv4, $ipv6, $mac) {}
 
 define kbp_dashboard_new::customer_entry_export($path, $extra_paths=false, $regex_paths=false, $entry_url, $text, $add_environment=true) {
   $entry_name = regsubst($name,'^(.*?) (.*)$','\1')
