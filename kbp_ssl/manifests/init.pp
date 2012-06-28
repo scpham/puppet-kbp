@@ -37,3 +37,10 @@ define kbp_ssl::private_key($content=false, $key_location=false) {
     mode    => 400;
   }
 }
+
+class kbp_ssl::intermediate::terena {
+  kbp_ssl::public_key { 'TerenaCA':
+    content => template('kbp_ssl/TerenaCA.pem'),
+    notify  => Exec['reload-apache2'];
+  }
+}
