@@ -50,8 +50,8 @@ class kbp_dashboard_new::client {
     dcenv       => $dcenv,
     is_virtual  => $is_virtual,
     proccount   => $processorcount,
-    memsize     => regsubst($memsize, '^(.*) .*$', '\1'),
-    memtype     => regsubst($memsize, '^.* (.*)$', '\1'),
+    memsize     => regsubst($memorysize, '^(.*) .*$', '\1'),
+    memtype     => regsubst($memorysize, '^.* (.*)$', '\1'),
     parent      => $parent;
   }
 
@@ -61,9 +61,6 @@ class kbp_dashboard_new::client {
 define kbp_dashboard_new::environment($fullname, $url, $port) {
   file { "/srv/www/${url}/${name}":
     ensure  => directory,
-    purge   => true,
-    recurse => true,
-    force   => true;
   }
 
   concat { "/srv/www/${url}/${name}/.htpasswd":
