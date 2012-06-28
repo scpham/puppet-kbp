@@ -104,14 +104,15 @@ define kbp_dashboard_new::server($fqdn, $environment, $dcenv, $is_virtual, $proc
 
 define kbp_dashboard_new::interface::wrapper() {
   @@kbp_dashboard_new::interface { $name:
-    server => $fqdn,
-    ipv4   => template("kbp_dashboard_new/ipv4"),
-    ipv6   => template("kbp_dashboard_new/ipv6"),
-    mac    => template("kbp_dashboard_new/mac");
+    if_name => $name,
+    server  => $fqdn,
+    ipv4    => template("kbp_dashboard_new/ipv4"),
+    ipv6    => template("kbp_dashboard_new/ipv6"),
+    mac     => template("kbp_dashboard_new/mac");
   }
 }
 
-define kbp_dashboard_new::interface($name, $server, $ipv4, $ipv6, $mac) {}
+define kbp_dashboard_new::interface($if_name, $server, $ipv4, $ipv6, $mac) {}
 
 define kbp_dashboard_new::customer_entry_export($path, $extra_paths=false, $regex_paths=false, $entry_url, $text, $add_environment=true) {
   $entry_name = regsubst($name,'^(.*?) (.*)$','\1')
