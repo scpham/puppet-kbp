@@ -52,7 +52,7 @@ class kbp_dashboard_new::client {
 
 define kbp_dashboard_new::environment::wrapper($fullname) {
   @@kbp_dashboard_new::environment { $name:
-    name => $name,
+    name     => $name,
     fullname => $fullname;
   }
 }
