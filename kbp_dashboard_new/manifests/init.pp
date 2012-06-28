@@ -83,12 +83,12 @@ define kbp_dashboard_new::dcenv($fullname) {}
 
 define kbp_dashboard_new::server($environment, $dcenv, $is_virtual, $proccount, $memsize, $memtype, $parent) {}
 
-define kbp_dashboard_new::interface::wrapper($server = fqdn) {
+define kbp_dashboard_new::interface::wrapper($fqdn = $fqdn) {
   @@kbp_dashboard_new::interface { $name:
-    server    => $server,
-    ipv4      => template("kbp_dashboard_new/ipv4"),
-    ipv6      => template("kbp_dashboard_new/ipv6"),
-    mac       => template("kbp_dashboard_new/mac");
+    fqdn => $fqdn,
+    ipv4 => template("kbp_dashboard_new/ipv4"),
+    ipv6 => template("kbp_dashboard_new/ipv6"),
+    mac  => template("kbp_dashboard_new/mac");
   }
 }
 
