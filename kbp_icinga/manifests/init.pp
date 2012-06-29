@@ -1789,6 +1789,8 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
 #    Undocumented
 #  max_check_attempts
 #    Number of retries before the monitoring considers the site down.
+#  nrpe_proxy
+#    Host to use as nrpe proxy
 #
 # Actions:
 #  Undocumented
@@ -1798,7 +1800,7 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
 #  gen_puppet
 #
 define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_name=false, $response=false,
-    $statuscode="200", $max_check_attempts=false, $ssl=false, $preventproxyoverride=false) {
+    $statuscode="200", $max_check_attempts=false, $ssl=false, $preventproxyoverride=false, $nrpe_proxy=false) {
   kbp_icinga::site { "${name}_80":
     address              => $address,
     port                 => $port,
@@ -1814,7 +1816,8 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_n
     },
     vhost                => false,
     ha                   => $ha,
-    preventproxyoverride => $preventproxyoverride;
+    preventproxyoverride => $preventproxyoverride,
+    proxy                => $nrpe_proxy;
   }
 
   if $ssl {
@@ -1831,7 +1834,8 @@ define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_n
       },
       vhost                => false,
       ha                   => $ha,
-      preventproxyoverride => $preventproxyoverride;
+      preventproxyoverride => $preventproxyoverride,
+      proxy                => $nrpe_proxy;
     }
   }
 }

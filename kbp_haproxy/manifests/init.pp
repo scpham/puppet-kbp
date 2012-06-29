@@ -61,6 +61,8 @@ class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $lo
 #    TCP connection timeout between client and proxy and Maximum time for the server to respond to the proxy
 #  timeout_http_request
 #    Maximum time for HTTP request between client and proxy
+#  nrpe_proxy
+#    Host to use as nrpe proxy
 #  haproxy_tag="haproxy_${environment}"
 #    Change this when there are multiple loadbalancers in one environment
 #
@@ -71,7 +73,7 @@ class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $lo
 #  Undocumented
 #  gen_puppet
 #
-define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=false, $monitoring_hostname=false, $cookie=false, $make_lbconfig, $httpcheck_uri=false, $httpcheck_port=false, $httpcheck_interval=false, $httpcheck_fall=false, $httpcheck_rise=false, backupserver=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s", $timeout_http_request="10s", $tcp_sslport=false, $haproxy_tag="haproxy_${environment}") {
+define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=false, $monitoring_hostname=false, $cookie=false, $make_lbconfig, $httpcheck_uri=false, $httpcheck_port=false, $httpcheck_interval=false, $httpcheck_fall=false, $httpcheck_rise=false, backupserver=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s", $timeout_http_request="10s", $tcp_sslport=false, $nrpe_proxy=false, $haproxy_tag="haproxy_${environment}") {
   $safe_name=regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
 
   gen_ferm::rule { "HAProxy forward for ${name}":
@@ -158,6 +160,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
       port                 => $port,
       max_check_attempts   => $max_check_attempts,
       response             => $monitoring_response,
+      nrpe_proxy           => $nrpe_proxy,
       preventproxyoverride => true;
     }
   }
