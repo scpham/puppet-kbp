@@ -1,5 +1,5 @@
 class kbp_dashboard_new::site($url, $ssl=true, $mysql_name=$environment, $dbpassword) {
-  include gen::base::python_django_south
+  include gen_base::python_django_south
 
   $port = $ssl ? {
     false => 80,
