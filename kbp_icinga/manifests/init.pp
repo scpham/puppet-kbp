@@ -596,7 +596,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       arguments     => ['-p $ARG1$','-u $ARG2$','-e $ARG3$','-t 20','-N'];
     "check_http_port_url_nrpe":
       command_name  => "check_http_port_url",
-      arguments     => ['$ARG1$','$ARG2$','$ARG3$','-N'],
+      arguments     => ['$ARG1$','$ARG2$','$ARG3$'],
       nrpe          => true;
     "check_http_ssl":
       command_name  => "check_http",
