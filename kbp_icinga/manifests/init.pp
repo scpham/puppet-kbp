@@ -589,30 +589,30 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       arguments     => ['$ARG1$', '$ARG2$', '$ARG3$'],
       nrpe          => true;
     "check_http":
-      arguments     => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20'];
+      arguments     => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20','-N'];
     "check_http_port_url":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-p $ARG1$','-u $ARG2$','-e $ARG3$','-t 20'];
+      arguments     => ['-p $ARG1$','-u $ARG2$','-e $ARG3$','-t 20','-N'];
     "check_http_port_url_nrpe":
       command_name  => "check_http_port_url",
-      arguments     => ['$ARG1$','$ARG2$','$ARG3$'],
+      arguments     => ['$ARG1$','$ARG2$','$ARG3$','-N'],
       nrpe          => true;
     "check_http_ssl":
       command_name  => "check_http",
-      arguments     => ['-S', '-I $HOSTADDRESS$', '-e $ARG1$', '-t 20'];
+      arguments     => ['-S', '-I $HOSTADDRESS$', '-e $ARG1$', '-t 20','-N'];
     "check_http_vhost":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-H $ARG1$','-e $ARG2$','-t 20'];
+      arguments     => ['-H $ARG1$','-e $ARG2$','-t 20','-N'];
     "check_http_vhost_address":
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
-      arguments     => ['-H $ARG2$','-e $ARG3$','-t 20'];
+      arguments     => ['-H $ARG2$','-e $ARG3$','-t 20','-N'];
     "check_http_vhost_port":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-H $ARG1$','-p $ARG2$','-e $ARG3$','-t 20'];
+      arguments     => ['-H $ARG1$','-p $ARG2$','-e $ARG3$','-t 20','-N'];
     "check_http_vhost_response":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
@@ -624,35 +624,35 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     "check_http_vhost_ssl":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-S','-H $ARG1$','-e $ARG2$','-t 20'];
+      arguments     => ['-S','-H $ARG1$','-e $ARG2$','-t 20','-N'];
     "check_http_vhost_ssl_address":
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
-      arguments     => ['-S','-H $ARG2$','-e $ARG3$','-t 20'];
+      arguments     => ['-S','-H $ARG2$','-e $ARG3$','-t 20','-N'];
     "check_http_vhost_url":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-H $ARG1$','-u $ARG2$','-e $ARG3$','-t 20'];
+      arguments     => ['-H $ARG1$','-u $ARG2$','-e $ARG3$','-t 20','-N'];
     "check_http_vhost_url_address":
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
-      arguments     => ['-H $ARG2$','-u $ARG3$','-e $ARG4$','-t 20'];
+      arguments     => ['-H $ARG2$','-u $ARG3$','-e $ARG4$','-t 20','-N'];
     "check_http_vhost_url_login_ssl_address":
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
-      arguments     => ['-S', '-H $ARG2$', '-u $ARG3$', '-a $ARG4$', '-e $ARG5$', '-t 20'];
+      arguments     => ['-S', '-H $ARG2$', '-u $ARG3$', '-a $ARG4$', '-e $ARG5$', '-t 20', '-N'];
     "check_http_vhost_url_login_address":
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
-      arguments     => ['-H $ARG2$','-u $ARG3$','-a $ARG4$', '-e $ARG5$', '-t 20'];
+      arguments     => ['-H $ARG2$','-u $ARG3$','-a $ARG4$', '-e $ARG5$', '-t 20', '-N'];
     "check_http_vhost_url_ssl":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-S','-H $ARG1$','-u $ARG2$','-e $ARG3$','-t 20'];
+      arguments     => ['-S','-H $ARG1$','-u $ARG2$','-e $ARG3$','-t 20','-N'];
     "check_http_vhost_url_ssl_address":
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
-      arguments     => ['-S','-H $ARG2$','-u $ARG3$','-e $ARG4$','-t 20'];
+      arguments     => ['-S','-H $ARG2$','-u $ARG3$','-e $ARG4$','-t 20','-N'];
     "check_http_vhost_url_response":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
