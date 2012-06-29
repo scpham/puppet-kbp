@@ -94,7 +94,7 @@ define kbp_dashboard_new::server::wrapper() {
     memsize     => regsubst($memorysize, '^(.*) .*$', '\1'),
     memtype     => regsubst($memorysize, '^.* (.*)$', '\1'),
     parent      => $parent ? {
-      undef   => false,
+      undef   => 'none',
       default => $parent,
     };
   }
