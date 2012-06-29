@@ -357,7 +357,8 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         address     => $address,
         address6    => $address6,
         forward     => "https://${real_name}",
-        serveralias => $serveralias;
+        serveralias => $serveralias,
+        monitor_ip  => $real_monitor_ip;
       }
     } else {
       gen_apache::site { "${real_name}_80":
@@ -494,7 +495,7 @@ define kbp_apache_new::module ($ensure = "enable") {
   }
 }
 
-define kbp_apache_new::forward_vhost ($forward, $address = '*', $address6 = '::', $ensure="present", $serveralias=false, $statuscode=301, $port=80) {
+define kbp_apache_new::forward_vhost ($forward, $address = '*', $address6 = '::', $ensure="present", $serveralias=false, $statuscode=301, $port=80, $monitor_ip = false) {
   gen_apache::forward_vhost { $name:
     forward     => $forward,
     address     => $address,
@@ -508,9 +509,12 @@ define kbp_apache_new::forward_vhost ($forward, $address = '*', $address6 = '::'
   kbp_icinga::site { "${name}_forward":
     service_description => "Vhost ${name} forward",
     host_name           => $name,
-    address             => $address ? {
-      '*'     => false,
-      default => $address,
+    address             => $monitor_ip ? {
+      false   => $address ? {
+        '*'     => false,
+        default => $address,
+      },
+      default => $monitor_ip,
     },
     statuscode          => $statuscode,
     response            => $forward;
