@@ -132,7 +132,6 @@ class kbp_icinga::client {
       sudo      => true,
       arguments => '$ARG1$';
     "check_puppet_dontrun":
-      sudo      => true,
       command   => "check_file",
       arguments => '-f $ARG1$ -n';
     "check_puppet_state_freshness":
