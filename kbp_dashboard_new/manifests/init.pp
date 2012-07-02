@@ -70,8 +70,11 @@ define kbp_dashboard_new::environment($env_name, $fullname, $url, $port) {
     target => "/srv/www/${url}/${name}/.htpasswd",
   }
 
-  kbp_apache_new::vhost_addition { "${url}_${port}/access_${name}":
-    content => template("kbp_dashboard_new/vhost-additions/access");
+  kbp_apache_new::vhost_addition {
+    "${url}_${port}/access_${name}":
+      content => template('kbp_dashboard_new/vhost-additions/access');
+    "${url}_${port}/proxies_${name}":
+      content => template('kbp_dashboard_new/vhost-additions/proxies');
   }
 }
 
@@ -117,42 +120,3 @@ define kbp_dashboard_new::interface::wrapper() {
 }
 
 define kbp_dashboard_new::interface($key, $if_name, $server, $ipv4, $ipv6, $mac) {}
-
-define kbp_dashboard_new::customer_entry_export($path, $extra_paths=false, $regex_paths=false, $entry_url, $text, $add_environment=true) {
-  $entry_name = regsubst($name,'^(.*?) (.*)$','\1')
-
-  if ! defined(Kbp_dashboard_new::Customer_entry["${entry_name}_${environment}"]) {
-    @@kbp_dashboard_new::customer_entry { "${entry_name}_${environment}":
-      path            => $path,
-      extra_paths     => $extra_paths,
-      regex_paths     => $regex_paths,
-      entry_url       => $entry_url,
-      text            => $text,
-      add_environment => $add_environment,
-      entry_name      => $entry_name,
-      environment     => $environment;
-    }
-  }
-}
-
-define kbp_dashboard_new::customer_entry($path, $extra_paths=false, $regex_paths=false, $entry_url, $text, $add_environment=true, $entry_name, $environment) {
-  $base_path = $path
-
-  concat::add_content { "1 index.html content for ${entry_name} for ${environment}":
-    content => template("kbp_dashboard_new/index.html_customer_body"),
-    target  => "/srv/www/${url}/${environment}/index.html";
-  }
-
-  kbp_apache_new::vhost_addition { "${url}_${port}/proxy_${entry_name}_${environment}":
-    content => template("kbp_dashboard_new/vhost-additions/proxy");
-  }
-}
-
-define kbp_dashboard_new::base_entry($path, $text, $entry_name, $environment) {
-  $base_path = $path
-
-  concat::add_content { "1 index.html content for ${entry_name} for ${environment}_new":
-    content => template("kbp_dashboard_new/index.html_customer_body"),
-    target  => "/srv/www/${url}/${environment}/index.html";
-  }
-}
