@@ -39,6 +39,10 @@ class kbp_dashboard_new::site($url, $ssl=true, $mysql_name=$environment, $dbpass
       password    => $dbpassword,
       tag         => "mysql_${kumina}_dashboard";
   }
+
+  kbp_apache_new::vhost_addition { "${url}_${port}/access":
+    content => template('kbp_dashboard_new/vhost-additions/base_access');
+  }
 }
 
 class kbp_dashboard_new::client {
