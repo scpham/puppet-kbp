@@ -449,15 +449,6 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
     require => [Package["munin"], Package["rsync"]];
   }
 
-  @@kbp_dashboard::customer_entry_export { "Munin":
-    path      => "munin",
-    entry_url => $ssl ? {
-      false => "http://munin.kumina.nl",
-      true  => "https://munin.kumina.nl",
-    },
-    text      => "Graphs of server usage and performance.";
-  }
-
   Kbp_munin::Environment <<| |>> {
     site => $site,
   }

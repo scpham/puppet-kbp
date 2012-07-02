@@ -926,17 +926,6 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   @@kbp_munin::alert_export { "icinga on ${fqdn}":
     command => "/usr/sbin/send_nsca -H ${fqdn} -c /etc/send_nsca.cfg";
   }
-
-  @@kbp_dashboard::customer_entry_export { "Icinga on ${fqdn}":
-    path            => "icinga",
-    regex_paths     => ["/cgi-bin/icinga/","/stylesheets/","/images/"],
-    entry_url       => $ssl ? {
-      false => "http://icinga.kumina.nl",
-      true  => "https://icinga.kumina.nl",
-    },
-    text            => "Availability monitoring of servers and services.",
-    add_environment => false;
-  }
 }
 
 # Class: kbp_icinga::environment

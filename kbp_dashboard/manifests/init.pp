@@ -1,4 +1,4 @@
-class kbp_dashboard_new::site($url, $ssl=true, $mysql_name=$environment, $dbpassword) {
+class kbp_dashboard::site($url, $ssl=true, $mysql_name=$environment, $dbpassword) {
   include gen_base::python_django_south
 
   $port = $ssl ? {
@@ -11,7 +11,7 @@ class kbp_dashboard_new::site($url, $ssl=true, $mysql_name=$environment, $dbpass
     target  => "/srv/www/${url}/kumina/.htpasswd";
   }
 
-  Kbp_dashboard_new::Environment <<| |>> {
+  Kbp_dashboard::Environment <<| |>> {
     url  => $url,
     port => $port,
   }
@@ -41,27 +41,27 @@ class kbp_dashboard_new::site($url, $ssl=true, $mysql_name=$environment, $dbpass
   }
 
   kbp_apache_new::vhost_addition { "${url}_${port}/access":
-    content => template('kbp_dashboard_new/vhost-additions/base_access');
+    content => template('kbp_dashboard/vhost-additions/base_access');
   }
 }
 
-class kbp_dashboard_new::client {
-  $used_ifs_string = template("kbp_dashboard_new/interfaces")
+class kbp_dashboard::client {
+  $used_ifs_string = template("kbp_dashboard/interfaces")
   $used_ifs        = split($used_ifs_string, ",")
 
-  kbp_dashboard_new::server::wrapper { $fqdn:; }
+  kbp_dashboard::server::wrapper { $fqdn:; }
 
-  kbp_dashboard_new::interface::wrapper { $used_ifs:; }
+  kbp_dashboard::interface::wrapper { $used_ifs:; }
 }
 
-define kbp_dashboard_new::environment::wrapper($fullname) {
-  @@kbp_dashboard_new::environment { $name:
+define kbp_dashboard::environment::wrapper($fullname) {
+  @@kbp_dashboard::environment { $name:
     env_name => $name,
     fullname => $fullname;
   }
 }
 
-define kbp_dashboard_new::environment($env_name, $fullname, $url, $port) {
+define kbp_dashboard::environment($env_name, $fullname, $url, $port) {
   file { "/srv/www/${url}/${name}":
     ensure  => directory,
   }
@@ -76,23 +76,23 @@ define kbp_dashboard_new::environment($env_name, $fullname, $url, $port) {
 
   kbp_apache_new::vhost_addition {
     "${url}_${port}/access_${name}":
-      content => template('kbp_dashboard_new/vhost-additions/access');
+      content => template('kbp_dashboard/vhost-additions/access');
     "${url}_${port}/proxies_${name}":
-      content => template('kbp_dashboard_new/vhost-additions/proxies');
+      content => template('kbp_dashboard/vhost-additions/proxies');
   }
 }
 
-define kbp_dashboard_new::dcenv::wrapper($fullname) {
-  @@kbp_dashboard_new::dcenv { $name:
+define kbp_dashboard::dcenv::wrapper($fullname) {
+  @@kbp_dashboard::dcenv { $name:
     dcenv_name => $name,
     fullname   => $fullname;
   }
 }
 
-define kbp_dashboard_new::dcenv($dcenv_name, $fullname) {}
+define kbp_dashboard::dcenv($dcenv_name, $fullname) {}
 
-define kbp_dashboard_new::server::wrapper() {
-  @@kbp_dashboard_new::server { $name:
+define kbp_dashboard::server::wrapper() {
+  @@kbp_dashboard::server { $name:
     fqdn        => $fqdn,
     environment => $environment,
     dcenv       => $dcenv,
@@ -110,17 +110,17 @@ define kbp_dashboard_new::server::wrapper() {
   }
 }
 
-define kbp_dashboard_new::server($fqdn, $environment, $dcenv, $is_virtual, $proccount, $memsize, $memtype, $parent) {}
+define kbp_dashboard::server($fqdn, $environment, $dcenv, $is_virtual, $proccount, $memsize, $memtype, $parent) {}
 
-define kbp_dashboard_new::interface::wrapper() {
-  @@kbp_dashboard_new::interface { "${name}${fqdn}":
+define kbp_dashboard::interface::wrapper() {
+  @@kbp_dashboard::interface { "${name}${fqdn}":
     key     => "${name}${fqdn}",
     if_name => $name,
     server  => $fqdn,
-    ipv4    => template("kbp_dashboard_new/ipv4"),
-    ipv6    => template("kbp_dashboard_new/ipv6"),
-    mac     => template("kbp_dashboard_new/mac");
+    ipv4    => template("kbp_dashboard/ipv4"),
+    ipv6    => template("kbp_dashboard/ipv6"),
+    mac     => template("kbp_dashboard/mac");
   }
 }
 
-define kbp_dashboard_new::interface($key, $if_name, $server, $ipv4, $ipv6, $mac) {}
+define kbp_dashboard::interface($key, $if_name, $server, $ipv4, $ipv6, $mac) {}

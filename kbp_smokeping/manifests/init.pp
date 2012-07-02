@@ -38,16 +38,6 @@ class kbp_smokeping::server($ssl=true) {
     content => template("kbp_smokeping/basepage.html"),
     require => Package["smokeping"];
   }
-
-  @@kbp_dashboard::customer_entry_export { "Smokeping":
-    path        => "smokeping",
-    regex_paths => ["/images/"],
-    entry_url   => $ssl ? {
-      false => "http://smokeping.kumina.nl",
-      true  => "https://smokeping.kumina.nl",
-    },
-    text        => "Graphs of site responsiveness.";
-  }
 }
 
 # Class: kbp_smokeping::server

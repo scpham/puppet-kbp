@@ -156,8 +156,6 @@ class kbp_base::environment {
   include kbp_icinga::environment
   include kbp_user::environment
 
-  Kbp_dashboard::Customer_entry_export <<| |>>
-
   @@kbp_dashboard::environment { $environment:
     fullname => $customer_name;
   }
