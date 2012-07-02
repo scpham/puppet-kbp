@@ -107,7 +107,7 @@ define kbp_dashboard_new::server($fqdn, $environment, $dcenv, $is_virtual, $proc
 
 define kbp_dashboard_new::interface::wrapper() {
   @@kbp_dashboard_new::interface { $name:
-    key     => $name$fqdn,
+    key     => "${name}${fqdn}",
     if_name => $name,
     server  => $fqdn,
     ipv4    => template("kbp_dashboard_new/ipv4"),
