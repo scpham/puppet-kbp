@@ -1,0 +1,14 @@
+<%
+used_ifs = ""
+first = true
+interfaces.split(',').each do |interface|
+  if interface != "lo" and has_variable?("macaddress_".concat(interface)) and (has_variable?("ipaddress_".concat(interface)) or has_variable?("ipaddress_".concat(interface)))
+    if first == false
+      used_ifs = used_ifs + ","
+    end
+    used_ifs = used_ifs + interface
+    first = false
+  end
+end
+-%>
+<%= used_ifs -%>
