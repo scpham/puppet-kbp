@@ -106,7 +106,7 @@ define kbp_dashboard_new::server::wrapper() {
 define kbp_dashboard_new::server($fqdn, $environment, $dcenv, $is_virtual, $proccount, $memsize, $memtype, $parent) {}
 
 define kbp_dashboard_new::interface::wrapper() {
-  @@kbp_dashboard_new::interface { $name:
+  @@kbp_dashboard_new::interface { "${name}${fqdn}":
     key     => "${name}${fqdn}",
     if_name => $name,
     server  => $fqdn,
