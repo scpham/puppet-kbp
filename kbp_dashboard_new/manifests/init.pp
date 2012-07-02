@@ -16,30 +16,6 @@ class kbp_dashboard_new::site($url, $ssl=true, $mysql_name=$environment, $dbpass
     port => $port,
   }
 
-  kbp_mysql::client { 'dashboard':
-    mysql_name => 'dashboard';
-  }
-
-  @@mysql::server::db { "dashboard for ${fqdn}":
-    tag => "mysql_${kumina}_dashboard";
-  }
-
-  @@mysql::server::grant {
-    "dashboard on puppet for ${fqdn}":
-      user        => 'dashboard',
-      db          => 'puppet',
-      hostname    => $fqdn,
-      password    => $dbpassword,
-      permissions => 'SELECT',
-      tag         => "mysql_${kumina}_dashboard";
-    "dashboard on dashboard for ${fqdn}":
-      user        => 'dashboard',
-      db          => 'dashboard',
-      hostname    => $fqdn,
-      password    => $dbpassword,
-      tag         => "mysql_${kumina}_dashboard";
-  }
-
   kbp_apache_new::vhost_addition { "${url}_${port}/access":
     content => template('kbp_dashboard_new/vhost-additions/base_access');
   }
