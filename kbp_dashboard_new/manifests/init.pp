@@ -95,7 +95,10 @@ define kbp_dashboard_new::server::wrapper() {
     memtype     => regsubst($memorysize, '^.* (.*)$', '\1'),
     parent      => $parent ? {
       undef   => 'none',
-      default => $parent,
+      default => $is_virtual ? {
+        'false' => 'none',
+        default => $parent,
+      },
     };
   }
 }
