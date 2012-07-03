@@ -54,6 +54,17 @@ class kbp_dashboard::client {
   kbp_dashboard::interface::wrapper { $used_ifs:; }
 }
 
+define kbp_dashboard::service::wrapper($fullname) {
+  @@kbp_dashboard::service { "${name}${fqdn}":
+    key          => "${name}${fqdn}",
+    service_name => $name,
+    fullname     => $fullname,
+    server       => $fqdn;
+  }
+}
+
+define kbp_dashboard::service($key, $service_name, $fullname, $server) {}
+
 define kbp_dashboard::environment::wrapper($fullname) {
   @@kbp_dashboard::environment { $name:
     env_name => $name,

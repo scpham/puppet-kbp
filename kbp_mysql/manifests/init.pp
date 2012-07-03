@@ -143,6 +143,10 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
   Kbp_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
 
   Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
+
+  kbp_dashboard::service::wrapper { 'mysql_server':
+    fullname => 'MySQL Server';
+  }
 }
 
 class kbp_mysql::server::ssl ($cert_dir="/etc/mysql/ssl") {

@@ -51,6 +51,10 @@ class kbp_apache_new {
   kbp_apache_new::module { ["deflate","rewrite"]:; }
 
   kbp_icinga::http { "http_${fqdn}":; }
+
+  kbp_dashboard::service::wrapper { 'apache':
+    fullname => 'Apache';
+  }
 }
 
 # Class: kbp_apache_new::global_umask_007
