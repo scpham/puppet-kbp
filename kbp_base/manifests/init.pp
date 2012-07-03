@@ -156,7 +156,7 @@ class kbp_base::environment {
   include kbp_icinga::environment
   include kbp_user::environment
 
-  @@kbp_dashboard::environment { $environment:
+  kbp_dashboard::environment::wrapper { $environment:
     fullname => $customer_name;
   }
   kbp_dashboard_new::environment::wrapper { $environment:
