@@ -55,8 +55,8 @@ class kbp_dashboard::client {
 }
 
 define kbp_dashboard::service::wrapper($fullname) {
-  @@kbp_dashboard::service { "${name}${fqdn}":
-    key          => "${name}${fqdn}",
+  @@kbp_dashboard::service { "${name}_${fqdn}":
+    key          => "${name}_${fqdn}",
     service_name => $name,
     fullname     => $fullname,
     server       => $fqdn;
@@ -124,8 +124,8 @@ define kbp_dashboard::server::wrapper() {
 define kbp_dashboard::server($fqdn, $environment, $dcenv, $is_virtual, $proccount, $memsize, $memtype, $parent) {}
 
 define kbp_dashboard::interface::wrapper() {
-  @@kbp_dashboard::interface { "${name}${fqdn}":
-    key     => "${name}${fqdn}",
+  @@kbp_dashboard::interface { "${name}_${fqdn}":
+    key     => "${name}_${fqdn}",
     if_name => $name,
     server  => $fqdn,
     ipv4    => template("kbp_dashboard/ipv4"),
