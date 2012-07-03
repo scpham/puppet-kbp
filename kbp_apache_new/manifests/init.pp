@@ -13,6 +13,14 @@ class kbp_apache_new {
   include gen_apache
   include kbp_munin::client::apache
 
+  # Needed for /server-status (munin) when using NameVirtualHosts
+  kbp_apache_new::site { 'localhost':
+    address             => '127.0.0.1',
+    address6            => '::1',
+    create_documentroot => false,
+    monitor             => false;
+  }
+
   file {
     "/etc/apache2/mods-available/deflate.conf":
       content => template("kbp_apache_new/mods-available/deflate.conf"),
