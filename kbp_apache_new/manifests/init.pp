@@ -17,6 +17,7 @@ class kbp_apache_new {
   kbp_apache_new::site { 'localhost':
     address             => '127.0.0.1',
     address6            => '::1',
+    documentroot        => '/srv/www',
     create_documentroot => false,
     monitor             => false;
   }
