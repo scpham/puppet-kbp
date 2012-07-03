@@ -41,7 +41,7 @@ define kbp_dashboard_new::environment::wrapper($fullname) {
 define kbp_dashboard_new::environment($env_name, $fullname, $url, $prod_url, $port) {
   file {
     "/srv/www/${url}/${name}":
-      ensure  => directory,
+      ensure  => directory;
     "/srv/www/${url}/${name}/.htpasswd":
       ensure  => link,
       target  => "/srv/www/${prod_url}/${name}/.htpasswd";
