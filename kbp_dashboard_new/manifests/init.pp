@@ -16,7 +16,7 @@ class kbp_dashboard_new::site($url, $prod_url, $ssl=true, $mysql_name=$environme
   }
 
   @@mysql::server::db { "dashboard_new for ${fqdn}":
-    tag => "mysql_${kumina}_dashboard_new";
+    tag => "mysql_${environment}_dashboard_new";
   }
 
   @@mysql::server::grant {
@@ -26,13 +26,13 @@ class kbp_dashboard_new::site($url, $prod_url, $ssl=true, $mysql_name=$environme
       hostname    => $fqdn,
       password    => $dbpassword,
       permissions => 'SELECT',
-      tag         => "mysql_${kumina}_dashboard_new";
+      tag         => "mysql_${environment}_dashboard_new";
     "dashboard_new on dashboard_new for ${fqdn}":
       user        => 'dashboard_new',
       db          => 'dashboard_new',
       hostname    => $fqdn,
       password    => $dbpassword,
-      tag         => "mysql_${kumina}_dashboard_new";
+      tag         => "mysql_${environment}_dashboard_new";
   }
 
   Kbp_dashboard_new::Environment <<| |>> {
