@@ -91,6 +91,7 @@ class kbp_apache_new::passenger {
 }
 
 class kbp_apache_new::php {
+  include kbp_apache_new::php_common
   include gen_base::libapache2_mod_php5
 }
 
@@ -232,8 +233,16 @@ class kbp_apache_new::glassfish_domain_base {
   }
 }
 
+class kbp_apache_new::php_common {
+  kbp_dashboard::service_plugin::wrapper { 'php':
+    fullname => 'PHP',
+    service  => 'apache';
+  }
+}
+
 define kbp_apache_new::php_cgi($ensure="present", $documentroot, $custom_php_ini=false) {
   if $ensure == "present" {
+    include kbp_apache_new::php_common
     include gen_php5::cgi
     include gen_php5::apc
     include gen_base::apache2_mpm_worker
