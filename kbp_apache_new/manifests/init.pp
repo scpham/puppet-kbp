@@ -183,6 +183,18 @@ class kbp_apache_new::module::headers {
   kbp_apache_new::module { "headers":; }
 }
 
+# Class: kbp_apache_new::cgid
+#
+# Action:
+#  Setup the mod-cgid module in Apache with default settings.
+#
+# Depends:
+#  kbp_apache_new::module
+#
+class kbp_apache_new::module::cgid {
+  kbp_apache_new::module { "cgid":; }
+}
+
 class kbp_apache_new::intermediate::rapidssl {
   kbp_ssl::public_key { "RapidSSL_CA_bundle":
     content => template("kbp_apache_new/ssl/RapidSSL_CA_bundle.pem"),
