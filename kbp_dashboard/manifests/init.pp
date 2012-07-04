@@ -44,7 +44,7 @@ class kbp_dashboard::site($url, $ssl=true, $mysql_name=$environment, $dbpassword
     content => template('kbp_dashboard/vhost-additions/base_access');
   }
 
-  kcron { 'fill_dashboard_db':
+  kcron { 'filldashboarddb':
     command => "/srv/django/dashboard.kumina.nl/dashboard/fill_dashboard_database -ps ${dbhost} -pp ${dbpasswd} -ds ${dbhost} -dp ${dbpasswd}",
     hour    => 0;
   }
