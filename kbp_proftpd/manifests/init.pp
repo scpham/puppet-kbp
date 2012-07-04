@@ -21,6 +21,10 @@ class kbp_proftpd {
   gen_linux::kmod { "nf_conntrack_ftp":
     ensure => present;
   }
+
+  kbp_dashboard::service::wrapper { 'proftpd':
+    fullname => 'ProFTPD';
+  }
 }
 
 # Class: kbp_proftpd::mysql
