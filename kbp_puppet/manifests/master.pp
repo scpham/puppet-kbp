@@ -90,6 +90,10 @@ class kbp_puppet::master {
     "/srv/puppet/kbp":
       origin => "git@github.com:kumina/puppet-kbp.git";
   }
+
+  kbp_dashboard::service::wrapper { 'puppetmaster':
+    fullname => 'Puppetmaster';
+  }
 }
 
 # Define: kbp_puppet::master::config
