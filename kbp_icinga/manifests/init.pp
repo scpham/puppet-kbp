@@ -445,10 +445,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       notify  => Exec["reload-icinga"];
     '/etc/icinga/build_icinga_config':
       content => template('kbp_icinga/server/build_icinga_config'),
-      mode    => 770;
+      mode    => 750;
     '/etc/icinga/update_icinga_config':
       content => template('kbp_icinga/server/update_icinga_config'),
-      mode    => 770;
+      mode    => 750;
   }
 
   exec { 'build_icinga_config':
