@@ -71,7 +71,7 @@ define kbp_dashboard::service::wrapper($fullname) {
 define kbp_dashboard::service($key, $service_name, $fullname, $server) {}
 
 define kbp_dashboard::service_plugin::wrapper($fullname, $service) {
-  @@kbp_dashboard::service { "${name}_${service}_${fqdn}":
+  @@kbp_dashboard::service_plugin { "${name}_${service}_${fqdn}":
     key         => "${name}_${service}_${fqdn}",
     plugin_name => $name,
     fullname    => $fullname,
