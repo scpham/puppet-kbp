@@ -508,15 +508,16 @@ define kbp_apache_new::module ($ensure = "enable") {
   }
 }
 
-define kbp_apache_new::forward_vhost ($forward, $address = '*', $address6 = '::', $ensure="present", $serveralias=false, $statuscode=301, $port=80, $monitor_ip = false) {
+define kbp_apache_new::forward_vhost ($forward, $address = '*', $address6 = '::', $ensure="present", $serveralias=false, $statuscode=301, $port=80, $monitor_ip = false, $preserve_path=true) {
   gen_apache::forward_vhost { $name:
-    forward     => $forward,
-    address     => $address,
-    address6    => $address6,
-    ensure      => $ensure,
-    serveralias => $serveralias,
-    statuscode  => $statuscode,
-    port        => $port;
+    forward       => $forward,
+    address       => $address,
+    address6      => $address6,
+    ensure        => $ensure,
+    preserve_path => $preserve_path,
+    serveralias   => $serveralias,
+    statuscode    => $statuscode,
+    port          => $port;
   }
 
   kbp_icinga::site { "${name}_forward":
