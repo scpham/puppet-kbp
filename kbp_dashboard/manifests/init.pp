@@ -1,4 +1,4 @@
-class kbp_dashboard::site($url, $ssl=true, $mysql_name=$environment, $dbpassword) {
+class kbp_dashboard::site($url, $ssl=true, $mysql_name=$environment, $dbpassword, $dbhost) {
   include gen_base::python_django_south
 
   $port = $ssl ? {
@@ -45,7 +45,7 @@ class kbp_dashboard::site($url, $ssl=true, $mysql_name=$environment, $dbpassword
   }
 
   kcron { 'filldashboarddb':
-    command => "/srv/django/dashboard.kumina.nl/dashboard/fill_dashboard_database -ps ${dbhost} -pp ${dbpasswd} -ds ${dbhost} -dp ${dbpasswd}",
+    command => "/srv/django/dashboard.kumina.nl/dashboard/fill_dashboard_database -ps ${dbhost} -pp ${dbpasswd} -ds ${dbhost} -dp ${dbpassword}",
     minute  => 0;
   }
 }
