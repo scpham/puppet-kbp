@@ -1,4 +1,4 @@
-class kbp_dashboard::site($url, $ssl=true, $mysql_name=$environment, $dbpassword, $dbhost) {
+class kbp_dashboard::site_host($url, $ssl=true, $mysql_name=$environment, $dbpassword, $dbhost) {
   include gen_base::python_django_south
 
   $port = $ssl ? {
@@ -81,6 +81,19 @@ define kbp_dashboard::service_plugin::wrapper($fullname, $service) {
 }
 
 define kbp_dashboard::service_plugin($key, $plugin_name, $fullname, $service, $server) {}
+
+define kbp_dashboard::site::wrapper($service, $ssl, $auth) {
+  @@kbp_dashboard::site { "${name}_${fqdn}":
+    key       => "${name}_${fqdn}",
+    site_name => $name,
+    service   => $service,
+    server    => $fqdn,
+    ssl       => $ssl,
+    auth      => $auth;
+  }
+}
+
+define kbp_dashboard::site($key, $site_name, $service, $server, $ssl, $auth) {}
 
 define kbp_dashboard::environment::wrapper($fullname) {
   @@kbp_dashboard::environment { $name:

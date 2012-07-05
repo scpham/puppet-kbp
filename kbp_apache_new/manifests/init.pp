@@ -521,6 +521,12 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       require => Package["phpmyadmin"],
     }
   }
+
+  kbp_dashboard::site::wrapper { $real_name:
+    service => 'apache',
+    ssl     => $real_ssl,
+    auth    => $auth;
+  }
 }
 
 define kbp_apache_new::module ($ensure = "enable") {
