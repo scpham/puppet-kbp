@@ -86,7 +86,7 @@ define kbp_dashboard::site::wrapper($service, $ssl, $auth) {
   @@kbp_dashboard::site { "${name}_${fqdn}":
     key       => "${name}_${fqdn}",
     site_name => $name,
-    service   => $service,
+    service   => "${service}_${fqdn}",
     ssl       => $ssl,
     auth      => $auth;
   }
