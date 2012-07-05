@@ -87,13 +87,12 @@ define kbp_dashboard::site::wrapper($service, $ssl, $auth) {
     key       => "${name}_${fqdn}",
     site_name => $name,
     service   => $service,
-    server    => $fqdn,
     ssl       => $ssl,
     auth      => $auth;
   }
 }
 
-define kbp_dashboard::site($key, $site_name, $service, $server, $ssl, $auth) {}
+define kbp_dashboard::site($key, $site_name, $service, $ssl, $auth) {}
 
 define kbp_dashboard::environment::wrapper($fullname) {
   @@kbp_dashboard::environment { $name:
