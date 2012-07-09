@@ -339,7 +339,23 @@ class kbp_munin::client::unbound {
   }
 }
 
-# Define: kbp_munin::client::glassfish
+# Class: kbp_munin::client::glassfish
+#
+# Actions:
+#  Setup the munin trending for glassfish
+#
+# Depends:
+#  kbp_munin::client
+#  gen_puppet
+#
+class kbp_munin::client::glassfish {
+  gen_munin::client::plugin { "files_user_glassfish":
+    script_path => '/usr/share/munin/plugins/kumina',
+    script      => 'files_user_';
+  }
+}
+
+# Define: kbp_munin::client::glassfish_instance
 #
 # Actions:
 #  Setup the munin trending for glassfish domains
@@ -348,7 +364,7 @@ class kbp_munin::client::unbound {
 #  kbp_munin::client
 #  gen_puppet
 #
-define kbp_munin::client::glassfish ($jmxport, $jmxuser=false, $jmxpass=false) {
+define kbp_munin::client::glassfish_instance ($jmxport, $jmxuser=false, $jmxpass=false) {
   kbp_munin::client::jmxcheck { ["${name}_${jmxport}_java_threads", "${name}_${jmxport}_java_process_memory", "${name}_${jmxport}_java_cpu"]:
       jmxuser => $jmxuser,
       jmxpass => $jmxpass;

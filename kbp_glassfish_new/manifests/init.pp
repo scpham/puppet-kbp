@@ -2,6 +2,7 @@
 
 class kbp_glassfish_new {
   include gen_glassfish
+  include kbp_munin::client::glassfish
 
   group { "glassfish":
     gid     => 2000,
@@ -283,7 +284,7 @@ define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true,
     }
   }
 
-  kbp_munin::client::glassfish { "${name}":
+  kbp_munin::client::glassfish_instance { "${name}":
       jmxport => $jmxport,
       jmxuser => $username,
       jmxpass => $password;
