@@ -6,6 +6,29 @@ class kbp_dashboard::site_host($url, $ssl=true, $mysql_name=$environment, $dbpas
     true  => 443,
   }
 
+  kbp_dashboard::base_service::wrapper {
+    'apache':
+      fullname => 'Apache';
+    'asterisk':
+      fullname => 'Asterisk';
+    'glassfish':
+      fullname => 'Glassfish';
+    'haproxy':
+      fullname => 'HAProxy';
+    'mysql_server':
+      fullname => 'MySQL Server';
+    'nfs_server':
+      fullname => 'NFS Server';
+    'proftpd':
+      fullname => 'ProFTPD';
+    'puppetmaster':
+      fullname => 'Puppetmaster';
+    'solr':
+      fullname => 'Solr';
+    'tomcat':
+      fullname => 'Tomcat';
+  }
+
   file { "/srv/www/${url}/.htpasswd":
     ensure  => link,
     target  => "/srv/www/${url}/${environment}/.htpasswd";
@@ -59,16 +82,15 @@ class kbp_dashboard::client {
   kbp_dashboard::interface::wrapper { $used_ifs:; }
 }
 
-define kbp_dashboard::service::wrapper($fullname) {
+define kbp_dashboard::service::wrapper {
   @@kbp_dashboard::service { "${name}_${fqdn}":
     key          => "${name}_${fqdn}",
-    service_name => $name,
-    fullname     => $fullname,
+    base_service => $name,
     server       => $fqdn;
   }
 }
 
-define kbp_dashboard::service($key, $service_name, $fullname, $server) {}
+define kbp_dashboard::service($key, $base_service, $server) {}
 
 define kbp_dashboard::service_plugin::wrapper($fullname, $service) {
   @@kbp_dashboard::service_plugin { "${name}_${service}_${fqdn}":
@@ -94,6 +116,15 @@ define kbp_dashboard::site::wrapper($service, $ssl, $auth) {
 
 define kbp_dashboard::site($key, $site_name, $service, $ssl, $auth) {}
 
+define kbp_dashboard::base_service::wrapper($fullname) {
+  @@kbp_dashboard::base_service { $name:
+    service_name => $name,
+    fullname     => $fullname;
+  }
+}
+
+define kbp_dashboard::base_service($service_name, $fullname) {}
+
 define kbp_dashboard::environment::wrapper($fullname) {
   @@kbp_dashboard::environment { $name:
     env_name => $name,
@@ -103,7 +134,7 @@ define kbp_dashboard::environment::wrapper($fullname) {
 
 define kbp_dashboard::environment($env_name, $fullname, $url, $port) {
   file { "/srv/www/${url}/${name}":
-    ensure  => directory,
+    ensure  => directory;
   }
 
   concat { "/srv/www/${url}/${name}/.htpasswd":

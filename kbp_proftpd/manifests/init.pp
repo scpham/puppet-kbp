@@ -22,9 +22,7 @@ class kbp_proftpd {
     ensure => present;
   }
 
-  kbp_dashboard::service::wrapper { 'proftpd':
-    fullname => 'ProFTPD';
-  }
+  kbp_dashboard::service::wrapper { 'proftpd':; }
 }
 
 # Class: kbp_proftpd::mysql

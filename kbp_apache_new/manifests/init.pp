@@ -52,9 +52,7 @@ class kbp_apache_new {
 
   kbp_icinga::http { "http_${fqdn}":; }
 
-  kbp_dashboard::service::wrapper { 'apache':
-    fullname => 'Apache';
-  }
+  kbp_dashboard::service::wrapper { 'apache':; }
 }
 
 # Class: kbp_apache_new::global_umask_007

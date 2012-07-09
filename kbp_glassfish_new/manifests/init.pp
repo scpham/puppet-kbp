@@ -48,9 +48,7 @@ class kbp_glassfish_new {
     ["grizzly-http.jar","grizzly-http-ajp.jar"]:;
   }
 
-  kbp_dashboard::service::wrapper { 'glassfish':
-    fullname => 'Glassfish';
-  }
+  kbp_dashboard::service::wrapper { 'glassfish':; }
 }
 
 class kbp_glassfish_new::patch::jmx {

@@ -55,7 +55,5 @@ class kbp_nfs::server($need_gssd = "no", $need_idmapd = "no", $need_statd = "yes
 
   Kbp_nfs::Client::Export_opts <<| tag == $nfs_tag |>>
 
-  kbp_dashboard::service::wrapper { 'nfs_server':
-    fullname => 'NFS Server';
-  }
+  kbp_dashboard::service::wrapper { 'nfs_server':; }
 }

@@ -27,7 +27,5 @@ class kbp_asterisk::server {
     tag    => "mysql_asterisk";
   }
 
-  kbp_dashboard::service::wrapper { 'asterisk':
-    fullname => 'Asterisk';
-  }
+  kbp_dashboard::service::wrapper { 'asterisk':; }
 }
