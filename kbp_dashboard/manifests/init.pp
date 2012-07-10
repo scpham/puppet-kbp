@@ -104,17 +104,18 @@ define kbp_dashboard::service_plugin::wrapper($fullname, $service) {
 
 define kbp_dashboard::service_plugin($key, $plugin_name, $fullname, $service, $server) {}
 
-define kbp_dashboard::site::wrapper($service, $ssl, $auth) {
+define kbp_dashboard::site::wrapper($service, $ssl, $auth, $serveralias) {
   @@kbp_dashboard::site { "${name}_${fqdn}":
-    key       => "${name}_${fqdn}",
-    site_name => $name,
-    service   => "${service}_${fqdn}",
-    ssl       => $ssl,
-    auth      => $auth;
+    key         => "${name}_${fqdn}",
+    site_name   => $name,
+    service     => "${service}_${fqdn}",
+    ssl         => $ssl,
+    auth        => $auth,
+    serveralias => $serveralias;
   }
 }
 
-define kbp_dashboard::site($key, $site_name, $service, $ssl, $auth) {}
+define kbp_dashboard::site($key, $site_name, $service, $ssl, $auth, $serveralias) {}
 
 define kbp_dashboard::base_service::wrapper($fullname) {
   @@kbp_dashboard::base_service { $name:

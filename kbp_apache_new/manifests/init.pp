@@ -522,9 +522,10 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
   if !defined(Kbp_dashboard::Site::Wrapper[$real_name]) {
     kbp_dashboard::site::wrapper { $real_name:
-      service => 'apache',
-      ssl     => $real_ssl,
-      auth    => $auth;
+      service     => 'apache',
+      ssl         => $real_ssl,
+      auth        => $auth,
+      serveralias => $serveralias;
     }
   }
 }
