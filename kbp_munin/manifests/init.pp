@@ -402,7 +402,7 @@ define kbp_munin::client::jmxcheck ($jmxuser=false, jmxpass=false){
 }
 
 class kbp_munin::client::tomcat ($trending_password) {
-  include gen_base::
+  include gen_base::libxml_simple_perl
   gen_munin::client::plugin { ['tomcat_access','tomcat_jvm','tomcat_threads','tomcat_volume']:; }
 
   gen_munin::client::plugin { "files_user_tomcat6":
