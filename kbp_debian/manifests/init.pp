@@ -61,7 +61,7 @@ class kbp_debian::lenny {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_debian::squeeze {
+class kbp_debian::generic {
   # Don't pull in Recommends or Suggests dependencies when installing
   # packages with apt.
   file {
@@ -71,18 +71,15 @@ class kbp_debian::squeeze {
       content => "APT::Install-Suggests \"false\";\n";
   }
 
-  gen_apt::source {
-    "squeeze-updates":
-          comment      => "Repository for update packages in ${lsbdistcodename}, such as SpamAssassin and Clamav",
-          sourcetype   => "deb",
-          uri          => "http://ftp.nl.debian.org/debian/",
-          distribution => "squeeze-updates",
-          components   => "main";
+  gen_apt::source { "${lsbdistcodename}-updates":
+    comment      => "Repository for update packages in ${lsbdistcodename}, such as SpamAssassin and Clamav",
+    sourcetype   => "deb",
+    uri          => "http://ftp.nl.debian.org/debian/",
+    distribution => "${lsbdistcodename}-updates",
+    components   => "main";
   }
 
-  package { "bsd-mailx":
-    ensure => installed;
-  }
+  package { "bsd-mailx":; }
 }
 
 # Class: kbp_debian
@@ -95,7 +92,11 @@ class kbp_debian::squeeze {
 #  gen_puppet
 #
 class kbp_debian inherits kbp_base {
-  include "kbp_debian::$lsbdistcodename"
+  if $lsbdistcodename == 'lenny' {
+    include kbp_debian::lenny
+  } else {
+    include kbp_debian::generic
+  }
   include gen_haveged
   include rng-tools
 
