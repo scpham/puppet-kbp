@@ -141,7 +141,7 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
   }
 
   exec { 'remove_root_users':
-    onlyif  => '/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf -e "select * from mysql.user where user=\'root\'" | /bin/grep -q root',
+    onlyif  => '/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf -e "select * from mysql.user where user=\'root\' and password=\'\'" | /bin/grep -q root',
     command => '/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf -e "delete from mysql.user where user=\'root\'; flush privileges"';
   }
 
