@@ -140,6 +140,11 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
     content => "/var/lib/mysql/*";
   }
 
+  exec { 'remove_root_users':
+    onlyif  => '/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf -e "select * from mysql.user where user=\'root\'" | /bin/grep -q root',
+    command => '/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf -e "delete from mysql.user where user=\'root\'; flush privileges"';
+  }
+
   Kbp_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
 
   Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
