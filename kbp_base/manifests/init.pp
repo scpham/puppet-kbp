@@ -107,8 +107,6 @@ class kbp_base {
     version => $kernelrelease;
   }
 
-  include gen_base::base-files
-
   if versioncmp($lsbdistrelease, 6.0) < 0 {
     package { "tcptrack":
       ensure => latest,
@@ -196,6 +194,7 @@ class kbp_base::wanted_packages {
   include gen_base::module_init_tools
   include gen_base::sysstat
   include gen_base::file
+  include gen_base::base-files
 }
 
 #define kbp_base::staff_user($ensure="present", $fullname, $uid, $password_hash, $sshkeys="", $shell="bash") {
