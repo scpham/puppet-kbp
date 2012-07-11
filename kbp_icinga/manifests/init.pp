@@ -155,6 +155,10 @@ class kbp_icinga::client {
       arguments => '$ARG1$';
     "check_swap":
       arguments => "-w 10 -c 5";
+    "check_tomcat":
+      arguments => '-p 8080 -l monitoring -a $ARG1$ -n .';
+    "check_tomcat_application":
+      arguments => '-u monitoring -p $ARG1$ -a $ARG2$';
     "check_unbound":
       command   => "check_procs",
       arguments => "-c 1:1 -C unbound";
@@ -723,6 +727,12 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       nrpe      => true;
     "check_pgsql":
       nrpe      => true;
+    'check_tomcat':
+      nrpe      => true,
+      arguments => '$ARG1$';
+    'check_tomcat_application':
+      nrpe      => true,
+      arguments => ['$ARG1$','$ARG2$'];
   }
 
   file {
@@ -2174,6 +2184,39 @@ define kbp_icinga::mbean_value($jmxport, $objectname, $attributename, $expectedv
     file { "/etc/nagios/nrpe.d/mbean_${jmxport}_${attributename}_${expectedvalue}.conf":
       content => template("kbp_icinga/mbean_value.conf");
     }
+  }
+}
+
+# Class: kbp_icinga::tomcat
+#
+# Parameters:
+#  monitoring_password:
+#    The password for the monitoring user in the manager webapp
+#  ajp_port:
+#    The AJP connector port
+#
+class kbp_icinga::tomcat ($monitoring_password) {
+  include gen_base::libxml_xpath_perl
+  include gen_base::libwww-perl
+
+  kbp_icinga::service { "tomcat_status":
+    service_description => 'Status of the tomcat service',
+    check_command       => 'check_tomcat',
+    arguments           => $monitoring_password;
+  }
+}
+
+# Define: kbp_icinga::tomcat::application
+#
+# Parameters:
+#  monitoring_password:
+#    The password for the monitoring user in the manager webapp
+#
+define kbp_icinga::tomcat::application ($monitoring_password) {
+   kbp_icinga::service { "tomcat_app_${name}_status":
+    service_description => "Status of the tomcat application ${name}",
+    check_command       => 'check_tomcat_application',
+    arguments           => [$monitoring_password, $name];
   }
 }
 

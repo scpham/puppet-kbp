@@ -10,8 +10,9 @@
 #  gen_puppet
 #
 class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $serveralias=false, $documentroot=false, $ssl=false, $ajp13_connector_port = "8009",
-                  $java_opts="", $jvm_max_mem=false, $trending_password=false){
+                  $java_opts="", $jvm_max_mem=false, $trending_password=false, $monitoring_password=false){
   include kbp_apache_new
+
   if $trending_password {
     kbp_tomcat::user { 'munin':
       password   => $trending_password,
@@ -20,6 +21,17 @@ class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $serveralias=false, $docu
     }
     class { 'kbp_munin::client::tomcat':
       trending_password => $trending_password;
+    }
+  }
+
+  if $monitoring_password {
+    kbp_tomcat::user { 'monitoring':
+      password   => $monitoring_password,
+      role       => 'manager',
+      tomcat_tag => $tomcat_tag;
+    }
+    class { 'kbp_icinga::tomcat':
+      monitoring_password => $monitoring_password;
     }
   }
 
@@ -99,13 +111,19 @@ class kbp_tomcat::mysql {
 #
 define kbp_tomcat::webapp($war="", $urlpath="/", $context_xml_content=false, $root_app=false, $tomcat_tag="tomcat_${environment}",
                           $additional_context_settings = false, $environment_settings = false, $valve_settings = false,
-                          $datasource_settings = false, $leave_settings_alone=false) {
+                          $datasource_settings = false, $leave_settings_alone=false, $monitoring_password=false) {
   gen_tomcat::context { $name:
     tomcat_tag          => $tomcat_tag,
     war                 => $war,
     urlpath             => $urlpath,
     context_xml_content => $context_xml_content,
     root_app            => $root_app;
+  }
+
+  if $monitoring_password {
+    kbp_icinga::tomcat::application { $name:
+      monitoring_password => $monitoring_password;
+    }
   }
 
   if ! $leave_settings_alone {
