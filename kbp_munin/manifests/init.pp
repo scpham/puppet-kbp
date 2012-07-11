@@ -401,6 +401,25 @@ define kbp_munin::client::jmxcheck ($jmxuser=false, jmxpass=false){
   }
 }
 
+class kbp_munin::client::tomcat ($trending_password) {
+  include gen_base::
+  gen_munin::client::plugin { ['tomcat_access','tomcat_jvm','tomcat_threads','tomcat_volume']:; }
+
+  gen_munin::client::plugin { "files_user_tomcat6":
+    script_path => '/usr/share/munin/plugins/kumina',
+    script      => 'files_user_';
+  }
+
+  gen_munin::client::plugin { ['tomcat_avgtime','tomcat_maxtime']:
+    script      => 'tomcat_';
+  }
+
+  gen_munin::client::plugin::config { 'tomcat':
+    section => 'tomcat_*',
+    content => "env.timeout 10\nenv.ports 8080\nenv.user munin\nenv.password ${trending_password}";
+  }
+}
+
 # Class: kbp_munin::server
 #
 # Actions:

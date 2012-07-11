@@ -10,13 +10,24 @@
 #  gen_puppet
 #
 class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $serveralias=false, $documentroot=false, $ssl=false, $ajp13_connector_port = "8009",
-                  $java_opts="", $jvm_max_mem=false){
+                  $java_opts="", $jvm_max_mem=false, $trending_password=false){
   include kbp_apache_new
+  if $trending_password {
+    kbp_tomcat::user { 'munin':
+      password   => $trending_password,
+      role       => 'manager',
+      tomcat_tag => $tomcat_tag;
+    }
+    class { 'kbp_munin::client::tomcat':
+      trending_password => $trending_password;
+    }
+  }
 
   class { "gen_tomcat":
     ajp13_connector_port => $ajp13_connector_port,
     java_opts            => $java_opts,
-    jvm_max_mem          => $jvm_max_mem;
+    jvm_max_mem          => $jvm_max_mem,
+    tomcat_tag           => $tomcat_tag;
   }
 
   # Enable mod-proxy-ajp
