@@ -42,9 +42,7 @@ class kbp_syslog::server($environmentonly=true) {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_syslog::client {
-  include "kbp_syslog::client::${lsbdistcodename}"
-
+class kbp_syslog::client inherits rsyslog::client {
   kbp_ferm::rule { "Syslog traffic":
     saddr    => $source_ipaddress,
     proto    => "udp",
@@ -66,18 +64,6 @@ class kbp_syslog::client {
 #
 class kbp_syslog::server::lenny inherits rsyslog::server {
   include kbp_syslog::server::logrotate
-}
-
-# Class: kbp_syslog::client::lenny
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_syslog::client::lenny inherits rsyslog::client {
 }
 
 # Class: kbp_syslog::server::squeeze
@@ -115,18 +101,6 @@ class kbp_syslog::server::logrotate {
   # Don't think this is needed anymore. Check after 2012-3-12 if there are still files like
   # syslog.3.gz on servers. If so, find another solution for this.
   #include kbp_syslog::cleanup
-}
-
-# Class: kbp_syslog::client::squeeze
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_syslog::client::squeeze inherits rsyslog::client {
 }
 
 # Additional options
