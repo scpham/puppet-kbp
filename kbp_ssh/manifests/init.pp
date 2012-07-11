@@ -52,7 +52,7 @@ class kbp_ssh {
     notify  => Service["ssh"];
    }
 
-  if versioncmp($lsbmajdistrelease,6) >= 0 {
+  if $lsbdistcodename != 'lenny' {
     kaugeas { "sshd_config DebianBanner":
       lens    => 'Sshd.lns',
       file    => "/etc/ssh/sshd_config",

@@ -1,7 +1,7 @@
 class kbp_php5_xdebug {
   include gen_php5::common
 
-  if $lsbmajdistrelease > 5 {
+  if $lsbdistcodename != 'lenny' {
     $file_location = "/usr/lib/php5/20090626/xdebug.so"
   } else {
     $file_location = "/usr/lib/php5/20060613/xdebug.so"

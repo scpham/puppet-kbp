@@ -31,7 +31,7 @@ class kbp_postgresql::server($postgresql_name, $bind_address="0.0.0.0", $setup_b
   }
 
   # If we're on Squeeze and we want a version higher than 8.4, we need to pin stuff to backports
-  if $lsbmajdistrelease < 7 and versioncmp($version,'8.4') > 0 {
+  if $lsbdistcodename == 'squeeze' and versioncmp($version,'8.4') > 0 {
     gen_apt::preference { ["postgresql-${version}","libpq5","postgresql-client-9.1","postgresql-common","postgresql-client-common"]:; }
 
     package {
