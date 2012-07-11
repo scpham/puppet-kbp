@@ -62,6 +62,8 @@ class kbp_debian::lenny {
 #  gen_puppet
 #
 class kbp_debian::generic {
+  include gen_haveged
+
   # Don't pull in Recommends or Suggests dependencies when installing
   # packages with apt.
   file {
@@ -97,7 +99,6 @@ class kbp_debian inherits kbp_base {
   } else {
     include kbp_debian::generic
   }
-  include gen_haveged
   include rng-tools
 
   define check_alternatives($linkto) {
