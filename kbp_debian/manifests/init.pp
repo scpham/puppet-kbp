@@ -73,12 +73,14 @@ class kbp_debian::generic {
       content => "APT::Install-Suggests \"false\";\n";
   }
 
-  gen_apt::source { "${lsbdistcodename}-updates":
-    comment      => "Repository for update packages in ${lsbdistcodename}, such as SpamAssassin and Clamav",
-    sourcetype   => "deb",
-    uri          => "http://ftp.nl.debian.org/debian/",
-    distribution => "${lsbdistcodename}-updates",
-    components   => "main";
+  if $lsbdistcodename != 'wheezy' {
+    gen_apt::source { "${lsbdistcodename}-updates":
+      comment      => "Repository for update packages in ${lsbdistcodename}, such as SpamAssassin and Clamav",
+      sourcetype   => "deb",
+      uri          => "http://ftp.nl.debian.org/debian/",
+      distribution => "${lsbdistcodename}-updates",
+      components   => "main";
+    }
   }
 
   package { "bsd-mailx":; }
@@ -195,12 +197,16 @@ class kbp_debian inherits kbp_base {
       uri          => "http://security.debian.org/",
       distribution => "${lsbdistcodename}/updates",
       components   => "main contrib non-free";
-    "${lsbdistcodename}-backports":
+  }
+
+  if $lsbdistcodename != 'wheezy' {
+    gen_apt::source { "${lsbdistcodename}-backports":
       comment      => "Repository for packages which have been backported to ${lsbdistcodename}.",
       sourcetype   => "deb",
       uri          => "http://backports.debian.org/debian-backports",
       distribution => "${lsbdistcodename}-backports",
       components   => "main contrib non-free";
+    }
   }
 
   # TODO: move to appropriate modules (ticket 588)
