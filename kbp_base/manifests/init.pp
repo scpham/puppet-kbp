@@ -35,9 +35,11 @@ class kbp_base {
   if $fqdn != "puppetmaster.kumina.nl" {
     include kbp_puppet::default_config
   }
-  # Needed by elinks
-  include gen_base::libmozjs2d
-  if versioncmp($lsbdistrelease, 6) >= 0 { # Squeeze
+  # Needed by elinks on squeeze and older
+  if $lsbdistcodename != 'wheezy' {
+    include gen_base::libmozjs2d
+  }
+  if $lsbdistcodename != 'lenny' {
     # Needed by grub2
     include gen_base::libfreetype6
   }
@@ -198,75 +200,3 @@ class kbp_base::wanted_packages {
   include gen_base::file
   include gen_base::base-files
 }
-
-#define kbp_base::staff_user($ensure="present", $fullname, $uid, $password_hash, $sshkeys="", $shell="bash") {
-#    user { $name:
-#      comment      => $fullname,
-#      ensure       => $ensure,
-#      gid          => "kumina",
-#      uid          => $uid,
-#      groups       => ["adm", "staff", "root"],
-#      membership   => "minimum",
-#      shell        => "/bin/${shell}",
-#      home         => "/home/${name}",
-#      password     => $password_hash,
-#      require      => [File["/etc/skel/.bash_profile"], Package[$shell]];
-#    }
-#
-#    if $ensure == "present" {
-#      file {
-#        "/home/${name}":
-#          ensure  => directory,
-#          mode    => 750,
-#          owner   => $name,
-#          group   => "kumina",
-#          require => [User[$name], Group["kumina"]];
-#        "/home/${name}/.ssh":
-#          ensure  => directory,
-#          mode    => 700,
-#          owner   => $name,
-#          group   => "kumina";
-#        "/home/${name}/.ssh/authorized_keys":
-#          content => $sshkeys,
-#          owner   => $name,
-#          group   => "kumina",
-#          notify  => Kaugeas["sshd_config PermitRootLogin"];
-#        "/home/${name}/.${shell}rc":
-#          content => template("kbp_base/home/${name}/.${shell}rc"),
-#          owner   => $name,
-#          group   => "kumina";
-#        "/home/${name}/.bash_profile":
-#          content => template("kbp_base/home/${name}/.bash_profile"),
-#          owner   => $name,
-#          group   => "kumina";
-#        "/home/${name}/.bash_aliases":
-#          content => template("kbp_base/home/${name}/.bash_aliases"),
-#          owner   => $name,
-#          group   => "kumina";
-#        "/home/${name}/.gitconfig":
-#          content => template("kbp_base/git/.gitconfig"),
-#          group   => "kumina";
-#        "/home/${name}/.tmp":
-#          ensure  => directory,
-#          owner   => $name,
-#          group   => "kumina";
-#        "/home/${name}/.reportbugrc":
-#          content => "REPORTBUGEMAIL=${name}@kumina.nl\n",
-#          group   => "kumina";
-#      }
-#
-#      postfix::alias { "${name}: ${name}@kumina.nl":; }
-#
-#      concat::add_content { "Add ${name} to Kumina SSH keyring":
-#        target  => "/etc/ssh/kumina.keys",
-#        content => "# ${fullname} <${name}@kumina.nl>\n${sshkeys}";
-#      }
-#    } else {
-#      file { "/home/${name}":
-#        ensure  => absent,
-#        force   => true,
-#        recurse => true;
-#      }
-#    }
-#  }
-#
