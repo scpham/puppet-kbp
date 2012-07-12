@@ -29,6 +29,12 @@ class kbp_base {
   include kbp_ferm
   include kbp_nagios::nrpe
   include kbp_user::admin_users
+  # Needed for 'host'
+  if $lsbdistcodename == 'wheezy' {
+    include gen_base::libisccc80
+  } else {
+    include gen_base::libisccc60
+  }
   if $is_virtual == "false" {
     include kbp_physical
   }
