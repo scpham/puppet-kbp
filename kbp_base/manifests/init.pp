@@ -44,7 +44,9 @@ class kbp_base {
 
   kbp_postfix { "postfix":; }
 
-  kbp_ksplice { "ksplice":; }
+  if $lsbdistcodename != 'wheezy' {
+    kbp_ksplice { "ksplice":; }
+  }
 
   kbp_syslog { "syslog":; }
 
