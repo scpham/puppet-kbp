@@ -293,8 +293,12 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor_creds=false,
     $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $glassfish_domain=false, $glassfish_connector_port=false,
     $glassfish_connector_loglevel="info", $django_root_path=false,$django_root_django=false, $django_static_path=false, $django_static_django=false,
-    $django_settings=false, $phpmyadmin=false, $ha=false, $monitor_ip=false, $monitor_proxy = false) {
+    $django_settings=false, $phpmyadmin=false, $ha=false, $monitor_ip=false, $monitor_proxy = false, $failover=false) {
   include kbp_apache_new
+
+  if $failover and $address == '*' and $address6 == '*' {
+    fail("Site ${name} has failover set to true but no address or address6 is supplied.")
+  }
 
   $temp_name   = $port ? {
     false   => $name,
@@ -369,6 +373,25 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       proxy               => $monitor_proxy;
     }
 
+    if $failover {
+      kbp_icinga::site { "${monitor_name}_fo":
+        service_description => $service_description,
+        address             => $real_monitor_ip,
+        address6            => $address6,
+        host_name           => $real_name,
+        max_check_attempts  => $max_check_attempts,
+        auth                => $auth,
+        path                => $monitor_path,
+        response            => $monitor_response,
+        credentials         => $monitor_creds,
+        check_interval      => $monitor_check_interval,
+        ha                  => $ha,
+        ssl                 => $real_ssl,
+        proxy               => $monitor_proxy,
+        vhost               => false;
+      }
+    }
+
     if $smokeping {
       kbp_smokeping::target { $name:
         probe => $monitor_probe ? {
@@ -420,6 +443,23 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         check_interval      => $monitor_check_interval,
         ha                  => $ha,
         ssl                 => false;
+      }
+
+      if $failover {
+        kbp_icinga::site { "${real_name}_fo":
+          service_description => $service_description,
+          address             => $real_monitor_ip,
+          address6            => $address6,
+          host_name           => $real_name,
+          max_check_attempts  => $max_check_attempts,
+          auth                => $auth,
+          path                => $monitor_path,
+          response            => $monitor_response,
+          credentials         => $monitor_creds,
+          check_interval      => $monitor_check_interval,
+          ha                  => $ha,
+          vhost               => false;
+        }
       }
     }
 
