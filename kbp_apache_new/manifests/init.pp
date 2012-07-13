@@ -368,7 +368,10 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       response            => $monitor_response,
       credentials         => $monitor_creds,
       check_interval      => $monitor_check_interval,
-      ha                  => $ha,
+      ha                  => $failover ? {
+        true  => false,
+        false => $ha,
+      },
       ssl                 => $real_ssl,
       proxy               => $monitor_proxy;
     }
@@ -441,7 +444,10 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         response            => $monitor_response,
         credentials         => $monitor_creds,
         check_interval      => $monitor_check_interval,
-        ha                  => $ha,
+        ha                  => $failover ? {
+          true  => false,
+          false => $ha,
+        },
         ssl                 => false;
       }
 
