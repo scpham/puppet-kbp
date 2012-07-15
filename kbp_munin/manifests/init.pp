@@ -385,7 +385,7 @@ define kbp_munin::client::glassfish_instance ($jmxport, $jmxuser=false, $jmxpass
 #  gen_puppet
 #  gen_munin::client
 #
-define kbp_munin::client::jmxcheck ($jmxuser=false, jmxpass=false){
+define kbp_munin::client::jmxcheck ($jmxuser=false, $jmxpass=false){
   include gen_base::jmxquery
 
   gen_munin::client::plugin { "jmx_${name}":
