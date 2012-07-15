@@ -50,7 +50,7 @@ define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024", $
   }
 }
 
-define kbp_nfs::client::export_opts($location, $options, client) {
+define kbp_nfs::client::export_opts($location, $options, $client) {
   if !defined(Concat::Add_content[$location]) {
     concat::add_content {
       $location:
