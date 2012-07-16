@@ -1,0 +1,183 @@
+<IfModule pagespeed_module>
+    ModPagespeed on
+
+    AddOutputFilterByType MOD_PAGESPEED_OUTPUT_FILTER text/html
+    AddOutputFilterByType MOD_PAGESPEED_OUTPUT_FILTER application/xhtml+xml
+
+    ModPagespeedFileCachePath            /var/mod_pagespeed/cache/<%= real_name %>/
+    ModPagespeedGeneratedFilePrefix      /var/mod_pagespeed/files/<%= real_name %>/
+
+    ModPagespeedRewriteLevel PassThrough
+
+<% if real_add_head -%>
+    ModPagespeedEnableFilters add_head
+<% end -%>
+<% if real_combine_css -%>
+    ModPagespeedEnableFilters combine_css
+<% end -%>
+<% if real_convert_meta_tags -%>
+    ModPagespeedEnableFilters convert_meta_tags
+<% end -%>
+<% if real_extend_cache -%>
+    ModPagespeedEnableFilters extend_cache
+<% end -%>
+<% if real_inline_css -%>
+    ModPagespeedEnableFilters inline_css
+<% end -%>
+<% if real_inline_import_to_link -%>
+    ModPagespeedEnableFilters inline_import_to_link
+<% end -%>
+<% if real_inline_javascript -%>
+    ModPagespeedEnableFilters inline_javascript
+<% end -%>
+<% if real_rewrite_css -%>
+    ModPagespeedEnableFilters rewrite_css
+<% end -%>
+<% if real_rewrite_images -%>
+    ModPagespeedEnableFilters rewrite_images
+<% end -%>
+<% if real_rewrite_javascript -%>
+    ModPagespeedEnableFilters rewrite_javascript
+<% end -%>
+<% if real_rewrite_style_attributes_with_url -%>
+    ModPagespeedEnableFilters rewrite_style_attributes_with_url
+<% end -%>
+<% if real_trim_urls -%>
+    ModPagespeedEnableFilters trim_urls
+<% end -%>
+<% if real_combine_heads -%>
+    ModPagespeedEnableFilters combine_heads
+<% end -%>
+<% if real_strip_scripts -%>
+    ModPagespeedEnableFilters strip_scripts
+<% end -%>
+<% if real_outline_css -%>
+    ModPagespeedEnableFilters outline_css
+<% end -%>
+<% if real_outline_javascript -%>
+    ModPagespeedEnableFilters outline_javascript
+<% end -%>
+<% if real_move_css_above_scripts -%>
+    ModPagespeedEnableFilters move_css_above_scripts
+<% end -%>
+<% if real_move_css_to_head -%>
+    ModPagespeedEnableFilters move_css_to_head
+<% end -%>
+<% if real_rewrite_style_attributes -%>
+    ModPagespeedEnableFilters rewrite_style_attributes
+<% end -%>
+<% if real_flatten_css_imports -%>
+    ModPagespeedEnableFilters flatten_css_imports
+<% end -%>
+<% if real_make_google_analytics_async -%>
+    ModPagespeedEnableFilters make_google_analytics_async
+<% end -%>
+<% if real_combine_javascript -%>
+    ModPagespeedEnableFilters combine_javascript
+<% end -%>
+<% if real_local_storage_cache -%>
+    ModPagespeedEnableFilters local_storage_cache
+<% end -%>
+<% if real_insert_ga -%>
+    ModPagespeedEnableFilters insert_ga
+<% end -%>
+<% if real_convert_jpeg_to_progressive -%>
+    ModPagespeedEnableFilters convert_jpeg_to_progressive
+<% end -%>
+<% if real_convert_png_to_jpeg -%>
+    ModPagespeedEnableFilters convert_png_to_jpeg
+<% end -%>
+<% if real_convert_jpeg_to_webp -%>
+    ModPagespeedEnableFilters convert_jpeg_to_webp
+<% end -%>
+<% if real_insert_image_dimensions -%>
+    ModPagespeedEnableFilters insert_image_dimensions
+<% end -%>
+<% if real_inline_preview_images -%>
+    ModPagespeedEnableFilters inline_preview_images
+<% end -%>
+<% if real_resize_mobile_images -%>
+    ModPagespeedEnableFilters resize_mobile_images
+<% end -%>
+<% if real_remove_comments -%>
+    ModPagespeedEnableFilters remove_comments
+<% end -%>
+<% if real_collapse_whitespace -%>
+    ModPagespeedEnableFilters collapse_whitespace
+<% end -%>
+<% if real_elide_attributes -%>
+    ModPagespeedEnableFilters elide_attributes
+<% end -%>
+<% if real_sprite_images -%>
+    ModPagespeedEnableFilters sprite_images
+<% end -%>
+<% if real_rewrite_domains -%>
+    ModPagespeedEnableFilters rewrite_domains
+<% end -%>
+<% if real_remove_quotes -%>
+    ModPagespeedEnableFilters remove_quotes
+<% end -%>
+<% if real_add_instrumentation -%>
+    ModPagespeedEnableFilters add_instrumentation
+<% end -%>
+<% if real_defer_javascript -%>
+    ModPagespeedEnableFilters defer_javascript
+<% end -%>
+<% if real_inline_preview_images -%>
+    ModPagespeedEnableFilters inline_preview_images
+<% end -%>
+<% if real_lazyload_images -%>
+    ModPagespeedEnableFilters lazyload_images
+<% end -%>
+
+    ModPagespeedDomain cdn.myhost.com
+
+    ModPagespeedFileCacheSizeKb          102400
+    ModPagespeedFileCacheCleanIntervalMs 3600000
+    ModPagespeedLRUCacheKbPerProcess     1024
+    ModPagespeedLRUCacheByteLimit        16384
+    ModPagespeedCssInlineMaxBytes        2048
+    ModPagespeedImageInlineMaxBytes      2048
+    ModPagespeedCssImageInlineMaxBytes   2048
+    ModPagespeedJsInlineMaxBytes         2048
+    ModPagespeedCssOutlineMinBytes       3000
+    ModPagespeedJsOutlineMinBytes        3000
+
+    ModPagespeedImageMaxRewritesAtOnce      8
+
+    ModPagespeedJpegRecompressionQuality -1
+    ModPagespeedImageLimitOptimizedPercent 100
+    ModPagespeedImageLimitResizeAreaPercent 100
+
+    ModPagespeedMaxSegmentLength 250
+
+    ModPagespeedCombineAcrossPaths off
+
+    ModPagespeedAvoidRenamingIntrospectiveJavascript on
+
+    <Location /mod_pagespeed_beacon>
+          SetHandler mod_pagespeed_beacon
+    </Location>
+
+    # ModPagespeedStatistics off
+
+    <Location /mod_pagespeed_statistics>
+        Order allow,deny
+        Allow from localhost
+        Allow from 127.0.0.1
+        SetHandler mod_pagespeed_statistics
+    </Location>
+
+    ModPagespeedMessageBufferSize 100000
+
+    <Location /mod_pagespeed_message>
+        Allow from localhost
+        Allow from 127.0.0.1
+        SetHandler mod_pagespeed_message
+    </Location>
+    <Location /mod_pagespeed_referer_statistics>
+        Allow from localhost
+        Allow from 127.0.0.1
+        SetHandler mod_pagespeed_referer_statistics
+    </Location>
+</IfModule>

@@ -1,0 +1,6 @@
+<IfModule pagespeed_module>
+    ModPagespeed off
+
+    ModPagespeedFileCachePath            "/var/mod_pagespeed/cache/"
+    ModPagespeedGeneratedFilePrefix      "/var/mod_pagespeed/files/"
+</IfModule>
