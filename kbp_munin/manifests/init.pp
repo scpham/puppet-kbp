@@ -101,6 +101,12 @@ class kbp_munin::client::apache {
     "apache_processes":;
     "apache_volume":;
   }
+
+  gen_munin::client::plugin::config { "apache_":
+    section => 'apache_*',
+    content => 'env.url http://127.0.0.2:%d/server-status?auto\nenv.ports 80';
+  }
+
 }
 
 # Class: kbp_munin::client::haproxy

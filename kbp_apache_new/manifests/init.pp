@@ -15,7 +15,7 @@ class kbp_apache_new {
 
   # Needed for /server-status (munin) when using NameVirtualHosts
   kbp_apache_new::site { 'localhost':
-    address             => '127.0.0.1',
+    address             => '127.0.0.2',
     address6            => '::1',
     documentroot        => '/srv/www',
     create_documentroot => false,
