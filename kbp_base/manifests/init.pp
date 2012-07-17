@@ -146,6 +146,8 @@ class kbp_base {
     include gen_base::libkrb5-3
     include gen_base::libkrb5support0
   }
+
+  Resolv_conf <<| title == $dcenv |>>
 }
 
 # Class: kbp_base::environment
@@ -205,4 +207,14 @@ class kbp_base::wanted_packages {
   include gen_base::sysstat
   include gen_base::file
   include gen_base::base-files
+}
+
+define kbp_base::resolv_conf($ns1, $ns2, $ns3 = false, $domain = false, $search = $domain) {
+  if ! $domain {
+    fail('domain not set for resolv.conf.')
+  }
+
+  file { '/etc/resolv.conf':
+    content => template('kbp_base/resolv.conf');
+  }
 }
