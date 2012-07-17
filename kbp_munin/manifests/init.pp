@@ -104,7 +104,7 @@ class kbp_munin::client::apache {
 
   gen_munin::client::plugin::config { "apache_":
     section => 'apache_*',
-    content => 'env.url http://127.0.0.2:%d/server-status?auto\nenv.ports 80';
+    content => "env.url http://127.0.0.2:%d/server-status?auto\nenv.ports 80";
   }
 
 }
