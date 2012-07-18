@@ -90,12 +90,6 @@ class kbp_munin::client::apache {
   # This class is should be included in kbp_apache to collect apache data for munin
   include gen_base::libwww-perl
 
-  file { "/etc/apache2/conf.d/server-status":
-    content => template("kbp_munin/server-status"),
-    require => Package["apache2"],
-    notify  => Exec["reload-apache2"];
-  }
-
   gen_munin::client::plugin {
     "apache_accesses":;
     "apache_processes":;
@@ -104,7 +98,7 @@ class kbp_munin::client::apache {
 
   gen_munin::client::plugin::config { "apache_":
     section => 'apache_*',
-    content => "env.url http://127.0.0.2:%d/server-status?auto\nenv.ports 80";
+    content => "env.url http://127.0.0.255:%d/server-status?auto\nenv.ports 80";
   }
 
 }
