@@ -210,7 +210,6 @@ define kbp_glassfish_new::domain($portbase, $ensure="present", $jmx_port = false
       customname    => "Glassfish ${name} status";
     }
   }
-
 }
 
 # Define: kbp_glassfish_new::domain::site
@@ -264,7 +263,7 @@ define kbp_glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 8
 #  java_servicegroups:
 #   which Icinga servicegroup should receive notifications?
 #
-define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true, $java_servicegroups=false, $jmx_port = false, $username=false, $password=false, $autostart_path=false){
+define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true, $java_servicegroups=false, $jmx_port = false, $username=false, $password=false, $autostart_path=false, $domain) {
   if $jmx_port {
     $jmxport = $jmx_port
   } else {
@@ -290,11 +289,17 @@ define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true,
       jmxpass => $password;
   }
 
-  file { "/etc/init.d/glassfish-instance-${name}" :
-    content => template('kbp_glassfish_new/instance.init'),
-    mode    => 770,
-    notify  => Exec["update-rc.d glassfish-instance-${name}"],
-    require => Package['glassfish'];
+  file {
+    "/etc/init.d/glassfish-instance-${name}" :
+      content => template('kbp_glassfish_new/instance.init'),
+      mode    => 770,
+      notify  => Exec["update-rc.d glassfish-instance-${name}"],
+      require => Package['glassfish'];
+    "/var/log/${domain}/${name}":
+      ensure => directory,
+      owner  => 'glassfish',
+      group  => 'adm',
+      mode   => 2775;
   }
 
   exec { "update-rc.d glassfish-instance-${name}":
