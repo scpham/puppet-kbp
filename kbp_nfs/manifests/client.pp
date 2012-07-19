@@ -56,7 +56,7 @@ define kbp_nfs::client::export_opts($location, $options, $client) {
       $location:
         content => "${location} \\",
         target  => "/etc/exports";
-      "${location}zzz":
+      "${location}_aaaaa":
         content => "",
         target  => "/etc/exports";
     }
