@@ -38,9 +38,19 @@ define kbp_ssl::private_key($content=false, $key_location=false) {
   }
 }
 
-class kbp_ssl::intermediate::terena {
-  kbp_ssl::public_key { 'TerenaCA':
-    content => template('kbp_ssl/TerenaCA.pem'),
-    notify  => Exec['reload-apache2'];
+define kbp_ssl::intermediate {
+  $realname = $name ? {
+    'positivessl' => 'PositiveSSLCA',
+    'rapidssl'    => 'RapidSSL_CA_bundle',
+    'terena'      => 'TerenaCA',
+    'thawte'      => 'Thawte_SSL_CA',
+    'verisign'    => 'verisign_bundle',
+    default       => fail("${name} is not a known intermediate."),
+  }
+
+  if !defined(Kbp_ssl::Public_key[$realname]) {
+    kbp_ssl::public_key { $realname:
+      content => template("kbp_ssl/${realname}.pem");
+    }
   }
 }

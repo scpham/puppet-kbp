@@ -201,29 +201,31 @@ class kbp_apache_new::module::cgid {
 }
 
 class kbp_apache_new::intermediate::rapidssl {
-  kbp_ssl::public_key { "RapidSSL_CA_bundle":
-    content => template("kbp_apache_new/ssl/RapidSSL_CA_bundle.pem"),
+  kbp_ssl::intermediate { "rapidssl":
+    notify  => Exec["reload-apache2"];
+  }
+}
+
+class kbp_apache_new::intermediate::terena {
+  kbp_ssl::intermediate { 'terena':
     notify  => Exec["reload-apache2"];
   }
 }
 
 class kbp_apache_new::intermediate::positivessl {
-  kbp_ssl::public_key { "PositiveSSLCA":
-    content => template("kbp_apache_new/ssl/PositiveSSLCA.pem"),
+  kbp_ssl::intermediate { 'positivessl':
     notify  => Exec["reload-apache2"];
   }
 }
 
 class kbp_apache_new::intermediate::thawte {
-  kbp_ssl::public_key { "Thawte_SSL_CA":
-    content => template("kbp_apache_new/ssl/Thawte_SSL_CA.pem"),
+  kbp_ssl::intermediate { "thawte":
     notify  => Exec["reload-apache2"];
   }
 }
 
 class kbp_apache_new::intermediate::verisign {
-  kbp_ssl::public_key { "Verisign_SSL_CA":
-    content => template("kbp_apache_new/ssl/verisign_bundle.pem"),
+  kbp_ssl::intermediate { "verisign":
     notify  => Exec["reload-apache2"];
   }
 }
