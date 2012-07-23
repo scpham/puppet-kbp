@@ -1,6 +1,6 @@
 # Author: Kumina bv <support@kumina.nl>
 
-class kbp_glassfish_new {
+class kbp_glassfish {
   include gen_glassfish
   include kbp_munin::client::glassfish
 
@@ -45,23 +45,23 @@ class kbp_glassfish_new {
 
   # Patches to work around glassfish 3.1.2 http/ajp bugs
   # see http://java.net/jira/browse/GLASSFISH-18446
-  kbp_glassfish_new::patch {
+  kbp_glassfish::patch {
     ["grizzly-http.jar","grizzly-http-ajp.jar"]:;
   }
 
   kbp_dashboard::service::wrapper { 'glassfish':; }
 }
 
-class kbp_glassfish_new::patch::jmx {
+class kbp_glassfish::patch::jmx {
   # Patches to work around glassfish 3.1.2 JMX bugs
   # see http://java.net/jira/browse/GLASSFISH-18450
-  kbp_glassfish_new::patch {
+  kbp_glassfish::patch {
     ["container-common.jar", "glassfish-mbeanserver.jar", "internal-api.jar", "rest-service.jar"]:;
   }
 }
 
-class kbp_glassfish_new::cluster {
-  include kbp_glassfish_new
+class kbp_glassfish::cluster {
+  include kbp_glassfish
 
   file {
     "/srv/glassfish/nodes":
@@ -80,7 +80,7 @@ class kbp_glassfish_new::cluster {
   }
 }
 
-# Define: kbp_glassfish_new::domain
+# Define: kbp_glassfish::domain
 #
 # Actions:
 #  Undocumented
@@ -126,7 +126,7 @@ class kbp_glassfish_new::cluster {
 #  gen_puppet
 #  gen_glassfish::domain
 #
-define kbp_glassfish_new::domain($portbase, $ensure="present", $jmx_port = false, $web_address = "*",
+define kbp_glassfish::domain($portbase, $ensure="present", $jmx_port = false, $web_address = "*",
     $web_servername=false, $web_serveralias = [], $web_port = "80", $web_sslport = false, $web_redundant=false,
     $java_monitoring=false, $java_servicegroups=false, $monitoring_sms=true, $monitoring_statuspath=false,
     $mbean_objectname=false, $mbean_attributename=false, $mbean_expectedvalue=false, $mbean_attributekey=false) {
@@ -165,7 +165,7 @@ define kbp_glassfish_new::domain($portbase, $ensure="present", $jmx_port = false
     require => Exec["Create glassfish domain ${name}"];
   }
 
-  kbp_glassfish_new::instance { $name:
+  kbp_glassfish::instance { $name:
     portbase           => $portbase,
     java_monitoring    => $java_monitoring,
     sms                => $sms,
@@ -190,7 +190,7 @@ define kbp_glassfish_new::domain($portbase, $ensure="present", $jmx_port = false
      require => Exec["Create glassfish domain ${name}"];
     }
 
-    kbp_glassfish_new::domain::site { $web_servername:
+    kbp_glassfish::domain::site { $web_servername:
       webaddress       => $web_address,
       glassfish_domain => $name,
       jkport           => $jkport,
@@ -213,7 +213,7 @@ define kbp_glassfish_new::domain($portbase, $ensure="present", $jmx_port = false
 
 }
 
-# Define: kbp_glassfish_new::domain::site
+# Define: kbp_glassfish::domain::site
 #
 # Actions:
 #  Setup an apache vhost for the glassfish_domain, use this in the customer-specific code when
@@ -234,7 +234,7 @@ define kbp_glassfish_new::domain($portbase, $ensure="present", $jmx_port = false
 #  access_logformat
 #   The logformat that Apache should use.
 #
-define kbp_glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 80, $statuspath=false, $ensure = "present", $access_logformat="combined", $connector_loglevel="info", $serveralias=false, $webaddress="*") {
+define kbp_glassfish::domain::site ($glassfish_domain, $jkport, $webport = 80, $statuspath=false, $ensure = "present", $access_logformat="combined", $connector_loglevel="info", $serveralias=false, $webaddress="*") {
   kbp_apache_new::site { $name:
     address                      => $webaddress,
     glassfish_domain             => $glassfish_domain,
@@ -248,7 +248,7 @@ define kbp_glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 8
   }
 }
 
-# Define: kbp_glassfish_new::instance
+# Define: kbp_glassfish::instance
 #
 # Actions:
 #  Setup monitoring and trending, use this in the customer-specific code when
@@ -264,7 +264,7 @@ define kbp_glassfish_new::domain::site ($glassfish_domain, $jkport, $webport = 8
 #  java_servicegroups:
 #   which Icinga servicegroup should receive notifications?
 #
-define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true, $java_servicegroups=false, $jmx_port = false, $username=false, $password=false, $autostart_path=false){
+define kbp_glassfish::instance ($portbase, $java_monitoring=true, $sms=true, $java_servicegroups=false, $jmx_port = false, $username=false, $password=false, $autostart_path=false){
   if $jmx_port {
     $jmxport = $jmx_port
   } else {
@@ -291,7 +291,7 @@ define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true,
   }
 
   file { "/etc/init.d/glassfish-instance-${name}" :
-    content => template('kbp_glassfish_new/instance.init'),
+    content => template('kbp_glassfish/instance.init'),
     mode    => 770,
     notify  => Exec["update-rc.d glassfish-instance-${name}"],
     require => Package['glassfish'];
@@ -303,7 +303,7 @@ define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true,
   }
 }
 
-# Define: kbp_glassfish_new::patch
+# Define: kbp_glassfish::patch
 #
 # Actions: Move a jar from /srv/glassfish/patches to $destdir
 #
@@ -313,10 +313,10 @@ define kbp_glassfish_new::instance ($portbase, $java_monitoring=true, $sms=true,
 #  destdir:
 #   The directory the file should be placed in
 #
-define kbp_glassfish_new::patch ($ensure = present, $destdir="/opt/glassfish/modules"){
+define kbp_glassfish::patch ($ensure = present, $destdir="/opt/glassfish/modules"){
   file { "${destdir}/${name}":
     ensure  => $ensure,
-    source  => "puppet:///modules/kbp_glassfish_new/patches/${name}",
+    source  => "puppet:///modules/kbp_glassfish/patches/${name}",
     owner   => "root",
     group   => "root",
     mode    => 644,
