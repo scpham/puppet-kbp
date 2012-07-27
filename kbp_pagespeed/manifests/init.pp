@@ -20,6 +20,12 @@ class kbp_pagespeed {
     content => template('kbp_pagespeed/global-config'),
     notify  => Exec['reload-apache2'],
   }
+
+  # Create the directories we require
+  file { ['/srv/mod_pagespeed','/srv/mod_pagespeed/cache','/srv/mod_pagespeed/files']:
+    ensure => directory,
+    owner  => 'www-data',
+  }
 }
 
 # Define: kbp_pagespeed::site
@@ -187,7 +193,7 @@ define kbp_pagespeed::site ($ssl_also = false, $selection = 'none', $add_head = 
                             $inline_preview_images = false, $lazyload_images = false) {
   include kbp_pagespeed
 
-  $real_name   = regsubst($full_name,'^(.*)_(.*)$','\1')
+  $real_name = regsubst($name,'^(.*)_(.*)$','\1')
 
   if $ssl {
     kbp_pagespeed::site { "${real_name}_443":
@@ -195,7 +201,7 @@ define kbp_pagespeed::site ($ssl_also = false, $selection = 'none', $add_head = 
     }
   }
 
-  file { ["/var/mod_pagespeed/cache/${real_name}","/var/mod_pagespeed/files/${real_name}"]:
+  file { ["/srv/mod_pagespeed/cache/${real_name}","/srv/mod_pagespeed/files/${real_name}"]:
     ensure => directory,
     owner  => 'www-data',
     mode   => 750,
@@ -372,7 +378,7 @@ define kbp_pagespeed::site ($ssl_also = false, $selection = 'none', $add_head = 
 
   kbp_apache_new::vhost_addition { "${name}/pagespeed":
     content => template('kbp_pagespeed/site-settings'),
-    require => File["/var/mod_pagespeed/cache/${real_name}","/var/mod_pagespeed/files/${real_name}"],
+    require => File["/srv/mod_pagespeed/cache/${real_name}","/srv/mod_pagespeed/files/${real_name}"],
     notify  => Service['apache2'],
   }
 }
