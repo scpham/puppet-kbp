@@ -540,9 +540,13 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         content => template("kbp_apache_new/django/dispatch.wsgi"),
         replace => false,
         mode    => 775;
-      "/srv/django${real_django_static_django}":
+    }
+
+    if ! defined(File["/srv/django${real_django_static_django}"]) {
+      file { "/srv/django${real_django_static_django}":
         mode    => 775,
         ensure  => directory;
+      }
     }
   }
 
