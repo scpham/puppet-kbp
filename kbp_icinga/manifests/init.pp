@@ -371,8 +371,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   include kbp_munin::client::icinga
 
   # icinga.cfg options
-  $object_cache_file                        = '/dev/shm/icinga/objects.cache'
-  $status_file                              = '/dev/shm/icinga/status.dat'
+  $object_cache_file                        = '/var/cache/icinga/objects.cache'
+  $status_file                              = '/var/cache/icinga/status.dat'
   $status_update_interval                   = 2
   $check_external_commands                  = 1
   $log_rotation_method                      = 'n'
