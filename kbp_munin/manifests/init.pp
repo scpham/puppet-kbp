@@ -31,8 +31,8 @@ class kbp_munin::client {
     $munin_template = "kbp_munin/munin.conf_client_with_proxy"
   } else {
     $real_ipaddress = $external_ipaddress ? {
-      undef => $ipaddress,
-      false => $ipaddress,
+      undef   => $ipaddress,
+      false   => $ipaddress,
       default => $external_ipaddress,
     }
     $munin_template = "kbp_munin/munin.conf_client"
@@ -446,6 +446,11 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
     ferm_tag => "general_trending";
   }
 
+  file { ["/var/run/munin", "/var/lib/munin"]:
+    ensure  => directory,
+    owner   => "munin";
+  }
+
   File <| title == "/etc/munin/munin.conf" |> {
     ensure  => absent,
   }
@@ -460,30 +465,6 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
     require +> Package["munin"],
   }
 
-  # The RRD files for Munin are stored on a memory backed filesystem, so
-  # sync it to disk on reboots.
-  file { "/etc/init.d/munin-server":
-    content => template("munin/server/init.d/munin-server"),
-    mode    => 755,
-    require => [Package["rsync"], Package["munin"]],
-  }
-
-  service { "munin-server":
-    enable  => true,
-    require => File["/etc/init.d/munin-server"],
-  }
-
-  exec { "/etc/init.d/munin-server start":
-    unless  => "/bin/sh -c '[ -d /dev/shm/munin ]'",
-    require => Service["munin-server"];
-  }
-
-  # Cron job which syncs the RRD files to disk every 30 minutes.
-  file { "/etc/cron.d/munin-sync":
-    content => template("munin/server/cron.d/munin-sync"),
-    require => [Package["munin"], Package["rsync"]];
-  }
-
   Kbp_munin::Environment <<| |>> {
     site => $site,
   }
@@ -492,10 +473,6 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
 }
 
 define kbp_munin::environment($site,$offset=false,$sync_offset=false) {
-  service { "munin-${name}":
-    require => File["/etc/init.d/munin-${name}","/dev/shm/munin-${name}"];
-  }
-
   if $offset {
     $real_offset = $offset
   } else {
@@ -521,10 +498,7 @@ define kbp_munin::environment($site,$offset=false,$sync_offset=false) {
   }
 
   file {
-    "/etc/init.d/munin-${name}":
-      mode    => 755,
-      content => template("kbp_munin/init-script");
-    ["/dev/shm/munin-${name}","/var/log/munin-${name}","/var/run/munin-${name}","/var/lib/munin-${name}"]:
+    ["/var/log/munin/${name}", "/var/run/munin/${name}", "/var/lib/munin/${name}"]:
       ensure  => directory,
       owner   => "munin";
     "/srv/www/${site}/${name}":
@@ -534,9 +508,6 @@ define kbp_munin::environment($site,$offset=false,$sync_offset=false) {
     "/etc/cron.d/munin-${name}":
       owner   => "root",
       content => template("kbp_munin/cron");
-    "/etc/cron.d/munin-sync-${name}":
-      owner   => "root",
-      content => template("kbp_munin/cron-sync");
     "/etc/logrotate.d/munin-${name}":
       owner   => "root",
       content => template("kbp_munin/logrotate");
@@ -621,12 +592,12 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
       content => template('kbp_munin/2/munin.conf'),
       require => Package['munin'];
     '/etc/munin/conf':
-      ensure => directory,
+      ensure  => directory,
       require => Package['munin'];
     '/etc/apache2/conf.d/munin':
-      ensure => absent,
+      ensure  => absent,
       require => Package['munin'],
-      notify => Exec['reload-apache2'];
+      notify  => Exec['reload-apache2'];
   }
 
   kbp_apache_new::site { $site:

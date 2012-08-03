@@ -1,3 +1,0 @@
-# The RRD files for Munin are stored on a memory backed filesystem, so sync
-# to disk every 30 minutes.
-<%= real_sync_offset1 %>,<%= real_sync_offset2 %> * * * *   munin [ -d /dev/shm/munin-<%= name %> ] && rsync -a --delete /dev/shm/munin-<%= name %>/ /var/lib/munin-<%= name %>
