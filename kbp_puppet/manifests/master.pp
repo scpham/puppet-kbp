@@ -201,7 +201,9 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
   }
 
   # Enable the site
-  kbp_apache::site { "${pname}":; }
+  kbp_apache::site { "${pname}":
+    monitor => false;
+  }
 
   # Make sure we only setup database stuff when asked for
   if $real_dbsetup {
