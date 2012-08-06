@@ -437,8 +437,8 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
     80  => false,
   }
 
-  kbp_ferm::rule { "Munin connections from ${fqdn}":
-    saddr    => $fqdn,
+  kbp_ferm::rule { 'Munin connections':
+    saddr    => $source_ipaddress,
     proto    => "tcp",
     dport    => "4949",
     action   => "ACCEPT",
