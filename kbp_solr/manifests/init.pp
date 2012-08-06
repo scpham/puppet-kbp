@@ -10,6 +10,7 @@
 #
 class kbp_solr ($tomcat_tag="tomcat_solr_${environment}"){
   include gen_solr
+  include kbp_solr::common
 
   class { "kbp_tomcat":
     tomcat_tag => $tomcat_tag;
@@ -39,6 +40,13 @@ class kbp_solr ($tomcat_tag="tomcat_solr_${environment}"){
     require => Package["tomcat6","solr-common"],
     notify  => Service["tomcat6"],
   }
+}
 
+# Class: kbp_solr::common
+#
+# Actions:
+#  Include ferm rules for monitoring
+#
+class kbp_solr::common {
   Kbp_ferm::Rule <<| tag == "solr_monitoring" |>>
 }
