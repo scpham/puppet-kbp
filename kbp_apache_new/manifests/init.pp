@@ -98,6 +98,13 @@ class kbp_apache_new::php {
   include gen_base::libapache2_mod_php5
 }
 
+# Class: kbp_apache_new::phpcommon
+#
+# Actions:
+#  Set up common resources for all php methods, currently only used for dashboard
+#
+class kbp_apache_new::php_common {}
+
 # Class: kbp_apache_new::mem_cache
 #
 # Actions:
