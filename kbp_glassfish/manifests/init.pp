@@ -48,8 +48,6 @@ class kbp_glassfish {
   kbp_glassfish::patch {
     ["grizzly-http.jar","grizzly-http-ajp.jar"]:;
   }
-
-  kbp_dashboard::service::wrapper { 'glassfish':; }
 }
 
 class kbp_glassfish::patch::jmx {

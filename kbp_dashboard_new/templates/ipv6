@@ -1,3 +1,0 @@
-<% if has_variable?("ipaddress6_".concat(name)) -%>
-<%= eval("ipaddress6_".concat(name)) -%>
-<% else %>None<% end -%>

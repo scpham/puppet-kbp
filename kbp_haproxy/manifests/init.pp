@@ -14,8 +14,6 @@ class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $lo
 
   # These exported kfiles contain the firewall fragments
   Ekfile <<| tag == $haproxy_tag |>>
-
-  kbp_dashboard::service::wrapper { 'haproxy':; }
 }
 
 # Define: kbp_haproxy::site

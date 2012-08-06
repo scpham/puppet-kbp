@@ -23,8 +23,6 @@ class kbp_base {
   include kbp_sysctl
   include kbp_time
   include kbp_vim
-  include kbp_dashboard::client
-  include kbp_dashboard_new::client
   include kbp_mcollective::server
   include kbp_ferm
   include kbp_nagios::nrpe
@@ -166,12 +164,9 @@ class kbp_base::environment {
   include kbp_icinga::environment
   include kbp_user::environment
 
-  kbp_dashboard::environment::wrapper { $environment:
-    fullname => $customer_name;
-  }
-  kbp_dashboard_new::environment::wrapper { $environment:
-    fullname => $customer_name;
-  }
+  kbp_dashboard::environment { $environment:; }
+
+  kbp_dashboard_new::environment { $environment:; }
 
   @@kbp_smokeping::environment { $environment:; }
 

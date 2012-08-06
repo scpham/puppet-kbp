@@ -58,8 +58,6 @@ class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $serveralias=false, $docu
     entity            => "%tomcat6",
     password_required => false;
   }
-
-  kbp_dashboard::service::wrapper { 'tomcat':; }
 }
 
 # Class: kbp_tomcat::mysql

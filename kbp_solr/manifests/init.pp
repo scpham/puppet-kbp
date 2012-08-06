@@ -41,6 +41,4 @@ class kbp_solr ($tomcat_tag="tomcat_solr_${environment}"){
   }
 
   Kbp_ferm::Rule <<| tag == "solr_monitoring" |>>
-
-  kbp_dashboard::service::wrapper { 'solr':; }
 }

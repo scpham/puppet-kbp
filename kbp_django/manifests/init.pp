@@ -10,9 +10,4 @@ class kbp_django {
   kbp_apache_new::module { "wsgi":
     require => Package["libapache2-mod-wsgi"];
   }
-
-  kbp_dashboard::service_plugin::wrapper { 'django':
-    fullname => 'Django',
-    service  => 'apache';
-  }
 }

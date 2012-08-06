@@ -58,8 +58,6 @@ class kbp_apache_new {
   kbp_apache_new::module { ["deflate","rewrite"]:; }
 
   kbp_icinga::http { "http_${fqdn}":; }
-
-  kbp_dashboard::service::wrapper { 'apache':; }
 }
 
 # Class: kbp_apache_new::global_umask_007
@@ -249,13 +247,6 @@ class kbp_apache_new::glassfish_domain_base {
 
   file { "/etc/apache2/conf.d/jk":
     content => template("kbp_apache_new/conf.d/jk");
-  }
-}
-
-class kbp_apache_new::php_common {
-  kbp_dashboard::service_plugin::wrapper { 'php':
-    fullname => 'PHP',
-    service  => 'apache';
   }
 }
 
@@ -577,15 +568,6 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       target  => "/etc/phpmyadmin/apache.conf",
       notify  => Exec["reload-apache2"],
       require => Package["phpmyadmin"],
-    }
-  }
-
-  if !defined(Kbp_dashboard::Site::Wrapper[$real_name]) {
-    kbp_dashboard::site::wrapper { $real_name:
-      service     => 'apache',
-      ssl         => $real_ssl,
-      auth        => $auth,
-      serveralias => $serveralias;
     }
   }
 }
