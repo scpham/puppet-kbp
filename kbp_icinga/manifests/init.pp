@@ -411,11 +411,6 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   }
 
   file {
-    '/dev/shm/icinga':
-      ensure  => directory,
-      owner   => 'nagios',
-      group   => 'www-data',
-      mode    => 640;
     "/etc/icinga/ido2db.cfg":
       content => template("kbp_icinga/ido2db.cfg"),
       owner   => "nagios",
