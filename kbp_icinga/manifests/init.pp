@@ -378,6 +378,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   $log_rotation_method                      = 'n'
   $use_syslog                               = 0
   $check_result_reaper_frequency            = 1
+  $check_result_path                        = '/var/cache/icinga/checkresults'
   $soft_state_dependencies                  = 1
   $interval_length                          = 1
   $enable_event_handlers                    = 0
