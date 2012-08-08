@@ -96,6 +96,9 @@ class kbp_debian::generic {
 #  gen_puppet
 #
 class kbp_debian inherits kbp_base {
+  # put default timezone files in place
+  include gen_timezone
+
   if $lsbdistcodename == 'lenny' {
     include kbp_debian::lenny
   } else {
@@ -128,21 +131,6 @@ class kbp_debian inherits kbp_base {
 
   package { $unwantedpackages:
     ensure => absent;
-  }
-
-  # Local timezone
-  package { "tzdata":
-    ensure => latest,
-  }
-
-  file {
-    "/etc/timezone":
-      content => "Europe/Amsterdam\n",
-      require => Package["tzdata"];
-    "/etc/localtime":
-      ensure => link,
-      target => "/usr/share/zoneinfo/Europe/Amsterdam",
-      require => Package["tzdata"];
   }
 
   # Ensure /tmp always has the correct permissions. (It's a common
