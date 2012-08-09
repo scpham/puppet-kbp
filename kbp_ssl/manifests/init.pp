@@ -40,6 +40,7 @@ define kbp_ssl::private_key($content=false, $key_location=false) {
 
 define kbp_ssl::intermediate {
   $realname = $name ? {
+    'kumina'      => 'KuminaCA',
     'positivessl' => 'PositiveSSLCA',
     'rapidssl'    => 'RapidSSL_CA_bundle',
     'terena'      => 'TerenaCA',
