@@ -16,12 +16,9 @@ class kbp_unbound {
   include kbp_munin::client::unbound
 
   # get the backports version
-  gen_apt::preference { ["unbound", "libunbound2", "unbound-anchor"]:
-    repo => "${lsbdistcodename}-kumina";
-  }
-  gen_apt::preference { "libldns1":; }
+  gen_apt::preference { ["unbound", "libunbound2", "unbound-anchor", "libldns1"]:; }
 
-  # Our backported version supports status
+  # The backported version supports status
   Kservice <| title == "unbound" |> {
     hasstatus => true,
     hasreload => true,
