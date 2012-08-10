@@ -34,6 +34,7 @@ class kbp_base {
   } else {
     include gen_base::libisccc60
   }
+  # the is_virtual fact contains a STRING! Not a boolean!
   if $is_virtual == "true" {
     package { "mpt-status":
       ensure => absent;
