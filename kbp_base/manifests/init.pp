@@ -41,9 +41,6 @@ class kbp_base {
   else {
     include kbp_physical
   }
-  if $fqdn != "puppetmaster.kumina.nl" {
-    include kbp_puppet::default_config
-  }
   # Needed by elinks on squeeze and older
   if $lsbdistcodename != 'wheezy' {
     include gen_base::libmozjs2d
