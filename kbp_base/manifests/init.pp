@@ -10,6 +10,7 @@
 #  gen_puppet
 #
 class kbp_base {
+  include kbp_puppet::default_config
   include kbp_base::wanted_packages
   include gen_cron
   include lvm
