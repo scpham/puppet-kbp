@@ -34,7 +34,9 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
     "local":   {
       $package = "local-backup"
 
-      class { "localbackup::client":; }
+      class { "localbackup::client":
+        backup_home => $backup_home;
+      }
     }
     default:   {
       fail("Invalid method (${method}) for kbp_backup::client")
