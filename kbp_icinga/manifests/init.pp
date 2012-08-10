@@ -459,7 +459,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   }
 
   exec { "clearcache_icinga-web":
-    command     => "/usr/share/icinga-web/bin/clearcache.sh",
+    command     => "/usr/lib/icinga-web/bin/clearcache.sh",
     refreshonly => true;
   }
 
