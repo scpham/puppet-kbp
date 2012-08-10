@@ -34,7 +34,7 @@ class kbp_base {
   } else {
     include gen_base::libisccc60
   }
-  if $is_virtual {
+  if $is_virtual == "true" {
     package { "mpt-status":
       ensure => absent;
     }
