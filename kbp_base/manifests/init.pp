@@ -33,7 +33,12 @@ class kbp_base {
   } else {
     include gen_base::libisccc60
   }
-  if $is_virtual == "false" {
+  if $is_virtual {
+    package { "mpt-status":
+      ensure => absent;
+    }
+  }
+  else {
     include kbp_physical
   }
   if $fqdn != "puppetmaster.kumina.nl" {
