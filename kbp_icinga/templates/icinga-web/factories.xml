@@ -17,7 +17,11 @@
 		
 		<logger_manager class="AgaviLoggerManager" />
 		
-		<request class="AgaviWebRequest" />
+    <request class="AgaviWebRequest">
+      <ae:parameter name="sources">
+        <ae:parameter name="SERVER_SOFTWARE">Apache/2.2.16</ae:parameter>
+      </ae:parameter>
+    </request>
 		
 		<response class="AgaviWebResponse" />
 		
@@ -41,11 +45,7 @@
 	</ae:configuration>
 	
 	<ae:configuration environment="development.*">
-    <request class="AgaviWebRequest">
-      <ae:parameter name="sources">
-        <ae:parameter name="SERVER_SOFTWARE">Apache/2.2.16</ae:parameter>
-      </ae:parameter>
-    </request>
+		<request class="AgaviWebRequest" />
 		<response class="AgaviWebResponse">
 			<!-- in case you do var_dump() or something, as the content length is determined from the response content -->
 			<ae:parameter name="send_content_length">false</ae:parameter>
