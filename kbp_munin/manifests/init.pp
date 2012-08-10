@@ -467,12 +467,13 @@ class kbp_munin::server($site, $port=443) inherits munin::server {
 
   Kbp_munin::Environment <<| |>> {
     site => $site,
+    port => $port,
   }
   Kbp_munin::Alert <<| |>>
   Concat::Add_content <<| tag == "munin_client" |>>
 }
 
-define kbp_munin::environment($site,$offset=false,$sync_offset=false) {
+define kbp_munin::environment($site, $port, $offset = false, $sync_offset = false) {
   if $offset {
     $real_offset = $offset
   } else {
