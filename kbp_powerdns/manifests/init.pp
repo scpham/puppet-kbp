@@ -14,7 +14,8 @@ class kbp_powerdns::master {
 
   Kbp_ferm::Rule <<| tag == "bind_${environment}" |>>
 
-  Gen_ferm::Rule <<| tag == "poweradmin_${environment}" |>>
+  # Poweradmin MySQL access
+  Kbp_ferm::Rule <<| tag == "poweradmin_${environment}" |>>
 
   Gen_ferm::Rule <<| tag == "dns_monitoring" |>>
 }
