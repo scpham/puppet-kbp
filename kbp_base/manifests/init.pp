@@ -186,6 +186,10 @@ class kbp_base::environment {
     offset      => $offset,
     sync_offset => $sync_offset;
   }
+
+  @@kbp_munin::two::environment { $environment:
+    prettyname => $sanitized_customer_name;
+  }
 }
 
 class kbp_base::wanted_packages {

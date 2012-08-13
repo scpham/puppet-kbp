@@ -588,6 +588,11 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
     $port = 80
   }
 
+  Kbp_munin::Two::Environment <<| |>> {
+    site => $site,
+    port => $port,
+  }
+
   file {
     '/etc/munin/munin.conf':
       content => template('kbp_munin/2/munin.conf'),
@@ -669,7 +674,7 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
 # Depends:
 #  gen_puppet
 #
-define kbp_munin::two::environment ($site, $port, $prettyname = $sanitized_customer_name) {
+define kbp_munin::two::environment ($site = false, $port = false, $prettyname) {
   gen_munin::environment{$name:;}
 
   kbp_apache_new::vhost_addition { "${site}_${port}/access_${name}":
