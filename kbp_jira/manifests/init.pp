@@ -76,8 +76,27 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
   }
 
   kbp_tomcat::webapp { "jira":
-    context_xml_content => "<Context path=\"jira\" docBase=\"${root}/source/atlassian_jira/dist-tomcat/tomcat-6/atlassian-jira-${version}.war\" debug=\"0\" useHttpOnly=\"true\">\n\t<Resource name=\"UserTransaction\" auth=\"Container\" type=\"javax.transaction.UserTransaction\" factory=\"org.objectweb.jotm.UserTransactionFactory\" jotm.timeout=\"60\"/>\n\t<Manager pathname=\"\"/>\n</Context>",
-    root_app => true;
+    war                 => "${root}/source/atlassian_jira/dist-tomcat/tomcat-6/atlassian-jira-${version}.war",
+    urlpath             => "jira",
+    root_app            => true,
+    additional_context_settings => {'debug' => '0', 'useHttpOnly' => 'true'},
+  }
+
+  kaugeas {
+    'Context resource UserTransaction for jira':
+      file    => '/srv/tomcat/conf/Catalina/localhost/jira.xml',
+      lens    => 'Xml.lns',
+      changes => ["set Context/Resource[#attribute/name='UserTransaction']/#attribute/name 'UserTransaction'",
+                  "set Context/Resource[#attribute/name='UserTransaction']/#attribute/auth 'Container'",
+                  "set Context/Resource[#attribute/name='UserTransaction']/#attribute/type 'javax.transaction.UserTransaction'",
+                  "set Context/Resource[#attribute/name='UserTransaction']/#attribute/factory 'org.objectweb.jotm.UserTransactionFactory'",
+                  "set Context/Resource[#attribute/name='UserTransaction']/#attribute/jotm.timeout '60'"],
+      require => File['/srv/tomcat/conf/Catalina/localhost/jira.xml'];
+    'Context manager for jira':
+      file    => '/srv/tomcat/conf/Catalina/localhost/jira.xml',
+      lens    => 'Xml.lns',
+      changes => ["set Context/Manager[#attribute/pathname='']/#attribute/pathname ''"],
+      require => File['/srv/tomcat/conf/Catalina/localhost/jira.xml'];
   }
 
   # TODO Allow the DB to reside on another machine.
