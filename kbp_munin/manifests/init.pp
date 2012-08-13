@@ -669,12 +669,7 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
 # Depends:
 #  gen_puppet
 #
-define kbp_munin::two::environment ($site,$port,$prettyname=false) {
-  $pretty_name = $prettyname ? {
-    false   => $sanitized_customer_name,
-    default => $prettyname,
-  }
-
+define kbp_munin::two::environment ($site, $port, $prettyname = $sanitized_customer_name) {
   gen_munin::environment{$name:;}
 
   kbp_apache_new::vhost_addition { "${site}_${port}/access_${name}":
