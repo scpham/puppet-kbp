@@ -449,6 +449,21 @@ define kbp_munin::client::postgresql_dbs {
   }
 }
 
+# Class: kbp_munin::client::powerdns
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_munin::client::powerdns {
+  gen_munin::client::plugin { ['pdns_errors','pdns_latency','pdns_qsize','pdns_queries']:
+    script_path => '/usr/share/munin/plugins/kumina';
+  }
+}
+
 # Class: kbp_munin::client::bind9
 #
 # Actions:
