@@ -51,7 +51,7 @@ class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$fqdn, $datadir=false) {
+class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$fqdn, $datadir=false, $repl_user='repl', $repl_password='etohsh8xahNu', $repl_require_ssl=false) {
   if ! $mastermaster {
     class { "kbp_mysql::server":
       mysql_name   => $mysql_name,
@@ -62,11 +62,12 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
   }
 
   @@mysql::server::grant { "repl_${fqdn}":
-    user        => "repl",
-    password    => "etohsh8xahNu",
+    user        => $repl_user,
+    password    => $repl_password,
     hostname    => $repl_host,
-    db          => "*",
+    db          => '*',
     permissions => "replication slave",
+    require_ssl => $repl_require_ssl,
     tag         => "mysql_${environment}_${mysql_name}";
   }
 
@@ -151,13 +152,35 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
   Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
 }
 
-class kbp_mysql::server::ssl ($cert_dir="/etc/mysql/ssl") {
-  file {
-    $cert_dir:
-      ensure  => directory,
-      mode    => 750;
-    "/etc/mysql/conf.d/ssl.conf":
-      content => inline_template("[mysqld]\nssl\nssl-ca=${cert_dir}/cacert.pem\nssl-cert=${cert_dir}/${fqdn}.pem\nssl-key=${cert_dir}/serverkey.pem");
+# Class: kbp_mysql::server::ssl
+#
+# Parameters:
+#  cert_dir
+#    The directory where the cert, cacert and serverkey are located.
+#
+# Actions:
+#  Activate the ability to connect over SSL to the MySQL server
+#
+# Depends:
+#  kbp_mysql::server
+#  gen_puppet
+#
+class kbp_mysql::server::ssl ($certname=$fqdn, $intermediate){
+  file { "/etc/mysql/conf.d/ssl.cnf":
+    content  => "[mysqld]\nssl\nssl-ca=/etc/ssl/certs/${intermediate}.pem\nssl-cert=/etc/ssl/certs/${certname}.pem\nssl-key=/etc/ssl/private/${certname}.key",
+    require => File["/etc/ssl/certs/${intermediate}.pem", "/etc/ssl/certs/${certname}.pem", "/etc/ssl/private/${certname}.key"],
+    notify  => Exec['reload-mysql'];
+  }
+
+  setfacl {
+    "Allow MySQL read access to /etc/ssl/private/${certname}.key":
+      dir     => "/etc/ssl/private/${certname}.key",
+      recurse => false,
+      acl     => 'user:mysql:r--';
+    "Allow MySQL read access to /etc/ssl/private":
+      dir     => '/etc/ssl/private',
+      recurse => false,
+      acl     => 'user:mysql:--x';
   }
 }
 
@@ -193,25 +216,6 @@ class kbp_mysql::monitoring::icinga::server($otherhost=false) {
 
 class kbp_mysql::client::java {
   include mysql::java
-}
-
-# Class: kbp_mysql::puppetmaster
-#
-# Actions:
-#  Setup a database and user for the puppetmaster, as requested.
-#
-# Depends:
-#  gen_puppet
-#  kbp_mysql::server
-#
-class kbp_mysql::puppetmaster {
-  class { "kbp_mysql::server":
-    mysql_name => "puppetmaster";
-  }
-
-  Kbp_ferm::Rule       <<| tag == "mysql_${environment}_puppetmaster" |>>
-  Mysql::Server::Db    <<| tag == "${environment}_puppetmaster" |>>
-  Mysql::Server::Grant <<| tag == "${environment}_puppetmaster" |>>
 }
 
 # Define: kbp_mysql::client
