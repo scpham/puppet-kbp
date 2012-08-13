@@ -422,17 +422,17 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       content => template("kbp_icinga/idoutils.cfg"),
       require => Package["icinga"],
       notify  => Exec["reload-icinga"];
-    "/etc/icinga-web/databases.xml":
+    "/etc/icinga-web/conf.d/databases.xml":
       content => template("kbp_icinga/icinga-web/databases.xml"),
       owner   => "www-data",
       mode    => 600,
       require => Package["icinga-web"],
       notify  => Exec["clearcache_icinga-web"];
-    "/etc/icinga-web/auth.xml":
+    "/etc/icinga-web/conf.d/auth.xml":
       content => template("kbp_icinga/icinga-web/auth.xml"),
       require => Package["icinga-web"],
       notify  => Exec["clearcache_icinga-web"];
-    "/etc/icinga-web/translation.xml":
+    "/etc/icinga-web/conf.d/translation.xml":
       content => template("kbp_icinga/icinga-web/translation.xml"),
       require => Package["icinga-web"],
       notify  => Exec["clearcache_icinga-web"];
