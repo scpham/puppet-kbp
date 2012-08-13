@@ -1,3 +1,11 @@
+class kbp_backup::server {
+  include offsitebackup::server
+
+  Kbp_icinga::Clientcommand <| title == 'disk_space' |> {
+    arguments => "-W 5% -K 2% -w 5% -c 2% -l --errors-only -t 20",
+  }
+}
+
 class kbp_backup::disable {
   Kbp_backup::Client <| |> {
     ensure => absent,
