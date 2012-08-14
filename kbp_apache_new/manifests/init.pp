@@ -407,15 +407,6 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         proxy               => $monitor_proxy,
         vhost               => false;
       }
-
-      kbp_icinga::servicedependency { "apache_dependency_${monitor_name}_fo_http":
-        dependent_host_name           => $real_name,
-        dependent_service_description => "Vhost ${monitor_name} SSL",
-        host_name                     => $real_name,
-        service_description           => 'HTTP',
-        execution_failure_criteria    => 'w,u,c',
-        notification_failure_criteria => 'w,u,c';
-      }
     }
 
     if $smokeping {
@@ -495,15 +486,6 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
           check_interval      => $monitor_check_interval,
           ha                  => $ha,
           vhost               => false;
-        }
-
-        kbp_icinga::servicedependency { "apache_dependency_${real_name}_fo_http":
-          dependent_host_name           => $real_name,
-          dependent_service_description => "Vhost ${real_name}",
-          host_name                     => $real_name,
-          service_description           => 'HTTP',
-          execution_failure_criteria    => 'w,u,c',
-          notification_failure_criteria => 'w,u,c';
         }
       }
     }
