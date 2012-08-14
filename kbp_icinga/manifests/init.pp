@@ -1782,7 +1782,7 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
   }
 }
 
-# Define: kbp_icinga::haproxy
+# Define: kbp_icinga::haproxy::site
 #
 # Parameters:
 #  ha
@@ -1805,7 +1805,7 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::haproxy($address, $ha=false, $url=false, $port=false, $host_name=false, $response=false,
+define kbp_icinga::haproxy::site($address, $ha=false, $url=false, $port=false, $host_name=false, $response=false,
     $statuscode="200", $max_check_attempts=false, $ssl=false, $preventproxyoverride=false, $nrpe_proxy=false) {
   kbp_icinga::site { "${name}_80":
     address              => $address,

@@ -12,6 +12,8 @@ class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $lo
     tcp_smart_connect => $tcp_smart_connect;
   }
 
+  kbp_icinga::proc_status { 'haproxy':; }
+
   # These exported kfiles contain the firewall fragments
   Ekfile <<| tag == $haproxy_tag |>>
 }
@@ -141,7 +143,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
   }
 
   if $monitor_site {
-    kbp_icinga::haproxy { $name:
+    kbp_icinga::haproxy::site { $name:
       address              => $monitoring_address ? {
         false   => $listenaddress,
         default => $monitoring_address,
