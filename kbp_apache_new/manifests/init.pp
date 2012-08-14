@@ -409,7 +409,9 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       }
 
       kbp_icinga::servicedependency { "apache_dependency_${monitor_name}_fo_http":
+        dependent_host_name           => $real_name,
         dependent_service_description => "${monitor_name}_fo",
+        host_name                     => $real_name,
         service_description           => 'HTTP',
         execution_failure_criteria    => 'w,u,c',
         notification_failure_criteria => 'w,u,c';
@@ -496,7 +498,9 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         }
 
         kbp_icinga::servicedependency { "apache_dependency_${real_name}_fo_http":
+          dependent_host_name           => $real_name,
           dependent_service_description => "${real_name}_fo",
+          host_name                     => $real_name,
           service_description           => 'HTTP',
           execution_failure_criteria    => 'w,u,c',
           notification_failure_criteria => 'w,u,c';
