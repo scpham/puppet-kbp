@@ -233,7 +233,7 @@ class kbp_mysql::client::java {
 #  kbp_ferm
 #  gen_puppet
 #
-define kbp_mysql::client ($mysql_name, $address=$fqdn, $environment=$environment) {
+define kbp_mysql::client ($mysql_name, $address=$source_ipaddress, $environment=$environment) {
   include gen_base::mysql_client
 
   kbp_ferm::rule { "MySQL connections for ${name}":
