@@ -383,6 +383,13 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       proxy               => $monitor_proxy;
     }
 
+    kbp_icinga::servicedependency { "apache_dependency_${monitor_name}_http":
+      dependent_service_description => $monitor_name,
+      service_description           => 'HTTP',
+      execution_failure_criteria    => 'wuc',
+      notification_failure_criteria => 'wuc';
+    }
+
     if $failover {
       kbp_icinga::site { "${monitor_name}_fo":
         service_description => $service_description,
@@ -399,6 +406,13 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         ssl                 => $real_ssl,
         proxy               => $monitor_proxy,
         vhost               => false;
+      }
+
+      kbp_icinga::servicedependency { "apache_dependency_${monitor_name}_fo_http":
+        dependent_service_description => "${monitor_name}_fo",
+        service_description           => 'HTTP',
+        execution_failure_criteria    => 'wuc',
+        notification_failure_criteria => 'wuc';
       }
     }
 
@@ -458,6 +472,13 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         ssl                 => false;
       }
 
+      kbp_icinga::servicedependency { "apache_dependency_${real_name}_http":
+        dependent_service_description => $real_name,
+        service_description           => 'HTTP',
+        execution_failure_criteria    => 'wuc',
+        notification_failure_criteria => 'wuc';
+      }
+
       if $failover {
         kbp_icinga::site { "${real_name}_fo":
           service_description => $service_description,
@@ -472,6 +493,13 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
           check_interval      => $monitor_check_interval,
           ha                  => $ha,
           vhost               => false;
+        }
+
+        kbp_icinga::servicedependency { "apache_dependency_${real_name}_fo_http":
+          dependent_service_description => "${real_name}_fo",
+          service_description           => 'HTTP',
+          execution_failure_criteria    => 'wuc',
+          notification_failure_criteria => 'wuc';
         }
       }
     }
