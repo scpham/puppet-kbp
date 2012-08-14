@@ -12,7 +12,9 @@ class kbp_haproxy ($failover = false, $haproxy_tag="haproxy_${environment}", $lo
     tcp_smart_connect => $tcp_smart_connect;
   }
 
-  kbp_icinga::proc_status { 'haproxy':; }
+  if ! $failover {
+    kbp_icinga::proc_status { 'haproxy':; }
+  }
 
   # These exported kfiles contain the firewall fragments
   Ekfile <<| tag == $haproxy_tag |>>
