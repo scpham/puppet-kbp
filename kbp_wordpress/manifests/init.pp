@@ -53,10 +53,6 @@ define kbp_wordpress($external_mysql = true, $mysql_name, $db = false, $user = $
   }
 
   if $external_mysql {
-    kbp_mysql::client { $name:
-      mysql_name => $mysql_name;
-    }
-
     @@mysql::server::db { $real_db:
       tag => "mysql_${environment}_${mysql_name}";
     }
