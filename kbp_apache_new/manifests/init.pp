@@ -384,7 +384,10 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
 
     kbp_icinga::servicedependency { "apache_dependency_${monitor_name}_http":
-      dependent_service_description => "Vhost ${monitor_name}",
+      dependent_service_description => $real_ssl ? {
+        false => "Vhost ${real_name}",
+        true  => "Vhost ${real_name} SSL",
+      },
       service_description           => 'HTTP',
       execution_failure_criteria    => 'w,u,c',
       notification_failure_criteria => 'w,u,c';
