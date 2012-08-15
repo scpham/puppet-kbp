@@ -53,17 +53,17 @@ define kbp_wordpress($external_mysql = true, $mysql_name, $db = false, $user = $
   }
 
   if $external_mysql {
-    mysql::client { $name:
+    kbp_mysql::client { $name:
       mysql_name => $mysql_name;
     }
 
     @@mysql::server::db { $real_db:
-      mysql_name => $mysql_name;
+      tag => "mysql_${environment}_${mysql_name}";
     }
 
     @@mysql::server::grant { "${real_user} on ${real_db}.*":
-      mysql_name => $mysql_name,
-      password   => $password;
+      password   => $password,
+      tag        => "mysql_${environment}_${mysql_name}";
     }
   } elsif ! defined(Class['kbp_mysql::server']) {
     class { 'kbp_mysql::server':
