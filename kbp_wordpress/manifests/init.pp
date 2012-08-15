@@ -36,22 +36,44 @@ class kbp_wordpress::common {
 #  kbp_apache_new
 #  mysql
 #
-define kbp_wordpress($mysql_name, $db, $user = $db, $password) {
+define kbp_wordpress($external_mysql = true, $mysql_name, $db = false, $user = $false, $password) {
   include kbp_wordpress::common
+
+  $real_db = $db ? {
+    false   => regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G'),
+    default => $db,
+  }
+  $real_user = $user ? {
+    false   => $real_db,
+    default => $user,
+  }
 
   kbp_apache_new::site { $name:
     php => true;
   }
 
-  if ! defined(Class['kbp_mysql::server']) {
+  if $external_mysql {
+    mysql::client { $name:
+      mysql_name => $mysql_name;
+    }
+
+    @@mysql::server::db { $real_db:
+      mysql_name => $mysql_name;
+    }
+
+    @@mysql::server::grant { "${real_user} on ${real_db}.*":
+      mysql_name => $mysql_name,
+      password   => $password;
+    }
+  } elsif ! defined(Class['kbp_mysql::server']) {
     class { 'kbp_mysql::server':
       mysql_name => $mysql_name;
     }
-  }
 
-  mysql::server::db { $db:; }
+    mysql::server::db { $real_db:; }
 
-  mysql::server::grant { "${user} on ${db}.*":
-    password => $password;
+    mysql::server::grant { "${real_user} on ${real_db}.*":
+      password => $password;
+    }
   }
 }
