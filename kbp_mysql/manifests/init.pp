@@ -1,40 +1,66 @@
 # Author: Kumina bv <support@kumina.nl>
 
 # Parameters:
-#  mysql_name         The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
-#  slow_query_time    See kbp_mysql::server
-#
-class kbp_mysql::mastermaster($mysql_name, $repl_password, $repl_user='repl', $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10) {
-  class { "kbp_mysql::master":
-    mysql_name      => $mysql_name,
-    bind_address    => $bind_address,
-    setup_backup    => $setup_backup,
-    datadir         => $datadir,
-    slow_query_time => $slow_query_time;
+#  mysql_name
+#    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
+class kbp_mysql::mastermaster($mysql_name, $serverid, $auto_increment_increment=10, $auto_increment_offset=$serverid, $setup_binlogs=true, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10, $repl_password) {
+
+  if ! $serverid {
+    $real_serverid = fqdn_rand(4294967293)+2 # 32 bit integer that is not 0 or 1
+  } else {
+    $real_serverid = $serverid
   }
-  class { "kbp_mysql::slave":
-    repl_host       => $repl_host,
-    mysql_name      => $mysql_name,
-    mastermaster    => true,
-    monitoring_ha   => $monitoring_ha_slaving,
-    datadir         => $datadir,
-    slow_query_time => $slow_query_time,
-    repl_user       => $repl_user,
-    repl_password   => $repl_password;
+
+  class {
+    "kbp_mysql::master":
+      mysql_name      => $mysql_name,
+      bind_address    => $bind_address,
+      setup_backup    => $setup_backup,
+      serverid        => $real_serverid,
+      setup_binlogs   => $setup_binlogs,
+      datadir         => $datadir,
+      slow_query_time => $slow_query_time;
+    "kbp_mysql::slave":
+      repl_host       => $repl_host,
+      mysql_name      => $mysql_name,
+      mastermaster    => true,
+      monitoring_ha   => $monitoring_ha_slaving,
+      datadir         => $datadir,
+      slow_query_time => $slow_query_time,
+      repl_user       => $repl_user,
+      repl_password   => $repl_password;
+  }
+
+  file { '/etc/mysql/conf.d/auto_increment.cnf':
+    content => "[mysqld]\nauto_increment_increment = ${auto_increment_increment}\nauto_increment_offset = ${auto_increment_offset}",
+    require => File['/etc/mysql/conf.d/master.cnf'],
+    notify  => Exec['reload-mysql'];
   }
 }
 
 # Parameters:
-#  mysql_name         The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
+#  mysql_name
+#    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
+#  bind_address:
+#    The address to bind the server to
+#  setup_backup:
+#    Backup this mysql server
+#  datadir:
+#    Root directory for all the mysql data.
 #  slow_query_time    See kbp_mysql::server
-#
-class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $slow_query_time=10) {
+class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $serverid=1, $setup_binlogs = true, $slow_query_time=10) {
   class { "kbp_mysql::server":
     mysql_name      => $mysql_name,
     setup_backup    => $setup_backup,
     bind_address    => $bind_address,
     datadir         => $datadir,
     slow_query_time => $slow_query_time;
+  }
+
+  file { '/etc/mysql/conf.d/master.cnf':
+    content => template('kbp_mysql/master.cnf'),
+    require => Service['mysql'],
+    notify  => Exec['reload-mysql'];
   }
 
   Mysql::Server::Grant <<| tag == "mysql_${environment}_${mysql_name}" |>>
@@ -58,7 +84,7 @@ class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$source_ipaddress, $datadir=false, $repl_user='repl', $repl_password, $repl_require_ssl=false, $slow_query_time=10) {
+class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$source_ipaddress, $datadir=false, $repl_user='repl', $repl_password, $repl_require_ssl=false, $serverid=false, $slow_query_time=10) {
   if ! $mastermaster {
     class { "kbp_mysql::server":
       mysql_name      => $mysql_name,
@@ -67,6 +93,25 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
       datadir         => $datadir,
       slow_query_time => $slow_query_time;
     }
+
+    file { '/etc/mysql/conf.d/master.cnf':
+      ensure => absent;
+    }
+  }
+
+  if ! $serverid {
+    $real_serverid = fqdn_rand(4294967293)+2 # 32 bit number that cannot be 0 or 1 (1=master usually)
+  } else {
+    $real_serverid = $serverid
+  }
+
+  file { '/etc/mysql/conf.d/slave.conf':
+    content => $mastermaster ? {
+      true  => '# see master.cnf for the server-id', # Serverid is set in kbp_mysql::master
+      default => "[mysqld]\nserver-id = ${real_serverid}",
+    },
+    require => Service['mysql'],
+    notify  => Exec['reload-mysql'];
   }
 
   @@mysql::server::grant { "repl_${fqdn}":
