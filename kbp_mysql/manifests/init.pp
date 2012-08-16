@@ -155,14 +155,17 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
 # Class: kbp_mysql::server::ssl
 #
 # Parameters:
-#  cert_dir
-#    The directory where the cert, cacert and serverkey are located.
+#  certname
+#    The filename (without extention) of the keyfile and certificate (installed using kbp_ssl::keys{}).
+#  intermediate
+#    The name of the intermediate certificate in use.
 #
 # Actions:
 #  Activate the ability to connect over SSL to the MySQL server
 #
 # Depends:
 #  kbp_mysql::server
+#  kbp_ssl::keys
 #  gen_puppet
 #
 class kbp_mysql::server::ssl ($certname=$fqdn, $intermediate){
