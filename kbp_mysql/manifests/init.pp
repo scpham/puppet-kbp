@@ -172,15 +172,10 @@ class kbp_mysql::server::ssl ($certname=$fqdn, $intermediate){
     notify  => Exec['reload-mysql'];
   }
 
-  setfacl {
-    "Allow MySQL read access to /etc/ssl/private/${certname}.key":
-      dir     => "/etc/ssl/private/${certname}.key",
-      recurse => false,
-      acl     => 'user:mysql:r--';
-    "Allow MySQL read access to /etc/ssl/private":
-      dir     => '/etc/ssl/private',
-      recurse => false,
-      acl     => 'user:mysql:--x';
+  setfacl { "Allow MySQL read access to /etc/ssl/private":
+    dir     => '/etc/ssl/private',
+    recurse => false,
+    acl     => 'user:mysql:--x';
   }
 }
 
