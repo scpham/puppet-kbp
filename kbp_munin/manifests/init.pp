@@ -516,7 +516,6 @@ define kbp_munin::environment($site, $port, $offset = false, $sync_offset = fals
 
   concat {
     "/etc/munin/munin-${name}.conf":
-      purge_on_pm => true,
       require     => Package["munin"];
     "/srv/www/${site}/${name}/.htpasswd":
       require     => File["/srv/www/${site}/${name}"];

@@ -76,7 +76,6 @@ class kbp_base {
   }
 
   concat { "/etc/ssh/kumina.keys":
-    purge_on_pm => true,
     owner       => "root",
     group       => "root",
     mode        => 0644,
