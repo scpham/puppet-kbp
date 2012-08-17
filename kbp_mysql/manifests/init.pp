@@ -51,7 +51,7 @@ class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$fqdn, $datadir=false, $repl_user='repl', $repl_password='etohsh8xahNu', $repl_require_ssl=false) {
+class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$source_ipaddress, $datadir=false, $repl_user='repl', $repl_password='etohsh8xahNu', $repl_require_ssl=false) {
   if ! $mastermaster {
     class { "kbp_mysql::server":
       mysql_name   => $mysql_name,
@@ -77,7 +77,7 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
     permissions => "super, replication client";
   }
 
-  kbp_ferm::rule { "MySQL slaving from ${fqdn}":
+  kbp_ferm::rule { "MySQL slaving":
     exported => true,
     saddr    => $repl_host,
     proto    => "tcp",
