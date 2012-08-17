@@ -3,7 +3,7 @@
 # Parameters:
 #  mysql_name
 #    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
-class kbp_mysql::mastermaster($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$fqdn, $datadir=false) {
+class kbp_mysql::mastermaster($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false) {
   class { "kbp_mysql::master":
     mysql_name   => $mysql_name,
     bind_address => $bind_address,
