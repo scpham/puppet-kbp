@@ -115,7 +115,7 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
     datadir => $datadir;
   }
 
-  if $setup_backup {
+  if $setup_backup and ! defined('Kbp_backup::Disable') {
     file { "/etc/backup/prepare.d/mysql":
       ensure  => link,
       target  => "/usr/share/backup-scripts/prepare/mysql",
