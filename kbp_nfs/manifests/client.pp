@@ -13,7 +13,7 @@
 #  Undocumented
 #  gen_puppet
 #
-define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024", $export_options="rw,sync,no_subtree_check", $serverpath=false, $nfs_tag = "nfs_${environment}", $ferm_saddr = $fqdn, $nfs_client = $fqdn) {
+define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024,vers=3", $export_options="rw,sync,no_subtree_check", $serverpath=false, $nfs_tag = "nfs_${environment}", $ferm_saddr = $fqdn, $nfs_client = $fqdn) {
   include kbp_trending::nfs
 
   $real_serverpath = $serverpath ? {
