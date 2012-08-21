@@ -11,10 +11,9 @@
 #  gen_puppet
 #
 class kbp_time {
-  if ((versioncmp($lsbdistrelease,"5.0") >= 0) and (versioncmp($lsbdistrelease,"6.0")) < 0 ) { #this is lenny
+  if $lsbdistmajrelease == '5' { # This is lenny
     include openntpd::common
-  }
-  if (versioncmp($lsbdistrelease, "6.0") >= 0) { # This is squeeze or ewer
+  } elsif $lsbdistmajrelease == '6' { # This is squeeze or newer
     include ntp
     include kbp_trending::ntpd
   }
