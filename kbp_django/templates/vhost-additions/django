@@ -1,0 +1,2 @@
+WSGIScriptAlias <%= root_path %> /srv/django<%= root_django %>/dispatch.wsgi
+Alias <%= static_path %> /srv/django<%= static_django %>

@@ -526,7 +526,8 @@ define kbp_munin::environment($site, $port, $offset = false, $sync_offset = fals
     target  => "/etc/munin/munin-${name}.conf";
   }
 
-  kbp_apache_new::vhost_addition { "${site}_${port}/access_${name}":
+  kbp_apache_new::vhost_addition { "${site}/access_${name}":
+    ports   => $port,
     content => template("kbp_munin/vhost-additions/access");
   }
 
@@ -613,10 +614,12 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
   }
 
   kbp_apache_new::vhost_addition {
-    "${site}_${port}/munin.conf":
+    "${site}/munin.conf":
+      ports   => $port,
       content => template("kbp_munin/2/apache2/munin.conf");
     # Configure access to the root web-dir
-    "${site}_${port}/access_0_common":
+    "${site}/access_0_common":
+      ports   => $port,
       content => template("kbp_munin/2/apache2/access_common");
   }
 
@@ -676,7 +679,8 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
 define kbp_munin::two::environment ($site = false, $port = false, $prettyname) {
   gen_munin::environment{$name:;}
 
-  kbp_apache_new::vhost_addition { "${site}_${port}/access_${name}":
+  kbp_apache_new::vhost_addition { "${site}/access_${name}":
+    ports   => $port,
     content => template("kbp_munin/2/apache2/access.conf");
   }
 

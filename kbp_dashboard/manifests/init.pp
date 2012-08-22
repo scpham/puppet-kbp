@@ -40,7 +40,8 @@ class kbp_dashboard::site_host($url, $ssl=true, $mysql_name=$environment, $dbpas
       tag         => "mysql_${environment}_dashboard";
   }
 
-  kbp_apache_new::vhost_addition { "${url}_${port}/access":
+  kbp_apache_new::vhost_addition { "${url}/access":
+    ports   => $port,
     content => template('kbp_dashboard/vhost-additions/base_access');
   }
 
@@ -64,9 +65,11 @@ define kbp_dashboard::environment($url, $port) {
   }
 
   kbp_apache_new::vhost_addition {
-    "${url}_${port}/access_${name}":
+    "${url}/access_${name}":
+      ports   => $port,
       content => template('kbp_dashboard/vhost-additions/access');
-    "${url}_${port}/proxies_${name}":
+    "${url}/proxies_${name}":
+      ports   => $port,
       content => template('kbp_dashboard/vhost-additions/proxies');
   }
 }

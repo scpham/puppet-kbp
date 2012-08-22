@@ -243,6 +243,11 @@ define kbp_tomcat::datasource_setting ($context, $hash) {
 #
 define kbp_tomcat::apache_proxy_ajp_site($ensure="present", $port=8009, $ssl=false, $address='*', $redirect_non_ssl=true, $non_ssl=true, $serveralias=false, $documentroot="/srv/www/${name}", $tomcat_tag="tomcat_${environment}",
     $sourcepath="/", $urlpath="/", $php=false, $make_default=false, $monitor_path=$urlpath, $monitor_response=false, $monitor_max_check_attempts="5", $auth=false, $intermediate=false) {
+  if $ssl or $intermediate {
+    $real_ssl = true
+  } else {
+    $real_ssl = false
+  }
 
   kbp_apache_new::site { $name:
     ensure             => $ensure,
@@ -263,12 +268,14 @@ define kbp_tomcat::apache_proxy_ajp_site($ensure="present", $port=8009, $ssl=fal
   }
 
   if $non_ssl {
-    kbp_apache_new::vhost_addition { "${name}_80/tomcat_proxy":
-      content => template("kbp_tomcat/apache/tomcat_proxy");
-    }
-  }
-  if $ssl or $intermediate {
-    kbp_apache_new::vhost_addition { "${name}_443/tomcat_proxy":
+    kbp_apache_new::vhost_addition { "${name}/tomcat_proxy":
+      ports   => $non_ssl ? {
+        true  => $real_ssl ? {
+          true  => [80, 443],
+          false => 80,
+        },
+        false => 443,
+      },
       content => template("kbp_tomcat/apache/tomcat_proxy");
     }
   }

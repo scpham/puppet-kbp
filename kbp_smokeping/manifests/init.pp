@@ -60,7 +60,8 @@ define kbp_smokeping::environment($url, $owner="Kumina bv", $contact="support@ku
     syslogfacility => $syslogfacility;
   }
 
-  kbp_apache_new::vhost_addition { "${url}_${port}/smokeping_${name}.conf":
+  kbp_apache_new::vhost_addition { "${url}/smokeping_${name}.conf":
+    ports   => $port,
     content => template("kbp_smokeping/apache");
   }
 

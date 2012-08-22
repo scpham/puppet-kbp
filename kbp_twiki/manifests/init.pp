@@ -32,7 +32,8 @@ define kbp_twiki::site ($port = "80") {
 
   $vhost_directory = "/srv/www/${name}"
 
-  kbp_apache_new::vhost_addition { "${name}_${port}/twiki":
+  kbp_apache_new::vhost_addition { "${name}/twiki":
+    ports   => $port,
     content => template("kbp_twiki/apache.conf");
   }
 }

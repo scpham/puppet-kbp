@@ -22,13 +22,6 @@ class kbp_apache_new {
     monitor             => false;
   }
 
-  # Also needed for the /server-status page
-  file { '/etc/apache2/conf.d/server-status':
-    content => template('kbp_apache_new/conf.d/server-status'),
-    require => Package['apache2'],
-    notify  => Exec['reload-apache2'];
-  }
-
   file {
     "/etc/apache2/mods-available/deflate.conf":
       content => template("kbp_apache_new/mods-available/deflate.conf"),
@@ -38,6 +31,11 @@ class kbp_apache_new {
       content => template("kbp_apache_new/conf.d/security"),
       require => Package["apache2"],
       notify  => Exec["reload-apache2"];
+    # Also needed for the /server-status page
+    '/etc/apache2/conf.d/server-status':
+      content => template('kbp_apache_new/conf.d/server-status'),
+      require => Package['apache2'],
+      notify  => Exec['reload-apache2'];
   }
 
   # There are classes that override /srv/www (think the NFS class), this makes sure
@@ -295,27 +293,25 @@ define kbp_apache_new::php_cgi($ensure="present", $documentroot, $custom_php_ini
 #  Undocumented
 #  gen_puppet
 #
-define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot=false, $create_documentroot=true, $address='*', $address6='::',
-    $port=false, $make_default=false, $ssl=false, $non_ssl=true, $key=false, $cert=false, $intermediate=false, $wildcard=false, $log_vhost=false, $access_logformat="combined",
+define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot = "/srv/www/${name}", $create_documentroot=true, $address='*', $address6='::',
+    $make_default=false, $ssl=false, $non_ssl=true, $key=false, $cert=false, $intermediate=false, $wildcard=false, $log_vhost=false, $access_logformat="combined",
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor_creds=false,
     $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $glassfish_domain=false, $glassfish_connector_port=false,
-    $glassfish_connector_loglevel="info", $django_root_path=false,$django_root_django=false, $django_static_path=false, $django_static_django=false,
-    $django_settings=false, $phpmyadmin=false, $ha=false, $monitor_ip=false, $monitor_proxy = false, $failover=false) {
+    $glassfish_connector_loglevel="info", $phpmyadmin=false, $ha=false, $monitor_ip=false, $monitor_proxy = false, $failover=false) {
   include kbp_apache_new
+
+  if regsubst($name, '^(.*)_.*$', '\1') != $name {
+    fail("Only pass the site name to kbp_apache_new::site, not ${name}")
+  }
 
   if $failover and $address == '*' and $address6 == '*' {
     fail("Site ${name} has failover set to true but no address or address6 is supplied.")
   }
 
-  $temp_name   = $port ? {
-    false   => $name,
-    default => "${name}_${port}",
-  }
   if $key or $cert or $intermediate or $wildcard or $ssl {
     include kbp_apache_new::ssl
 
     $real_ssl = true
-    $full_name = regsubst($temp_name,'^([^_]*)$','\1_443')
 
     if $make_default and ! $non_ssl {
       Kbp_icinga::Http <| title == "http_${fqdn}" |> {
@@ -324,24 +320,21 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
   } else {
     $real_ssl = false
-    $full_name = regsubst($temp_name,'^([^_]*)$','\1_80')
   }
-  $real_name   = regsubst($full_name,'^(.*)_(.*)$','\1')
-  $real_port   = regsubst($full_name,'^(.*)_(.*)$','\2')
+  $port        = $real_ssl ? {
+    false => 80,
+    true  => 443,
+  }
+  $full_name   = regsubst($name, '^([^_]*)$', "\1_${port}")
   $dontmonitor = ["default","default-ssl","localhost"]
-  $real_documentroot = $documentroot ? {
-    false   => "/srv/www/${real_name}",
-    default => $documentroot,
-  }
 
   gen_apache::site { $full_name:
     ensure              => $ensure,
     serveralias         => $serveralias,
     create_documentroot => $create_documentroot,
-    documentroot        => $real_documentroot,
+    documentroot        => $documentroot,
     address             => $address,
     address6            => $address6,
-    port                => $port,
     log_vhost           => $log_vhost,
     access_logformat    => $access_logformat,
     make_default        => $make_default,
@@ -354,9 +347,9 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
     if $real_ssl {
-      $monitor_name = "${real_name}_SSL"
+      $monitor_name = "${name}_SSL"
     } else {
-      $monitor_name = $real_name
+      $monitor_name = $name
     }
 
     $real_monitor_ip = $monitor_ip ? {
@@ -368,7 +361,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       service_description => $service_description,
       address             => $real_monitor_ip,
       address6            => $address6,
-      host_name           => $real_name,
+      host_name           => $name,
       max_check_attempts  => $max_check_attempts,
       auth                => $auth,
       path                => $monitor_path,
@@ -385,8 +378,8 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
     kbp_icinga::servicedependency { "apache_dependency_${monitor_name}_http":
       dependent_service_description => $real_ssl ? {
-        false => "Vhost ${real_name}",
-        true  => "Vhost ${real_name} SSL",
+        false => "Vhost ${name}",
+        true  => "Vhost ${name} SSL",
       },
       service_description           => 'HTTP',
       execution_failure_criteria    => 'w,u,c',
@@ -398,7 +391,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         service_description => $service_description,
         address             => $real_monitor_ip,
         address6            => $address6,
-        host_name           => $real_name,
+        host_name           => $name,
         max_check_attempts  => $max_check_attempts,
         auth                => $auth,
         path                => $monitor_path,
@@ -428,33 +421,32 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
   if $real_ssl and $non_ssl {
     if $redirect_non_ssl {
-      kbp_apache_new::forward_vhost { $real_name:
+      kbp_apache_new::forward_vhost { $name:
         ensure      => $ensure,
         address     => $address,
         address6    => $address6,
-        forward     => "https://${real_name}",
+        forward     => "https://${name}",
         serveralias => $serveralias,
         monitor_ip  => $real_monitor_ip;
       }
     } else {
-      gen_apache::site { "${real_name}_80":
+      gen_apache::site { "${name}_80":
         ensure              => $ensure,
         serveralias         => $serveralias,
         create_documentroot => $create_documentroot,
-        documentroot        => $real_documentroot,
+        documentroot        => $documentroot,
         address             => $address,
         address6            => $address6,
-        port                => $port,
         log_vhost           => $log_vhost,
         access_logformat    => $access_logformat,
         make_default        => $make_default;
       }
 
-      kbp_icinga::site { $real_name:
+      kbp_icinga::site { $name:
         service_description => $service_description,
         address             => $real_monitor_ip,
         address6            => $address6,
-        host_name           => $real_name,
+        host_name           => $name,
         max_check_attempts  => $max_check_attempts,
         auth                => $auth,
         path                => $monitor_path,
@@ -468,19 +460,19 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
         ssl                 => false;
       }
 
-      kbp_icinga::servicedependency { "apache_dependency_${real_name}_http":
-        dependent_service_description => "Vhost ${real_name}",
+      kbp_icinga::servicedependency { "apache_dependency_${name}_http":
+        dependent_service_description => "Vhost ${name}",
         service_description           => 'HTTP',
         execution_failure_criteria    => 'w,u,c',
         notification_failure_criteria => 'w,u,c';
       }
 
       if $failover {
-        kbp_icinga::site { "${real_name}_fo":
+        kbp_icinga::site { "${name}_fo":
           service_description => $service_description,
           address             => $real_monitor_ip,
           address6            => $address6,
-          host_name           => $real_name,
+          host_name           => $name,
           max_check_attempts  => $max_check_attempts,
           auth                => $auth,
           path                => $monitor_path,
@@ -497,15 +489,15 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       if $cert {
         kbp_icinga::sslcert { $cert:; }
       } else {
-        kbp_icinga::sslcert { $real_name:; }
+        kbp_icinga::sslcert { $name:; }
       }
     }
   }
 
-  if ! defined(Gen_ferm::Rule["HTTP(S) connections on ${real_port}"]) {
-    gen_ferm::rule { "HTTP(S) connections on ${real_port}":
+  if ! defined(Gen_ferm::Rule["HTTP(S) connections on ${port}"]) {
+    gen_ferm::rule { "HTTP(S) connections on ${port}":
       proto  => "tcp",
-      dport  => $real_port,
+      dport  => $port,
       action => "ACCEPT";
     }
   }
@@ -516,52 +508,10 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
 
     kbp_apache_new::glassfish_domain { $glassfish_domain:
-      site               => $real_name,
-      site_port          => $real_port,
+      site               => $name,
+      site_port          => $port,
       connector_loglevel => $glassfish_connector_loglevel,
       connector_port     => $glassfish_connector_port;
-    }
-  }
-
-  if $django_settings {
-    include kbp_django
-
-    $real_django_root_path = $django_root_path ? {
-      false   => '/',
-      default => $django_root_path,
-    }
-    $real_django_root_django = $django_root_django ? {
-      false   => "/${real_name}",
-      default => $django_root_django,
-    }
-    $real_django_static_path = $django_static_path ? {
-      false   => '/media',
-      default => $django_static_path,
-    }
-    $real_django_static_django = $django_static_django ? {
-      false   => "/${real_name}/media",
-      default => $django_static_django,
-    }
-
-    kbp_apache_new::vhost_addition { "${full_name}/django":
-      content => template("kbp_apache_new/vhost-additions/django");
-    }
-
-    file {
-      "/srv/django${real_django_root_django}":
-        mode    => 775,
-        ensure  => directory;
-      "/srv/django${real_django_root_django}/dispatch.wsgi":
-        content => template("kbp_apache_new/django/dispatch.wsgi"),
-        replace => false,
-        mode    => 775;
-    }
-
-    if ! defined(File["/srv/django${real_django_static_django}"]) {
-      file { "/srv/django${real_django_static_django}":
-        mode    => 775,
-        ensure  => directory;
-      }
     }
   }
 
@@ -574,7 +524,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
       # Default to CGI
       default:   {
         kbp_apache_new::php_cgi { $full_name:
-          documentroot   => $real_documentroot,
+          documentroot   => $documentroot,
           custom_php_ini => $custom_php_ini;
         }
       }
@@ -637,11 +587,14 @@ define kbp_apache_new::forward_vhost ($forward, $address = '*', $address6 = '::'
   }
 }
 
-define kbp_apache_new::vhost_addition($ensure="present", $content=false) {
-  $fullname = regsubst($name,'^(.*?)_.*$','\1')
-  $port     = regsubst($name,'^.*_(.*?)/.*$','\1')
+define kbp_apache_new::vhost_addition($ensure="present", $content=false, $ports = 80) {
+  if regsubst($name, '^(.*)_.*/.*$', '\1') != $name {
+    fail("Vhost addition ${name}: Passing the port in the name of a kbp_apache_new::vhost_addition is no longer allowed, use the ports param (defaults to 80).")
+  }
 
-  gen_apache::vhost_addition { $name:
+  $names = split(inline_template("<% name_array = name.split('/') %><%= [ports].flatten.map { |x| name_array[0]+'_'+x.to_s+'/'+name_array[1] }.join(' ') %>"), ' ')
+
+  gen_apache::vhost_addition { $names:
     ensure  => $ensure,
     content => $content ? {
       false   => undef,
@@ -650,10 +603,11 @@ define kbp_apache_new::vhost_addition($ensure="present", $content=false) {
   }
 }
 
-define kbp_apache_new::glassfish_domain($site, $site_port, $connector_port, $connector_loglevel="info") {
+define kbp_apache_new::glassfish_domain($site, $port, $connector_port, $connector_loglevel="info") {
   include kbp_apache_new::glassfish_domain_base
 
-  kbp_apache_new::vhost_addition { "${site}_${site_port}/glassfish-jk":
+  kbp_apache_new::vhost_addition { "${site}/glassfish-jk":
+    ports   => $port,
     content => "JkLogLevel ${connector_loglevel}\nJkMount /* ${name}\n";
   }
 
@@ -671,7 +625,11 @@ define kbp_apache_new::glassfish_domain($site, $site_port, $connector_port, $con
 define kbp_apache_new::cgi($documentroot=false, $custom_php_ini=false) {
   include gen_base::libapache2-mod-fcgid
 
-  kbp_apache_new::vhost_addition { "${name}/enable-cgi":
+  $real_name = regsubst($name, '^(.*)_.*$', '\1')
+  $port      = regsubst($name, '^.*_(.*)$', '\1')
+
+  kbp_apache_new::vhost_addition { "${real_name}/enable-cgi":
+    ports   => $port,
     content => template("kbp_apache_new/vhost-additions/enable_cgi");
   }
 }
