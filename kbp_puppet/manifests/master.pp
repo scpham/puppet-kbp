@@ -13,10 +13,8 @@ class kbp_puppet::master {
   include gen_puppet::master
   include kbp_puppet::vim
   include kbp_rails::mysql
-  include kbp_apache::passenger
+  include kbp_apache_new::passenger
   include kbp_trending::puppetmaster
-  # TODO once this uses the new apache modules this can be removed
-  include kbp_icinga::passenger::queue
 
   gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
 
@@ -109,17 +107,10 @@ class kbp_puppet::master {
 #  kbp_puppet::master
 #  gen_puppet
 #
-define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet/puppet.conf", $debug = false,
-        $dbsetup = true, $dbname = false, $dbuser = false, $dbpasswd = false,
-        $dbhost = false, $dbserver = false, $dbsocket = false, $environments = [],
-        $factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet",
-        $pluginsync = true, $port = "8140", $queue = false, $queue_host = "localhost",
-        $queue_port = "61613", $rackroot = "/usr/local/share/puppet/rack",
-        $rundir = "/var/run/puppet", $ssldir = "/var/lib/puppet/ssl",
+define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet/puppet.conf", $debug = false, $dbsetup = true, $dbname = false, $dbuser = false, $dbpasswd = false,
+        $dbhost = false, $dbserver = false, $dbsocket = false, $environments = [], $factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet", $pluginsync = true, $port = "8140",
+        $queue = false, $queue_host = "localhost", $queue_port = "61613", $rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet", $ssldir = "/var/lib/puppet/ssl",
         $templatedir = '$confdir/templates', $vardir = "/var/lib/puppet") {
-
-  include apache
-
   # The dbhost config option changed into dbserver somewhere in 2.6-2.7, we
   # accept both for now. Maybe give a message at some point.
   if $dbserver { $set_dbserver = $dbserver }
@@ -141,9 +132,6 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
   # The rackdir that is being used
   $rackdir = "${rackroot}/${pname}"
 
-  # The address to bind to
-  $address = "*:${port}"
-
   gen_puppet::master::config { $name:
     configfile  => $configfile,
     debug       => $debug,
@@ -158,20 +146,6 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
     vardir      => $vardir,
   }
 
-  # The apache config should determine where to listen on
-  apache::site_config { "${pname}":
-    address      => $address,
-    documentroot => "${rackdir}/public",
-    template     => "apache/sites-available/simple-fqdn.erb",
-  }
-
-  # Open the port in Apache
-  line { "Make Apache listen to port ${port} for puppetmaster ${name}.":
-    content => "Listen ${port}",
-    file    => "/etc/apache2/ports.conf",
-    require => Package["apache2"],
-  }
-
   # Open the firewall for our puppetmaster
   kbp_ferm::rule { "Connections to puppetmaster ${name}.":
     proto  => "tcp",
@@ -179,24 +153,26 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
     action => "ACCEPT",
   }
 
-  # The vhost-addition should set the documentroot, the puppet directory,
-  # the additional apache permissions and debugging options.
-  file {
-    "/etc/apache2/vhost-additions/${pname}/permissions.conf":
-      notify  => Exec["reload-apache2"],
-      content => template("kbp_puppet/master/apache2/vhost-additions/permissions.conf.erb");
-    "/etc/apache2/vhost-additions/${pname}/rack.conf":
-      notify  => Exec["reload-apache2"],
-      content => template("kbp_puppet/master/apache2/vhost-additions/rack.conf");
-    "/etc/apache2/vhost-additions/${pname}/ssl.conf":
-      notify  => Exec["reload-apache2"],
-      require => File["${ssldir}/ca/ca_crt.pem","${ssldir}/ca/ca_crl.pem"],
-      content => template("kbp_puppet/master/apache2/vhost-additions/ssl.conf.erb");
+  # Enable the site
+  kbp_apache_new::site { $pname:
+    address      => $address,
+    port         => $port,
+    documentroot => "${rackdir}/public",
+    monitor      => false;
   }
 
-  # Enable the site
-  kbp_apache::site { "${pname}":
-    monitor => false;
+  # The vhost-addition should set the documentroot, the puppet directory,
+  # the additional apache permissions and debugging options.
+  kbp_apache_new::vhost_addition {
+    "${pname}/permissions.conf":
+      ports   => $port,
+      content => template("kbp_puppet/master/apache2/vhost-additions/permissions.conf.erb");
+    "${pname}/rack.conf":
+      ports   => $port,
+      content => template("kbp_puppet/master/apache2/vhost-additions/rack.conf");
+    "${pname}/ssl.conf":
+      ports   => $port,
+      content => template("kbp_puppet/master/apache2/vhost-additions/ssl.conf.erb");
   }
 
   # Make sure we only setup database stuff when asked for

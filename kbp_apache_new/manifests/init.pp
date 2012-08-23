@@ -75,7 +75,7 @@ class kbp_apache_new::global_umask_007 {
   }
 }
 
-# Class: kbp_apache::passenger
+# Class: kbp_apache_new::passenger
 #
 # Actions:
 #  Undocumented
@@ -296,8 +296,8 @@ define kbp_apache_new::php_cgi($ensure="present", $documentroot, $custom_php_ini
 define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot = "/srv/www/${name}", $create_documentroot=true, $address='*', $address6='::',
     $make_default=false, $ssl=false, $non_ssl=true, $key=false, $cert=false, $intermediate=false, $wildcard=false, $log_vhost=false, $access_logformat="combined",
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor_creds=false,
-    $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $glassfish_domain=false, $glassfish_connector_port=false,
-    $glassfish_connector_loglevel="info", $phpmyadmin=false, $ha=false, $monitor_ip=false, $monitor_proxy = false, $failover=false) {
+    $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $phpmyadmin=false, $ha=false, $monitor_ip=false,
+    $monitor_proxy = false, $failover=false, $port = false) {
   include kbp_apache_new
 
   if regsubst($name, '^(.*)_.*$', '\1') != $name {
@@ -321,11 +321,14 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   } else {
     $real_ssl = false
   }
-  $port        = $real_ssl ? {
-    false => 80,
-    true  => 443,
+  $real_port        = $port ? {
+    false   => $real_ssl ? {
+      false => 80,
+      true  => 443,
+    },
+    default => $port,
   }
-  $full_name   = regsubst($name, '^([^_]*)$', "\1_${port}")
+  $full_name   = regsubst($name, '^([^_]*)$', "\1_${real_port}")
   $dontmonitor = ["default","default-ssl","localhost"]
 
   gen_apache::site { $full_name:
@@ -494,24 +497,11 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     }
   }
 
-  if ! defined(Gen_ferm::Rule["HTTP(S) connections on ${port}"]) {
-    gen_ferm::rule { "HTTP(S) connections on ${port}":
+  if ! defined(Gen_ferm::Rule["HTTP(S) connections on ${real_port}"]) {
+    gen_ferm::rule { "HTTP(S) connections on ${real_port}":
       proto  => "tcp",
-      dport  => $port,
+      dport  => $real_port,
       action => "ACCEPT";
-    }
-  }
-
-  if $glassfish_domain {
-    if ! $glassfish_connector_port {
-      fail { "glassfish_connector_port is undefined for ${site}":; }
-    }
-
-    kbp_apache_new::glassfish_domain { $glassfish_domain:
-      site               => $name,
-      site_port          => $port,
-      connector_loglevel => $glassfish_connector_loglevel,
-      connector_port     => $glassfish_connector_port;
     }
   }
 
