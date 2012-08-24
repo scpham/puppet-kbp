@@ -43,6 +43,13 @@ class kbp_physical {
         driver => "adaptec";
       }
     }
+    'megaraid_sas': {
+      package { 'megacli':; }
+
+      kbp_icinga::raidcontroller { 'controller0':
+        driver => 'megaraid_sas';
+      }
+    }
   }
 
   if $consolefqdn != -1 {
