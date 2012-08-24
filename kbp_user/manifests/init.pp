@@ -6,7 +6,7 @@ class kbp_user::admin_users {
   Kbp_user::Admin_user <<| tag == 'admin_user' |>>
 }
 
-define kbp_user($ensure="present", $uid, $gid, $comment, $groups=false, $shell='/bin/bash', $keys=false, $key_type='ssh-rsa', $passwords=false, $password=false) {
+define kbp_user($ensure="present", $uid, $gid, $comment, $groups=false, $shell='/bin/bash', $keys=false, $key_type='ssh-rsa', $passwords=false, $password=false, $home = "/home/${name}") {
   user { $name:
     ensure     => $ensure,
     uid        => $uid,
@@ -17,12 +17,13 @@ define kbp_user($ensure="present", $uid, $gid, $comment, $groups=false, $shell='
     },
     shell      => $shell,
     comment    => $comment,
+    home       => $home,
     managehome => true,
-    require    => Group[$gid],
     password   => $password ? {
       false   => undef,
       default => $password,
-    };
+    },
+    require    => Group[$gid];
   }
 
   if $keys and $ensure == "present" {
