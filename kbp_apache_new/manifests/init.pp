@@ -612,7 +612,7 @@ define kbp_apache_new::glassfish_domain($site, $port, $connector_port, $connecto
   }
 }
 
-define kbp_apache_new::cgi($documentroot=false, $custom_php_ini=false) {
+define kbp_apache_new::cgi($documentroot=false, $custom_php_ini=false, $set_scriptalias=true) {
   include gen_base::libapache2-mod-fcgid
 
   $real_name = regsubst($name, '^(.*)_.*$', '\1')

@@ -623,7 +623,9 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
       content => template("kbp_munin/2/apache2/access_common");
   }
 
-  kbp_apache_new::cgi { "${site}_${port}":; }
+  kbp_apache_new::cgi { "${site}_${port}":
+    set_scriptalias => false;
+  }
 
   File <| title == "/srv/www/${site}" |> {
     mode => 775,

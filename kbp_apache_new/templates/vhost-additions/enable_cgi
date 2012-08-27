@@ -12,7 +12,7 @@
   Allow from all
 </Directory>
 <% end -%>
-
+<% if set_scriptalias -%>
 ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
 
 <Directory "/usr/lib/cgi-bin">
@@ -21,3 +21,4 @@ ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
   Order allow,deny
   Allow from all
 </Directory>
+<% end -%>
