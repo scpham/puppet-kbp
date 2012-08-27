@@ -76,6 +76,7 @@ class kbp_apt::kumina {
   # Always prefer packages that we created ourselves.
   gen_apt::preference { "all":
     package => "*",
+    prio    => '499',
     repo    => "${lsbdistcodename}-kumina";
   }
 }
