@@ -8,13 +8,13 @@
 #
 # Depends:
 #  gen_pagespeed
-#  kbp_apache_new
+#  kbp_apache
 #
 class kbp_pagespeed {
-  include kbp_apache_new
+  include kbp_apache
   include gen_pagespeed
 
-  kbp_apache_new::module { 'pagespeed':; }
+  kbp_apache::module { 'pagespeed':; }
 
   # Override the global config by a very minimal config. This essentially disabled pagespeed.
   file { "/etc/apache2/mods-enabled/pagespeed.conf":
@@ -183,7 +183,7 @@ class kbp_pagespeed {
 #
 # Depends:
 #  kbp_pagespeed
-#  kbp_apache_new
+#  kbp_apache
 #
 # TODO:
 #  - Test if an apache reload is good enough for changing the site-specific settings.
@@ -440,7 +440,7 @@ define kbp_pagespeed::site ($ssl_also = false, $selection = 'none', $add_head = 
 
   # This actually adds the configuration, based on a template. The restart of Apache might be over to top, a
   # reload might be enough, but has not been tested yet.
-  kbp_apache_new::vhost_addition { "${name}/pagespeed":
+  kbp_apache::vhost_addition { "${name}/pagespeed":
     content => template('kbp_pagespeed/site-settings'),
     require => File["/srv/mod_pagespeed/cache/${real_name}","/srv/mod_pagespeed/files/${real_name}"],
     notify  => Service['apache2'],

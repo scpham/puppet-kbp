@@ -11,7 +11,7 @@
 #
 class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $serveralias=false, $documentroot=false, $ssl=false, $ajp13_connector_port = "8009",
                   $java_opts="", $jvm_max_mem=false, $trending_password=false, $monitoring_password=false){
-  include kbp_apache_new
+  include kbp_apache
 
   if $trending_password {
     kbp_tomcat::user { 'munin':
@@ -43,7 +43,7 @@ class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $serveralias=false, $docu
   }
 
   # Enable mod-proxy-ajp
-  kbp_apache_new::module { "proxy_ajp":; }
+  kbp_apache::module { "proxy_ajp":; }
 
   # Add /usr/share/java/*.jar to the tomcat classpath
   file { "/srv/tomcat/conf/catalina.properties":
@@ -249,7 +249,7 @@ define kbp_tomcat::apache_proxy_ajp_site($ensure="present", $port=8009, $ssl=fal
     $real_ssl = false
   }
 
-  kbp_apache_new::site { $name:
+  kbp_apache::site { $name:
     ensure             => $ensure,
     serveralias        => $serveralias,
     documentroot       => $documentroot,
@@ -264,11 +264,11 @@ define kbp_tomcat::apache_proxy_ajp_site($ensure="present", $port=8009, $ssl=fal
     redirect_non_ssl   => $redirect_non_ssl,
     non_ssl            => $non_ssl,
     intermediate       => $intermediate,
-    require            => Kbp_apache_new::Module["proxy_ajp"];
+    require            => Kbp_apache::Module["proxy_ajp"];
   }
 
   if $non_ssl {
-    kbp_apache_new::vhost_addition { "${name}/tomcat_proxy":
+    kbp_apache::vhost_addition { "${name}/tomcat_proxy":
       ports   => $non_ssl ? {
         true  => $real_ssl ? {
           true  => [80, 443],

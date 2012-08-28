@@ -15,7 +15,7 @@
 #  gen_puppet
 #
 class kbp_lamp_new::common {
-  include kbp_apache_new
+  include kbp_apache
 }
 
 # Class: kbp_lamp::cgi
@@ -28,7 +28,7 @@ class kbp_lamp_new::common {
 #  gen_puppet
 #
 class kbp_lamp_new::cgi {
-  include kbp_apache_new
+  include kbp_apache
 
   package { "libapache2-mod-fcgid":
     ensure => latest,

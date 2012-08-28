@@ -7,14 +7,14 @@ class kbp_django {
     ensure => directory;
   }
 
-  kbp_apache_new::module { "wsgi":
+  kbp_apache::module { "wsgi":
     require => Package["libapache2-mod-wsgi"];
   }
 }
 
 define kbp_django::site(settings = 'settings', $root_path = '/', $root_django = "/${name}", $static_path = '/media', $static_django = "/${name}/media", $auth = false, $wildcard = false, $intermediate = false, $monitor = true,
       $make_default = false, $serveralias = false, $monitor_path = false, $address = '*', $monitor_ip = false) {
-  kbp_apache_new::site { $name:
+  kbp_apache::site { $name:
     address      => $address,
     auth         => $auth,
     wildcard     => $wildcard,
@@ -30,7 +30,7 @@ define kbp_django::site(settings = 'settings', $root_path = '/', $root_django = 
     $real_ssl = true
   }
 
-  kbp_apache_new::vhost_addition { "${name}/django":
+  kbp_apache::vhost_addition { "${name}/django":
     ports   => $real_ssl ? {
       true    => 443,
       default => undef,

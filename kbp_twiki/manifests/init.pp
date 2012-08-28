@@ -24,15 +24,15 @@ class kbp_twiki {
 #
 # Depends:
 #  kbp_twiki
-#  kbp_apache_new
+#  kbp_apache
 #
 define kbp_twiki::site ($port = "80") {
   include kbp_twiki
-  include kbp_apache_new::module::cgid
+  include kbp_apache::module::cgid
 
   $vhost_directory = "/srv/www/${name}"
 
-  kbp_apache_new::vhost_addition { "${name}/twiki":
+  kbp_apache::vhost_addition { "${name}/twiki":
     ports   => $port,
     content => template("kbp_twiki/apache.conf");
   }

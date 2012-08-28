@@ -526,7 +526,7 @@ define kbp_munin::environment($site, $port, $offset = false, $sync_offset = fals
     target  => "/etc/munin/munin-${name}.conf";
   }
 
-  kbp_apache_new::vhost_addition { "${site}/access_${name}":
+  kbp_apache::vhost_addition { "${site}/access_${name}":
     ports   => $port,
     content => template("kbp_munin/vhost-additions/access");
   }
@@ -583,7 +583,7 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
 
   if $wildcard {
     $port = 443
-    include kbp_apache_new::ssl
+    include kbp_apache::ssl
   } else {
     $port = 80
   }
@@ -606,14 +606,14 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
       notify  => Exec['reload-apache2'];
   }
 
-  kbp_apache_new::site { $site:
+  kbp_apache::site { $site:
     make_default => true,
     wildcard     => $wildcard,
     intermediate => $intermediate,
     auth         => true;
   }
 
-  kbp_apache_new::vhost_addition {
+  kbp_apache::vhost_addition {
     "${site}/munin.conf":
       ports   => $port,
       content => template("kbp_munin/2/apache2/munin.conf");
@@ -623,7 +623,7 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
       content => template("kbp_munin/2/apache2/access_common");
   }
 
-  kbp_apache_new::cgi { "${site}_${port}":
+  kbp_apache::cgi { "${site}_${port}":
     set_scriptalias => false;
   }
 
@@ -635,7 +635,7 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
     acl          => "group:munin:rwx",
     dir          => "/srv/www/${site}",
     make_default => true,
-    require      => [Kbp_apache_new::Site[$site],Package['munin']];
+    require      => [Kbp_apache::Site[$site],Package['munin']];
   }
 
   if $use_rrdcached {
@@ -681,7 +681,7 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
 define kbp_munin::two::environment ($site = false, $port = false, $prettyname) {
   gen_munin::environment{$name:;}
 
-  kbp_apache_new::vhost_addition { "${site}/access_${name}":
+  kbp_apache::vhost_addition { "${site}/access_${name}":
     ports   => $port,
     content => template("kbp_munin/2/apache2/access.conf");
   }

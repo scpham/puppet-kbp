@@ -41,7 +41,7 @@ class kbp_dashboard_new::site_host($url, $prod_url, $ssl=true, $mysql_name=$envi
     port     => $port,
   }
 
-  kbp_apache_new::vhost_addition { "${url}/access":
+  kbp_apache::vhost_addition { "${url}/access":
     ports   => $port,
     content => template('kbp_dashboard_new/vhost-additions/base_access');
   }
@@ -56,7 +56,7 @@ define kbp_dashboard_new::environment($url, $prod_url, $port) {
       target  => "/srv/www/${prod_url}/${name}/.htpasswd";
   }
 
-  kbp_apache_new::vhost_addition {
+  kbp_apache::vhost_addition {
     "${url}/access_${name}":
       ports   => $port,
       content => template('kbp_dashboard_new/vhost-additions/access');

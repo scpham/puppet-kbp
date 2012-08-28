@@ -9,12 +9,12 @@
 #  Undocumented
 #  gen_puppet
 #
-class kbp_apache_new {
+class kbp_apache {
   include gen_apache
   include kbp_munin::client::apache
 
   # Needed for /server-status (munin) when using NameVirtualHosts
-  kbp_apache_new::site { 'localhost':
+  kbp_apache::site { 'localhost':
     address             => '127.0.0.255',
     address6            => '::1',
     documentroot        => '/srv/www',
@@ -24,16 +24,16 @@ class kbp_apache_new {
 
   file {
     "/etc/apache2/mods-available/deflate.conf":
-      content => template("kbp_apache_new/mods-available/deflate.conf"),
+      content => template("kbp_apache/mods-available/deflate.conf"),
       require => Package["apache2"],
       notify  => Exec["reload-apache2"];
     "/etc/apache2/conf.d/security":
-      content => template("kbp_apache_new/conf.d/security"),
+      content => template("kbp_apache/conf.d/security"),
       require => Package["apache2"],
       notify  => Exec["reload-apache2"];
     # Also needed for the /server-status page
     '/etc/apache2/conf.d/server-status':
-      content => template('kbp_apache_new/conf.d/server-status'),
+      content => template('kbp_apache/conf.d/server-status'),
       require => Package['apache2'],
       notify  => Exec['reload-apache2'];
   }
@@ -53,21 +53,21 @@ class kbp_apache_new {
     require    => Package["apache2"];
   }
 
-  kbp_apache_new::module { ["deflate","rewrite"]:; }
+  kbp_apache::module { ["deflate","rewrite"]:; }
 
   kbp_icinga::http { "http_${fqdn}":; }
 }
 
-# Class: kbp_apache_new::global_umask_007
+# Class: kbp_apache::global_umask_007
 #
 # Actions:
 #  Set the umask of the Apache process to 007, for broken scripts that otherwise create files
 #  world-readable/writable.
 #
 # Depends:
-#  kbp_apache_new
+#  kbp_apache
 #
-class kbp_apache_new::global_umask_007 {
+class kbp_apache::global_umask_007 {
   line { "Set Apache's umask":
     file    => "/etc/apache2/envvars",
     content => "umask 007",
@@ -75,7 +75,7 @@ class kbp_apache_new::global_umask_007 {
   }
 }
 
-# Class: kbp_apache_new::passenger
+# Class: kbp_apache::passenger
 #
 # Actions:
 #  Undocumented
@@ -84,40 +84,40 @@ class kbp_apache_new::global_umask_007 {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_apache_new::passenger {
-  include kbp_apache_new
+class kbp_apache::passenger {
+  include kbp_apache
   include gen_base::libapache2-mod-passenger
-  include kbp_apache_new::module::passenger
+  include kbp_apache::module::passenger
   include kbp_icinga::passenger::queue
 }
 
-class kbp_apache_new::php {
-  include kbp_apache_new::php_common
+class kbp_apache::php {
+  include kbp_apache::php_common
   include gen_base::libapache2_mod_php5
 }
 
-# Class: kbp_apache_new::phpcommon
+# Class: kbp_apache::phpcommon
 #
 # Actions:
 #  Set up common resources for all php methods, currently only used for dashboard
 #
-class kbp_apache_new::php_common {}
+class kbp_apache::php_common {}
 
-# Class: kbp_apache_new::mem_cache
+# Class: kbp_apache::mem_cache
 #
 # Actions:
 #  Enables the mem_cache module, but disables the default config, since we don't want it for all sites.
 #
 # Depends:
-#  kbp_apache_new::module
+#  kbp_apache::module
 #
-class kbp_apache_new::mem_cache {
-  kbp_apache_new::module { "mem_cache":; }
+class kbp_apache::mem_cache {
+  kbp_apache::module { "mem_cache":; }
 
   # We do not like the default config for all sites
   file { "/etc/apache2/mods-enabled/mem_cache.conf":
     ensure  => absent,
-    require => Kbp_apache_new::Module["mem_cache"],
+    require => Kbp_apache::Module["mem_cache"],
     notify  => Exec["force-reload-apache2"];
   }
 }
@@ -131,8 +131,8 @@ class kbp_apache_new::mem_cache {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_apache_new::ssl {
-  kbp_apache_new::module { "ssl":; }
+class kbp_apache::ssl {
+  kbp_apache::module { "ssl":; }
 }
 
 # Class: kbp_apache::module::passenger
@@ -144,39 +144,39 @@ class kbp_apache_new::ssl {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_apache_new::module::passenger {
-  kbp_apache_new::module { "passenger":
+class kbp_apache::module::passenger {
+  kbp_apache::module { "passenger":
     require => Package["libapache2-mod-passenger"];
   }
 }
 
-class kbp_apache_new::module::expires {
-  kbp_apache_new::module { "expires":; }
+class kbp_apache::module::expires {
+  kbp_apache::module { "expires":; }
 }
 
-class kbp_apache_new::module::dav {
-  kbp_apache_new::module { "dav":; }
+class kbp_apache::module::dav {
+  kbp_apache::module { "dav":; }
 }
 
-class kbp_apache_new::module::dav_fs {
-  kbp_apache_new::module { "dav_fs":; }
+class kbp_apache::module::dav_fs {
+  kbp_apache::module { "dav_fs":; }
 }
 
-class kbp_apache_new::module::auth_mysql {
+class kbp_apache::module::auth_mysql {
   include gen_base::libapache2-mod-auth-mysql
 
-  kbp_apache_new::module { "auth_mysql":
+  kbp_apache::module { "auth_mysql":
     require => Package["libapache2-mod-auth-mysql"],
   }
 }
 
-class kbp_apache_new::module::proxy_http {
-  kbp_apache_new::module { "proxy_http":
+class kbp_apache::module::proxy_http {
+  kbp_apache::module { "proxy_http":
     notify => Exec["force-reload-apache2"];
   }
 }
 
-class kbp_apache_new::module::jk {
+class kbp_apache::module::jk {
   include gen_apache::jk
 
   file { "/var/cache/apache2/jk":
@@ -187,54 +187,54 @@ class kbp_apache_new::module::jk {
   }
 }
 
-class kbp_apache_new::module::headers {
-  kbp_apache_new::module { "headers":; }
+class kbp_apache::module::headers {
+  kbp_apache::module { "headers":; }
 }
 
-# Class: kbp_apache_new::cgid
+# Class: kbp_apache::cgid
 #
 # Action:
 #  Setup the mod-cgid module in Apache with default settings.
 #
 # Depends:
-#  kbp_apache_new::module
+#  kbp_apache::module
 #
-class kbp_apache_new::module::cgid {
-  kbp_apache_new::module { "cgid":; }
+class kbp_apache::module::cgid {
+  kbp_apache::module { "cgid":; }
 }
 
-class kbp_apache_new::intermediate::rapidssl {
+class kbp_apache::intermediate::rapidssl {
   kbp_ssl::intermediate { "rapidssl":
     notify  => Exec["reload-apache2"];
   }
 }
 
-class kbp_apache_new::intermediate::terena {
+class kbp_apache::intermediate::terena {
   kbp_ssl::intermediate { 'terena':
     notify  => Exec["reload-apache2"];
   }
 }
 
-class kbp_apache_new::intermediate::positivessl {
+class kbp_apache::intermediate::positivessl {
   kbp_ssl::intermediate { 'positivessl':
     notify  => Exec["reload-apache2"];
   }
 }
 
-class kbp_apache_new::intermediate::thawte {
+class kbp_apache::intermediate::thawte {
   kbp_ssl::intermediate { "thawte":
     notify  => Exec["reload-apache2"];
   }
 }
 
-class kbp_apache_new::intermediate::verisign {
+class kbp_apache::intermediate::verisign {
   kbp_ssl::intermediate { "verisign":
     notify  => Exec["reload-apache2"];
   }
 }
 
-class kbp_apache_new::glassfish_domain_base {
-  include kbp_apache_new::module::jk
+class kbp_apache::glassfish_domain_base {
+  include kbp_apache::module::jk
 
   concat { "/etc/apache2/workers.properties":
     require => Package["apache2"];
@@ -251,18 +251,18 @@ class kbp_apache_new::glassfish_domain_base {
   }
 
   file { "/etc/apache2/conf.d/jk":
-    content => template("kbp_apache_new/conf.d/jk");
+    content => template("kbp_apache/conf.d/jk");
   }
 }
 
-define kbp_apache_new::php_cgi($ensure="present", $documentroot, $custom_php_ini=false) {
+define kbp_apache::php_cgi($ensure="present", $documentroot, $custom_php_ini=false) {
   if $ensure == "present" {
-    include kbp_apache_new::php_common
+    include kbp_apache::php_common
     include gen_php5::cgi
     include gen_php5::apc
     include gen_base::apache2_mpm_worker
 
-    kbp_apache_new::cgi { $name:
+    kbp_apache::cgi { $name:
       documentroot   => $documentroot,
       custom_php_ini => $custom_php_ini;
     }
@@ -293,15 +293,15 @@ define kbp_apache_new::php_cgi($ensure="present", $documentroot, $custom_php_ini
 #  Undocumented
 #  gen_puppet
 #
-define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot = "/srv/www/${name}", $create_documentroot=true, $address='*', $address6='::',
+define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "/srv/www/${name}", $create_documentroot=true, $address='*', $address6='::',
     $make_default=false, $ssl=false, $non_ssl=true, $key=false, $cert=false, $intermediate=false, $wildcard=false, $log_vhost=false, $access_logformat="combined",
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor_creds=false,
     $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $phpmyadmin=false, $ha=false, $monitor_ip=false,
     $monitor_proxy = false, $failover=false, $port = false) {
-  include kbp_apache_new
+  include kbp_apache
 
   if regsubst($name, '^(.*)_.*$', '\1') != $name {
-    fail("Only pass the site name to kbp_apache_new::site, not ${name}")
+    fail("Only pass the site name to kbp_apache::site, not ${name}")
   }
 
   if $failover and $address == '*' and $address6 == '*' {
@@ -309,7 +309,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   }
 
   if $key or $cert or $intermediate or $wildcard or $ssl {
-    include kbp_apache_new::ssl
+    include kbp_apache::ssl
 
     $real_ssl = true
 
@@ -424,7 +424,7 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
 
   if $real_ssl and $non_ssl {
     if $redirect_non_ssl {
-      kbp_apache_new::forward_vhost { $name:
+      kbp_apache::forward_vhost { $name:
         ensure      => $ensure,
         address     => $address,
         address6    => $address6,
@@ -509,11 +509,11 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
     case $php {
       # Mod_php, I choose you!
       'mod_php': {
-        include kbp_apache_new::php
+        include kbp_apache::php
       }
       # Default to CGI
       default:   {
-        kbp_apache_new::php_cgi { $full_name:
+        kbp_apache::php_cgi { $full_name:
           documentroot   => $documentroot,
           custom_php_ini => $custom_php_ini;
         }
@@ -536,13 +536,13 @@ define kbp_apache_new::site($ensure="present", $serveralias=false, $documentroot
   }
 }
 
-define kbp_apache_new::module ($ensure = "enable") {
+define kbp_apache::module ($ensure = "enable") {
   gen_apache::module { $name:
     ensure => $ensure;
   }
 }
 
-define kbp_apache_new::forward_vhost ($forward, $address = '*', $address6 = '::', $ensure="present", $serveralias=false, $statuscode=301, $port=80, $monitor_ip = false, $preserve_path=true) {
+define kbp_apache::forward_vhost ($forward, $address = '*', $address6 = '::', $ensure="present", $serveralias=false, $statuscode=301, $port=80, $monitor_ip = false, $preserve_path=true) {
   gen_apache::forward_vhost { $name:
     forward       => $forward,
     address       => $address,
@@ -577,9 +577,9 @@ define kbp_apache_new::forward_vhost ($forward, $address = '*', $address6 = '::'
   }
 }
 
-define kbp_apache_new::vhost_addition($ensure="present", $content=false, $ports = 80) {
+define kbp_apache::vhost_addition($ensure="present", $content=false, $ports = 80) {
   if regsubst($name, '^(.*)_.*/.*$', '\1') != $name {
-    fail("Vhost addition ${name}: Passing the port in the name of a kbp_apache_new::vhost_addition is no longer allowed, use the ports param (defaults to 80).")
+    fail("Vhost addition ${name}: Passing the port in the name of a kbp_apache::vhost_addition is no longer allowed, use the ports param (defaults to 80).")
   }
 
   $names = split(inline_template("<% name_array = name.split('/') %><%= [ports].flatten.map { |x| name_array[0]+'_'+x.to_s+'/'+name_array[1] }.join(' ') %>"), ' ')
@@ -593,10 +593,10 @@ define kbp_apache_new::vhost_addition($ensure="present", $content=false, $ports 
   }
 }
 
-define kbp_apache_new::glassfish_domain($site, $port, $connector_port, $connector_loglevel="info") {
-  include kbp_apache_new::glassfish_domain_base
+define kbp_apache::glassfish_domain($site, $port, $connector_port, $connector_loglevel="info") {
+  include kbp_apache::glassfish_domain_base
 
-  kbp_apache_new::vhost_addition { "${site}/glassfish-jk":
+  kbp_apache::vhost_addition { "${site}/glassfish-jk":
     ports   => $port,
     content => "JkLogLevel ${connector_loglevel}\nJkMount /* ${name}\n";
   }
@@ -607,19 +607,19 @@ define kbp_apache_new::glassfish_domain($site, $port, $connector_port, $connecto
       linebreak => false,
       target    => "/etc/apache2/workers.properties";
     "3 worker domain ${name} settings":
-      content => template("kbp_apache_new/glassfish/workers.properties_settings"),
+      content => template("kbp_apache/glassfish/workers.properties_settings"),
       target  => "/etc/apache2/workers.properties";
   }
 }
 
-define kbp_apache_new::cgi($documentroot=false, $custom_php_ini=false, $set_scriptalias=true) {
+define kbp_apache::cgi($documentroot=false, $custom_php_ini=false, $set_scriptalias=true) {
   include gen_base::libapache2-mod-fcgid
 
   $real_name = regsubst($name, '^(.*)_.*$', '\1')
   $port      = regsubst($name, '^.*_(.*)$', '\1')
 
-  kbp_apache_new::vhost_addition { "${real_name}/enable-cgi":
+  kbp_apache::vhost_addition { "${real_name}/enable-cgi":
     ports   => $port,
-    content => template("kbp_apache_new/vhost-additions/enable_cgi");
+    content => template("kbp_apache/vhost-additions/enable_cgi");
   }
 }

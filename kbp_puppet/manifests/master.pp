@@ -13,7 +13,7 @@ class kbp_puppet::master {
   include gen_puppet::master
   include kbp_puppet::vim
   include kbp_rails::mysql
-  include kbp_apache_new::passenger
+  include kbp_apache::passenger
   include kbp_trending::puppetmaster
 
   gen_apt::preference { ["puppetmaster","puppetmaster-common"]:; }
@@ -154,7 +154,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
   }
 
   # Enable the site
-  kbp_apache_new::site { $pname:
+  kbp_apache::site { $pname:
     address      => $address,
     port         => $port,
     documentroot => "${rackdir}/public",
@@ -163,7 +163,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
 
   # The vhost-addition should set the documentroot, the puppet directory,
   # the additional apache permissions and debugging options.
-  kbp_apache_new::vhost_addition {
+  kbp_apache::vhost_addition {
     "${pname}/permissions.conf":
       ports   => $port,
       content => template("kbp_puppet/master/apache2/vhost-additions/permissions.conf.erb");

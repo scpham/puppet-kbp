@@ -33,7 +33,7 @@ class kbp_wordpress::common {
 #
 # Depends:
 #  kbp_wordpress::common
-#  kbp_apache_new
+#  kbp_apache
 #  mysql
 #
 define kbp_wordpress($external_mysql = true, $mysql_name, $db = false, $user = $false, $password) {
@@ -48,7 +48,7 @@ define kbp_wordpress($external_mysql = true, $mysql_name, $db = false, $user = $
     default => $user,
   }
 
-  kbp_apache_new::site { $name:
+  kbp_apache::site { $name:
     php => true;
   }
 
