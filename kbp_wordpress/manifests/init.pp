@@ -30,13 +30,15 @@ class kbp_wordpress::common {
 #   The MySQL user, defaults to $db.
 #  password
 #   The password for the MySQL user.
+#  serveralias
+#   Serveralias for this vhost. Can be an array.
 #
 # Depends:
 #  kbp_wordpress::common
 #  kbp_apache
 #  mysql
 #
-define kbp_wordpress($external_mysql = true, $mysql_name, $db = false, $user = $false, $password) {
+define kbp_wordpress($external_mysql = true, $mysql_name, $db = false, $user = $false, $password, $serveralias = false) {
   include kbp_wordpress::common
 
   $real_db = $db ? {
@@ -49,7 +51,8 @@ define kbp_wordpress($external_mysql = true, $mysql_name, $db = false, $user = $
   }
 
   kbp_apache::site { $name:
-    php => true;
+    serveralias => $serveralias,
+    php         => true;
   }
 
   if $external_mysql {
