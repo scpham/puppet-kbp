@@ -11,10 +11,13 @@
 #  gen_puppet
 #
 class kbp_time {
-  if $lsbdistmajrelease == '5' { # This is lenny
-    include openntpd::common
-  } elsif $lsbdistmajrelease == '6' { # This is squeeze or newer
-    include ntp
-    include kbp_trending::ntpd
+  case $lsbdistcodename {
+    'lenny' : {
+      include openntpd::common
+    }
+    'squeeze' : {
+      include ntp
+      include kbp_trending::ntpd
+    }
   }
 }
