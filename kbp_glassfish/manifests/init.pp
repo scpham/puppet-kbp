@@ -314,11 +314,13 @@ define kbp_glassfish::instance ($portbase, $java_monitoring=true, $sms=true, $ja
 #   Set to absent to remove the file (will not restore the original!)
 #  destdir:
 #   The directory the file should be placed in
+#  location:
+#   Where the file should be sourced from (puppet:///modules/${location}/${name}).
 #
-define kbp_glassfish::patch ($ensure = present, $destdir="/opt/glassfish/modules"){
+define kbp_glassfish::patch ($ensure = present, $destdir = "/opt/glassfish/modules", $location = 'kbp_glassfish/patches'){
   file { "${destdir}/${name}":
     ensure  => $ensure,
-    source  => "puppet:///modules/kbp_glassfish/patches/${name}",
+    source  => "puppet:///modules/${location}/${name}",
     owner   => "root",
     group   => "root",
     mode    => 644,
