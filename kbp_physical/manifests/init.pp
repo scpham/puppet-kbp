@@ -94,4 +94,10 @@ class kbp_physical {
     mode    => 700,
     require => Package["backup-scripts"];
   }
+
+  # Install some firmware packages, maybe not all are needed, but no loss in having them installed
+  package { ['firmware-bnx2','firmware-ralink','bluez-firmware','zd1211-firmware','libertas-firmware','firmware-linux-nonfree','firmware-qlogic','firmware-netxen','ixp4xx-microcode','firmware-iwlwifi',
+             'firmware-ipw2x00','firmware-intelwimax','firmware-bnx2x','atmel-firmware','firmware-atheros']:
+    ensure => latest,
+  }
 }
