@@ -100,4 +100,11 @@ class kbp_physical {
              'firmware-intelwimax','firmware-bnx2x','atmel-firmware','firmware-atheros']:
     ensure => latest,
   }
+
+  # And make sure they have the correct permissions
+  file { "/lib/firmware":
+    owner   => 'root',
+    group   => 'root',
+    recurse => true,
+  }
 }
