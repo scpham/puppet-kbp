@@ -24,9 +24,9 @@ class kbp_unbound {
     hasreload => true,
   }
 
-  concat::add_content { "80 unbound.conf settings for trending":
+  concat::add_content { "05 unbound.conf settings for trending":
     # according to: http://www.unbound.net/documentation/howto_statistics.html
-    content => "\tstatistics-interval: 0\n\textended-statistics: yes\n\tstatistics-cumulative: no",
+    content => "\tstatistics-interval: 0\n\textended-statistics: yes\n\tstatistics-cumulative: no\n",
     target  => "/etc/unbound/unbound.conf";
   }
 }
@@ -49,4 +49,41 @@ define kbp_unbound::allow {
   }
 
   gen_unbound::allow { $name:; }
+}
+
+#
+# Define: kbp_unbound::stub_zone
+#
+# Actions:
+#  Configure a stub-zone
+#
+# Parameters (see http://www.unbound.net/documentation/unbound.conf.html for info):
+#  stub_host:
+#   The Host the request should be forwarded to
+#  stub_addr:
+#   See stub_host, except that you'll have to use an IP address here
+#  stub_prime:
+#   true or false (see documentation for explanation)
+#  stub_first:
+#   true or false (see documentation for explanation)
+#
+# Depends:
+#  kbp_unbound
+#
+define kbp_unbound::stub_zone ($stub_host=false, $stub_addr=false, $stub_prime=false, $stub_first=false) {
+  gen_unbound::stub_zone { $name:
+    stub_host  => $stub_host,
+    stub_addr  => $stub_addr,
+    stub_prime => $stub_prime,
+    stub_first => $stub_first;
+  }
+
+  kbp_ferm::rule { "Unbound stubzone ${name}":
+    saddr    => $source_ipaddress,
+    proto    => '(tcp udp)',
+    dport    => 53,
+    action   => 'ACCEPT',
+    exported => true,
+    ferm_tag => "unbound_stubzone_${::environment}"
+  }
 }
