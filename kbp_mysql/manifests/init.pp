@@ -125,6 +125,16 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
     file { "/etc/mysql/conf.d/expire_logs.cnf":
       content => "[mysqld]\nexpire_logs_days = 7\n";
     }
+  } else {
+    # Remove the backup script. Don't remove the expire_logs, since that might inadvertently fill up a disk
+    # where binlogs are created but no longer removed. We just remove them earlier.
+    file { "/etc/backup/prepare.d/mysql":
+      ensure => absent,
+    }
+
+    file { "/etc/mysql/conf.d/expire_logs.cnf":
+      content => "[mysqld]\nexpire_logs_days = 1\n";
+    }
   }
 
   file {
