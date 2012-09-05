@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Bail out on errors.
+set -o errexit
+
+# Clean out .Trash and .Junk mail folders.
+su mail -l -s /bin/bash -c "find /srv/mail -regex '.*/\.\(Trash\|Junk\)\(/.*\)?\/\(cur\|new\)/.*' -type f -ctime +30 -delete"
+
+# Move manually tagged SPAM/UCE.
+su mail -l -s /bin/bash -c "find /srv/mail/ -regex '.*/\.(SPAM|Junk)\(/.*\)?\/\(cur\|new\)/.*' -type f -exec chmod 666 '{}' ';' -exec mv '{}' /srv/spam/messages ';'"
+
+# Learn and remove SPAM/UCE.
+su amavis -l -s /bin/bash -c "find /srv/spam/messages -type f -exec sa-learn --spam '{}' ';' -delete" > /dev/null

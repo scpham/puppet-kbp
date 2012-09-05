@@ -74,7 +74,7 @@ define kbp_user::admin_user($comment, $uid, $gid, $groups=false, $shell, $passwo
       group   => $gid;
   }
 
-  postfix::alias { "${name}: ${name}@kumina.nl":; }
+  gen_postfix::alias { "${name}: ${name}@kumina.nl":; }
 
   concat::add_content { "Add ${name} to Kumina SSH keyring":
     target  => "/etc/ssh/kumina.keys",

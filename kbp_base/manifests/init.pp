@@ -52,7 +52,7 @@ class kbp_base {
     include gen_base::libfreetype6
   }
 
-  kbp_postfix { "postfix":; }
+  kbp_mail { 'mail':; }
 
   if $lsbdistcodename != 'wheezy' {
     kbp_ksplice { "ksplice":; }

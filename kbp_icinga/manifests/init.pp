@@ -262,6 +262,12 @@ class kbp_icinga::client {
       check_command       => "check_ntpd",
       nrpe                => true,
       sms                 => false;
+    "smtp_gateway":
+      service_description => "SMTP gateway",
+      check_command       => "check_local_smtp",
+      nrpe                => true,
+      sms                 => false,
+      customer_notify     => false;
     "swap":
       service_description => "Swap usage",
       check_command       => "check_swap",
