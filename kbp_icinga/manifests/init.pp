@@ -265,6 +265,7 @@ class kbp_icinga::client {
     "smtp_gateway":
       service_description => "SMTP gateway",
       check_command       => "check_local_smtp",
+      check_interval      => 300,
       nrpe                => true,
       sms                 => false,
       customer_notify     => false;
