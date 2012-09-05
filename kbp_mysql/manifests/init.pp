@@ -93,6 +93,13 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
     ha                  => $monitoring_ha,
     check_interval      => 60;
   }
+
+  kbp_icinga::servicedependency { "mysql_dependency_slaving_service":
+    dependent_service_description => "MySQL slaving",
+    service_description           => "MySQL service",
+    execution_failure_criteria    => "u,w,c",
+    notification_failure_criteria => "u,w,c";
+  }
 }
 
 # Class: kbp_mysql::server
@@ -215,6 +222,13 @@ class kbp_mysql::monitoring::icinga::server($otherhost=false) {
       service_description => "MySQL service connection limit",
       check_command       => "check_mysql_connlimit",
       nrpe                => true;
+  }
+
+  kbp_icinga::servicedependency { "mysql_dependency_connlimit_service":
+    dependent_service_description => "MySQL service connection limit",
+    service_description           => "MySQL service",
+    execution_failure_criteria    => "u,w,c",
+    notification_failure_criteria => "u,w,c";
   }
 
   mysql::user { "monitoring":
