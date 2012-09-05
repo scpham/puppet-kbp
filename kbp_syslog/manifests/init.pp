@@ -92,7 +92,7 @@ class kbp_syslog::server::logrotate {
   gen_logrotate::rotate { "rsyslog":
     logs       => ["/var/log/syslog", "/var/log/mail.info", "/var/log/mail.warn", "/var/log/mail.err", "/var/log/mail.log", "/var/log/daemon.log",
       "/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log", "/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
-      "/var/log/messages"],
+      "/var/log/messages","/var/log/external/*/syslog.log"],
     options    => ["daily", "rotate 90", "missingok", "notifempty", "compress", "delaycompress", "sharedscripts", "dateext"],
     postrotate => "invoke-rc.d rsyslog reload > /dev/null";
   }
