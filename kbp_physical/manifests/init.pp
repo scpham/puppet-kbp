@@ -43,7 +43,7 @@ class kbp_physical {
     }
     'mptsas': {
       $package = ['lsiutil','python-pexpect']
-      $driver  = 'mptsas'
+      $driver  = 'lsimpt'
     }
   }
 
