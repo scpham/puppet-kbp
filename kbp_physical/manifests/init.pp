@@ -30,26 +30,27 @@ class kbp_physical {
 
   case $raidcontroller0_driver {
     "3w-9xxx": {
-      package { "3ware-cli-binary":; }
-
-      kbp_icinga::raidcontroller { "controller0":
-        driver => "3ware";
-      }
+      $package = '3ware-cli-binary'
+      $driver  = '3ware'
     }
     "aacraid": {
-      package { "arcconf":; }
-
-      kbp_icinga::raidcontroller { "controller0":
-        driver => "adaptec";
-      }
+      $package = 'arcconf'
+      $driver  = 'adaptec'
     }
     'megaraid_sas': {
-      package { 'megacli':; }
-
-      kbp_icinga::raidcontroller { 'controller0':
-        driver => 'megaraid_sas';
-      }
+      $package = 'megacli'
+      $driver  = 'megaraid_sas'
     }
+    'mptsas': {
+      $package = ['lsiutil','python-pexpect']
+      $driver  = 'mptsas'
+    }
+  }
+
+  package { $package:; }
+
+  kbp_icinga::raidcontroller { 'controller0':
+    driver => $driver;
   }
 
   if $consolefqdn != -1 {
