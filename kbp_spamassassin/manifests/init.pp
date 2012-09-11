@@ -15,6 +15,7 @@ class kbp_spamassassin {
 
   file { '/etc/spamassassin/local.cf':
     content => template('kbp_spamassassin/local.cf'),
-    notify  => Exec['reload-amavis'];
+    notify  => Exec['reload-amavis'],
+    require => Package["spamassassin"];
   }
 }
