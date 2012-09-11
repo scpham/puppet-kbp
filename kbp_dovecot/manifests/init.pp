@@ -9,7 +9,8 @@
 #  Undocumented
 #  gen_puppet
 #
-class kbp_dovecot::imap(certs, mysql_user = false, mysql_pass = false, mysql_db = false, mysql_host = false) {
+class kbp_dovecot::imap($certs, $postmaster, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false) {
+  $key_name = regsubst($certs,'^(.*)/(.*)$','\2')
   include gen_dovecot::imap
 
   file {
@@ -29,6 +30,7 @@ class kbp_dovecot::imap(certs, mysql_user = false, mysql_pass = false, mysql_db 
       require => Package["dovecot-common"];
     "/etc/dovecot/dovecot.conf":
       content => template("kbp_dovecot/dovecot.conf"),
+      notify  => Service["dovecot"],
       require => Package["dovecot-common"];
   }
 

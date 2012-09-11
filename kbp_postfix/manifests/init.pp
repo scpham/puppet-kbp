@@ -13,10 +13,12 @@ class kbp_postfix::mailgraph {
 #  Undocumented
 #  gen_puppet
 #
-class kbp_postfix($relayhost = false, $mailname = false, $myhostname = false, $mynetworks = false, $mydestination = false, $mode = false, $mailname = $fqdn, $incoming = false, $always_bcc = false, mysql_user = false,
-      mysql_pass = false, mysql_db = false, mysql_host = false) {
+class kbp_postfix($certs=false, $relayhost=false, $mailname=false, $myhostname=false, $mynetworks=false, $mydestination=false, $mode=false,
+    $mailname=$fqdn, $incoming=false, $always_bcc=false, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false,
+    $relay_domains=false) {
   include kbp_openssl::common
   class { 'gen_postfix':
+    certs         => $certs,
     relayhost     => $relayhost,
     myhostname    => $myhostname,
     mynetworks    => $mynetworks,
@@ -26,10 +28,14 @@ class kbp_postfix($relayhost = false, $mailname = false, $myhostname = false, $m
     mysql_user    => $mysql_user,
     mysql_pass    => $mysql_pass,
     mysql_db      => $mysql_db,
-    mysql_host    => $mysql_host;
+    mysql_host    => $mysql_host,
+    relay_domains => $relay_domains;
   }
   if $mode == 'primary' {
     include gen_base::postfix_mysql
+    if ! $certs {
+      fail('When using primary mode for kbp_postfix, $certs must be set')
+    }
   }
 
   gen_postfix::alias { ["root: reports+${environment}@kumina.nl",'reports: root']:; }

@@ -17,6 +17,8 @@
 #  mysql_pass      The MySQL password used for Postfix and Dovecot. Only used and has to be set when mode is primary
 #  mysql_db        The MySQL database used for Postfix and Dovecot. Only used and has to be set when mode is primary
 #  mysql_host      The MySQL host used for Postfix and Dovecot. Only used and has to be set when mode is primary
+#  relay_domains   Same as Postfix, see http://www.postfix.org/postconf.5.html#relay_domains. Only used when mode is primary or secondary. Defaults to false (which means '$mydestination' in Postfix)
+#  postmaster      Email address of postmaster (used by Dovecot)
 #
 # Depends:
 #  gen_postgrey (only when mode is primary or secondary)
@@ -25,18 +27,25 @@
 #  kbp_postfix
 #  kbp_ferm (only accept_incoming is true or mode is primary or secondary)
 #
-define kbp_mail($certs = false, $relayhost = false, $mailname = false, $mydestination = false, $accept_incoming = false, $myhostname = false, $mynetworks = false, $always_bcc = false, $mode = false, mysql_user = false,
-      mysql_pass = false, mysql_db = false, mysql_host = false) {
+define kbp_mail($certs=false, $relayhost=false, $mailname=false, $mydestination=false, $accept_incoming=false, $myhostname=false, $mynetworks=false,
+    $always_bcc=false, $mode=false, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false, $relay_domains=false,
+    $postmaster=false) {
   if $mode == 'primary' or $mode == 'secondary' {
     include gen_postgrey
 
     if $mode == 'primary' {
       if ! $certs {
-        fail('When using primary mode for kbp_mail, $certs must be set as dovecot needs it.')
+        fail('When using primary mode for kbp_mail, $certs must be set as dovecot and postfix need it.')
       }
+
+      if ! $postmaster {
+        fail('When using primary mode for kbp_mail, $postmaster must be set as dovecot needs it.')
+      }
+
       include kbp_amavis
       class { 'kbp_dovecot::imap':
         certs      => $certs,
+        postmaster => $postmaster,
         mysql_user => $mysql_user,
         mysql_pass => $mysql_pass,
         mysql_db   => $mysql_db,
@@ -46,6 +55,7 @@ define kbp_mail($certs = false, $relayhost = false, $mailname = false, $mydestin
   }
 
   class { 'kbp_postfix':
+    certs         => $certs,
     relayhost     => $relayhost,
     mailname      => $mailname,
     mydestination => $mydestination,
@@ -56,7 +66,8 @@ define kbp_mail($certs = false, $relayhost = false, $mailname = false, $mydestin
     mysql_user    => $mysql_user,
     mysql_pass    => $mysql_pass,
     mysql_db      => $mysql_db,
-    mysql_host    => $mysql_host;
+    mysql_host    => $mysql_host,
+    relay_domains => $relay_domains;
   }
 
   if $accept_incoming or $mode == 'primary' or $mode == 'secondary' {
