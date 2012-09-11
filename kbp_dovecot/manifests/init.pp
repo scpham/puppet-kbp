@@ -25,9 +25,11 @@ class kbp_dovecot::imap(certs, mysql_user = false, mysql_pass = false, mysql_db 
       mode    => 700;
     "/etc/dovecot/dovecot-sql.conf":
       content => template("kbp_dovecot/dovecot-sql.conf"),
-      mode    => 600;
+      mode    => 600,
+      require => Package["dovecot-common"];
     "/etc/dovecot/dovecot.conf":
-      content => template("kbp_dovecot/dovecot.conf");
+      content => template("kbp_dovecot/dovecot.conf"),
+      require => Package["dovecot-common"];
   }
 
   kbp_ssl::keys { $certs:; }
