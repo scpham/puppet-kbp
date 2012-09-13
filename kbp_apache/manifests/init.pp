@@ -255,7 +255,7 @@ class kbp_apache::glassfish_domain_base {
   }
 }
 
-define kbp_apache::php_cgi($ensure="present", $documentroot, $custom_php_ini=false) {
+define kbp_apache::php_cgi($ensure="present", $documentroot, $custom_php_ini=false, $ports=false) {
   if $ensure == "present" {
     include kbp_apache::php_common
     include gen_php5::cgi
@@ -264,7 +264,8 @@ define kbp_apache::php_cgi($ensure="present", $documentroot, $custom_php_ini=fal
 
     kbp_apache::cgi { $name:
       documentroot   => $documentroot,
-      custom_php_ini => $custom_php_ini;
+      custom_php_ini => $custom_php_ini,
+      ports          => $ports;
     }
 
     Package <| title == "libapache2-mod-php5" |> {
@@ -513,9 +514,16 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
       }
       # Default to CGI
       default:   {
+        if $real_ssl and $non_ssl and ! $redirect_non_ssl {
+          $ports = [80, 443]
+        } else {
+          $ports = false
+        }
+
         kbp_apache::php_cgi { $full_name:
           documentroot   => $documentroot,
-          custom_php_ini => $custom_php_ini;
+          custom_php_ini => $custom_php_ini,
+          ports          => $ports;
         }
       }
     }
@@ -612,14 +620,17 @@ define kbp_apache::glassfish_domain($site, $port, $connector_port, $connector_lo
   }
 }
 
-define kbp_apache::cgi($documentroot=false, $custom_php_ini=false, $set_scriptalias=true) {
+define kbp_apache::cgi($documentroot=false, $custom_php_ini=false, $set_scriptalias=true, $ports=false) {
   include gen_base::libapache2-mod-fcgid
 
   $real_name = regsubst($name, '^(.*)_.*$', '\1')
   $port      = regsubst($name, '^.*_(.*)$', '\1')
 
   kbp_apache::vhost_addition { "${real_name}/enable-cgi":
-    ports   => $port,
+    ports   => $ports ? {
+      false   => $port,
+      default => $ports,
+    },
     content => template("kbp_apache/vhost-additions/enable_cgi");
   }
 }
