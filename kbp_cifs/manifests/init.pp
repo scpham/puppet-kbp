@@ -30,6 +30,7 @@ define kbp_cifs::mount($ensure='mounted', $unc, $options='rw', $username, $passw
     unc      => $unc,
     options  => $options,
     username => $username,
-    password => $password;
+    password => $password,
+    domain   => $domain;
   }
 }
