@@ -19,9 +19,8 @@ class kbp_unbound {
   gen_apt::preference { ["unbound", "libunbound2", "unbound-anchor", "libldns1"]:; }
 
   # The backported version supports status
-  Kservice <| title == "unbound" |> {
+  Service <| title == "unbound" |> {
     hasstatus => true,
-    hasreload => true,
   }
 
   concat::add_content { "05 unbound.conf settings for trending":
