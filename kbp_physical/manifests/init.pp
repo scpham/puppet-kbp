@@ -28,29 +28,31 @@ class kbp_physical {
 
   kbp_libvirt { "kbp_libvirt":; }
 
-  case $raidcontroller0_driver {
-    "3w-9xxx": {
-      $package = '3ware-cli-binary'
-      $driver  = '3ware'
+  if $raidcontroller0_driver {
+    case $raidcontroller0_driver {
+      "3w-9xxx": {
+        $package = '3ware-cli-binary'
+        $driver  = '3ware'
+      }
+      "aacraid": {
+        $package = 'arcconf'
+        $driver  = 'adaptec'
+      }
+      'megaraid_sas': {
+        $package = 'megacli'
+        $driver  = 'megaraid_sas'
+      }
+      'mptsas': {
+        $package = ['lsiutil','python-pexpect']
+        $driver  = 'lsimpt'
+      }
     }
-    "aacraid": {
-      $package = 'arcconf'
-      $driver  = 'adaptec'
-    }
-    'megaraid_sas': {
-      $package = 'megacli'
-      $driver  = 'megaraid_sas'
-    }
-    'mptsas': {
-      $package = ['lsiutil','python-pexpect']
-      $driver  = 'lsimpt'
-    }
-  }
 
-  package { $package:; }
+    package { $package:; }
 
-  kbp_icinga::raidcontroller { 'controller0':
-    driver => $driver;
+    kbp_icinga::raidcontroller { 'controller0':
+      driver => $driver;
+    }
   }
 
   if $consolefqdn != -1 {
