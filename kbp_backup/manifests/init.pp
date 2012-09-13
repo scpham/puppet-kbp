@@ -70,6 +70,11 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
       ensure  => $ensure,
       require => Package[$package];
     }
+    if $lsbdistcodename == 'squeeze' {
+      gen_apt::preference { 'rdiff-backup':
+        repo => 'squeeze-kumina';
+      }
+    }
   }
 
   kbp_backup::exclude { "excludes_base":
