@@ -62,7 +62,12 @@ class kbp_ssh {
   }
 
   # Fix permissions.
-  file { "/etc/ssh/ssh_known_hosts":; }
+  file {
+    "/etc/ssh/ssh_known_hosts":;
+    '/root/.ssh':
+      ensure => directory,
+      mode   => 700;
+  }
 }
 
 # Class: kbp_ssh::permit_root_logins_with_forced_commands
