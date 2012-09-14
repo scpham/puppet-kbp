@@ -1,4 +1,4 @@
-<Location /<%= name %>>
+<Location /env_<%= name %>>
 Order Allow,Deny
 Allow From All
 
