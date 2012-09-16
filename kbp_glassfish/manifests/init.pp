@@ -232,14 +232,16 @@ define kbp_glassfish::domain($portbase, $ensure="present", $jmx_port = false, $w
 #  access_logformat
 #   The logformat that Apache should use.
 #
-define kbp_glassfish::domain::site ($glassfish_domain, $jkport, $webport = 80, $statuspath=false, $ensure = "present", $access_logformat="combined", $connector_loglevel="info", $serveralias=false, $webaddress="*") {
+define kbp_glassfish::domain::site ($glassfish_domain, $jkport, $webport = 80, $statuspath=false, $ensure = "present", $access_logformat="combined", $connector_loglevel="info", $serveralias=false, $webaddress="*",
+    $monitoring_ha=false) {
   kbp_apache::site { $name:
     address             => $webaddress,
     create_documentroot => false,
     documentroot        => '/srv/www',
     serveralias         => $serveralias,
     access_logformat    => $access_logformat,
-    ensure              => $ensure;
+    ensure              => $ensure,
+    ha                  => $monitoring_ha;
   }
 
   kbp_apache::glassfish_domain { $glassfish_domain:
