@@ -20,17 +20,26 @@
 #    CIFS password
 #   domain
 #    CIFS domain
+#   group
+#    The group that the files and dirs in the mount belong to (used when the SMB server does not support unix-type file permissions)
+#   dir_perms
+#    The permissions of the directories within the mount in OCTAL (used when the SMB server does not support unix-type file permissions)
+#   file_perms
+#    The permissions of the files within the mount in OCTAL (used when the SMB server does not support unix-type file permissions)
 #
 # Depends:
 #  gen_cifs
 #
-define kbp_cifs::mount($ensure='mounted', $unc, $options='rw', $username, $password, $domain) {
+define kbp_cifs::mount($ensure='mounted', $unc, $options='rw', $group='root', $dir_perms='0755', $file_perms='0644', $username, $password, $domain) {
   gen_cifs::mount { $name:
-    ensure   => $ensure,
-    unc      => $unc,
-    options  => $options,
-    username => $username,
-    password => $password,
-    domain   => $domain;
+    ensure     => $ensure,
+    unc        => $unc,
+    options    => $options,
+    username   => $username,
+    password   => $password,
+    group      => $group,
+    dir_perms  => $dir_perms,
+    file_perms => $file_perms,
+    domain     => $domain;
   }
 }
