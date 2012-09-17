@@ -20,6 +20,8 @@
 #    CIFS password
 #   domain
 #    CIFS domain
+#   user
+#    The user that the files and dirs in the mount belong to (used when the SMB server does not support unix-type file permissions)
 #   group
 #    The group that the files and dirs in the mount belong to (used when the SMB server does not support unix-type file permissions)
 #   dir_perms
@@ -30,13 +32,14 @@
 # Depends:
 #  gen_cifs
 #
-define kbp_cifs::mount($ensure='mounted', $unc, $options='rw', $group='root', $dir_perms='0755', $file_perms='0644', $username, $password, $domain) {
+define kbp_cifs::mount($ensure='mounted', $unc, $options='rw', $user='root', $group='root', $dir_perms='0755', $file_perms='0644', $username, $password, $domain) {
   gen_cifs::mount { $name:
     ensure     => $ensure,
     unc        => $unc,
     options    => $options,
     username   => $username,
     password   => $password,
+    user       => $user,
     group      => $group,
     dir_perms  => $dir_perms,
     file_perms => $file_perms,
