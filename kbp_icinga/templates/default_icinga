@@ -10,7 +10,7 @@ CGICFG="/etc/icinga/cgi.cfg"
 NICENESS=5
 
 # start ido2db daemon (no/yes)
-IDO2DB=yes
+IDO2DB=no
 
 # if you use pam_tmpdir, you need to explicitly set TMPDIR:
 #TMPDIR=/tmp
