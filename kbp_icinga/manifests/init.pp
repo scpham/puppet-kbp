@@ -35,6 +35,10 @@ class kbp_icinga::client {
       command   => "check_procs",
       arguments => "-w 0 -C rdiff-backup";
     "check_cassandra":;
+    "check_mount":
+      sudo      => true,
+      command   => "check_mount",
+      arguments => '$ARG1$';
     "check_cpu":
       arguments => "-w 90 -c 95";
     "check_dhcp":
@@ -582,6 +586,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       command_name  => "check_dummy",
       nrpe          => true,
       arguments     => "0";
+    "check_mount":
+      command_name  => "check_mount",
+      arguments     => ['$ARG1$'],
+      nrpe          => true;
     "check_drbd_mount":
       command_name  => "check_drbd_mount",
       arguments     => ['$ARG1$','$ARG2$'],
@@ -1663,6 +1671,26 @@ define kbp_icinga::nfs::client {
     service_description => "NFS mount ${name}",
     check_command       => "check_nfs_client",
     arguments           => ["${name}/.monitoring","NFS_mount_ok"],
+    nrpe                => true;
+  }
+}
+
+# Define: kbp_icinga::cifs::client
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+define kbp_icinga::mount {
+  $sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
+
+  kbp_icinga::service { "mount_${sanitized_name}":
+    service_description => "Mountpoint ${name}",
+    check_command       => "check_mount",
+    arguments           => [$name],
     nrpe                => true;
   }
 }

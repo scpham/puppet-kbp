@@ -49,4 +49,6 @@ define kbp_cifs::mount($ensure='mounted', $unc, $options='rw', $user='root', $gr
   kbp_backup::exclude { "exclude_cifsmount_${name}":
     content => "${name}/*";
   }
+
+  kbp_icinga::mount { $name:; }
 }
