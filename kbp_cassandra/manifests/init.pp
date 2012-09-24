@@ -81,7 +81,10 @@ class kbp_cassandra::server($branch="07x", $customtag="cassandra_${environment}"
   kcron { "Create a daily snapshot of the Cassandra data and move it to /var/backups":
     command => "/usr/bin/nodetool -h ${hostname} -p 8080 snapshot -t backup && /bin/rm -rf /var/backups/cassandra && /bin/mkdir /var/backups/cassandra && for i in `ls /var/lib/cassandra/data/`; do mv /var/lib/cassandra/data/\$i/snapshots/backup /var/backups/cassandra/\$i; done",
     require => Package['cassandra'],
-    hour    => '0',
+    hour    => '18',
     minute  => '0',
   }
+
+  # Don't backup the data directory.
+  kbp_backup::exclude { "/var/lib/cassandra/":; }
 }
