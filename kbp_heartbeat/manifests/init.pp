@@ -31,7 +31,9 @@
 #  Undocumented
 #  gen_puppet
 #
-class kbp_heartbeat($autojoin="none", $warntime=5, $deadtime=15, $initdead=60, $keepalive=2, $crm="respawn", $node_name=$hostname, $node_dev="eth0", $node_ip=$ipaddress_eth0, $customtag="heartbeat_${environment}") {
+class kbp_heartbeat($autojoin="none", $warntime=5, $deadtime=15, $initdead=60, $keepalive=2, $crm="respawn", $node_name=$hostname, $node_dev="eth0", $node_ip=$ipaddress_eth0, $heartbeat_tag="${environment}_${dcenv}") {
+  $real_heartbeat_tag = "heartbeat_${heartbeat_tag}"
+
   include kbp_icinga::heartbeat
   class { "gen_heartbeat":
     autojoin      => $autojoin,
@@ -43,16 +45,17 @@ class kbp_heartbeat($autojoin="none", $warntime=5, $deadtime=15, $initdead=60, $
     node_name     => $node_name,
     node_ip       => $node_ip,
     node_dev      => $node_dev,
-    heartbeat_tag => $customtag;
+    heartbeat_tag => $real_heartbeat_tag;
   }
 
-  Gen_ferm::Rule <<| tag == $customtag |>>
+  Kbp_ferm::Rule <<| tag == $real_heartbeat_tag |>>
 
-  @@gen_ferm::rule { "Heartbeat connections from ${fqdn}":
-    saddr  => $node_ip,
-    proto  => "udp",
-    dport  => 694,
-    action => "ACCEPT",
-    tag    => $customtag;
+  kbp_ferm::rule { "Heartbeat connections":
+    exported => true,
+    saddr    => $node_ip,
+    proto    => "udp",
+    dport    => 694,
+    action   => "ACCEPT",
+    ferm_tag => $real_heartbeat_tag;
   }
 }
