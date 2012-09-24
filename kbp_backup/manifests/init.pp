@@ -83,7 +83,7 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
   }
 }
 
-define kbp_backup::exclude($ensure="present", $content=false) {
+define kbp_backup::exclude($ensure="present", $content=$name) {
   $sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
 
   concat::add_content { $sanitized_name:
