@@ -21,10 +21,10 @@ class kbp_rsync {
 # Depends:
 #  kbp_rsync
 #
-class kbp_rsync::server {
+define kbp_rsync::server {
   include kbp_rsync
 
-  Kbp_rsync::Source_setup <<| tag = "${environment}_rsync_${name}" |>>
+  Kbp_rsync::Source_setup <<| tag == "${environment}_rsync_${name}" |>>
 }
 
 # Define: kbp_rsync::source_setup
@@ -44,11 +44,11 @@ class kbp_rsync::server {
 define kbp_rsync::source_setup ($source, $key, $path) {
   include kbp_rsync
 
-  kfile { "/root/${name}.conf":
+  file { "/root/${name}.conf":
     content => template('kbp_rsync/rsyncd.conf'),
   }
 
-  ssh_authorized_key { "Rsync_user_for_${name}":
+  ssh_authorized_key { "Rsync_for_${name}":
     type    => "ssh-rsa",
     user    => "root",
     options => ["from=\"${source}\"","command=\"/usr/bin/rsync --config=/root/${name}.conf --server --daemon .\""],
@@ -105,9 +105,6 @@ define kbp_rsync::client ($source_host, $target_dir, $source_dir, $private_key, 
 
   # Setup the secret key
   file {
-    "/root/.ssh":
-      ensure  => directory,
-      mode    => 700;
     "/root/.ssh/rsync-key-${name}":
       content => $private_key;
   }
