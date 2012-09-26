@@ -106,6 +106,7 @@ define kbp_rsync::client ($source_host, $target_dir, $source_dir, $private_key, 
   # Setup the secret key
   file {
     "/root/.ssh/rsync-key-${name}":
+      mode    => 640,
       content => $private_key;
   }
 
