@@ -173,7 +173,7 @@ define kbp_haproxy::site::add_server ($cookie=false, $httpcheck_uri=false, $http
   if $tcp_sslport {
     gen_haproxy::site::add_server { "${site_name}_ssl;${server_name}":
       httpcheck_uri      => $httpcheck_uri,
-      httpcheck_port     => $httpcheck_port,
+      httpcheck_port     => $tcp_sslport,
       httpcheck_interval => $httpcheck_interval,
       httpcheck_fall     => $httpcheck_fall,
       httpcheck_rise     => $httpcheck_rise,
