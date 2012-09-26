@@ -111,7 +111,7 @@ define kbp_rsync::client ($source_host, $target_dir, $source_dir, $private_key, 
   }
 
   # The cronjob that does the actual sync
-  kcron { "Sync from other machine":
+  kcron { "rsync-${name}":
     command => "/usr/bin/rsync -qazHSx --delete ${real_bwlimit} ${real_exclude} -e 'ssh -i /root/.ssh/rsync-key-${name}' ${source_host}::${name}/* ${target_dir}",
     user    => "root",
     hour    => $hour,
