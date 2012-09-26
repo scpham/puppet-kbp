@@ -21,13 +21,17 @@ class kbp_rsync {
 class kbp_rsync::server_setup {
   kbp_user { "rsyncuser":
     uid     => 200,
-    gid     => 0,
+    gid     => 200,
     comment => "Rsync user",
+  }
+
+  group { "rsyncuser":
+    gid => 200,
   }
 
   kbp_sudo::rule { "Allow rsyncuser to run rsync as root":
     entity            => 'rsyncuser',
-    command           => '/usr/bin/rsync',
+    command           => '/usr/bin/rsync *',
     as_user           => 'root',
     password_required => false,
   }
