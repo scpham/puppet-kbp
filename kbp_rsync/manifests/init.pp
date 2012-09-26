@@ -10,6 +10,29 @@ class kbp_rsync {
   include gen_base::rsync
 }
 
+# Class: kbp_rsync::server_setup
+#
+# Action:
+#  Setup a separate user for rsync on the server, to increase security.
+#
+# Depends:
+#  kbp_rsync
+#
+class kbp_rsync::server_setup {
+  kbp_user { "rsyncuser":
+    uid     => 200,
+    gid     => 0,
+    comment => "Rsync user",
+  }
+
+  kbp_sudo::rule { "Allow rsyncuser to run rsync as root":
+    entity            => 'rsyncuser',
+    command           => '/usr/bin/rsync',
+    as_user           => 'root',
+    password_required => false,
+  }
+}
+
 # Define: kbp_rsync::server
 #
 # Action:
@@ -22,8 +45,6 @@ class kbp_rsync {
 #  kbp_rsync
 #
 define kbp_rsync::server {
-  include kbp_rsync
-
   Kbp_rsync::Source_setup <<| tag == "${environment}_rsync_${name}" |>>
 }
 
@@ -43,15 +64,16 @@ define kbp_rsync::server {
 #
 define kbp_rsync::source_setup ($source, $key, $path) {
   include kbp_rsync
+  include kbp_rsync::server_setup
 
-  file { "/root/${name}.conf":
+  file { "/home/rsyncuser/${name}.conf":
     content => template('kbp_rsync/rsyncd.conf'),
   }
 
   ssh_authorized_key { "Rsync_for_${name}":
     type    => "ssh-rsa",
-    user    => "root",
-    options => ["from=\"${source}\"","command=\"/usr/bin/rsync --config=/root/${name}.conf --server --daemon .\""],
+    user    => "rsyncuser",
+    options => ["from=\"${source}\"","command=\"/usr/bin/sudo /usr/bin/rsync --config=/home/rsyncuser/${name}.conf --server --daemon .\""],
     key     => $key,
   }
 }
@@ -112,7 +134,7 @@ define kbp_rsync::client ($source_host, $target_dir, $source_dir, $private_key, 
 
   # The cronjob that does the actual sync
   kcron { "rsync-${name}":
-    command => "/usr/bin/rsync -qazHSx --delete ${real_bwlimit} ${real_exclude} -e 'ssh -i /root/.ssh/rsync-key-${name}' ${source_host}::${name}/* ${target_dir}",
+    command => "/usr/bin/rsync -qazHSx --delete ${real_bwlimit} ${real_exclude} -e 'ssh -l rsyncuser -i /root/.ssh/rsync-key-${name}' ${source_host}::${name}/* ${target_dir}",
     user    => "root",
     hour    => $hour,
     minute  => $minute,
