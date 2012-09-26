@@ -1983,9 +1983,11 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
 
     if !defined(Kbp_icinga::Host[$real_name]) {
       kbp_icinga::host { $real_name:
-        conf_dir => $confdir,
-        address  => $address,
-        parents  => $parents;
+        conf_dir             => $confdir,
+        address              => $address,
+        parents              => $parents,
+        proxy                => $proxy,
+        preventproxyoverride => false;
       }
     }
   }
