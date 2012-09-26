@@ -22,8 +22,7 @@ define kbp_user($ensure="present", $uid, $gid, $comment, $groups=false, $shell='
     password   => $password ? {
       false   => undef,
       default => $password,
-    },
-    require    => Group[$gid];
+    };
   }
 
   if $keys and $ensure == "present" {
