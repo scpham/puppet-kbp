@@ -402,6 +402,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   $use_large_installation_tweaks            = 1
   $enable_environment_macros                = 0
   $debug_verbosity                          = 1
+  $temp_path                                = '/var/cache/icinga'
+  $log_file                                 = '/var/cache/icinga/icinga.log'
   # cgi.cfg options
   $url_html_path                            = '/'
   $url_stylesheets_path                     = '/stylesheets'
@@ -423,7 +425,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   package { ["icinga-web", 'icinga-mobile']:;}
 
   gen_logrotate::rotate { "icinga":
-    logs => "/var/log/icinga/icinga.log";
+    logs => "/var/cache/icinga/icinga.log";
   }
 
   file {
@@ -464,6 +466,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     '/etc/icinga/update_icinga_config':
       content => template('kbp_icinga/server/update_icinga_config'),
       mode    => 750;
+    '/var/log/icinga':
+      ensure  => link,
+      target  => '/var/cache/icinga/';
   }
 
   exec { 'build_icinga_config':
