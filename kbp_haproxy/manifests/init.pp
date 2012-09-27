@@ -69,6 +69,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
     listenaddress         => $listenaddress,
     port                  => $port,
     balance               => $balance,
+    cookie                => $cookie,
     timeout_connect       => $timeout_connect,
     timeout_server_client => $timeout_server_client,
     timeout_http_request  => $timeout_http_request,
@@ -81,6 +82,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
       port                  => "443",
       mode                  => "tcp",
       balance               => $balance,
+      cookie                => $cookie,
       timeout_connect       => $timeout_connect,
       timeout_server_client => $timeout_server_client,
       timeout_http_request  => $timeout_http_request,
@@ -172,6 +174,7 @@ define kbp_haproxy::site::add_server ($cookie=false, $httpcheck_uri=false, $http
 
   if $tcp_sslport {
     gen_haproxy::site::add_server { "${site_name}_ssl;${server_name}":
+      cookie             => $cookie,
       httpcheck_uri      => $httpcheck_uri,
       httpcheck_port     => $httpcheck_port,
       httpcheck_interval => $httpcheck_interval,

@@ -60,6 +60,7 @@ define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environme
 
     if ! defined(Kbp_haproxy::Site[$real_name]) {
       kbp_haproxy::site { $real_name:
+        cookie                => $cookie,
         listenaddress         => $ip,
         port                  => $port,
         monitor_site          => $monitor_site,
@@ -82,6 +83,7 @@ define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environme
 
     if $export_done {
       kbp_haproxy::site::add_server { "${real_name};${real_servername}":
+        cookie             => $cookie,
         serverport         => $serverport,
         serverip           => $serverip,
         httpcheck_uri      => $httpcheck_uri,
@@ -94,6 +96,7 @@ define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environme
       }
     } else {
       @@kbp_haproxy::site::add_server { "${real_name};${real_servername}":
+        cookie             => $cookie,
         serverport         => $serverport,
         serverip           => $serverip,
         httpcheck_uri      => $httpcheck_uri,
