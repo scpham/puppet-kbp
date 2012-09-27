@@ -471,7 +471,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       force   => true,
       target  => '/var/cache/icinga/';
     '/var/cache/icinga/tmp':
-      ensure  => directory;
+      ensure  => directory,
+      owner   => 'nagios';
   }
 
   exec { 'build_icinga_config':
