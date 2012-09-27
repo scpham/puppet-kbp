@@ -468,6 +468,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       mode    => 750;
     '/var/log/icinga':
       ensure  => link,
+      force   => true,
       target  => '/var/cache/icinga/';
     '/var/cache/icinga/tmp':
       ensure  => directory;
