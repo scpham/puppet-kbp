@@ -402,7 +402,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   $use_large_installation_tweaks            = 1
   $enable_environment_macros                = 0
   $debug_verbosity                          = 1
-  $temp_path                                = '/var/cache/icinga'
+  $temp_path                                = '/var/cache/icinga/tmp'
   $log_file                                 = '/var/cache/icinga/icinga.log'
   # cgi.cfg options
   $url_html_path                            = '/'
@@ -469,6 +469,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     '/var/log/icinga':
       ensure  => link,
       target  => '/var/cache/icinga/';
+    '/var/cache/icinga/tmp':
+      ensure  => directory;
   }
 
   exec { 'build_icinga_config':
