@@ -38,21 +38,29 @@ class kbp_loadbalancer ($failover=true, $loadbalancer_tag="${environment}_${dcen
 define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environment}_${dcenv}", $port=80, $location=false, $servername=$fqdn, $serverip=$ipaddress, $serverport=80, $cookie=false, $httpcheck_uri=false,
     $httpcheck_port=$serverport, $balance='roundrobin', $timeout_connect='10s', $timeout_server_client='10s', $timeout_http_request='10s', $tcp_sslport=false, $monitoring_ha=false, $monitoring_hostname=false, $monitoring_status='200',
     $monitoring_url=false, $monitoring_max_check_attempts=false, $monitoring_response=false, $monitoring_proxy=false, $nic='eth0', $monitoring_address=$ip, $sslport=false, $httpcheck_interval=false, $httpcheck_fall=false,
-    $httpcheck_rise=false, $backupserver=false, $monitor_site=true, $export_done=false, $netmask=32, $forwardfor_except=false) {
+    $httpcheck_rise=false, $backupserver=false, $monitor_site=true, $export_done=false, $netmask=32, $forwardfor_except=false, $monitor_interval='10s', $monitor_timeout='20s') {
   if ! $exported {
-    $real_name = regsubst($name, '(.*);(.*)', '\1')
+    $real_name       = regsubst($name, '(.*);(.*)', '\1')
     $real_servername = regsubst($name, '(.*);(.*)', '\2') ? {
       $name   => $servername,
       default => regsubst($name, '(.*);(.*)', '\2'),
     }
-    $safe_name = regsubst($real_name, '[^a-zA-Z0-9\-_]', '_', 'G')
+    $safe_name       = regsubst($real_name, '[^a-zA-Z0-9\-_]', '_', 'G')
+    $provider        = $dcenv ? {
+      'hetzner' => 'ocf:kumina:hetzner-failover-ip',
+      default   => 'ocf:heartbeat:IPaddr2',
+    }
 
     if ! defined(Kbp_pacemaker::Primitive[$safe_name]) {
       kbp_pacemaker::primitive { $safe_name:
-        provider         => 'ocf:heartbeat:IPaddr2',
+        provider         => $provider,
         start_timeout    => '300s',
-        monitor_interval => '10s',
-        params           => "ip=\"${ip}\" cidr_netmask=\"${netmask}\" nic=\"${nic}\"",
+        monitor_interval => $monitor_interval,
+        monitor_timeout  => $monitor_timeout,
+        params           => $provider ? {
+          'ocf:heartbeat:IPaddr2'          => "ip=\"${ip}\" cidr_netmask=\"${netmask}\" nic=\"${nic}\"",
+          'ocf:kumina:hetzner-failover-ip' => "ip=\"${ip}\" script=\"/usr/local/sbin/parse-hetzner-json.py\"",
+        },
         location         => $location,
         group            => 'ALL_IPs';
       }
