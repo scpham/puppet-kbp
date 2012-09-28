@@ -9,7 +9,7 @@
 #  Undocumented
 #  gen_puppet
 #
-class kbp_dovecot::imap($certs, $postmaster, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false) {
+class kbp_dovecot::imap($certs, $deploycerts=true, $postmaster, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false) {
   $key_name = regsubst($certs,'^(.*)/(.*)$','\2')
   include gen_dovecot::imap
 
@@ -34,8 +34,9 @@ class kbp_dovecot::imap($certs, $postmaster, $mysql_user=false, $mysql_pass=fals
       require => Package["dovecot-common"];
   }
 
-  kbp_ssl::keys { $certs:; }
-
+  if $deploycerts {
+    kbp_ssl::keys { $certs:; }
+  }
 
   kbp_ferm::rule {
     "Sieve connections":

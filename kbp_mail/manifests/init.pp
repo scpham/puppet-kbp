@@ -5,6 +5,7 @@
 #
 # Parameters:
 #  certs           The Puppet location and name (without extension) of the certificates for Dovecot. Only used and has to be set when mode is primary
+#  deploycerts     Set to false if certificate is deployed elsewhere (default: true)
 #  relayhost       Same as Postfix, see http://www.postfix.org/postconf.5.html#relayhost. Absent by default
 #  mailname        The name to set in /etc/mailname. Defaults to $fqdn
 #  mydestination   Same as Postfix, see http://www.postfix.org/postconf.5.html#mydestination. Defaults to $fqdn, $hostname, localhost.localdomain, localhost. The default is appended when this param is set
@@ -27,7 +28,7 @@
 #  kbp_postfix
 #  kbp_ferm (only accept_incoming is true or mode is primary or secondary)
 #
-define kbp_mail($certs=false, $relayhost=false, $mailname=false, $mydestination=false, $accept_incoming=false, $myhostname=false, $mynetworks=false,
+define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=false, $mydestination=false, $accept_incoming=false, $myhostname=false, $mynetworks=false,
     $always_bcc=false, $mode=false, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false, $relay_domains=false,
     $postmaster=false) {
   if $mode == 'primary' or $mode == 'secondary' {
@@ -44,12 +45,13 @@ define kbp_mail($certs=false, $relayhost=false, $mailname=false, $mydestination=
 
       include kbp_amavis
       class { 'kbp_dovecot::imap':
-        certs      => $certs,
-        postmaster => $postmaster,
-        mysql_user => $mysql_user,
-        mysql_pass => $mysql_pass,
-        mysql_db   => $mysql_db,
-        mysql_host => $mysql_host;
+        certs       => $certs,
+        deploycerts => $deploycerts,
+        postmaster  => $postmaster,
+        mysql_user  => $mysql_user,
+        mysql_pass  => $mysql_pass,
+        mysql_db    => $mysql_db,
+        mysql_host  => $mysql_host;
       }
     }
   }
