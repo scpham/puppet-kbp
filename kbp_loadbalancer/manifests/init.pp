@@ -37,7 +37,7 @@ class kbp_loadbalancer ($failover=true, $loadbalancer_tag="${environment}_${dcen
 
 define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environment}_${dcenv}", $port=80, $location=false, $servername=$fqdn, $serverip=$ipaddress, $serverport=80, $cookie=false, $httpcheck_uri=false,
     $httpcheck_port=$serverport, $balance='roundrobin', $timeout_connect='10s', $timeout_server_client='10s', $timeout_http_request='10s', $tcp_sslport=false, $monitoring_ha=false, $monitoring_hostname=false, $monitoring_status='200',
-    $monitoring_url=false, $monitoring_max_check_attempts=false, $monitoring_response=false, $monitoring_proxy=false, $nic='eth0', $monitoring_address=false, $sslport=false, $httpcheck_interval=false, $httpcheck_fall=false,
+    $monitoring_url=false, $monitoring_max_check_attempts=false, $monitoring_response=false, $monitoring_proxy=false, $nic='eth0', $monitoring_address=$ip, $sslport=false, $httpcheck_interval=false, $httpcheck_fall=false,
     $httpcheck_rise=false, $backupserver=false, $monitor_site=true, $export_done=false, $netmask=32, $forwardfor_except=false) {
   if ! $exported {
     $real_name = regsubst($name, '(.*);(.*)', '\1')
