@@ -157,6 +157,8 @@ define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environme
       sslport                       => $sslport,
       backupserver                  => $backupserver,
       forwardfor_except             => $forwardfor_except,
+      monitor_timeout               => $monitor_timeout,
+      monitor_interval              => $monitor_interval,
       tag                           => "loadbalancer_${loadbalancer_tag}";
     }
   }
