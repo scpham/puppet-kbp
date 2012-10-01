@@ -71,7 +71,7 @@ define kbp_pacemaker::group {
 }
 
 define kbp_pacemaker::clone ($resource) {
-  kbp_pacemaker::clone { $name:
+  gen_pacemaker::clone { $name:
     resource => $resource;
   }
 }
