@@ -69,3 +69,9 @@ define kbp_pacemaker::order ($score="inf", $resource_1, $resource_2) {
 define kbp_pacemaker::group {
   gen_pacemaker::group { $name:; }
 }
+
+define kbp_pacemaker::clone ($resource) {
+  kbp_pacemaker::clone { $name:
+    resource => $resource;
+  }
+}
