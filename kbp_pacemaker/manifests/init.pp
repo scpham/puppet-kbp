@@ -50,19 +50,23 @@ define kbp_pacemaker::location ($primitive, $score="inf", $resnode) {
   }
 }
 
-define kbp_pacemaker::colocation ($resource_1, $resource_2, $score="inf") {
-  gen_pacemaker::colocation { $name:
-    resource_1 => $resource_1,
-    resource_2 => $resource_2,
-    score      => $score;
+define kbp_pacemaker::colocation ($ensure='present', $resource_1, $resource_2, $score="inf") {
+  if $ensure == 'present' {
+    gen_pacemaker::colocation { $name:
+      resource_1 => $resource_1,
+      resource_2 => $resource_2,
+      score      => $score;
+    }
   }
 }
 
-define kbp_pacemaker::order ($score="inf", $resource_1, $resource_2) {
-  gen_pacemaker::order { $name:
-    resource_1 => $resource_1,
-    resource_2 => $resource_2,
-    score      => $score;
+define kbp_pacemaker::order ($ensure='present', $score="inf", $resource_1, $resource_2) {
+  if $ensure == 'present' {
+    gen_pacemaker::order { $name:
+      resource_1 => $resource_1,
+      resource_2 => $resource_2,
+      score      => $score;
+    }
   }
 }
 
