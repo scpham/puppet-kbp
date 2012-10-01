@@ -1,6 +1,6 @@
 # Author: Kumina bv <support@kumina.nl>
 
-class kbp_loadbalancer ($failover=true, $loadbalancer_tag="${environment}_${dcenv}", $heartbeat_dev='eth0', $heartbeat_ip=$ipaddress_eth0) {
+class kbp_loadbalancer ($failover=true, $loadbalancer_tag="${environment}_${dcenv}", $heartbeat_dev='eth0', $heartbeat_ip=$ipaddress_eth0, $haproxy_in_heartbeat=true) {
   class { 'kbp_haproxy':
     failover => $failover;
   }
@@ -15,19 +15,21 @@ class kbp_loadbalancer ($failover=true, $loadbalancer_tag="${environment}_${dcen
 
     kbp_pacemaker::group { 'ALL_IPs':; }
 
-    kbp_pacemaker::primitive { 'HAProxy':
-      provider         => 'lsb:haproxy',
-      monitor_interval => '10s';
-    }
+    if $haproxy_in_heartbeat {
+      kbp_pacemaker::primitive { 'HAProxy':
+        provider         => 'lsb:haproxy',
+        monitor_interval => '10s';
+      }
 
-    kbp_pacemaker::colocation { 'IPs_with_proxy':
-      resource_1 => 'ALL_IPs',
-      resource_2 => 'HAProxy';
-    }
+      kbp_pacemaker::colocation { 'IPs_with_proxy':
+        resource_1 => 'ALL_IPs',
+        resource_2 => 'HAProxy';
+      }
 
-    kbp_pacemaker::order { 'haproxy_after_ALL_IPs':
-      resource_1 => 'ALL_IPs',
-      resource_2 => 'HAProxy';
+      kbp_pacemaker::order { 'haproxy_after_ALL_IPs':
+        resource_1 => 'ALL_IPs',
+        resource_2 => 'HAProxy';
+      }
     }
   }
 
