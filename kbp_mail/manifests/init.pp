@@ -14,6 +14,7 @@
 #  mynetworks      Same as Postfix, see http://www.postfix.org/postconf.5.html#mynetworks. Defaults to 127.0.0.0/8 [::1]/128
 #  always_bcc      Same as Postfix, see http://www.postfix.org/postconf.5.html#always_bcc. Absent by default
 #  mode            Set to primary for a full mailserver, secondary for a backup mailserver, false otherwise. Defaults to false
+#                  Special mode: 'dovecot': configure everything as primary, except postfix which will be configured with mode=false
 #  mysql_user      The MySQL username used for Postfix and Dovecot. Only used and has to be set when mode is primary
 #  mysql_pass      The MySQL password used for Postfix and Dovecot. Only used and has to be set when mode is primary
 #  mysql_db        The MySQL database used for Postfix and Dovecot. Only used and has to be set when mode is primary
@@ -31,10 +32,10 @@
 define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=false, $mydestination=false, $accept_incoming=false, $myhostname=false, $mynetworks=false,
     $always_bcc=false, $mode=false, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false, $relay_domains=false,
     $postmaster=false) {
-  if $mode == 'primary' or $mode == 'secondary' {
+  if $mode == 'primary' or $mode == 'secondary' or $mode == 'dovecot' {
     include gen_postgrey
 
-    if $mode == 'primary' {
+    if $mode == 'primary' or $mode == 'dovecot' {
       if ! $certs {
         fail('When using primary mode for kbp_mail, $certs must be set as dovecot and postfix need it.')
       }
@@ -64,7 +65,10 @@ define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=fal
     myhostname    => $myhostname,
     mynetworks    => $mynetworks,
     always_bcc    => $always_bcc,
-    mode          => $mode,
+    mode          => $mode ? {
+      'dovecot' => false,
+      default   => $mode,
+    },
     mysql_user    => $mysql_user,
     mysql_pass    => $mysql_pass,
     mysql_db      => $mysql_db,
