@@ -99,6 +99,8 @@ define kbp_rsync::source_setup ($source, $key, $path) {
 #  bwlimit:     If you'd like to limit the bandwidth used for this sync, you can use this. The number is is kbit/s (as opposed to the rsync bwlimit, which
 #               requires a totally inconvenient KBytes/s).
 #  target_ip:   The IP address of the target machine, this machine. Defaults to the external ip address as found by the fact.
+#  exclude:     The exclude statement for the rsync job. Defaults to false, which disables this feature.
+#  chown:       The argument given to 'chown -R' for this directory. Defaults to false, which disables this feature.
 #
 # Example:
 #  This is an example on how to generate the ssh key:
@@ -111,7 +113,7 @@ define kbp_rsync::source_setup ($source, $key, $path) {
 #  kbp_rsync
 #  kcron
 #
-define kbp_rsync::client ($source_host, $target_dir, $source_dir, $private_key, $public_key, $hour="*", $minute="*/5", bwlimit=false, $target_ip=$::external_ipaddress, $exclude=false) {
+define kbp_rsync::client ($source_host, $target_dir, $source_dir, $private_key, $public_key, $hour="*", $minute="*/5", bwlimit=false, $target_ip=$::external_ipaddress, $exclude=false, $chown=false) {
   # We prefer entering the bwlimit in kbit/s, so we need to convert it to
   # KBytes/s
   if $bwlimit {
@@ -129,6 +131,13 @@ define kbp_rsync::client ($source_host, $target_dir, $source_dir, $private_key, 
     $real_exclude = ""
   }
 
+  # Custom chown after the sync
+  if $chown {
+    $real_chown = "/bin/chown -R ${chown} ${target_dir}"
+  } else {
+    $real_chown = ""
+  }
+
   # Setup the secret key
   file {
     "/root/.ssh/rsync-key-${name}":
@@ -138,7 +147,7 @@ define kbp_rsync::client ($source_host, $target_dir, $source_dir, $private_key, 
 
   # The cronjob that does the actual sync
   kcron { "rsync-${name}":
-    command => "/usr/bin/rsync -qazHSx --delete ${real_bwlimit} ${real_exclude} -e 'ssh -l rsyncuser -i /root/.ssh/rsync-key-${name}' ${source_host}::${name}/* ${target_dir}",
+    command => "/usr/bin/rsync -qazHSx --delete ${real_bwlimit} ${real_exclude} -e 'ssh -l rsyncuser -i /root/.ssh/rsync-key-${name}' ${source_host}::${name}/* ${target_dir}; ${real_chown}",
     user    => "root",
     hour    => $hour,
     minute  => $minute,
