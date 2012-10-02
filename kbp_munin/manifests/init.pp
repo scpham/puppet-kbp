@@ -509,12 +509,9 @@ define kbp_munin::environment($site, $port, $offset = false, $sync_offset = fals
     "/etc/cron.d/munin-${name}":
       owner   => "root",
       content => template("kbp_munin/cron");
-    "/etc/logrotate.d/munin-${name}":
-      owner   => "root",
-      content => template("kbp_munin/logrotate");
   }
 
-  gen_logrotate::rotate { 'munin':
+  gen_logrotate::rotate { "munin-${name}":
       logs => ["/var/log/munin/${name}/munin-graph.log", "/var/log/munin/${name}/munin-html.log", "/var/log/munin/${name}/munin-limits.log", "/var/log/munin/${name}/munin-update.log"];
   }
 
