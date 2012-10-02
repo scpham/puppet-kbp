@@ -54,8 +54,11 @@ class kbp_base {
 
   kbp_mail { 'mail':; }
 
-  if $lsbdistcodename != 'wheezy' {
-    kbp_ksplice { "ksplice":; }
+  kbp_ksplice { "ksplice":
+    ensure => $lsbdistcodename ? {
+      'wheezy' => 'absent',
+      default  => 'present',
+    };
   }
 
   kbp_syslog { "syslog":; }
