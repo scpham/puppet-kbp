@@ -76,7 +76,7 @@ class kbp_puppet::default_config {
 
   kcron { "run-puppet":
     mailto  => "reports@kumina.nl",
-    command => "/bin/sleep ${sleep}; /usr/bin/test ! -f /etc/puppet/dontrunpuppetd && /usr/bin/puppet agent --onetime --no-daemonize --no-splay --color false --logdest console --logdest syslog 2>&1 >/dev/null",
+    command => "/bin/sleep ${sleep}; /usr/bin/test ! -f /etc/puppet/dontrunpuppetd && /usr/bin/puppet agent --onetime --no-daemonize --no-splay --color false --logdest console --logdest syslog >/dev/null 2>&1",
     hour    => $hours,
     minute  => "0",
   }
