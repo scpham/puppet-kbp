@@ -514,6 +514,10 @@ define kbp_munin::environment($site, $port, $offset = false, $sync_offset = fals
       content => template("kbp_munin/logrotate");
   }
 
+  gen_logrotate::rotate { 'munin':
+      logs => ["/var/log/munin/${name}/munin-graph.log", "/var/log/munin/${name}/munin-html.log", "/var/log/munin/${name}/munin-limits.log", "/var/log/munin/${name}/munin-update.log"];
+  }
+
   concat {
     "/etc/munin/munin-${name}.conf":
       require     => Package["munin"];
