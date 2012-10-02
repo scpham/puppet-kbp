@@ -1,6 +1,8 @@
 define kbp_ksplice($ensure='present') {
-  include gen_base::python_pycurl
-  include kbp_icinga::ksplice
+  if $ensure == 'present' {
+    include gen_base::python_pycurl
+    include kbp_icinga::ksplice
+  }
   class { 'ksplice':
     ensure => $ensure;
   }
