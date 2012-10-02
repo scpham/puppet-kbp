@@ -123,9 +123,14 @@ define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environme
       }
     }
 
-    if $sslport and ! defined(Kbp_stunnel::Site[$real_name]) {
-      kbp_stunnel::site { $real_name:
-        port => $sslport;
+    if $sslport {
+      Kbp_icinga::Haproxy::Site <| title == $real_name |> {
+        ssl => true,
+      }
+      if ! defined(Kbp_stunnel::Site[$real_name]) {
+        kbp_stunnel::site { $real_name:
+          port => $sslport;
+        }
       }
     }
   } else {
