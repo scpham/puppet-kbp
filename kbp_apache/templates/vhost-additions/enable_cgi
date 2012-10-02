@@ -6,7 +6,7 @@
 <% else -%>
   FCGIWrapper /usr/lib/cgi-bin/php5 .php
 <% end -%>
-  Options ExecCGI Indexes FollowSymLinks MultiViews
+  Options ExecCGI FollowSymLinks MultiViews
   AllowOverride All
   Order allow,deny
   Allow from all
