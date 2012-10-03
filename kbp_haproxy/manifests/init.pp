@@ -142,7 +142,10 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
       host_name            => $monitoring_hostname,
       port                 => $port,
       max_check_attempts   => $max_check_attempts,
-      response             => $monitoring_response,
+      response             => $redirect_non_ssl ? {
+        true    => false,
+        default => $monitoring_response,
+      },
       proxy                => $monitoring_proxy,
       preventproxyoverride => true;
     }
