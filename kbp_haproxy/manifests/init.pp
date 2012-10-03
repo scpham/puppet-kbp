@@ -133,6 +133,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
         false => $real_sslport ? {
           false => $monitoring_status,
           true  => "${monitoring_status}, 301",
+        },
         true  => 301,
       },
       path                 => $monitoring_url,
