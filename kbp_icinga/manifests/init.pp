@@ -627,7 +627,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       nrpe          => true;
     "check_http_ssl":
       command_name  => "check_http",
-      arguments     => ['-S', '-I $HOSTADDRESS$', '-e $ARG1$', '-t 20','-N'];
+      arguments     => ['--ssl=3', '-I $HOSTADDRESS$', '-e $ARG1$', '-t 20','-N'];
     "check_http_vhost":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
@@ -651,11 +651,11 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     "check_http_vhost_ssl":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-S','-H $ARG1$','-e $ARG2$','-t 20','-N'];
+      arguments     => ['--ssl=3','-H $ARG1$','-e $ARG2$','-t 20','-N'];
     "check_http_vhost_ssl_address":
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
-      arguments     => ['-S','-H $ARG2$','-e $ARG3$','-t 20','-N'];
+      arguments     => ['--ssl=3','-H $ARG2$','-e $ARG3$','-t 20','-N'];
     "check_http_vhost_url":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
@@ -667,7 +667,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     "check_http_vhost_url_login_ssl_address":
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
-      arguments     => ['-S', '-H $ARG2$', '-u $ARG3$', '-a $ARG4$', '-e $ARG5$', '-t 20', '-N'];
+      arguments     => ['--ssl=3', '-H $ARG2$', '-u $ARG3$', '-a $ARG4$', '-e $ARG5$', '-t 20', '-N'];
     "check_http_vhost_url_login_address":
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
@@ -675,11 +675,11 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     "check_http_vhost_url_ssl":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-S','-H $ARG1$','-u $ARG2$','-e $ARG3$','-t 20','-N'];
+      arguments     => ['--ssl=3','-H $ARG1$','-u $ARG2$','-e $ARG3$','-t 20','-N'];
     "check_http_vhost_url_ssl_address":
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
-      arguments     => ['-S','-H $ARG2$','-u $ARG3$','-e $ARG4$','-t 20','-N'];
+      arguments     => ['--ssl=3','-H $ARG2$','-u $ARG3$','-e $ARG4$','-t 20','-N'];
     "check_http_vhost_url_response":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
@@ -691,11 +691,11 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     "check_http_vhost_url_response_ssl":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
-      arguments     => ['-S', '-H $ARG1$', '-u $ARG2$', '-r $ARG3$', '-e $ARG4$', '-t 20'];
+      arguments     => ['--ssl=3', '-H $ARG1$', '-u $ARG2$', '-r $ARG3$', '-e $ARG4$', '-t 20'];
     "check_http_vhost_url_response_ssl_address":
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
-      arguments     => ['-S', '-H $ARG2$', '-u $ARG3$', '-r $ARG4$', '-e $ARG5$', '-t 20'];
+      arguments     => ['--ssl=3', '-H $ARG2$', '-u $ARG3$', '-r $ARG4$', '-e $ARG5$', '-t 20'];
     "check_http_vhost_port_url_response":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
@@ -1827,70 +1827,6 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
     },
     proxy                 => $proxy,
     preventproxyoverride  => $preventproxyoverride;
-  }
-}
-
-# Define: kbp_icinga::haproxy::site
-#
-# Parameters:
-#  ha
-#    Undocumented
-#  url
-#    Undocumented
-#  response
-#    Undocumented
-#  address
-#    Undocumented
-#  max_check_attempts
-#    Number of retries before the monitoring considers the site down.
-#  nrpe_proxy
-#    Host to use as nrpe proxy
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-define kbp_icinga::haproxy::site($address, $ha=false, $url=false, $port=false, $host_name=false, $response=false,
-    $statuscode="200", $max_check_attempts=false, $ssl=false, $preventproxyoverride=false, $nrpe_proxy=false) {
-  kbp_icinga::site { "${name}_80":
-    address              => $address,
-    port                 => $port,
-    path                 => $url,
-    max_check_attempts   => $max_check_attempts,
-    statuscode           => $ssl ? {
-      false => $statuscode,
-      true  => "${statuscode},301",
-    },
-    host_name            => $host_name ? {
-      false   => $name,
-      default => $host_name,
-    },
-    vhost                => false,
-    ha                   => $ha,
-    preventproxyoverride => $preventproxyoverride,
-    proxy                => $nrpe_proxy;
-  }
-
-  if $ssl {
-    kbp_icinga::site { "${name}_443":
-      address              => $address,
-      ssl                  => true,
-      port                 => $port,
-      path                 => $url,
-      max_check_attempts   => $max_check_attempts,
-      statuscode           => $statuscode,
-      host_name            => $ssl ? {
-        false   => $name,
-        default => $host_name,
-      },
-      vhost                => false,
-      ha                   => $ha,
-      preventproxyoverride => $preventproxyoverride,
-      proxy                => $nrpe_proxy;
-    }
   }
 }
 

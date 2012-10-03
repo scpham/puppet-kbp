@@ -105,14 +105,20 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
 
   if $monitor_site {
     if $tcp_sslport or $sslport {
-      kbp_icinga::haproxy::site { "${name}_ssl":
+      if $tcp_sslport {
+        $real_sslport = $tcp_sslport
+      } else {
+        $real_sslport = $sslport
+      }
+
+      kbp_icinga::site { "${name}_ssl":
         address              => $monitoring_address,
         ssl                  => true,
         ha                   => $monitoring_ha,
         statuscode           => $monitoring_status,
         url                  => $monitoring_url,
         host_name            => $monitoring_hostname,
-        port                 => $port,
+        port                 => $real_sslport,
         max_check_attempts   => $max_check_attempts,
         response             => $monitoring_response,
         nrpe_proxy           => $monitoring_proxy,
@@ -120,7 +126,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
       }
     }
 
-    kbp_icinga::haproxy::site { $name:
+    kbp_icinga::site { $name:
       address              => $monitoring_address,
       ha                   => $monitoring_ha,
       statuscode           => $redirect_non_ssl ? {
