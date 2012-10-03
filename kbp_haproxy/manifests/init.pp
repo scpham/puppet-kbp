@@ -49,13 +49,12 @@ class kbp_haproxy ($failover = false, $loglevel="warning") {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=$listenaddress, $monitoring_hostname=false,
+define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=$listenaddress, $monitoring_hostname=$name,
     $cookie=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s",
-    $timeout_http_request="10s", $tcp_sslport=false, $monitoring_proxy=false, $httpcheck_uri=false, $forwardfor_except=false, $httpclose=false, $timeout_server=false) {
-  $real_name = regsubst($name, '(.*);(.*)', '\1')
-  $safe_name = regsubst($real_name, '[^a-zA-Z0-9\-_]', '_', 'G')
+    $timeout_http_request="10s", $tcp_sslport=false, $monitoring_proxy=false, $httpcheck_uri=false, $forwardfor_except=false, $httpclose=false, $timeout_server=false, $sslport=false, $redirect_non_ssl=false) {
+  $safe_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
 
-  kbp_ferm::rule { "HAProxy forward for ${real_name}":
+  kbp_ferm::rule { "HAProxy forward for ${name}":
     proto  => "tcp",
     daddr  => $listenaddress ? {
       "0.0.0.0" => undef,
@@ -65,7 +64,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
     action => "ACCEPT";
   }
 
-  gen_haproxy::site { $real_name:
+  gen_haproxy::site { $name:
     listenaddress         => $listenaddress,
     port                  => $port,
     balance               => $balance,
@@ -76,11 +75,12 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
     httpcheck_uri         => $httpcheck_uri,
     forwardfor_except     => $forwardfor_except,
     httpclose             => $httpclose,
-    timeout_server        => $timeout_server;
+    timeout_server        => $timeout_server,
+    redirect_non_ssl      => $redirect_non_ssl;
   }
 
   if $tcp_sslport {
-    gen_haproxy::site { "${real_name}_ssl":
+    gen_haproxy::site { "${name}_ssl":
       listenaddress         => $listenaddress,
       port                  => "443",
       mode                  => "tcp",
@@ -95,7 +95,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
       timeout_server        => $timeout_server;
     }
 
-    kbp_ferm::rule { "HAProxy forward for ${real_name}_ssl":
+    kbp_ferm::rule { "HAProxy forward for ${name}_ssl":
       proto  => "tcp",
       daddr  => $listenaddress,
       dport  => "443",
@@ -104,19 +104,31 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
   }
 
   if $monitor_site {
-    kbp_icinga::haproxy::site { $real_name:
+    if $tcp_sslport or $sslport {
+      kbp_icinga::haproxy::site { "${name}_ssl":
+        address              => $monitoring_address,
+        ssl                  => true,
+        ha                   => $monitoring_ha,
+        statuscode           => $monitoring_status,
+        url                  => $monitoring_url,
+        host_name            => $monitoring_hostname,
+        port                 => $port,
+        max_check_attempts   => $max_check_attempts,
+        response             => $monitoring_response,
+        nrpe_proxy           => $monitoring_proxy,
+        preventproxyoverride => true;
+      }
+    }
+
+    kbp_icinga::haproxy::site { $name:
       address              => $monitoring_address,
-      ssl                  => $tcp_sslport ? {
-        false   => false,
-        default => true,
-      },
       ha                   => $monitoring_ha,
-      statuscode           => $monitoring_status,
-      url                  => $monitoring_url,
-      host_name            => $monitoring_hostname ? {
-        false   => $real_name,
-        default => $monitoring_hostname,
+      statuscode           => $redirect_non_ssl ? {
+        false => $monitoring_status,
+        true  => 301,
       },
+      url                  => $monitoring_url,
+      host_name            => $monitoring_hostname,
       port                 => $port,
       max_check_attempts   => $max_check_attempts,
       response             => $monitoring_response,

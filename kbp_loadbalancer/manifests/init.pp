@@ -40,9 +40,19 @@ class kbp_loadbalancer ($failover=true, $loadbalancer_tag="${environment}_${dcen
 define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environment}_${dcenv}", $port=80, $location=false, $servername=$fqdn, $serverip=$ipaddress, $serverport=80, $cookie=false, $httpcheck_uri=false,
     $httpcheck_port=$serverport, $balance='roundrobin', $timeout_connect='10s', $timeout_server_client='10s', $timeout_http_request='10s', $tcp_sslport=false, $monitoring_ha=false, $monitoring_hostname=false, $monitoring_status='200',
     $monitoring_url=false, $monitoring_max_check_attempts=false, $monitoring_response=false, $monitoring_proxy=false, $nic='eth0', $monitoring_address=$ip, $sslport=false, $httpcheck_interval=false, $httpcheck_fall=false,
-    $httpcheck_rise=false, $backupserver=false, $monitor_site=true, $export_done=false, $netmask=32, $forwardfor_except=false, $monitor_interval='10s', $monitor_timeout='20s', $httpclose=false, $timeout_server=false) {
+    $httpcheck_rise=false, $backupserver=false, $monitor_site=true, $export_done=false, $netmask=32, $forwardfor_except=false, $monitor_interval='10s', $monitor_timeout='20s', $httpclose=false, $timeout_server=false,
+    $redirect_non_ssl=false) {
+  $real_name = regsubst($name, '(.*);(.*)', '\1')
+  if $redirect_non_ssl {
+    if ! $sslport {
+      fail("kbp_loadbalancer::ip ${name}: \$redirect_non_ssl only makes sense to be true when \$sslport is also set as it only works for when stunnel is used, otherwise the redirect can be done in the normal way on the webservers.")
+    } elsif ! $export_done {
+      kbp_apache::vhost_addition { "${real_name}/${real_name}_non_ssl_redirect":
+        content => "RewriteEngine On\nRewriteCond %{HTTP:X-SSL} !^On$\nRewriteRule (.*) https://${real_name}\$1 [QSA,NE,R=301,L]\n";
+      }
+    }
+  }
   if ! $exported {
-    $real_name       = regsubst($name, '(.*);(.*)', '\1')
     $real_servername = regsubst($name, '(.*);(.*)', '\2') ? {
       $name   => $servername,
       default => regsubst($name, '(.*);(.*)', '\2'),
@@ -90,7 +100,9 @@ define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environme
         httpcheck_uri         => $httpcheck_uri,
         forwardfor_except     => $forwardfor_except,
         httpclose             => $httpclose,
-        timeout_server        => $timeout_server;
+        timeout_server        => $timeout_server,
+        sslport               => $sslport,
+        redirect_non_ssl      => $redirect_non_ssl;
       }
     }
 
@@ -164,6 +176,7 @@ define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environme
       monitor_site                  => $monitor_site,
       nic                           => $nic,
       sslport                       => $sslport,
+      redirect_non_ssl              => $redirect_non_ssl,
       backupserver                  => $backupserver,
       forwardfor_except             => $forwardfor_except,
       monitor_timeout               => $monitor_timeout,
