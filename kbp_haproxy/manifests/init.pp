@@ -105,9 +105,9 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
 
   if $monitor_site {
     if $tcp_sslport or $sslport {
-      if $tcp_sslport {
+      if $tcp_sslport and $tcp_sslport != 443 {
         $real_sslport = $tcp_sslport
-      } else {
+      } elsif $sslport != 443 {
         $real_sslport = $sslport
       }
 
