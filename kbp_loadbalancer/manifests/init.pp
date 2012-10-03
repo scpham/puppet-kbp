@@ -39,7 +39,7 @@ class kbp_loadbalancer ($failover=true, $haproxy_loglevel='warning', $loadbalanc
 }
 
 define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environment}_${dcenv}", $port=80, $location=false, $servername=$fqdn, $serverip=$ipaddress, $serverport=80, $cookie=false, $httpcheck_uri=false,
-    $httpcheck_port=$serverport, $balance='roundrobin', $timeout_connect='10s', $timeout_server_client='10s', $timeout_http_request='10s', $tcp_sslport=false, $monitoring_ha=false, $monitoring_hostname=false, $monitoring_status='200',
+    $httpcheck_port=$serverport, $balance='roundrobin', $timeout_connect='10s', $timeout_server_client='10s', $timeout_http_request='10s', $tcp_sslport=false, $monitoring_ha=false, $monitoring_hostname=$name, $monitoring_status='200',
     $monitoring_url=false, $monitoring_max_check_attempts=false, $monitoring_response=false, $monitoring_proxy=false, $nic='eth0', $monitoring_address=$ip, $sslport=false, $httpcheck_interval=false, $httpcheck_fall=false,
     $httpcheck_rise=false, $backupserver=false, $monitor_site=true, $export_done=false, $netmask=32, $forwardfor_except=false, $monitor_interval='10s', $monitor_timeout='20s', $httpclose=false, $timeout_server=false,
     $redirect_non_ssl=false) {
