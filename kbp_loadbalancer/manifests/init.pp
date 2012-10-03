@@ -2,8 +2,8 @@
 
 class kbp_loadbalancer ($failover=true, $haproxy_loglevel='warning', $loadbalancer_tag="${environment}_${dcenv}", $heartbeat_dev='eth0', $heartbeat_ip=$ipaddress_eth0, $haproxy_in_heartbeat=true) {
   class { 'kbp_haproxy':
-    failover => $failover,
-    loglevel => $haproxy_loglevel;
+    failover         => $failover,
+    haproxy_loglevel => $haproxy_loglevel;
   }
 
   if $failover {
