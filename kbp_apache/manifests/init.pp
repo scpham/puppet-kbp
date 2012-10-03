@@ -298,7 +298,7 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
     $make_default=false, $ssl=false, $non_ssl=true, $key=false, $cert=false, $intermediate=false, $wildcard=false, $log_vhost=false, $access_logformat="combined",
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor_creds=false,
     $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $phpmyadmin=false, $ha=false, $monitor_ip=false,
-    $monitor_proxy = false, $failover=false, $port = false) {
+    $monitor_proxy = false, $failover=false, $port = false, $monitor_statuscode=false) {
   include kbp_apache
 
   if regsubst($name, '^(.*)_.*$', '\1') != $name {
@@ -377,7 +377,8 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
         false => $ha,
       },
       ssl                 => $real_ssl,
-      proxy               => $monitor_proxy;
+      proxy               => $monitor_proxy,
+      statuscode          => $monitor_statuscode;
     }
 
     kbp_icinga::servicedependency { "apache_dependency_${monitor_name}_http":
@@ -405,7 +406,8 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
         ha                  => $ha,
         ssl                 => $real_ssl,
         proxy               => $monitor_proxy,
-        vhost               => false;
+        vhost               => false,
+        statuscode          => $monitor_statuscode;
       }
     }
 
@@ -461,7 +463,8 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
           true  => false,
           false => $ha,
         },
-        ssl                 => false;
+        ssl                 => false,
+        statuscode          => $monitor_statuscode;
       }
 
       kbp_icinga::servicedependency { "apache_dependency_${name}_http":
@@ -484,7 +487,8 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
           credentials         => $monitor_creds,
           check_interval      => $monitor_check_interval,
           ha                  => $ha,
-          vhost               => false;
+          vhost               => false,
+          statuscode          => $monitor_statuscode;
         }
       }
     }

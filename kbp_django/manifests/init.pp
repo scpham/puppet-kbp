@@ -13,20 +13,20 @@ class kbp_django {
 }
 
 define kbp_django::site($settings='settings', $root_path='/', $root_django="/${name}", $static_path='/media', $static_django="/${name}/media", $auth=false, $wildcard=false, $intermediate=false, $monitor=true, $make_default=false,
-    $serveralias=false, $monitor_path=false, $address='*', $monitor_ip=false, $monitor_response=false) {
+    $serveralias=false, $monitor_path=false, $address='*', $monitor_ip=false, $monitor_statuscode=false) {
   include kbp_django
 
   kbp_apache::site { $name:
-    address          => $address,
-    auth             => $auth,
-    wildcard         => $wildcard,
-    intermediate     => $intermediate,
-    monitor          => $monitor,
-    make_default     => $make_default,
-    serveralias      => $serveralias,
-    monitor_path     => $monitor_path,
-    monitor_ip       => $monitor_ip,
-    monitor_response => $monitor_response;;
+    address            => $address,
+    auth               => $auth,
+    wildcard           => $wildcard,
+    intermediate       => $intermediate,
+    monitor            => $monitor,
+    make_default       => $make_default,
+    serveralias        => $serveralias,
+    monitor_path       => $monitor_path,
+    monitor_ip         => $monitor_ip,
+    monitor_statuscode => $monitor_statuscode;
   }
 
   if $wildcard or $intermediate {
