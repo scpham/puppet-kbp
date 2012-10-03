@@ -1,8 +1,9 @@
 # Author: Kumina bv <support@kumina.nl>
 
-class kbp_loadbalancer ($failover=true, $loadbalancer_tag="${environment}_${dcenv}", $heartbeat_dev='eth0', $heartbeat_ip=$ipaddress_eth0, $haproxy_in_heartbeat=true) {
+class kbp_loadbalancer ($failover=true, $haproxy_loglevel='warning', $loadbalancer_tag="${environment}_${dcenv}", $heartbeat_dev='eth0', $heartbeat_ip=$ipaddress_eth0, $haproxy_in_heartbeat=true) {
   class { 'kbp_haproxy':
-    failover => $failover;
+    failover => $failover,
+    loglevel => $haproxy_loglevel;
   }
 
   if $failover {
