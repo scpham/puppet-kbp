@@ -1939,7 +1939,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
 
   $check_command_vhost = 'check_http_vhost'
   $arguments_vhost     = $real_name
-  if $port and $port != 80 {
+  if $port and $port != 80 and (! $ssl or $port != 443) {
     $check_command_port = "${check_command_vhost}_port"
     $arguments_port     = "${arguments_vhost}|${port}"
   } else {
