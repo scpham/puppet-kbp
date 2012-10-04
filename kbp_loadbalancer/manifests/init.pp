@@ -51,6 +51,10 @@ define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environme
       kbp_apache::vhost_addition { "${real_name}/${real_name}_non_ssl_redirect":
         content => "RewriteEngine On\nRewriteCond %{HTTP:X-SSL} !^On$\nRewriteRule (.*) https://${real_name}\$1 [QSA,NE,R=301,L]\n";
       }
+
+      Kbp_icinga::Site <| title == $real_name |> {
+        statuscode => 301,
+      }
     }
   }
   if ! $exported {
