@@ -425,7 +425,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   package { ["icinga-web", 'icinga-mobile']:;}
 
   gen_logrotate::rotate { "icinga":
-    logs => "/var/cache/icinga/icinga.log";
+    logs => "/var/cache/icinga/icinga.log",
+    options => ["daily", "compress","rotate 21","missingok"];
   }
 
   file {
