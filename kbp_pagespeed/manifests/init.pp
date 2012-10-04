@@ -196,7 +196,7 @@ define kbp_pagespeed::site ($ssl_also = false, $selection = 'none', $add_head = 
                             $convert_jpeg_to_progressive = false, $convert_png_to_jpeg = false, $convert_jpeg_to_webp = false, $insert_image_dimensions = false,
                             $inline_preview_images = false, $resize_mobile_images = false, $remove_comments = false, $collapse_whitespace = false, elide_attributes = false,
                             $sprite_images = false, $rewrite_domains = false, $remove_quotes = false, $add_instrumentation = false, $defer_javascript = false,
-                            $inline_preview_images = false, $lazyload_images = false) {
+                            $inline_preview_images = false, $lazyload_images = false, $ports = '8080') {
   include kbp_pagespeed
 
   # Get the name without the port added.
@@ -254,7 +254,7 @@ define kbp_pagespeed::site ($ssl_also = false, $selection = 'none', $add_head = 
   # This creates a site-specific cache location. By not using the global caching directories, removing a site entirely can be easier.
   # The 'if ! defined' is needed for the SSL sites that would create the same directories.
   if ! defined(File["/srv/mod_pagespeed/cache/${real_name}"]) {
-    file { "/srv/mod_pagespeed/cache/${real_name}"]:
+    file { "/srv/mod_pagespeed/cache/${real_name}":
       ensure => directory,
       owner  => 'www-data',
       mode   => 750,
@@ -444,5 +444,6 @@ define kbp_pagespeed::site ($ssl_also = false, $selection = 'none', $add_head = 
     content => template('kbp_pagespeed/site-settings'),
     require => File["/srv/mod_pagespeed/cache/${real_name}","/srv/mod_pagespeed/files/${real_name}"],
     notify  => Service['apache2'],
+    ports   => $ports;
   }
 }
