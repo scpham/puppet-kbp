@@ -5,7 +5,7 @@ class kbp_loadbalancer ($failover=true, $haproxy_loglevel='warning', $loadbalanc
     false   => false,
     default => $haproxy_in_heartbeat,
   }
-  notify {"FAILOVER: ${failover}, haproxy_in_heartbeat: ${haproxy_in_heartbeat}":;}
+
   class { 'kbp_haproxy':
     failover         => $haproxy_in_heartbeat,
     haproxy_loglevel => $haproxy_loglevel;
