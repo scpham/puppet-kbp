@@ -33,11 +33,23 @@ define kbp_django::site($settings='settings', $root_path='/', $root_django="/${n
     $real_ssl = true
   }
 
-  kbp_apache::vhost_addition { "${name}/django":
-    ports   => $real_ssl ? {
+  kbp_django::app { $name:
+    vhost         => $name,
+    port          => $real_ssl ? {
       true    => 443,
-      default => undef,
+      default => 80,
     },
+    settings      => $settings,
+    root_path     => $root_path,
+    root_django   => $root_django,
+    static_path   => $static_path,
+    static_django => $static_django;
+  }
+}
+
+define kbp_django::app($vhost, $port, $settings='settings', $root_path='/', $root_django="/${name}", $static_path='/media', $static_django="/${name}/media", $vhost_addition_prefix='') {
+  kbp_apache::vhost_addition { "${vhost}/${vhost_addition_prefix}django":
+    ports   => $port,
     content => template("kbp_django/vhost-additions/django");
   }
 
