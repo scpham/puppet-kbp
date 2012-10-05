@@ -51,7 +51,7 @@ class kbp_haproxy ($failover = false, $haproxy_loglevel="warning") {
 #
 define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=$listenaddress, $monitoring_hostname=$name,
     $cookie=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s",
-    $timeout_http_request="10s", $tcp_sslport=false, $monitoring_proxy=false, $httpcheck_uri=false, $forwardfor_except=false, $httpclose=false, $timeout_server=false, $sslport=false, $redirect_non_ssl=false) {
+    $timeout_http_request="10s", $tcp_sslport=false, $monitoring_proxy=false, $httpcheck_uri=false, $forwardfor_except=false, $httpclose=false, $timeout_server="20s", $sslport=false, $redirect_non_ssl=false) {
   $safe_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
 
   kbp_ferm::rule { "HAProxy forward for ${name}":
