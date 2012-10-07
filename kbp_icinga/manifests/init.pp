@@ -384,7 +384,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   include gen_icinga::server
   include kbp_nsca::server
   include kbp_munin::client::icinga
-  include gen_php5:xsl
+  include gen_php5::xsl
 
   # icinga.cfg options
   $object_cache_file                        = '/var/cache/icinga/objects.cache'
