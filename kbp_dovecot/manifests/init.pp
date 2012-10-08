@@ -41,7 +41,7 @@ class kbp_dovecot::imap($certs, $deploycerts=true, $postmaster, $mysql_user=fals
   kbp_ferm::rule {
     "Sieve connections":
       proto  => "tcp",
-      dport  => "2000",
+      dport  => "4190",
       action => "ACCEPT";
     "IMAP connections":
       proto  => "tcp",
