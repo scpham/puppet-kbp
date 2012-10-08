@@ -3,7 +3,7 @@ class kbp_squirrelmail {
   include gen_squirrelmail::plugin::avelsieve
 }
 
-define kbp_squirrelmail::site ($ssl=false, $intermediate=false, $redirect_non_ssl=false, $address=false, $serveralias=false, $org_name=false, $org_logo=false, $org_logo_width=false, $org_logo_height=false, $org_title=false, $provider_uri=false) {
+define kbp_squirrelmail::site ($ssl=false, $intermediate=false, $redirect_non_ssl=false, $address='*', $serveralias=false, $org_name=false, $org_logo=false, $org_logo_width=false, $org_logo_height=false, $org_title=false, $provider_uri=false) {
   include kbp_squirrelmail
 
   kbp_apache::site { $name:
