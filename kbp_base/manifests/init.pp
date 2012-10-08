@@ -71,7 +71,7 @@ class kbp_base {
       as_user           => "ALL",
       command           => "ALL",
       password_required => true;
-    "Kumina default rule":
+    "001Kumina default rule":
       entity            => "%root",
       as_user           => "ALL",
       command           => "ALL",
