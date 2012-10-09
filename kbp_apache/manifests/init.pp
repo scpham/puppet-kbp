@@ -298,7 +298,7 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
     $make_default=false, $ssl=false, $non_ssl=true, $key=false, $cert=false, $intermediate=false, $wildcard=false, $log_vhost=false, $access_logformat="combined",
     $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor_creds=false,
     $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $phpmyadmin=false, $ha=false, $monitor_ip=false,
-    $monitor_proxy = false, $failover=false, $port = false, $monitor_statuscode=false) {
+    $monitor_proxy = false, $failover=false, $port = false, $monitor_statuscode=false, $webdav=false) {
   include kbp_apache
 
   if regsubst($name, '^(.*)_.*$', '\1') != $name {
@@ -544,6 +544,16 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
       target  => "/etc/phpmyadmin/apache.conf",
       notify  => Exec["reload-apache2"],
       require => Package["phpmyadmin"],
+    }
+  }
+
+  if $webdav {
+    include kbp_apache::module::dav
+    include kbp_apache::module::dav_fs
+
+    kbp_apache::vhost_addition { "${name}/webdav":
+      ports   => '443',
+      content => "<Location />\nDav On\nForceType text/plain\n</Location>",
     }
   }
 }
