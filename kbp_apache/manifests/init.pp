@@ -170,6 +170,10 @@ class kbp_apache::module::auth_mysql {
   }
 }
 
+class kbp_apache::module::auth_digest {
+  kbp_apache::module { "auth_digest":; }
+}
+
 class kbp_apache::module::proxy_http {
   kbp_apache::module { "proxy_http":
     notify => Exec["force-reload-apache2"];
