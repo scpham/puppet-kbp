@@ -35,6 +35,7 @@ class kbp_icinga::client {
       command   => "check_procs",
       arguments => "-w 0 -C rdiff-backup";
     "check_cassandra":;
+    "check_doublemount":;
     "check_mount":
       sudo      => true,
       command   => "check_mount",
@@ -587,7 +588,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     ["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd",
      "check_pacemaker","check_mysql","check_mysql_connlimit","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp",
      "check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_failures",'check_megaraid_sas',"check_nullmailer","check_passenger_queue","check_mcollective","check_backup_status",
-     'check_unbound', 'check_activemq', 'check_lsimpt']:
+     'check_unbound', 'check_activemq', 'check_lsimpt','check_doublemount']:
       nrpe          => true;
     "return-ok":
       command_name  => "check_dummy",
@@ -1702,6 +1703,22 @@ define kbp_icinga::mount {
     service_description => "Mountpoint ${name}",
     check_command       => "check_mount",
     arguments           => [$name],
+    nrpe                => true;
+  }
+}
+
+# Class: kbp_icinga::doublemount
+#
+# Actions:
+#  Checks wether mountpoints are used more than once
+#
+# Depends:
+#  kbp_icinga
+#
+class kbp_icinga::doublemount {
+  kbp_icinga::service { "doublemount":
+    service_description => "Double mounts",
+    check_command       => "check_doublemount",
     nrpe                => true;
   }
 }

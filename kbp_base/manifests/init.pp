@@ -19,6 +19,7 @@ class kbp_base {
   include kbp_apt
   include kbp_apt::kumina
   include kbp_icinga::client
+  include kbp_icinga::doublemount
   include kbp_puppet
   include kbp_ssh
   include kbp_sysctl
