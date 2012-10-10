@@ -8,6 +8,7 @@
 #  deploycerts     Set to false if certificate is deployed elsewhere (default: true)
 #  relayhost       Same as Postfix, see http://www.postfix.org/postconf.5.html#relayhost. Absent by default
 #  mailname        The name to set in /etc/mailname. Defaults to $fqdn
+#  mydomain        The domain to use for sending emails. Defaults to $domain
 #  mydestination   Same as Postfix, see http://www.postfix.org/postconf.5.html#mydestination. Defaults to $fqdn, $hostname, localhost.localdomain, localhost. The default is appended when this param is set
 #  accept_incoming Set to true to allow the server to accept incoming mail. Defaults to false
 #  myhostname      Same as Postfix, see http://www.postfix.org/postconf.5.html#myhostname. Defaults to $fqdn
@@ -30,7 +31,7 @@
 #  kbp_ferm (only accept_incoming is true or mode is primary or secondary)
 #
 define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=false, $mydestination=false, $accept_incoming=false, $myhostname=false, $mynetworks=false,
-    $always_bcc=false, $mode=false, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false, $relay_domains=false,
+    $always_bcc=false, $mode=false, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false, $relay_domains=false, $mydomain=$domain,
     $postmaster=false) {
   if $mode == 'primary' or $mode == 'secondary' or $mode == 'dovecot' {
     include gen_postgrey
@@ -61,6 +62,7 @@ define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=fal
     certs         => $certs,
     relayhost     => $relayhost,
     mailname      => $mailname,
+    mydomain      => $mydomain,
     mydestination => $mydestination,
     myhostname    => $myhostname,
     mynetworks    => $mynetworks,

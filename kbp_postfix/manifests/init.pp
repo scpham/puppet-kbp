@@ -15,11 +15,12 @@ class kbp_postfix::mailgraph {
 #
 class kbp_postfix($certs=false, $relayhost=false, $mailname=false, $myhostname=false, $mynetworks=false, $mydestination=false, $mode=false,
     $mailname=$fqdn, $incoming=false, $always_bcc=false, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false,
-    $relay_domains=false) {
+    $relay_domains=false, $mydomain=$domain) {
   include kbp_openssl::common
   class { 'gen_postfix':
     certs         => $certs,
     relayhost     => $relayhost,
+    mydomain      => $mydomain,
     myhostname    => $myhostname,
     mynetworks    => $mynetworks,
     mydestination => $mydestination,
