@@ -86,3 +86,26 @@ define kbp_unbound::stub_zone ($stub_host=false, $stub_addr=false, $stub_prime=f
     ferm_tag => "unbound_stubzone_${::environment}"
   }
 }
+
+#
+# Define: kbp_unbound::local_zone
+#
+# Actions:
+#  Configure a local-zone
+#
+# Parameters (see http://www.unbound.net/documentation/unbound.conf.html for info):
+#  zonetype:
+#   The type of the zone (one of 'deny','refuse','static','transparent',
+#   'typetransparent','redirect','nodefault'. See documentation for explanation).
+#
+# Depends:
+#  kbp_unbound
+#
+# ToDo:
+#  Create a define for local-data, so puppet can add this data to the config file
+#
+define kbp_unbound::local_zone ($zonetype) {
+  gen_unbound::local_zone { $name:
+    zonetype => $zonetype;
+  }
+}
