@@ -1,6 +1,10 @@
 # Author: Kumina bv <support@kumina.nl>
 
 define kbp_syslog($client=true, $environmentonly=true) {
+  Package <| title == "rsyslog" |> {
+    ensure => latest,
+  }
+
   if $client {
     include kbp_syslog::client
   } else {
