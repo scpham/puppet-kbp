@@ -1719,6 +1719,7 @@ class kbp_icinga::doublemount {
   kbp_icinga::service { "doublemount":
     service_description => "Double mounts",
     check_command       => "check_doublemount",
+    check_interval      => 3600,
     nrpe                => true;
   }
 }
