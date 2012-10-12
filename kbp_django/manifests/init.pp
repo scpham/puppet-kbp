@@ -13,7 +13,7 @@ class kbp_django {
 }
 
 define kbp_django::site($settings='settings', $root_path='/', $root_django="/${name}", $static_path='/media', $static_django="/${name}/media", $auth=false, $wildcard=false, $intermediate=false, $monitor=true, $make_default=false,
-    $serveralias=false, $monitor_path=false, $address='*', $monitor_ip=false, $monitor_statuscode=false) {
+    $serveralias=false, $monitor_path=false, $address='*', $monitor_ip=false, $monitor_statuscode=false, $wsgi_file='dispatch.wsgi') {
   include kbp_django
 
   kbp_apache::site { $name:
@@ -43,11 +43,12 @@ define kbp_django::site($settings='settings', $root_path='/', $root_django="/${n
     root_path     => $root_path,
     root_django   => $root_django,
     static_path   => $static_path,
-    static_django => $static_django;
+    static_django => $static_django,
+    wsgi_file     => $wsgi_file;
   }
 }
 
-define kbp_django::app($vhost, $port, $settings='settings', $root_path='/', $root_django="/${name}", $static_path='/media', $static_django="/${name}/media", $vhost_addition_prefix='') {
+define kbp_django::app($vhost, $port, $settings='settings', $root_path='/', $root_django="/${name}", $static_path='/media', $static_django="/${name}/media", $vhost_addition_prefix='', $wsgi_file='dispatch.wsgi') {
   kbp_apache::vhost_addition { "${vhost}/${vhost_addition_prefix}django":
     ports   => $port,
     content => template("kbp_django/vhost-additions/django");
@@ -57,10 +58,15 @@ define kbp_django::app($vhost, $port, $settings='settings', $root_path='/', $roo
     "/srv/django${root_django}":
       ensure  => directory,
       mode    => 775;
-    "/srv/django${root_django}/dispatch.wsgi":
-      content => template("kbp_django/dispatch.wsgi"),
-      replace => false,
-      mode    => 775;
+  }
+
+  if $wsgi_file == 'dispatch.wsgi' {
+    file {
+      "/srv/django${root_django}/dispatch.wsgi":
+        content => template("kbp_django/dispatch.wsgi"),
+        replace => false,
+        mode    => 775;
+    }
   }
 
   if ! defined(File["/srv/django${static_django}"]) {
