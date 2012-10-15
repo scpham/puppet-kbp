@@ -196,24 +196,24 @@ class kbp_base::environment {
 }
 
 class kbp_base::wanted_packages {
+  include gen_base::base-files
+  include gen_base::bzip2
+  include gen_base::curl
+  include gen_base::dnsutils
+  include gen_base::dpkg
+  include gen_base::elinks
+  include gen_base::file
+  include gen_base::libpam0g
   include gen_base::libpam-modules
   include gen_base::libpam-runtime
-  include gen_base::libpam0g
-  include gen_base::realpath
-  include gen_base::dnsutils
-  include gen_base::wget
-  include gen_base::telnet_ssl
-  include gen_base::curl
-  include gen_base::bzip2
-  include gen_base::nscd
-  include gen_base::elinks
-  include gen_base::dpkg
-  include gen_base::perl
   include gen_base::module_init_tools
-  include gen_base::sysstat
-  include gen_base::file
-  include gen_base::base-files
+  include gen_base::nscd
+  include gen_base::perl
+  include gen_base::realpath
   include gen_base::screen
+  include gen_base::sysstat
+  include gen_base::telnet_ssl
+  include gen_base::wget
 }
 
 define kbp_base::resolv_conf($ns1, $ns2, $ns3 = false, $domain = false, $search = $domain) {
