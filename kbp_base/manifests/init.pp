@@ -213,6 +213,7 @@ class kbp_base::wanted_packages {
   include gen_base::sysstat
   include gen_base::file
   include gen_base::base-files
+  include gen_base::screen
 }
 
 define kbp_base::resolv_conf($ns1, $ns2, $ns3 = false, $domain = false, $search = $domain) {
