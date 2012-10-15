@@ -113,7 +113,7 @@ class kbp_debian inherits kbp_base {
   }
 
   # Packages we want to have installed
-  $wantedpackages = ["openssh-server", "less", "lftp", "screen", "debsums", "dlocate", "gnupg",
+  $wantedpackages = ["openssh-server", "less", "lftp", "debsums", "dlocate", "gnupg",
     "ucf", "reportbug", "tree", "netcat", "openssh-client", "tcpdump", "iproute", "acl", "tmux",
     "psmisc", "udev", "lsof", "strace", "pinfo", "lsb-release", "ethtool", "socat", "make"]
   package { $wantedpackages:
