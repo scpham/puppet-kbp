@@ -38,9 +38,19 @@ define kbp_drbd($location, $mastermaster=true, $time_out=false, $connect_int=fal
       require  => Gen_drbd[$name];
     }
 
-    file { "${location}/.monitoring":
-      content => "DRBD_mount_ok",
-      require => Mount[$location];
+    file {
+      "${location}/.monitoring":
+        content => "DRBD_mount_ok",
+        require => Mount[$location];
+      '/etc/init.d/mount_ocfs2':
+        content => template('kbp_drbd/mount_ocfs2'),
+        mode    => 755,
+        notify  => Exec['setup mount ocfs2 script'];
+    }
+
+    exec { 'setup mount ocfs2 script':
+      command     => '/sbin/insserv -d mount_ocfs2',
+      refreshonly => true;
     }
 
     kbp_icinga::drbd { $location:; }
