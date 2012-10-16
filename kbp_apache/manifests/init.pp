@@ -496,14 +496,6 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
         }
       }
     }
-
-    if ! $wildcard {
-      if $cert {
-        kbp_icinga::sslcert { $cert:; }
-      } else {
-        kbp_icinga::sslcert { $name:; }
-      }
-    }
   }
 
   if ! defined(Gen_ferm::Rule["HTTP(S) connections on ${real_port}"]) {

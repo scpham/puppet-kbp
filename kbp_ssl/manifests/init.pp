@@ -1,8 +1,6 @@
 define kbp_ssl::wildcard {
   $key_name = regsubst($name,'^(.*)/(.*)$','\2')
 
-  kbp_icinga::sslcert { $key_name:; }
-
   kbp_ssl::keys { $name:; }
 }
 
@@ -29,6 +27,8 @@ define kbp_ssl::public_key($content=false, $key_location=false, $owner = 'root')
     owner   => $owner,
     mode    => 444;
   }
+
+  kbp_icinga::sslcert { $name:; }
 }
 
 define kbp_ssl::private_key($content=false, $key_location=false, $owner = 'root') {
