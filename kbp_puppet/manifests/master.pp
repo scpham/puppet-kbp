@@ -267,7 +267,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
       "Set dbmigrate for ${name}.":
         configfile => $configfile,
         var        => 'dbmigrate',
-        value      => 'true',
+        value      => 'false',
         section    => 'main';
     }
 
