@@ -17,7 +17,7 @@
 #
 define kbp_drbd($location, $mastermaster=true, $time_out=false, $connect_int=false, $ping_int=false, $ping_timeout=false, $after_sb_0pri="discard-younger-primary",
     $after_sb_1pri="discard-secondary", $after_sb_2pri="call-pri-lost-after-sb", $rate="5M", $verify_alg="md5", $use_ipaddress=$external_ipaddress, $device_name=$name,
-    $mount_options='nodev,nosuid,noatime,acl,nointr') {
+    $mount_options='nodev,nosuid,noatime,acl,nointr',$disk_flushes=true,$max_buffers=false,$unplug_watermark=false,$sndbuf_size=false,$al_extents=false) {
   include kbp_trending::drbd
 
   if $mastermaster {
@@ -57,18 +57,23 @@ define kbp_drbd($location, $mastermaster=true, $time_out=false, $connect_int=fal
   }
 
   gen_drbd { $name:
-    use_ipaddress => $use_ipaddress,
-    mastermaster  => $mastermaster,
-    time_out      => $time_out,
-    connect_int   => $connect_int,
-    ping_int      => $ping_int,
-    ping_timeout  => $ping_timeout,
-    after_sb_0pri => $after_sb_0pri,
-    after_sb_1pri => $after_sb_1pri,
-    after_sb_2pri => $after_sb_2pri,
-    rate          => $rate,
-    verify_alg    => $verify_alg,
-    device_name   => $device_name;
+    use_ipaddress    => $use_ipaddress,
+    mastermaster     => $mastermaster,
+    time_out         => $time_out,
+    connect_int      => $connect_int,
+    ping_int         => $ping_int,
+    ping_timeout     => $ping_timeout,
+    after_sb_0pri    => $after_sb_0pri,
+    after_sb_1pri    => $after_sb_1pri,
+    after_sb_2pri    => $after_sb_2pri,
+    disk_flushes     => $disk_flushes,
+    max_buffers      => $max_buffers,
+    unplug_watermark => $unplug_watermark,
+    sndbuf_size      => $sndbuf_size,
+    al_extents       => $al_extents,
+    rate             => $rate,
+    verify_alg       => $verify_alg,
+    device_name      => $device_name;
   }
 
   Kbp_ferm::Rule <<| tag == "ferm_drbd_${environment}_${name}" |>>
