@@ -1751,7 +1751,8 @@ define kbp_icinga::sslcert($path="/etc/ssl/certs/${name}.pem") {
     service_description => "SSL certificate in ${path}",
     check_command       => "check_sslcert",
     arguments           => $path,
-    nrpe                => true;
+    nrpe                => true,
+    warnsms             => false;
   }
 }
 
