@@ -123,6 +123,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
         port                 => $real_sslport,
         max_check_attempts   => $max_check_attempts,
         response             => $monitoring_response,
+        vhost                => false,
         proxy                => $monitoring_proxy,
         preventproxyoverride => true;
       }
