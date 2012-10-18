@@ -146,6 +146,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
         true    => false,
         default => $monitoring_response,
       },
+      vhost                => false,
       proxy                => $monitoring_proxy,
       preventproxyoverride => true;
     }
