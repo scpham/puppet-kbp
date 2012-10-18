@@ -7,6 +7,7 @@ define kbp_squirrelmail::site ($intermediate=false, $address='*', $serveralias=f
   include kbp_squirrelmail
 
   kbp_apache::site { $name:
+    ssl          => true,
     intermediate => $intermediate,
     address      => $address,
     serveralias  => $serveralias,
