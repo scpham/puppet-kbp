@@ -663,7 +663,7 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
     }
 
     gen_munin::client::plugin::config { 'rrdcached':
-      content => 'user munin';
+      content => 'user root';
     }
   }
 }
