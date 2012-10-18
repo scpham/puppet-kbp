@@ -248,11 +248,15 @@ define kbp_tomcat::apache_proxy_ajp_site($ensure="present", $port=8009, $ssl=fal
   } else {
     $real_ssl = false
   }
+  $real_documentroot = $sourcepath ? {
+    '/'     => '/var/www',
+    default => $documentroot,
+  }
 
   kbp_apache::site { $name:
     ensure             => $ensure,
     serveralias        => $serveralias,
-    documentroot       => $documentroot,
+    documentroot       => $real_documentroot,
     php                => $php,
     make_default       => $make_default,
     monitor_path       => $monitor_path,

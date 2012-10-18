@@ -17,8 +17,7 @@ class kbp_apache {
   kbp_apache::site { 'localhost':
     address             => '127.0.0.255',
     address6            => '::1',
-    documentroot        => '/srv/www',
-    create_documentroot => false,
+    documentroot        => '/var/www',
     monitor             => false;
   }
 
@@ -71,7 +70,7 @@ class kbp_apache::global_umask_007 {
   line { "Set Apache's umask":
     file    => "/etc/apache2/envvars",
     content => "umask 007",
-    require => Package["apache2"]
+    require => Package["apache2"];
   }
 }
 
@@ -298,11 +297,10 @@ define kbp_apache::php_cgi($ensure="present", $documentroot, $custom_php_ini=fal
 #  Undocumented
 #  gen_puppet
 #
-define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "/srv/www/${name}", $create_documentroot=true, $address='*', $address6='::',
-    $make_default=false, $ssl=false, $non_ssl=true, $key=false, $cert=false, $intermediate=false, $wildcard=false, $log_vhost=false, $access_logformat="combined",
-    $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor_creds=false,
-    $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $phpmyadmin=false, $ha=false, $monitor_ip=false,
-    $monitor_proxy = false, $failover=false, $port = false, $monitor_statuscode=false, $webdav=false) {
+define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "/srv/www/${name}", $address='*', $address6='::', $make_default=false, $ssl=false, $non_ssl=true, $key=false, $cert=false, $intermediate=false,
+    $wildcard=false, $log_vhost=false, $access_logformat="combined", $redirect_non_ssl=true, $auth=false, $max_check_attempts=false, $monitor_path=false, $monitor_response=false, $monitor_probe=false, $monitor_creds=false,
+    $monitor_check_interval=false,$monitor=true, $smokeping=true, $php=false, $custom_php_ini=false, $phpmyadmin=false, $ha=false, $monitor_ip=false, $monitor_proxy=false, $failover=false, $port=false, $monitor_statuscode=false,
+    $webdav=false) {
   include kbp_apache
 
   if regsubst($name, '^(.*)_.*$', '\1') != $name {
@@ -337,20 +335,19 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
   $dontmonitor = ["default","default-ssl","localhost"]
 
   gen_apache::site { $full_name:
-    ensure              => $ensure,
-    serveralias         => $serveralias,
-    create_documentroot => $create_documentroot,
-    documentroot        => $documentroot,
-    address             => $address,
-    address6            => $address6,
-    log_vhost           => $log_vhost,
-    access_logformat    => $access_logformat,
-    make_default        => $make_default,
-    ssl                 => $ssl,
-    key                 => $key,
-    cert                => $cert,
-    intermediate        => $intermediate,
-    wildcard            => $wildcard;
+    ensure           => $ensure,
+    serveralias      => $serveralias,
+    documentroot     => $documentroot,
+    address          => $address,
+    address6         => $address6,
+    log_vhost        => $log_vhost,
+    access_logformat => $access_logformat,
+    make_default     => $make_default,
+    ssl              => $ssl,
+    key              => $key,
+    cert             => $cert,
+    intermediate     => $intermediate,
+    wildcard         => $wildcard;
   }
 
   if $ensure == "present" and $monitor and ! ($name in $dontmonitor) {
@@ -441,15 +438,14 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
       }
     } else {
       gen_apache::site { "${name}_80":
-        ensure              => $ensure,
-        serveralias         => $serveralias,
-        create_documentroot => $create_documentroot,
-        documentroot        => $documentroot,
-        address             => $address,
-        address6            => $address6,
-        log_vhost           => $log_vhost,
-        access_logformat    => $access_logformat,
-        make_default        => $make_default;
+        ensure           => $ensure,
+        serveralias      => $serveralias,
+        documentroot     => $documentroot,
+        address          => $address,
+        address6         => $address6,
+        log_vhost        => $log_vhost,
+        access_logformat => $access_logformat,
+        make_default     => $make_default;
       }
 
       kbp_icinga::site { $name:

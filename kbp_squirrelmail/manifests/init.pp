@@ -7,12 +7,11 @@ define kbp_squirrelmail::site ($intermediate=false, $address='*', $serveralias=f
   include kbp_squirrelmail
 
   kbp_apache::site { $name:
-    intermediate        => $intermediate,
-    address             => $address,
-    serveralias         => $serveralias,
-    documentroot        => '/usr/share/squirrelmail',
-    create_documentroot => false,
-    php                 => true;
+    intermediate => $intermediate,
+    address      => $address,
+    serveralias  => $serveralias,
+    documentroot => '/usr/share/squirrelmail',
+    php          => true;
   }
 
   file { "/etc/squirrelmail/config_local.php":
@@ -21,7 +20,7 @@ define kbp_squirrelmail::site ($intermediate=false, $address='*', $serveralias=f
   }
 
   kbp_apache::vhost_addition { "${name}/javascript":
-    ports    => '443',
-    content  => "Alias /javascript /usr/share/javascript\n";
+    ports   => '443',
+    content => "Alias /javascript /usr/share/javascript\n";
   }
 }
