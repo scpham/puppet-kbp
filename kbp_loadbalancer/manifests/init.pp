@@ -1,6 +1,6 @@
 # Author: Kumina bv <support@kumina.nl>
 
-class kbp_loadbalancer ($failover=true, $haproxy_loglevel='warning', $loadbalancer_tag="${environment}_${dcenv}", $heartbeat_dev='eth0', $heartbeat_ip=$ipaddress_eth0, $haproxy_in_heartbeat=true) {
+class kbp_loadbalancer ($failover=true, $haproxy_loglevel='warning', $loadbalancer_tag="${environment}_${dcenv}", $heartbeat_dev='eth0', $heartbeat_ip=$ipaddress_eth0, $haproxy_in_heartbeat=true, $heartbeat_initdead='60') {
   $real_haproxy_in_heartbeat = $failover ? {
     false   => false,
     default => $haproxy_in_heartbeat,
@@ -16,6 +16,7 @@ class kbp_loadbalancer ($failover=true, $haproxy_loglevel='warning', $loadbalanc
     class { 'kbp_heartbeat':
       node_dev      => $heartbeat_dev,
       node_ip       => $heartbeat_ip,
+      initdead      => $heartbeat_initdead,
       heartbeat_tag => $loadbalancer_tag;
     }
 
