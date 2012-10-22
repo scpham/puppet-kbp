@@ -1,33 +1,38 @@
 # Author: Kumina bv <support@kumina.nl>
 
 # Parameters:
-#  mysql_name
-#    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
-class kbp_mysql::mastermaster($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false) {
+#  mysql_name         The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
+#  slow_query_time    See kbp_mysql::server
+#
+class kbp_mysql::mastermaster($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10) {
   class { "kbp_mysql::master":
-    mysql_name   => $mysql_name,
-    bind_address => $bind_address,
-    setup_backup => $setup_backup,
-    datadir      => $datadir;
+    mysql_name      => $mysql_name,
+    bind_address    => $bind_address,
+    setup_backup    => $setup_backup,
+    datadir         => $datadir,
+    slow_query_time => $slow_query_time;
   }
   class { "kbp_mysql::slave":
-    repl_host     => $repl_host,
-    mysql_name    => $mysql_name,
-    mastermaster  => true,
-    monitoring_ha => $monitoring_ha_slaving,
-    datadir       => $datadir;
+    repl_host       => $repl_host,
+    mysql_name      => $mysql_name,
+    mastermaster    => true,
+    monitoring_ha   => $monitoring_ha_slaving,
+    datadir         => $datadir,
+    slow_query_time => $slow_query_time;
   }
 }
 
 # Parameters:
-#  mysql_name
-#    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
-class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false) {
+#  mysql_name         The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
+#  slow_query_time    See kbp_mysql::server
+#
+class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $slow_query_time=10) {
   class { "kbp_mysql::server":
-    mysql_name   => $mysql_name,
-    setup_backup => $setup_backup,
-    bind_address => $bind_address,
-    datadir      => $datadir;
+    mysql_name      => $mysql_name,
+    setup_backup    => $setup_backup,
+    bind_address    => $bind_address,
+    datadir         => $datadir,
+    slow_query_time => $slow_query_time;
   }
 
   Mysql::Server::Grant <<| tag == "mysql_${environment}_${mysql_name}" |>>
@@ -41,8 +46,8 @@ class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
 # Class: kbp_mysql::slave
 #
 # Parameters:
-#  mysql_name
-#    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
+#  mysql_name         The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
+#  slow_query_time    See kbp_mysql::server
 #
 # Actions:
 #  Undocumented
@@ -51,13 +56,14 @@ class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$source_ipaddress, $datadir=false, $repl_user='repl', $repl_password='etohsh8xahNu', $repl_require_ssl=false) {
+class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$source_ipaddress, $datadir=false, $repl_user='repl', $repl_password='etohsh8xahNu', $repl_require_ssl=false, $slow_query_time=10) {
   if ! $mastermaster {
     class { "kbp_mysql::server":
-      mysql_name   => $mysql_name,
-      setup_backup => $setup_backup,
-      bind_address => $bind_address,
-      datadir      => $datadir;
+      mysql_name      => $mysql_name,
+      setup_backup    => $setup_backup,
+      bind_address    => $bind_address,
+      datadir         => $datadir,
+      slow_query_time => $slow_query_time;
     }
   }
 
@@ -105,8 +111,9 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
 # Class: kbp_mysql::server
 #
 # Parameters:
-#  mysql_name
-#    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
+#  mysql_name       The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
+#  slow_query_time  Slow query log time in seconds; see mysql documentation for long_query_time global variable. Set to false or 0 to disable.
+#
 #
 # Actions:
 #  Undocumented
@@ -115,7 +122,7 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $charset=false) {
+class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $charset=false, $slow_query_time=10) {
   include kbp_trending::mysql
   include kbp_mysql::monitoring::icinga::server
   class { "mysql::server":
@@ -152,6 +159,20 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
       ensure  => absent;
 #      content => "[mysqld]\ncharacter-set-server = 'utf8'\n",
 #      notify  => Service["mysql"];
+  }
+
+  case $slow_query_time {
+    false, 'false', 0, '0', /0\.0+$/: {
+      file { '/etc/mysql/conf.d/slow-query-log.cnf':
+        ensure => absent;
+      }
+    }
+    default: {
+      file { '/etc/mysql/conf.d/slow-query-log.cnf':
+        content => template('kbp_mysql/slow-query-log.cnf'),
+        require => Package['mysql-server-5.1'];
+      }
+    }
   }
 
   kbp_backup::exclude { "exclude_var_lib_mysql":
