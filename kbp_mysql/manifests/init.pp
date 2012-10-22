@@ -170,7 +170,7 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
     default: {
       file { '/etc/mysql/conf.d/slow-query-log.cnf':
         content => template('kbp_mysql/slow-query-log.cnf'),
-        require => Package['mysql-server-5.1'];
+        require => Package[$mysql::server::mysqlserver];
       }
     }
   }
