@@ -49,7 +49,7 @@ class Resource:
         self.name = name
         self.rname = rname
         self.max_param_len = 0
-        self.params = []
+        self.params = {}
         self.add_param('conf_dir', False)
 
     def add_param(self, name, string = None, cust_name_str = None, ignore_if = 'false', value = None):
@@ -57,21 +57,20 @@ class Resource:
             string = name
         if string:
             self.max_param_len = max(self.max_param_len, len(name))
-        self.params.append({'name': name, 'string': string, 'cust_name_str': cust_name_str, 'ignore_if': ignore_if, 'value': value})
+        self.params[name] = {'name': name, 'string': string, 'cust_name_str': cust_name_str, 'ignore_if': ignore_if, 'value': value}
 
     def set_param(self, name, value):
-        for param in self.params:
-            if param['name'] == name:
-                if isinstance(param['value'], list):
-                    param['value'].append(value)
-                else:
-                    param['value'] = value
+        if name in self.params:
+            if isinstance(self.params[name]['value'], list):
+                self.params[name]['value'].append(value)
+            else:
+                self.params[name]['value'] = value
 
     def create(self):
         stringl = [basedir, '/']
-        for param in self.params:
-            if param['name'] == 'conf_dir':
-                stringl.append(param['value'])
+        for name, data in self.params.items():
+            if name == 'conf_dir':
+                stringl.append(data['value'])
         stringl.extend(['/', self.rname, '_', self.name, '.cfg'])
         filename = ''.join(stringl)
         f = open(filename, 'w')
@@ -80,12 +79,12 @@ class Resource:
 
     def __str__(self):
         stringl = ['define %s {\n' % self.rname]
-        for param in self.params:
-            if param['string'] and param['value'] is not None and param['value'] != param['ignore_if']:
-                name_str = param['string']
-                if param['cust_name_str'] is not None:
-                    name_str = getattr(self, param['cust_name_str'])()
-                stringl.append('  %s  %s\n' % (name_str.ljust(self.max_param_len), param['value']))
+        for name, data in self.params.items():
+            if data['string'] and data['value'] is not None and data['value'] != data['ignore_if']:
+                name_str = data['string']
+                if data['cust_name_str'] is not None:
+                    name_str = getattr(self, data['cust_name_str'])()
+                stringl.append('  %s  %s\n' % (name_str.ljust(self.max_param_len), data['value']))
         stringl.append('}\n')
         return ''.join(stringl)
 
@@ -95,7 +94,7 @@ class Configdir(Resource):
 
     def __init__(self, name):
         self.name = name
-        self.params = []
+        self.params = {}
 
     def create(self):
         if not path.isdir(basedir + '/' + self.name):
@@ -221,12 +220,7 @@ class Host(Resource):
         self.add_param('register')
 
     def get_name_str(self):
-        for param in self.params:
-            if param['name'] == 'register':
-                if param['value'] == '0':
-                    return 'name'
-                else:
-                    return 'host_name'
+        return 'name' if self.params['register']['value'] == '0' else 'host_name'
 
 # Hostescalations
 class Hostescalation(Resource):
@@ -302,10 +296,21 @@ resource_types = [Configdir, Servicegroup, Service, Serviceescalation, Servicede
 for resource_type in resource_types:
     c.execute("select title, id from resources where restype='%s';" % resource_type.restype)
     resources = c.fetchall()
+    icinga_resources = []
+    hosts = {}
     for resource in resources:
         res = resource_type(resource[0])
         c.execute("select a.name, b.value from param_names as a, param_values as b where b.param_name_id = a.id and b.resource_id = %s", resource[1])
         params = c.fetchall()
+        if resource_type == Host and res.name in hosts:
+            parents = dict(params)['parents']
+            if parents != 'false':
+                hosts[res.name].params['parents']['value'] =  '%s, %s' % (hosts[res.name].params['parents']['value'], parents)
+            continue
         for param in params:
             res.set_param(*param)
+        if resource_type == Host:
+            hosts[res.name] = res
+        icinga_resources.append(res)
+    for res in icinga_resources:
         res.create()
