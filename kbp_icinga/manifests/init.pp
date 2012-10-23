@@ -620,6 +620,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       nrpe          => true;
     "check_http":
       arguments     => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20','-N'];
+    "check_http_cert":
+      arguments     => ['-I $HOSTADDRESS$', '-C 30,10', '-t 20'];
     "check_http_port_url":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
@@ -2030,6 +2032,28 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     proxy                => $proxy,
     preventproxyoverride => $preventproxyoverride,
     check_interval       => $check_interval;
+  }
+
+  if $ssl {
+    kbp_icinga::service { "vhost_${name}_cert":
+      conf_dir             => $confdir,
+      service_description  => $service_description ? {
+        false   => "Vhost ${real_name} SSL cert",
+        default => $service_description,
+      },
+      host_name            => $vhost ? {
+        true  => $fqdn,
+        false => $real_name,
+      },
+      # Passing the address to be able to determine to which host the service belongs in the case of multiple hosts with the same name, not used in the actual Icinga config.
+      address              => $address,
+      check_command        => 'check_http_cert',
+      max_check_attempts   => $max_check_attempts,
+      ha                   => $ha,
+      proxy                => $proxy,
+      preventproxyoverride => $preventproxyoverride,
+      check_interval       => $check_interval;
+    }
   }
 }
 
