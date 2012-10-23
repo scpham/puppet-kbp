@@ -1316,12 +1316,11 @@ define kbp_icinga::configdir($override_nomonitoring=false) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::service($ensure="present", $service_description=false, $use=false, $servicegroups=false, $passive=false, $ha=false, $sms=true,
-    $warnsms=true, $conf_dir="${::environment}/${::fqdn}", $host_name=$::fqdn, $initial_state=false, $active_checks_enabled=false, $passive_checks_enabled=false,
-    $obsess_over_service=false, $check_freshness=false, $freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false,
-    $process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false,
-    $check_interval=false, $retry_interval=false, $notification_period=false, $notification_options=false, $max_check_attempts=false, $check_command=false,
-    $arguments=false, $register=false, $nrpe=false, $proxy=false, $customer_notify=true, $preventproxyoverride=false, $override_nomonitoring=false) {
+define kbp_icinga::service($ensure="present", $service_description=false, $use=false, $servicegroups=false, $passive=false, $ha=false, $sms=true, $warnsms=true, $conf_dir="${environment}/${fqdn}", $host_name=$fqdn,
+    $initial_state=false, $active_checks_enabled=false, $passive_checks_enabled=false, $obsess_over_service=false, $check_freshness=false, $freshness_threshold=false, $notifications_enabled=false, $event_handler_enabled=false,
+    $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $notification_interval=false, $is_volatile=false, $check_period=false, $check_interval=false,
+    $retry_interval=false, $notification_period=false, $notification_options=false, $max_check_attempts=false, $check_command=false, $arguments=false, $register=false, $nrpe=false, $proxy=false, $customer_notify=true,
+    $preventproxyoverride=false, $override_nomonitoring=false, $address=false) {
   $contacts = $register ? {
     0       => "devnull",
     default => false,
@@ -1395,6 +1394,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
         conf_dir                      => $conf_dir,
         dependent_service_description => $service_description,
         host_name                     => $host_name,
+        address                       => $address,
         service_description           => "NRPE port",
         execution_failure_criteria    => "c",
         notification_failure_criteria => "c";
@@ -1412,6 +1412,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
         0       => undef,
         default => $host_name,
       },
+      address                      => $address,
       initial_state                => $initial_state,
       active_checks_enabled        => $active_checks_enabled,
       passive_checks_enabled       => $passive_checks_enabled,
@@ -1442,13 +1443,14 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
   }
 }
 
-define kbp_icinga::servicedependency($ensure="present", $dependent_service_description, $host_name=$fqdn, $service_description, $conf_dir="${environment}/${fqdn}", $dependent_host_name=$fqdn,
+define kbp_icinga::servicedependency($ensure="present", $dependent_service_description, $host_name=$fqdn, $address=false, $service_description, $conf_dir="${environment}/${fqdn}", $dependent_host_name=$fqdn,
     $execution_failure_criteria=false, $notification_failure_criteria="o") {
   if $::monitoring == 'true' or ($::override_nomonitoring and $::monitoring != 'force_off') {
     gen_icinga::servicedependency { $name:
       ensure                        => $ensure,
       dependent_service_description => $dependent_service_description,
       host_name                     => $host_name,
+      address                       => $address,
       service_description           => $service_description,
       conf_dir                      => $conf_dir,
       dependent_host_name           => $dependent_host_name,
@@ -2016,6 +2018,8 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       true  => $fqdn,
       false => $real_name,
     },
+    # Passing the address to be able to determine to which host the service belongs in the case of multiple hosts with the same name, not used in the actual Icinga config.
+    address              => $address,
     check_command        => $real_check_command,
     max_check_attempts   => $max_check_attempts,
     arguments            => $real_arguments,
