@@ -621,7 +621,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     "check_http":
       arguments     => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20','-N'];
     "check_http_cert":
-      arguments     => ['-I $HOSTADDRESS$', '-C 30,10', '-t 20'];
+      command_name  => "check_http",
+      host_argument => '-I $HOSTADDRESS$',
+      arguments     => ['-C 30,10', '-t 20'];
     "check_http_port_url":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
