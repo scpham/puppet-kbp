@@ -292,25 +292,51 @@ class Servercommand(Resource):
         self.add_param('name', 'command_name', value=name)
         self.add_param('command_line')
 
-resource_types = [Configdir, Servicegroup, Service, Serviceescalation, Servicedependency, Hostgroup, Host, Hostescalation, Contactgroup, Contact, Timeperiod, Servercommand]
+resource_types = [Hostgroup, Host, Hostescalation, Servicegroup, Service, Serviceescalation, Servicedependency, Contactgroup, Contact, Timeperiod, Servercommand, Configdir]
+configdirs = []
+icinga_resources = []
+hosts = {}
 for resource_type in resource_types:
     c.execute("select title, id from resources where restype='%s';" % resource_type.restype)
     resources = c.fetchall()
-    icinga_resources = []
-    hosts = {}
     for resource in resources:
         res = resource_type(resource[0])
         c.execute("select a.name, b.value from param_names as a, param_values as b where b.param_name_id = a.id and b.resource_id = %s", resource[1])
         params = c.fetchall()
-        if resource_type == Host and res.name in hosts:
-            parents = dict(params)['parents']
-            if parents != 'false':
-                hosts[res.name].params['parents']['value'] =  '%s, %s' % (hosts[res.name].params['parents']['value'], parents)
-            continue
+        paramsd = dict(params)
+        if resource_type == Host:
+            if '%s_%s' % (res.name, paramsd['address']) in hosts:
+                res.name = '%s_%s' % (res.name, paramsd['address'])
+            if res.name in hosts:
+                if hosts[res.name].params['address']['value'] == paramsd['address']:
+                    if paramsd['parents'] != 'false':
+                        hosts[res.name].params['parents']['value'] =  '%s, %s' % (hosts[res.name].params['parents']['value'], paramsd['parents'])
+                    continue
+                else:
+                    other_res = hosts.pop(res.name)
+                    other_res.name = '%s_%s' % (other_res.name, other_res.params['address']['value'])
+                    other_res.params['name']['value'] = other_res.name
+                    other_res.params['conf_dir']['value'] = '%s_%s' % (other_res.params['conf_dir']['value'], other_res.params['address']['value'])
+                    hosts[other_res.name] = other_res
+                    res.name = '%s_%s' % (res.name, paramsd['address'])
+                    paramsd['name'] = res.name
+                    paramsd['conf_dir'] = '%s_%s' % (paramsd['conf_dir'], paramsd['address'])
+                    params = paramsd.items()
+            hosts[res.name] = res
+        elif 'host_name' in paramsd and paramsd['host_name'] != 'false' and paramsd['host_name'] not in hosts and 'address' in paramsd and paramsd['address'] != 'false':
+            if resource_type == Configdir:
+                res.name = '%s_%s' % (res.name, paramsd['address'])
+                paramsd['host_name'] = '%s_%s' % (paramsd['host_name'], paramsd['address'])
+            else:
+                paramsd['conf_dir'] = '%s_%s' % (paramsd['conf_dir'], paramsd['address'])
+                paramsd['host_name'] = '%s_%s' % (paramsd['host_name'], paramsd['address'])
+            params = paramsd.items()
         for param in params:
             res.set_param(*param)
-        if resource_type == Host:
-            hosts[res.name] = res
-        icinga_resources.append(res)
-    for res in icinga_resources:
-        res.create()
+        if resource_type == Configdir:
+            configdirs.append(res)
+        else:
+            icinga_resources.append(res)
+icinga_resources = configdirs + icinga_resources
+for res in icinga_resources:
+    res.create()
