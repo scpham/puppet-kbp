@@ -1946,7 +1946,10 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     }
 
     if !defined(Gen_icinga::Configdir[$confdir]) {
-      gen_icinga::configdir { $confdir:; }
+      gen_icinga::configdir { $confdir:
+        host_name => $real_name,
+        address   => $address;
+      }
     }
 
     if !defined(Kbp_icinga::Host[$real_name]) {
