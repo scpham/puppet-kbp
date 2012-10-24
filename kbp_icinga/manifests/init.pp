@@ -2072,7 +2072,10 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
 
     kbp_icinga::servicedependency { "ssl_dependency_${real_name}_cert_vhost":
       dependent_service_description => "${vhost_service_description} cert",
-      host_name                     => $vhost,
+      host_name                     => $vhost ? {
+        true  => $fqdn,
+        false => $real_name,
+      },
       service_description           => $vhost_service_description,
       execution_failure_criteria    => "u,w,c",
       notification_failure_criteria => "u,w,c";
