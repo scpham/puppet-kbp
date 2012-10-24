@@ -622,7 +622,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       arguments     => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20','-N'];
     "check_http_cert":
       command_name  => "check_http",
-      host_argument => '-I $HOSTADDRESS$',
+      host_argument => '-H $ARG1$',
       arguments     => ['-C 30,10', '-t 20'];
     "check_http_port_url":
       command_name  => "check_http",
@@ -2050,6 +2050,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       # Passing the address to be able to determine to which host the service belongs in the case of multiple hosts with the same name, not used in the actual Icinga config.
       address              => $address,
       check_command        => 'check_http_cert',
+      arguments            => $real_name,
       max_check_attempts   => $max_check_attempts,
       ha                   => $ha,
       proxy                => $proxy,
