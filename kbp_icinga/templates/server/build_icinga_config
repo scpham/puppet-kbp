@@ -329,6 +329,9 @@ for resource_type in resource_types:
                 paramsd['host_name'] = '%s_%s' % (paramsd['host_name'], paramsd['address'])
             else:
                 paramsd['conf_dir'] = '%s_%s' % (paramsd['conf_dir'], paramsd['address'])
+                if 'dependent_host_name' in paramsd and paramsd['dependent_host_name'] == paramsd['host_name']:
+                    print paramsd['dependent_host_name']
+                    paramsd['dependent_host_name'] = '%s_%s' % (paramsd['host_name'], paramsd['address'])
                 paramsd['host_name'] = '%s_%s' % (paramsd['host_name'], paramsd['address'])
             params = paramsd.items()
         for param in params:
