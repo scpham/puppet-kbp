@@ -622,12 +622,12 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       arguments     => ['-I $HOSTADDRESS$','-e $ARG1$','-t 20','-N'];
     "check_http_cert":
       command_name  => "check_http",
-      host_argument => '-H $ARG1$',
-      arguments     => ['-C 30,10', '-t 20'];
+      host_argument => '-I $HOSTADDRESS$',
+      arguments     => ['-H $ARG1$', '-C 30,10', '-t 20'];
     "check_http_cert_address":
       command_name  => "check_http",
-      host_argument => '-H $ARG1$',
-      arguments     => ['-I $ARG2$', '-C 30,10', '-t 20'];
+      host_argument => '-I $ARG2$',
+      arguments     => ['-H $ARG1$', '-C 30,10', '-t 20'];
     "check_http_port_url":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
