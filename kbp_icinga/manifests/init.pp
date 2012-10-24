@@ -2016,15 +2016,17 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     $real_arguments     = split("${address}|${arguments_ssl}|${real_statuscode}", '[|]')
   }
 
+  $vhost_service_description  => $service_description ? {
+    false   => $ssl ? {
+      false => "Vhost ${real_name}",
+      true  => "Vhost ${real_name} SSL",
+    },
+    default => $service_description,
+  }
+
   kbp_icinga::service { "vhost_${name}":
     conf_dir             => $confdir,
-    service_description  => $service_description ? {
-      false   => $ssl ? {
-        false => "Vhost ${real_name}",
-        true  => "Vhost ${real_name} SSL",
-      },
-      default => $service_description,
-    },
+    service_description  => $vhost_service_description,
     host_name            => $vhost ? {
       true  => $fqdn,
       false => $real_name,
@@ -2043,10 +2045,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
   if $ssl {
     kbp_icinga::service { "vhost_${name}_cert":
       conf_dir             => $confdir,
-      service_description  => $service_description ? {
-        false   => "Vhost ${real_name} SSL cert",
-        default => "${service_description} cert",
-      },
+      service_description  => "${vhost_service_description} cert",
       host_name            => $vhost ? {
         true  => $fqdn,
         false => $real_name,
@@ -2070,6 +2069,14 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       check_interval       => $check_interval,
       sms                  => false;
     }
+
+    kbp_icinga::servicedependency { "ssl_dependency_${real_name}_cert_vhost":
+      dependent_service_description => "${vhost_service_description} cert",
+      host_name                     => $vhost,
+      service_description           => $vhost_service_description,
+      execution_failure_criteria    => "u,w,c",
+      notification_failure_criteria => "u,w,c";
+    }
   }
 }
 
@@ -2087,7 +2094,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
 #  gen_puppet
 #
 define kbp_icinga::raidcontroller($driver) {
-  kbp_icinga::service { "${name}":
+  kbp_icinga::service { $name:
     service_description => "Raid ${name} ${driver}",
     check_command       => "check_${driver}",
     nrpe                => true,
