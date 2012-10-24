@@ -2016,7 +2016,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     $real_arguments     = split("${address}|${arguments_ssl}|${real_statuscode}", '[|]')
   }
 
-  $vhost_service_description  => $service_description ? {
+  $vhost_service_description = $service_description ? {
     false   => $ssl ? {
       false => "Vhost ${real_name}",
       true  => "Vhost ${real_name} SSL",
