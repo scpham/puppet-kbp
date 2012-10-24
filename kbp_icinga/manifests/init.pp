@@ -624,6 +624,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       command_name  => "check_http",
       host_argument => '-H $ARG1$',
       arguments     => ['-C 30,10', '-t 20'];
+    "check_http_cert_address":
+      command_name  => "check_http",
+      host_argument => '-H $ARG1$',
+      arguments     => ['-I $ARG2$', '-C 30,10', '-t 20'];
     "check_http_port_url":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
@@ -2041,7 +2045,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       conf_dir             => $confdir,
       service_description  => $service_description ? {
         false   => "Vhost ${real_name} SSL cert",
-        default => $service_description,
+        default => "${service_description} cert",
       },
       host_name            => $vhost ? {
         true  => $fqdn,
@@ -2049,32 +2053,23 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       },
       # Passing the address to be able to determine to which host the service belongs in the case of multiple hosts with the same name, not used in the actual Icinga config.
       address              => $address,
-      check_command        => 'check_http_cert',
-      arguments            => $real_name,
+      check_command        => $address ? {
+        '*'     => 'check_http_cert',
+        false   => 'check_http_cert',
+        default => 'check_http_cert_address',
+      },
+      arguments            => $address ? {
+        '*'     => $real_name,
+        false   => $real_name,
+        default => [$real_name, $address],
+      },
       max_check_attempts   => $max_check_attempts,
       ha                   => $ha,
       proxy                => $proxy,
       preventproxyoverride => $preventproxyoverride,
-      check_interval       => $check_interval;
+      check_interval       => $check_interval,
+      sms                  => false;
     }
-  }
-}
-
-# Define: kbp_icinga::sslsite
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-define kbp_icinga::sslsite {
-  kbp_icinga::service { "ssl_site_${name}":
-    service_description => "SSL validity ${name}",
-    check_command       => "check_ssl_cert",
-    arguments           => $name,
-    warnsms             => false;
   }
 }
 
