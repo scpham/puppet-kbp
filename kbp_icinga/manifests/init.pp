@@ -2076,6 +2076,8 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
         true  => $fqdn,
         false => $real_name,
       },
+      # Passing the address to be able to determine to which host the service belongs in the case of multiple hosts with the same name, not used in the actual Icinga config.
+      address                       => $address,
       service_description           => $vhost_service_description,
       execution_failure_criteria    => "u,w,c",
       notification_failure_criteria => "u,w,c";
