@@ -17,8 +17,8 @@ For installation instructions, see readme.txt.
         <property name="name" value="atlassian-jira"/>
         <property name="Name" value="Atlassian JIRA"/>
         <property name="version" value="<%= version %>"/>
-        <property name="buildnumber" value="649"/>
-        <property name="builddate" value="25-07-2011"/>
+        <property name="buildnumber" value="786"/>
+        <property name="builddate" value="09-10-2012"/>
 
         <!-- system properties -->
         <property name="slash" value="${file.separator}"/>
@@ -80,13 +80,11 @@ For installation instructions, see readme.txt.
         <!-- Tomcat-specific .war -->
         <jar jarfile="${dist-tomcat}/${name}-${version}.war">
             <fileset dir="${build.war}">
-                <exclude name="WEB-INF/lib/commons-logging*.jar"/>
             </fileset>
         </jar>
         <!-- Tomcat-6-specific .war -->
         <jar jarfile="${dist-tomcat}/tomcat-6/${name}-${version}.war">
             <fileset dir="${build.war}">
-                <exclude name="WEB-INF/lib/commons-logging*.jar"/>
                 <exclude name="WEB-INF/lib/log4j-*.jar"/>
             </fileset>
         </jar>
