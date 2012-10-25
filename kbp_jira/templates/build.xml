@@ -86,8 +86,8 @@ For installation instructions, see readme.txt.
         <!-- Tomcat-6-specific .war -->
         <jar jarfile="${dist-tomcat}/tomcat-6/${name}-${version}.war">
             <fileset dir="${build.war}">
-<!--                <exclude name="WEB-INF/lib/commons-logging*.jar"/>
-                <exclude name="WEB-INF/lib/log4j-*.jar"/> -->
+                <exclude name="WEB-INF/lib/commons-logging*.jar"/>
+                <exclude name="WEB-INF/lib/log4j-*.jar"/>
             </fileset>
         </jar>
         <!-- While we're at it, generate correct Tomcat/Resin config files -->
