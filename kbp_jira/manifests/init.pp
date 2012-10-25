@@ -10,6 +10,7 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
   include kbp_tomcat::mysql
   include gen_base::ant
   include gen_base::unzip
+  include kbp_mysql::client::java
 
   # Create the directories needed for jira
   file {
