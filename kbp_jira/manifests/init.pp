@@ -60,7 +60,7 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
 
   exec {
     "Get JIRA":
-      command     => "/usr/local/bin/get_jira ${root} ${version}",
+      command     => "/usr/local/bin/get_jira ${root} ${version}; rm -f /var/tmp/got-extra-jira-jars",
       unless      => "/usr/bin/test -f ${root}/source/DOWNLOADED_${version}",
       require     => File["/usr/local/bin/get_jira", $root];
     "Build JIRA WAR":
@@ -69,8 +69,8 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
       notify      => Service["tomcat6"],
       require     => [File["/usr/local/bin/build_war"], Package["ant"]];
     "Get extra JIRA jars":
-      command     => "/usr/bin/wget -O ${root}/source/jira-jars-tomcat-distribution-${version}-tomcat-6x.zip -q \"http://www.atlassian.com/software/jira/downloads/binary/jira-jars-tomcat-distribution-${version}-tomcat-6x.zip\" && unzip -o ${root}/source/jira-jars-tomcat-distribution-${version}-tomcat-6x.zip -d ${root}/source/atlassian_jira/edit-webapp/WEB-INF/lib;",
-      unless      => "/usr/bin/test -f ${root}/source/atlassian_jira/edit-webapp/WEB-INF/lib/commons-logging-1.1.1.jar",
+      command     => "/usr/bin/wget -O ${root}/source/jira-jars-tomcat-distribution-${version}-tomcat-6x.zip -q \"http://www.atlassian.com/software/jira/downloads/binary/jira-jars-tomcat-distribution-${version}-tomcat-6x.zip\" && unzip -o ${root}/source/jira-jars-tomcat-distribution-${version}-tomcat-6x.zip -d ${root}/source/atlassian_jira/edit-webapp/WEB-INF/lib; touch /var/tmp/got-extra-jira-jars",
+      unless      => "/usr/bin/test -f /var/tmp/got-extra-jira-jars",
       notify      => Exec["Build JIRA WAR"],
       require     => [File["${root}/source/atlassian_jira/edit-webapp/WEB-INF/lib"], Package["unzip"]];
   }
