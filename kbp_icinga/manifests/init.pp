@@ -2043,34 +2043,34 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
   }
 
   if $ssl {
-    if !defined(Kbp_icinga::Service["vhost_${name}_cert"]) {
-      kbp_icinga::service { "vhost_${name}_cert":
-        conf_dir             => $confdir,
-        service_description  => "${vhost_service_description} cert",
-        host_name            => $vhost ? {
-          true  => $fqdn,
-          false => $real_name,
-        },
-        # Passing the address to be able to determine to which host the service belongs in the case of multiple hosts with the same name, not used in the actual Icinga config.
-        address              => $address,
-        check_command        => $address ? {
-          '*'     => 'check_http_cert',
-          false   => 'check_http_cert',
-          default => 'check_http_cert_address',
-        },
-        arguments            => $address ? {
-          '*'     => $real_name,
-          false   => $real_name,
-          default => [$real_name, $address],
-        },
-        max_check_attempts   => $max_check_attempts,
-        ha                   => $ha,
-        proxy                => $proxy,
-        preventproxyoverride => $preventproxyoverride,
-        check_interval       => $check_interval,
-        sms                  => false;
-      }
+    kbp_icinga::service { "vhost_${name}_cert":
+      conf_dir             => $confdir,
+      service_description  => "${vhost_service_description} cert",
+      host_name            => $vhost ? {
+        true  => $fqdn,
+        false => $real_name,
+      },
+      # Passing the address to be able to determine to which host the service belongs in the case of multiple hosts with the same name, not used in the actual Icinga config.
+      address              => $address,
+      check_command        => $address ? {
+        '*'     => 'check_http_cert',
+        false   => 'check_http_cert',
+        default => 'check_http_cert_address',
+      },
+      arguments            => $address ? {
+        '*'     => $real_name,
+        false   => $real_name,
+        default => [$real_name, $address],
+      },
+      max_check_attempts   => $max_check_attempts,
+      ha                   => $ha,
+      proxy                => $proxy,
+      preventproxyoverride => $preventproxyoverride,
+      check_interval       => $check_interval,
+      sms                  => false;
+    }
 
+    if !defined(Kbp_icinga::Servicedependency["ssl_dependency_${real_name}_cert_vhost"]) {
       kbp_icinga::servicedependency { "ssl_dependency_${real_name}_cert_vhost":
         conf_dir                      => $confdir,
         dependent_service_description => "${vhost_service_description} cert",
