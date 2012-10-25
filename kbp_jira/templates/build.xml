@@ -16,7 +16,7 @@ For installation instructions, see readme.txt.
         <!-- project properties -->
         <property name="name" value="atlassian-jira"/>
         <property name="Name" value="Atlassian JIRA"/>
-        <property name="version" value="4.4"/>
+        <property name="version" value="<%= version %>"/>
         <property name="buildnumber" value="649"/>
         <property name="builddate" value="25-07-2011"/>
 
