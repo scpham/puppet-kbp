@@ -1,7 +1,7 @@
 # The ITM Jira server is deployed on blade-308. It's IP is added to DNS as jira.nl.informatm.com
 # TODO Create define for JIRA plugins. They should be downloaded, added to the lib/ or WEB-INF dir in ${root}/source/atlassian-jira directory and the WAR should be rebuild and redeployed
 
-class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_password, $db_server="localhost", $domain=$fqdn, $max_check_attempts="5") {
+class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_password, $db_server="localhost", $domain=$fqdn, $max_check_attempts="5", $urlpath="jira") {
   $root="/srv/jira"
   class { "kbp_tomcat":
     java_opts   => "-Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dmail.mime.decodeparameters=true",
@@ -78,7 +78,7 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
 
   kbp_tomcat::webapp { "jira":
     war                 => "${root}/source/atlassian_jira/dist-tomcat/tomcat-6/atlassian-jira-${version}.war",
-    urlpath             => "jira",
+    urlpath             => $urlpath,
     root_app            => true,
     additional_context_settings => {'debug' => '0', 'useHttpOnly' => 'true'},
   }
@@ -108,7 +108,7 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
   kbp_tomcat::apache_proxy_ajp_site { $domain:
     port                       => 8009,
     monitor_max_check_attempts => $max_check_attempts,
-    monitor_path               => "/jira/secure/Dashboard.jspa";
+    monitor_path               => "/${urlpath}/secure/Dashboard.jspa";
   }
 
   mysql::server::db { "${db_name}":
