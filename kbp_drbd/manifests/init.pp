@@ -84,6 +84,6 @@ define kbp_drbd($location, $mastermaster=true, $time_out=false, $connect_int=fal
     dport    => 7789,
     action   => "ACCEPT",
     exported => true,
-    tag      => "ferm_drbd_${environment}_${name}";
+    ferm_tag => "ferm_drbd_${environment}_${name}";
   }
 }
