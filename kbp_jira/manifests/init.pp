@@ -1,11 +1,11 @@
 # The ITM Jira server is deployed on blade-308. It's IP is added to DNS as jira.nl.informatm.com
 # TODO Create define for JIRA plugins. They should be downloaded, added to the lib/ or WEB-INF dir in ${root}/source/atlassian-jira directory and the WAR should be rebuild and redeployed
 
-class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_password, $db_server="localhost", $domain=$fqdn, $max_check_attempts="5", $urlpath="jira") {
+class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_password, $db_server="localhost", $domain=$fqdn, $max_check_attempts="5", $urlpath="jira", $jvm_max_mem="1024") {
   $root="/srv/jira"
   class { "kbp_tomcat":
     java_opts   => "-Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dmail.mime.decodeparameters=true",
-    jvm_max_mem => "512";
+    jvm_max_mem => $jvm_max_mem;
   }
   include kbp_tomcat::mysql
   include gen_base::ant
