@@ -13,13 +13,14 @@
 #  Undocumented
 #  gen_puppet
 #
-define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024,vers=3", $export_options="rw,sync,no_subtree_check", $serverpath=false, $nfs_tag = "nfs_${environment}", $ferm_saddr = $fqdn, $nfs_client = $fqdn) {
+define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024,vers=3", $export_options="rw,sync,no_subtree_check", $serverpath=false, $nfs_tag="default", $ferm_saddr=$fqdn, $nfs_client=$fqdn) {
   include kbp_trending::nfs
 
   $real_serverpath = $serverpath ? {
     false   => $name,
     default => $serverpath,
   }
+  $real_tag = "nfs_${environment}_${dcenv}_${nfs_tag}"
 
   # This will probably end up opening the same ports for the same hosts multiple times on the
   # server if you have several mounts, but that's not a problem.
@@ -28,7 +29,7 @@ define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024,ver
     saddr    => $ferm_saddr,
     proto    => "(tcp udp)",
     action   => "ACCEPT",
-    ferm_tag => $nfs_tag;
+    ferm_tag => $real_tag;
   }
 
   kbp_icinga::nfs::client { $name:; }
@@ -46,7 +47,7 @@ define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024,ver
     location => $real_serverpath,
     options  => $export_options,
     client   => $nfs_client,
-    tag      => $nfs_tag;
+    tag      => $real_tag;
   }
 }
 
