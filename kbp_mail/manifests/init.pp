@@ -32,28 +32,35 @@
 #
 define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=false, $mydestination=false, $accept_incoming=false, $myhostname=false, $mynetworks=false,
     $always_bcc=false, $mode=false, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false, $relay_domains=false, $mydomain=$domain,
-    $postmaster=false) {
+    $postmaster=false, $monitor_username=false, $monitor_password=false) {
   if $mode == 'primary' or $mode == 'secondary' or $mode == 'dovecot' {
     include gen_postgrey
 
     if $mode == 'primary' or $mode == 'dovecot' {
       if ! $certs {
-        fail('When using primary mode for kbp_mail, $certs must be set as dovecot and postfix need it.')
+        fail('When using primary or dovecot mode for kbp_mail, $certs must be set as dovecot and postfix need it.')
       }
-
       if ! $postmaster {
-        fail('When using primary mode for kbp_mail, $postmaster must be set as dovecot needs it.')
+        fail('When using primary or dovecot mode for kbp_mail, $postmaster must be set as dovecot needs it.')
+      }
+      if ! $monitor_username {
+        fail('When using primary or dovecot mode for kbp_mail, $monitor_username must be set as dovecot needs it.')
+      }
+      if ! $monitor_password {
+        fail('When using primary or dovecot mode for kbp_mail, $monitor_password must be set as dovecot needs it.')
       }
 
       include kbp_amavis
       class { 'kbp_dovecot::imap':
-        certs       => $certs,
-        deploycerts => $deploycerts,
-        postmaster  => $postmaster,
-        mysql_user  => $mysql_user,
-        mysql_pass  => $mysql_pass,
-        mysql_db    => $mysql_db,
-        mysql_host  => $mysql_host;
+        certs            => $certs,
+        deploycerts      => $deploycerts,
+        postmaster       => $postmaster,
+        mysql_user       => $mysql_user,
+        mysql_pass       => $mysql_pass,
+        mysql_db         => $mysql_db,
+        mysql_host       => $mysql_host,
+        monitor_username => $monitor_username,
+        monitor_password => $monitor_password;
       }
     }
   }
