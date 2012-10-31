@@ -9,9 +9,10 @@
 #  Undocumented
 #  gen_puppet
 #
-class kbp_dovecot::imap($certs, $deploycerts=true, $postmaster, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false) {
-  $key_name = regsubst($certs,'^(.*)/(.*)$','\2')
+class kbp_dovecot::imap($monitor_username, $monitor_password, $certs, $deploycerts=true, $postmaster, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false) {
   include gen_dovecot::imap
+
+  $key_name = regsubst($certs,'^(.*)/(.*)$','\2')
 
   file {
     "/srv/mail":
@@ -47,5 +48,15 @@ class kbp_dovecot::imap($certs, $deploycerts=true, $postmaster, $mysql_user=fals
       proto  => "tcp",
       dport  => "(143 993)",
       action => "ACCEPT";
+  }
+
+  kbp_icinga::service {
+    "${servername} IMAPS":
+      service_description => "IMAPS",
+      check_command       => "check_imaps";
+    "${servername} IMAP login":
+      service_description => "IMAP login",
+      check_command       => "check_imap_login",
+      arguments           => [$monitor_username, $monitor_password];
   }
 }
