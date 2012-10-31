@@ -18,3 +18,16 @@ class kbp_php5_xdebug {
     "html_errors":          value => "On";
   }
 }
+
+class kbp_php5_xdebug::disable {
+  package { "php5-xdebug":
+    notify => Exec["reload-apache2"],
+    ensure => absent;
+  }
+
+  gen_php5::common::config {
+    "zend_extension":       ensure => absent;
+    "xdebug.remote_enable": ensure => absent;
+    "html_errors":          ensure => absent;
+  }
+}
