@@ -1,5 +1,11 @@
 define kbp_mediawiki::site($basepath="/srv/www") {
   gen_mediawiki::site { "${basepath}/${name}":; }
+
+  file { "/etc/apache2/conf.d/mediawiki.conf":
+    ensure  => link,
+    target  => "/etc/mediawiki/apache.conf",
+    require => Package["mediawiki"],
+  }
 }
 
 define kbp_mediawiki::extension($site, $basepath="/srv/www", $extrapath="base/", $linkname=$name) {
