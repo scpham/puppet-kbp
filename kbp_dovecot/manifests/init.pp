@@ -53,10 +53,12 @@ class kbp_dovecot::imap($monitor_username, $monitor_password, $certs, $deploycer
   kbp_icinga::service {
     "${servername} IMAPS":
       service_description => "IMAPS",
-      check_command       => "check_imaps";
+      check_command       => "check_imaps",
+      check_interval      => 300;
     "${servername} IMAP login":
       service_description => "IMAP login",
       check_command       => "check_imap_login",
-      arguments           => [$monitor_username, $monitor_password];
+      arguments           => [$monitor_username, $monitor_password],
+      check_interval      => 300;
   }
 }
