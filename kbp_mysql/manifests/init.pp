@@ -4,7 +4,7 @@
 #  mysql_name         The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
 #  slow_query_time    See kbp_mysql::server
 #
-class kbp_mysql::mastermaster($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10) {
+class kbp_mysql::mastermaster($mysql_name, $repl_password, $repl_user='repl', $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10) {
   class { "kbp_mysql::master":
     mysql_name      => $mysql_name,
     bind_address    => $bind_address,
@@ -18,7 +18,9 @@ class kbp_mysql::mastermaster($mysql_name, $bind_address="0.0.0.0", $setup_backu
     mastermaster    => true,
     monitoring_ha   => $monitoring_ha_slaving,
     datadir         => $datadir,
-    slow_query_time => $slow_query_time;
+    slow_query_time => $slow_query_time,
+    repl_user       => $repl_user,
+    repl_password   => $repl_password;
   }
 }
 
@@ -56,7 +58,7 @@ class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$source_ipaddress, $datadir=false, $repl_user='repl', $repl_password='etohsh8xahNu', $repl_require_ssl=false, $slow_query_time=10) {
+class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$source_ipaddress, $datadir=false, $repl_user='repl', $repl_password, $repl_require_ssl=false, $slow_query_time=10) {
   if ! $mastermaster {
     class { "kbp_mysql::server":
       mysql_name      => $mysql_name,
