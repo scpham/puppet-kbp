@@ -12,4 +12,6 @@ require valid-user
 <Location /static/>
 Order allow,deny
 Allow from all
+Satisfy Any
+AuthType None
 </Location>
