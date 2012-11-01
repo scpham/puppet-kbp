@@ -1,9 +1,3 @@
-define kbp_ssl::wildcard {
-  $key_name = regsubst($name,'^(.*)/(.*)$','\2')
-
-  kbp_ssl::keys { $name:; }
-}
-
 define kbp_ssl::keys($owner = 'root') {
   $key_name = regsubst($name,'^(.*)/(.*)$','\2')
 
@@ -31,14 +25,11 @@ define kbp_ssl::public_key($content=false, $key_location=false, $owner = 'root')
   kbp_icinga::sslcert { $name:; }
 }
 
-define kbp_ssl::private_key($content=false, $key_location=false, $owner = 'root') {
+define kbp_ssl::private_key($key_location=false, $owner = 'root') {
   file { "/etc/ssl/private/${name}.key":
-    content => $content ? {
-      false   => template($key_location),
-      default => $content,
-    },
-    owner   => $owner,
-    mode    => 400;
+    source => "puppet:///modules/${key_location}",
+    owner  => $owner,
+    mode   => 400;
   }
 }
 

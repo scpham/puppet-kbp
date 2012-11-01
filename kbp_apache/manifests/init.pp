@@ -15,10 +15,10 @@ class kbp_apache {
 
   # Needed for /server-status (munin) when using NameVirtualHosts
   kbp_apache::site { 'localhost':
-    address             => '127.0.0.255',
-    address6            => '::1',
-    documentroot        => '/var/www',
-    monitor             => false;
+    address      => '127.0.0.255',
+    address6     => '::1',
+    documentroot => '/var/www',
+    monitor      => false;
   }
 
   file {
