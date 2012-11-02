@@ -18,7 +18,7 @@ class kbp_ssl::intermediate::verisign {
   kbp_ssl::intermediate { 'verisign':; }
 }
 
-class kbp_ssl::intermediate::verisign {
+class kbp_ssl::intermediate::kumina {
   kbp_ssl::intermediate { 'kumina':; }
 }
 
