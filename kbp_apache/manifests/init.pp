@@ -206,36 +206,6 @@ class kbp_apache::module::cgid {
   kbp_apache::module { "cgid":; }
 }
 
-class kbp_apache::intermediate::rapidssl {
-  kbp_ssl::intermediate { "rapidssl":
-    notify  => Exec["reload-apache2"];
-  }
-}
-
-class kbp_apache::intermediate::terena {
-  kbp_ssl::intermediate { 'terena':
-    notify  => Exec["reload-apache2"];
-  }
-}
-
-class kbp_apache::intermediate::positivessl {
-  kbp_ssl::intermediate { 'positivessl':
-    notify  => Exec["reload-apache2"];
-  }
-}
-
-class kbp_apache::intermediate::thawte {
-  kbp_ssl::intermediate { "thawte":
-    notify  => Exec["reload-apache2"];
-  }
-}
-
-class kbp_apache::intermediate::verisign {
-  kbp_ssl::intermediate { "verisign":
-    notify  => Exec["reload-apache2"];
-  }
-}
-
 class kbp_apache::glassfish_domain_base {
   include kbp_apache::module::jk
 
@@ -313,6 +283,17 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
 
   if $key or $cert or $intermediate or $wildcard or $ssl {
     include kbp_apache::ssl
+    if $intermediate {
+      include "kbp_ssl::intermediate::${intermediate}"
+    }
+    $real_intermediate = $intermediate ? {
+      false         => false,
+      'positivessl' => 'PositiveSSLCA.pem',
+      'rapidssl'    => 'RapidSSL_CA_bundle.pem',
+      'terena'      => 'TerenaCA.pem',
+      'thawte'      => 'Thawte_SSL_CA.pem',
+      'verisign'    => 'Verisign_SSL_CA.pem',
+    }
 
     $real_ssl = true
 
@@ -346,7 +327,7 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
     ssl              => $ssl,
     key              => $key,
     cert             => $cert,
-    intermediate     => $intermediate,
+    intermediate     => $real_intermediate,
     wildcard         => $wildcard;
   }
 

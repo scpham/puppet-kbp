@@ -1,3 +1,23 @@
+class kbp_ssl::intermediate::rapidssl {
+  kbp_ssl::intermediate { "rapidssl":; }
+}
+
+class kbp_ssl::intermediate::terena {
+  kbp_ssl::intermediate { 'terena':; }
+}
+
+class kbp_ssl::intermediate::positivessl {
+  kbp_ssl::intermediate { 'positivessl':; }
+}
+
+class kbp_ssl::intermediate::thawte {
+  kbp_ssl::intermediate { "thawte":; }
+}
+
+class kbp_ssl::intermediate::verisign {
+  kbp_ssl::intermediate { "verisign":; }
+}
+
 define kbp_ssl::keys($owner = 'root') {
   $key_name = regsubst($name,'^(.*)/(.*)$','\2')
 
@@ -12,7 +32,7 @@ define kbp_ssl::keys($owner = 'root') {
   }
 }
 
-define kbp_ssl::public_key($content=false, $key_location=false, $owner = 'root') {
+define kbp_ssl::public_key($content=false, $key_location=false, $owner='root') {
   file { "/etc/ssl/certs/${name}.pem":
     content => $content ? {
       false   => template($key_location),
@@ -25,7 +45,7 @@ define kbp_ssl::public_key($content=false, $key_location=false, $owner = 'root')
   kbp_icinga::sslcert { $name:; }
 }
 
-define kbp_ssl::private_key($key_location=false, $owner = 'root') {
+define kbp_ssl::private_key($key_location=false, $owner='root') {
   file { "/etc/ssl/private/${name}.key":
     source => "puppet:///modules/${key_location}",
     owner  => $owner,
@@ -44,9 +64,7 @@ define kbp_ssl::intermediate {
     default       => fail("${name} is not a known intermediate."),
   }
 
-  if !defined(Kbp_ssl::Public_key[$realname]) {
-    kbp_ssl::public_key { $realname:
-      content => template("kbp_ssl/${realname}.pem");
-    }
+  kbp_ssl::public_key { $realname:
+    key_location => "kbp_ssl/${realname}.pem";
   }
 }
