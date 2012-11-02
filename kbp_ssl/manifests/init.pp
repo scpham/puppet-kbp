@@ -1,5 +1,5 @@
 class kbp_ssl::intermediate::rapidssl {
-  kbp_ssl::intermediate { "rapidssl":; }
+  kbp_ssl::intermediate { 'rapidssl':; }
 }
 
 class kbp_ssl::intermediate::terena {
@@ -11,11 +11,15 @@ class kbp_ssl::intermediate::positivessl {
 }
 
 class kbp_ssl::intermediate::thawte {
-  kbp_ssl::intermediate { "thawte":; }
+  kbp_ssl::intermediate { 'thawte':; }
 }
 
 class kbp_ssl::intermediate::verisign {
-  kbp_ssl::intermediate { "verisign":; }
+  kbp_ssl::intermediate { 'verisign':; }
+}
+
+class kbp_ssl::intermediate::verisign {
+  kbp_ssl::intermediate { 'kumina':; }
 }
 
 define kbp_ssl::keys($owner = 'root') {
