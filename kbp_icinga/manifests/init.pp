@@ -199,7 +199,7 @@ class kbp_icinga::client {
     "puppet_nomonitoring":
       service_description   => "Nomonitoring exists",
       check_command         => "check_nomonitoring",
-      arguments             => ["/etc/puppet/nomonitoring"],
+      arguments             => "/etc/puppet/nomonitoring",
       nrpe                  => true,
       sms                   => false,
       customer_notify       => false,
@@ -217,6 +217,14 @@ class kbp_icinga::client {
       nrpe                => true,
       sms                 => false,
       customer_notify     => false;
+    "cron_status":
+      service_description => "Cron status",
+      check_command       => "check_proc_status",
+      arguments           => 'cron',
+      check_interval      => 1800,
+      nrpe                => true,
+      sms                 => false,
+      customer_notify     => false;
     "ssh":
       service_description => "SSH connectivity",
       check_command       => "check_ssh";
@@ -228,7 +236,7 @@ class kbp_icinga::client {
     "puppet_dontrun":
       service_description => "Puppet dontrun",
       check_command       => "check_puppet_dontrun",
-      arguments           => ["/etc/puppet/dontrunpuppetd"],
+      arguments           => "/etc/puppet/dontrunpuppetd",
       nrpe                => true,
       sms                 => false,
       customer_notify     => false;
