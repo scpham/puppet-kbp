@@ -13,11 +13,16 @@ class kbp_puppet {
   include gen_puppet
 
   # We backport the squeeze-backports versions to lenny-kumina
+  # The default wheezy packages are new enough
   gen_apt::preference { ["puppet","puppet-common","facter"]:
-    repo => $lsbdistcodename ? {
-      "lenny"   => "lenny-kumina",
-      "squeeze" => "squeeze-backports",
-      default   => $lsbdistcodename,
+    repo   => $lsbdistcodename ? {
+      "lenny"           => "lenny-kumina",
+      "squeeze"         => "squeeze-backports",
+      default           => $lsbdistcodename,
+    },
+    ensure => $lsbdistcodename ? {
+      /(lenny|squeeze)/ => present,
+      default           => absent,
     };
   }
 
