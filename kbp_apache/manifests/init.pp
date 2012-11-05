@@ -286,14 +286,6 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
     if $intermediate {
       include "kbp_ssl::intermediate::${intermediate}"
     }
-    $real_intermediate = $intermediate ? {
-      false         => false,
-      'positivessl' => 'PositiveSSLCA.pem',
-      'rapidssl'    => 'RapidSSL_CA_bundle.pem',
-      'terena'      => 'TerenaCA.pem',
-      'thawte'      => 'Thawte_SSL_CA.pem',
-      'verisign'    => 'Verisign_SSL_CA.pem',
-    }
 
     $real_ssl = true
 
@@ -311,6 +303,14 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
       true  => 443,
     },
     default => $port,
+  }
+  $real_intermediate = $intermediate ? {
+    false         => false,
+    'positivessl' => 'PositiveSSLCA.pem',
+    'rapidssl'    => 'RapidSSL_CA_bundle.pem',
+    'terena'      => 'TerenaCA.pem',
+    'thawte'      => 'Thawte_SSL_CA.pem',
+    'verisign'    => 'Verisign_SSL_CA.pem',
   }
   $full_name   = regsubst($name, '^([^_]*)$', "\1_${real_port}")
   $dontmonitor = ["default","default-ssl","localhost"]
