@@ -2253,7 +2253,7 @@ class kbp_icinga::tomcat ($monitoring_password) {
   include gen_base::libwww-perl
 
   kbp_icinga::service { "tomcat_status":
-    service_description => 'Status of the tomcat service',
+    service_description => 'Tomcat status',
     check_command       => 'check_tomcat',
     arguments           => $monitoring_password;
   }
@@ -2267,9 +2267,16 @@ class kbp_icinga::tomcat ($monitoring_password) {
 #
 define kbp_icinga::tomcat::application ($monitoring_password) {
    kbp_icinga::service { "tomcat_app_${name}_status":
-    service_description => "Status of the tomcat application ${name}",
+    service_description => "Tomcat app ${name} status",
     check_command       => 'check_tomcat_application',
     arguments           => [$monitoring_password, $name];
+  }
+
+  kbp_icinga::servicedependency { "tomcat_dependency_app_${name}_on_status":
+    dependent_service_description => "Tomcat app ${name} status",
+    service_description           => 'Tomcat status',
+    execution_failure_criteria    => "w,c,u",
+    notification_failure_criteria => "w,c,u";
   }
 }
 
