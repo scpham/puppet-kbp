@@ -15,7 +15,7 @@ class kbp_time {
     'lenny' : {
       include openntpd::common
     }
-    'squeeze' : {
+    default : {
       include ntp
       include kbp_trending::ntpd
     }
