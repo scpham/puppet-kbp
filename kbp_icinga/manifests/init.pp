@@ -217,14 +217,6 @@ class kbp_icinga::client {
       nrpe                => true,
       sms                 => false,
       customer_notify     => false;
-    "cron_status":
-      service_description => "Cron status",
-      check_command       => "check_proc_status",
-      arguments           => 'cron',
-      check_interval      => 1800,
-      nrpe                => true,
-      sms                 => false,
-      customer_notify     => false;
     "ssh":
       service_description => "SSH connectivity",
       check_command       => "check_ssh";
@@ -295,6 +287,17 @@ class kbp_icinga::client {
       nrpe                => true,
       sms                 => false,
       customer_notify     => false;
+  }
+  if $lsbdistrelease != 'lenny' {
+    kbp_icinga::service { 'cron_status':
+      service_description => 'Cron status',
+      check_command       => 'check_proc_status',
+      arguments           => 'cron',
+      check_interval      => 1800,
+      nrpe                => true,
+      sms                 => false,
+      customer_notify     => false;
+    }
   }
 
   kbp_icinga::servicedependency { "puppet_dependency_freshness_dontrun":
