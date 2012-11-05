@@ -16,7 +16,17 @@ class kbp_kvm {
 
   if $lsbdistcodename != 'lenny' {
     include gen_base::qemu_utils
+  }
+
+  if $lsbdistcodename == 'squeeze' {
     gen_apt::preference { "qemu-utils":; }
+  }
+
+  # remove backports preference when upgraded to wheezy
+  if $lsbdistcodename == 'wheezy' {
+    gen_apt::preference { "qemu-utils":
+      ensure => absent;
+    }
   }
 
   # Enable KSM
