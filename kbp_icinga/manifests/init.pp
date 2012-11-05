@@ -288,7 +288,7 @@ class kbp_icinga::client {
       sms                 => false,
       customer_notify     => false;
   }
-  if $lsbdistrelease != 'lenny' {
+  if $lsbdistcodename != 'lenny' {
     kbp_icinga::service { 'cron_status':
       service_description => 'Cron status',
       check_command       => 'check_proc_status',
