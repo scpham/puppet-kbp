@@ -310,7 +310,7 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
     'rapidssl'    => 'RapidSSL_CA_bundle.pem',
     'terena'      => 'TerenaCA.pem',
     'thawte'      => 'Thawte_SSL_CA.pem',
-    'verisign'    => 'Verisign_SSL_CA.pem',
+    'verisign'    => 'verisign_bundle.pem',
   }
   $full_name   = regsubst($name, '^([^_]*)$', "\1_${real_port}")
   $dontmonitor = ["default","default-ssl","localhost"]
