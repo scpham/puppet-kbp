@@ -10,6 +10,8 @@
 #  gen_puppet
 #
 define kbp_libvirt ($on_crash="destroy", $on_reboot="restart") {
+  include kbp_icinga::libvirtd
+
   class { "libvirt":
     on_crash  => $on_crash,
     on_reboot => $on_reboot;

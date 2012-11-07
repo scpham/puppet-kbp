@@ -87,6 +87,9 @@ class kbp_icinga::client {
     "check_ksplice":
       command   => "check_uptrack_local",
       arguments => "-w i -c o";
+    "check_libvirtd":
+      command   => "check_procs",
+      arguments => "-c 1: -C libvirtd";
     "check_loadtrend":
       arguments => "-m 1.5 -c 5 -w 2.5";
     "check_local_smtp":
@@ -597,7 +600,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   kbp_icinga::servercommand {
     ["check_ssh","check_smtp"]:;
     ["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd",
-     "check_pacemaker","check_mysql","check_mysql_connlimit","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp",
+     "check_pacemaker","check_mysql","check_mysql_connlimit","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_libvirtd",
      "check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_failures",'check_megaraid_sas',"check_nullmailer","check_passenger_queue","check_mcollective","check_backup_status",
      'check_unbound', 'check_activemq', 'check_lsimpt','check_doublemount']:
       nrpe          => true;
@@ -1148,6 +1151,23 @@ class kbp_icinga::ksplice {
     nrpe                => true,
     sms                 => false,
     customer_notify     => false;
+  }
+}
+
+# Class: kbp_icinga::libvirtd
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_icinga::libvirtd {
+  kbp_icinga::service { "libvirtd":
+    service_description => "libvirt-bin service",
+    check_command       => "check_libvirtd",
+    nrpe                => true;
   }
 }
 
