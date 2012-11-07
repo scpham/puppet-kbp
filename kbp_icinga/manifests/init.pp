@@ -831,7 +831,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       process_perf_data            => 1,
       notification_interval        => 600,
       check_period                 => "24x7",
-      check_interval               => 30,
+      check_interval               => 60,
       retry_interval               => 10,
       max_check_attempts           => 3,
       notification_options         => "w,u,c,r",
