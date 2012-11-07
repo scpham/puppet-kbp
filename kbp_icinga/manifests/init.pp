@@ -726,7 +726,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       arguments     => ['$ARG1$'],
       nrpe          => true;
     'check_imap_login':
-      arguments     => ['-u $ARG1$', '-p $ARG2'];
+      arguments     => ['-u $ARG1$', '-p $ARG2$'];
     "check_mbean_value":
       arguments     => ['$ARG1$','$ARG2$','$ARG3$','$ARG4$'],
       nrpe          => true;
