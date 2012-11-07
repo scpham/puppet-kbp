@@ -1,6 +1,6 @@
 # Author: Kumina bv <support@kumina.nl>
 
-# Class: kbp_drbd
+# Define: kbp_drbd
 #
 # Parameters:
 #  otherhost
@@ -42,18 +42,22 @@ define kbp_drbd($location, $mastermaster=true, $time_out=false, $connect_int=fal
       "${location}/.monitoring":
         content => "DRBD_mount_ok",
         require => Mount[$location];
-      '/etc/init.d/mount_ocfs2':
-        content => template('kbp_drbd/mount_ocfs2'),
-        mode    => 755,
-        notify  => Exec['setup mount ocfs2 script'];
+      "/etc/insserv/overrides/ocfs2":
+        notify  => Exec["reload insserv for ocfs2"],
+        content => '# Required-Start: $local_fs $network o2cb drbd';
     }
 
-    exec { 'setup mount ocfs2 script':
-      command     => '/sbin/insserv -d mount_ocfs2',
-      refreshonly => true;
+    exec { "reload insserv for ocfs2":
+      command     => "/sbin/insserv ocfs2",
+      refreshonly => true,
     }
 
     kbp_icinga::drbd { $location:; }
+
+    # Used to remove clutchy hack, remove after 2012-11-10
+    file { "/etc/init.d/mount_ocfs2":
+      ensure => absent;
+    }
   }
 
   gen_drbd { $name:
