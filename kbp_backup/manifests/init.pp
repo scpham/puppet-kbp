@@ -25,7 +25,7 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
 
   case $real_method {
     "absent": {
-      package { ["offsite-backup","localbackup"]:
+      package { ["offsite-backup","localbackup","backup-scripts"]:
         ensure => purged;
       }
     }
