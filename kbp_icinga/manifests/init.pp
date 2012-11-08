@@ -73,7 +73,7 @@ class kbp_icinga::client {
       command   => 'check_http',
       arguments => ['-I 127.0.0.1 -p $ARG1$ -u $ARG2$ -e $ARG3$ -t 20'];
     'check_http_port_url_autostart':
-      command   => 'check_http',
+      command   => 'check_http_port_url_autostart',
       arguments => ['$ARG1$ $ARG2$ $ARG3$ $ARG4$'];
     "check_icinga_config":
       sudo      => true,
