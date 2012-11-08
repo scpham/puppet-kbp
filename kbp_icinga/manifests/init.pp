@@ -72,6 +72,9 @@ class kbp_icinga::client {
     'check_http_port_url':
       command   => 'check_http',
       arguments => ['-I 127.0.0.1 -p $ARG1$ -u $ARG2$ -e $ARG3$ -t 20'];
+    'check_http_port_url_autostart':
+      command   => 'check_http',
+      arguments => ['$ARG1$ $ARG2$ $ARG3$ $ARG4$'];
     "check_icinga_config":
       sudo      => true,
       arguments => '$ARG1$';
@@ -646,6 +649,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
       arguments     => ['-p $ARG1$','-u $ARG2$','-e $ARG3$','-t 20','-N'];
+    "check_http_port_url_autostart_nrpe":
+      command_name  => "check_http_port_url_autostart",
+      arguments     => ['$ARG1$', '$ARG2$', '$ARG3$', '$ARG4$'],
+      nrpe          => true;
     "check_http_port_url_nrpe":
       command_name  => "check_http_port_url",
       arguments     => ['$ARG1$','$ARG2$','$ARG3$'],
@@ -2213,12 +2220,15 @@ define kbp_icinga::proc_status ($servicegroups=false) {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::glassfish::status_page($port, $statuspath=false, $response='200', $check_on_localhost=false, $servicegroups=false) {
+define kbp_icinga::glassfish::status_page($port, $statuspath=false, $response='200', $check_on_localhost=false, $servicegroups=false, $autostart_path=false) {
   $realpath = $statuspath ? {
     false   => "/${name}/status.jsp",
     default => $statuspath,
   }
-
+  $autostart = $autostart_path ? {
+    false   => '',
+    default => '_autostart',
+  }
   $nrpe = $check_on_localhost ? {
     false   => '',
     default => '_nrpe',
@@ -2226,9 +2236,12 @@ define kbp_icinga::glassfish::status_page($port, $statuspath=false, $response='2
 
   kbp_icinga::service { "glassfish_instance_${name}_status_page":
     service_description => "Glassfish instance ${name} status page",
-    check_command       => "check_http_port_url${nrpe}",
+    check_command       => "check_http_port_url${autostart}${nrpe}",
     servicegroups       => $servicegroups,
-    arguments           => [$port,$realpath,$response];
+    arguments           => $autostart_path ? {
+      false   => [$port, $realpath, $response],
+      default => [$autostart, $port, $realpath, $response],
+    };
   }
 }
 
