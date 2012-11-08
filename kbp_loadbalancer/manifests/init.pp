@@ -192,6 +192,7 @@ define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environme
       monitor_interval              => $monitor_interval,
       httpclose                     => $httpclose,
       timeout_server                => $timeout_server,
+      lvs_support                   => $lvs_support,
       tag                           => "loadbalancer_${loadbalancer_tag}";
     }
   }
