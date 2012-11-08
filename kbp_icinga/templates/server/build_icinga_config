@@ -324,14 +324,14 @@ for resource_type in resource_types:
                     params = paramsd.items()
             hosts[res.name] = res
         elif 'host_name' in paramsd and paramsd['host_name'] != 'false' and paramsd['host_name'] not in hosts and 'address' in paramsd and paramsd['address'] != 'false':
-            if resource_type == Configdir:
-                res.name = '%s_%s' % (res.name, paramsd['address'])
-                paramsd['host_name'] = '%s_%s' % (paramsd['host_name'], paramsd['address'])
-            else:
+            if resource_type != Configdir:
                 paramsd['conf_dir'] = '%s_%s' % (paramsd['conf_dir'], paramsd['address'])
+                if 'name' in res.params:
+                    res.params['name']['value'] = '%s_%s' % (res.params['name']['value'], paramsd['address'])
                 if 'dependent_host_name' in paramsd and paramsd['dependent_host_name'] == paramsd['host_name']:
-                    paramsd['dependent_host_name'] = '%s_%s' % (paramsd['host_name'], paramsd['address'])
-                paramsd['host_name'] = '%s_%s' % (paramsd['host_name'], paramsd['address'])
+                    paramsd['dependent_host_name'] = '%s_%s' % (paramsd['dependent_host_name'], paramsd['address'])
+            res.name = '%s_%s' % (res.name, paramsd['address'])
+            paramsd['host_name'] = '%s_%s' % (paramsd['host_name'], paramsd['address'])
             params = paramsd.items()
         for param in params:
             res.set_param(*param)
