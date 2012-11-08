@@ -1,10 +1,12 @@
-define kbp_pmacct::config ($aggregates, $filter = false, $plugins = ["mysql"], $sql_host = "localhost", $sql_db = "pmacct", $sql_user = "pmacct", $sql_passwd = false,
-                           $sql_history = "5m", $sql_history_roundoff = "m", $sql_refresh_time = "300", $sql_dont_try_update = true,
-                           $mysql_name = "pmacct") {
+define kbp_pmacct::config ($aggregates_nfprobe=false, $aggregates=["src_host","dst_host"], $aggregates_sql=$aggregates, $filter=false,
+                           $plugins=["mysql"], $sql_host="localhost", $sql_db="pmacct", $sql_user="pmacct", $sql_passwd=false,
+                           $sql_history="5m", $sql_history_roundoff="m", $sql_refresh_time="300", $sql_dont_try_update=true,
+                           $mysql_name="pmacct", $nfprobe_version=9, $nfprobe_receiver=false) {
   include gen_base::python_mysqldb
 
   gen_pmacct::config { $name:
-    aggregates           => $aggregates,
+    aggregates_sql       => $aggregates_sql,
+    aggregates_nfprobe   => $aggregates_nfprobe,
     filter               => $filter,
     plugins              => $plugins,
     sql_host             => $sql_host,
@@ -15,6 +17,8 @@ define kbp_pmacct::config ($aggregates, $filter = false, $plugins = ["mysql"], $
     sql_history_roundoff => $sql_history_roundoff,
     sql_refresh_time     => $sql_refresh_time,
     sql_dont_try_update  => $sql_dont_try_update,
+    nfprobe_version      => $nfprobe_version,
+    nfprobe_receiver     => $nfprobe_receiver,
   }
 
   if "mysql" in $plugins {
