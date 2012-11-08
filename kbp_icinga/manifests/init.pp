@@ -2240,7 +2240,7 @@ define kbp_icinga::glassfish::status_page($port, $statuspath=false, $response='2
     servicegroups       => $servicegroups,
     arguments           => $autostart_path ? {
       false   => [$port, $realpath, $response],
-      default => [$autostart, $port, $realpath, $response],
+      default => [$autostart_path, $port, $realpath, $response],
     };
   }
 }
