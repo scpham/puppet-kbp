@@ -48,7 +48,8 @@ define kbp_django::site($settings='settings', $root_path='/', $root_django="/${n
   }
 }
 
-define kbp_django::app($vhost, $port, $settings='settings', $root_path='/', $root_django="/${name}", $static_path='/media', $static_django="/${name}/media", $vhost_addition_prefix='', $wsgi_file='dispatch.wsgi') {
+define kbp_django::app($vhost, $port, $settings='settings', $root_path='/', $root_django="/${name}", $static_path='/media', $static_django="/${name}/media", $vhost_addition_prefix='', $wsgi_file='dispatch.wsgi',
+    $wsgi_owner='root') {
   kbp_apache::vhost_addition { "${vhost}/${vhost_addition_prefix}django":
     ports   => $port,
     content => template("kbp_django/vhost-additions/django");
@@ -61,11 +62,11 @@ define kbp_django::app($vhost, $port, $settings='settings', $root_path='/', $roo
   }
 
   if $wsgi_file == 'dispatch.wsgi' {
-    file {
-      "/srv/django${root_django}/dispatch.wsgi":
-        content => template("kbp_django/dispatch.wsgi"),
-        replace => false,
-        mode    => 775;
+    file { "/srv/django${root_django}/dispatch.wsgi":
+      content => template("kbp_django/dispatch.wsgi"),
+      owner   => $wsgi_owner,
+      replace => false,
+      mode    => 775;
     }
   }
 
