@@ -49,4 +49,8 @@ class kbp_ocfs2($ocfs2_tag=false, $use_ipaddress=$external_ipaddress) {
   }
 
   Kbp_ferm::Rule <<| tag == $real_tag |>>
+
+  if $lsbdistcodename == 'squeeze' {
+    gen_apt::preference { 'ocfs2-tools':; }
+  }
 }
