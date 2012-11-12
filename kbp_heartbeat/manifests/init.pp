@@ -31,7 +31,7 @@
 #  Undocumented
 #  gen_puppet
 #
-class kbp_heartbeat($autojoin="none", $warntime=5, $deadtime=15, $initdead=60, $keepalive=2, $crm="respawn", $node_name=$hostname, $node_dev="eth0", $node_ip=$ipaddress_eth0, $heartbeat_tag="${environment}_${dcenv}") {
+class kbp_heartbeat($autojoin="none", $warntime=5, $deadtime=15, $initdead=60, $keepalive=2, $crm="respawn", $node_name=$hostname, $node_dev="eth0", $node_ip=$ipaddress_eth0, $heartbeat_tag="${environment}_${custenv}") {
   $real_heartbeat_tag = "heartbeat_${heartbeat_tag}"
 
   include kbp_icinga::heartbeat

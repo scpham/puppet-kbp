@@ -35,7 +35,7 @@ class kbp_nfs::server($need_gssd='no', $need_idmapd='no', $need_statd='yes', $ne
       statdopts     => '--state-directory-path /srv/nfs';
   }
 
-  $real_tag = "nfs_${environment}_${dcenv}_${nfs_tag}"
+  $real_tag = "nfs_${environment}_${custenv}_${nfs_tag}"
 
   # We always keep the state in /srv/nfs, to make setting up failover NFS easier
   # make sure the directory exists.

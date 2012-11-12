@@ -20,7 +20,7 @@ define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024,ver
     false   => $name,
     default => $serverpath,
   }
-  $real_tag = "nfs_${environment}_${dcenv}_${nfs_tag}"
+  $real_tag = "nfs_${environment}_${custenv}_${nfs_tag}"
 
   # This will probably end up opening the same ports for the same hosts multiple times on the
   # server if you have several mounts, but that's not a problem.
