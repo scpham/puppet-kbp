@@ -15,49 +15,49 @@
 #  Undocumented
 #  gen_puppet
 #
-define kbp_drbd($location, $mastermaster=true, $time_out=false, $connect_int=false, $ping_int=false, $ping_timeout=false, $after_sb_0pri="discard-younger-primary",
-    $after_sb_1pri="discard-secondary", $after_sb_2pri="call-pri-lost-after-sb", $rate="5M", $verify_alg="md5", $use_ipaddress=$external_ipaddress, $device_name=$name,
-    $mount_options='nodev,nosuid,noatime,acl,nointr',$disk_flushes=true,$max_buffers=false,$unplug_watermark=false,$sndbuf_size=false,$al_extents=false) {
+define kbp_drbd($drbd_tag=false, $mastermaster=true, $time_out=false, $connect_int=false, $ping_int=false, $ping_timeout=false, $after_sb_0pri='discard-younger-primary', $after_sb_1pri='discard-secondary',
+    $after_sb_2pri='call-pri-lost-after-sb', $rate='5M', $verify_alg='md5', $use_ipaddress=$external_ipaddress, $mount_options='nodev,nosuid,noatime,acl,nointr', $disk_flushes=true, $max_buffers=false,
+    $unplug_watermark=false, $sndbuf_size=false, $al_extents=false, disk) {
   include kbp_trending::drbd
 
+  $real_tag = $drbd_tag ? {
+    false   => "drbd_${environment}_${custenv}",
+    default => "drbd_${environment}_${custenv}_${drbd_tag}",
+  }
+
   if $mastermaster {
-    class { "kbp_ocfs2":
+    class { 'kbp_ocfs2':
       use_ipaddress => $use_ipaddress,
-      ocfs2_tag     => $name;
+      ocfs2_tag     => $drbd_tag;
     }
 
-    mount { $location:
+    mount { $name:
       ensure   => mounted,
-      device   => "/dev/drbd1",
-      fstype   => "ocfs2",
+      device   => '/dev/drbd1',
+      fstype   => 'ocfs2',
       options  => $mount_options,
-      dump     => "0",
-      pass     => "0",
+      dump     => 0,
+      pass     => 0,
       remounts => true,
-      target   => "/etc/fstab",
+      target   => '/etc/fstab',
       require  => Gen_drbd[$name];
     }
 
     file {
-      "${location}/.monitoring":
-        content => "DRBD_mount_ok",
-        require => Mount[$location];
-      "/etc/insserv/overrides/ocfs2":
-        notify  => Exec["reload insserv for ocfs2"],
+      "${name}/.monitoring":
+        content => 'DRBD_mount_ok',
+        require => Mount[$name];
+      '/etc/insserv/overrides/ocfs2':
+        notify  => Exec['reload insserv for ocfs2'],
         content => '# Required-Start: $local_fs $network o2cb drbd';
     }
 
-    exec { "reload insserv for ocfs2":
-      command     => "/sbin/insserv ocfs2",
-      refreshonly => true,
+    exec { 'reload insserv for ocfs2':
+      command     => '/sbin/insserv ocfs2',
+      refreshonly => true;
     }
 
-    kbp_icinga::drbd { $location:; }
-
-    # Used to remove clutchy hack, remove after 2012-11-10
-    file { "/etc/init.d/mount_ocfs2":
-      ensure => absent;
-    }
+    kbp_icinga::drbd { $name:; }
   }
 
   gen_drbd { $name:
@@ -77,17 +77,18 @@ define kbp_drbd($location, $mastermaster=true, $time_out=false, $connect_int=fal
     al_extents       => $al_extents,
     rate             => $rate,
     verify_alg       => $verify_alg,
-    device_name      => $device_name;
+    drbd_tag         => $real_tag,
+    disk             => $disk;
   }
 
-  Kbp_ferm::Rule <<| tag == "ferm_drbd_${environment}_${name}" |>>
+  Kbp_ferm::Rule <<| tag == $real_tag |>>
 
-  kbp_ferm::rule { "DRBD connections from ${fqdn} for ${name}":
+  kbp_ferm::rule { "DRBD connections for ${name}":
     saddr    => $use_ipaddress,
-    proto    => "tcp",
+    proto    => 'tcp',
     dport    => 7789,
-    action   => "ACCEPT",
+    action   => 'ACCEPT',
     exported => true,
-    ferm_tag => "ferm_drbd_${environment}_${name}";
+    ferm_tag => $real_tag;
   }
 }
