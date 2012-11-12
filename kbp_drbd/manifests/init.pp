@@ -45,16 +45,16 @@ define kbp_drbd($drbd_tag=false, $mastermaster=true, $time_out=false, $connect_i
 
     file {
       "${name}/.monitoring":
-        content => 'DRBD_mount_ok',
+        content => "DRBD_mount_ok",
         require => Mount[$name];
-      '/etc/insserv/overrides/ocfs2':
-        notify  => Exec['reload insserv for ocfs2'],
-        content => '# Required-Start: $local_fs $network o2cb drbd';
+      "/etc/insserv/overrides/ocfs2":
+        notify  => Exec["reload insserv for ocfs2"],
+        content => template('kbp_drbd/ocfs2.init.override');
     }
 
-    exec { 'reload insserv for ocfs2':
-      command     => '/sbin/insserv ocfs2',
-      refreshonly => true;
+    exec { "reload insserv for ocfs2":
+      command     => "/sbin/insserv -r ocfs2; /sbin/insserv ocfs2",
+      refreshonly => true,
     }
 
     kbp_icinga::drbd { $name:; }

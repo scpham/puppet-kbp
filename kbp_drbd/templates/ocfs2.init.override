@@ -1,0 +1,10 @@
+### BEGIN INIT INFO
+# Provides: ocfs2
+# Required-Start: $local_fs $network o2cb drbd
+# Required-Stop: $local_fs
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Mount OCFS2 volumes at boot.
+# Description:  Mount OCFS2 volumes at boot.
+### END INIT INFO
+
