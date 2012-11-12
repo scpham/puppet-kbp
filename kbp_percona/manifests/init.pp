@@ -26,25 +26,24 @@ class kbp_percona::mastermaster($percona_name, $repl_password, $repl_user='repl'
 }
 
 # Parameters:
-#  percona_name         The name of this Percona setup, used in combination with $environment to make sure the correct resources are imported
+#  percona_name       The name of this Percona setup, used in combination with $environment to make sure the correct resources are imported
 #  slow_query_time    See kbp_percona::server
 #
 class kbp_percona::master($percona_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $slow_query_time=10) {
   class { "kbp_percona::server":
-    percona_name      => $percona_name,
+    percona_name    => $percona_name,
     setup_backup    => $setup_backup,
     bind_address    => $bind_address,
     datadir         => $datadir,
     slow_query_time => $slow_query_time;
   }
 
-  Mysql::Server::Grant <<| tag == "percona_${environment}_${percona_name}" |>>
+  Gen_percona::Server::Grant <<| tag == "percona_${environment}_${percona_name}" |>>
   Kbp_percona::Monitoring_dependency <<| tag == "percona_${environment}_${percona_name}" |>>
 
   if ! defined(Kbp_percona::Monitoring_dependency["percona_${environment}_${percona_name}_${fqdn}"]) {
     @@kbp_percona::monitoring_dependency { "percona_${environment}_${percona_name}_${fqdn}":; }
   }
-  fail("This class is untested and simply a copy from kbp_mysql.")
 }
 
 # Class: kbp_percona::slave
@@ -217,18 +216,10 @@ class kbp_percona::server($percona_name, $bind_address="0.0.0.0", $setup_backup=
 #  gen_puppet
 #
 class kbp_percona::server::ssl ($certname=$fqdn, $intermediate){
-  file { "/etc/percona/conf.d/ssl.cnf":
-    content  => "[perconad]\nssl\nssl-ca=/etc/ssl/certs/${intermediate}.pem\nssl-cert=/etc/ssl/certs/${certname}.pem\nssl-key=/etc/ssl/private/${certname}.key",
-    require => File["/etc/ssl/certs/${intermediate}.pem", "/etc/ssl/certs/${certname}.pem", "/etc/ssl/private/${certname}.key"],
-    notify  => Exec['reload-percona'];
+  class { 'kbp_mysql::server::ssl':
+    certname => $certname,
+    intermediate => $intermediate,
   }
-
-  setfacl { "Allow Percona read access to /etc/ssl/private":
-    dir     => '/etc/ssl/private',
-    recurse => false,
-    acl     => 'user:percona:--x';
-  }
-  fail("This class is untested and simply a copy from kbp_mysql.")
 }
 
 # Class: kbp_percona::monitoring::icinga::server
