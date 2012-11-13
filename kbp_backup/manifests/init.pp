@@ -82,14 +82,15 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
     content => template("kbp_backup/excludes_base");
   }
 
-  kbp_icinga::service { "daily_backup":
-    ensure              => $ensure,
-    service_description => "Daily backup service",
-    check_command       => "check_backup",
-    nrpe                => true,
-    sms                 => false,
-    check_interval      => '1800',
-    customer_notify     => false,
+  if $ensure == "present" {
+    kbp_icinga::service { "daily_backup":
+      service_description => "Daily backup service",
+      check_command       => "check_backup",
+      nrpe                => true,
+      sms                 => false,
+      check_interval      => '1800',
+      customer_notify     => false,
+    }
   }
 }
 
