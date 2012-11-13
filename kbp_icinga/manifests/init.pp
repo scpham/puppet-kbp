@@ -31,7 +31,8 @@ class kbp_icinga::client {
       sudo      => true,
       command   => "check_asterisk",
       arguments => "signet";
-    "check_backup":;
+    "check_backup":
+      sudo      => true;
     "check_backup_status":
       command   => "check_procs",
       arguments => "-w 0 -C rdiff-backup";
