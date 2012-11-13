@@ -14,6 +14,11 @@ class kbp_backup::disable {
   Kbp_backup::Exclude <| |> {
     ensure => absent,
   }
+
+  Kbp_icinga::Service <| title == "daily_backup" |> {
+    ensure => absent,
+  }
+
 }
 
 define kbp_backup::client($ensure="present", $method="offsite", $backup_server="backup2.kumina.nl", $backup_home="/backup/${environment}", $backup_user=$environment, $backup_remove_older_than="30B") {
