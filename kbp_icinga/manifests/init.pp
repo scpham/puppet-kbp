@@ -64,6 +64,8 @@ class kbp_icinga::client {
       arguments => '-f $ARG1$ -c $ARG2$';
     "check_dummy":
       arguments => '$ARG1$';
+    "check_emptyfirewall":
+      sudo      => true;
     "check_ferm_config":
       sudo      => true,
       arguments => '$ARG1$';
@@ -1144,7 +1146,25 @@ class kbp_icinga::ferm_config($filename) {
   }
 }
 
-# Class: kbp_icinga::ferm_config
+# Class: kbp_icinga::emptyfirewall
+#
+# Actions:
+#  Undocumented
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+class kbp_icinga::emptyfirewall {
+  kbp_icinga::service { "emptyfirewall":
+    service_description => "Empty firewall",
+    check_command       => "check_emptyfirewall",
+    check_interval      => 900,
+    nrpe                => true;
+  }
+}
+
+# Class: kbp_icinga::ksplice
 #
 # Actions:
 #  Undocumented

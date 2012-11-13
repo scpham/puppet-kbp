@@ -53,6 +53,7 @@ class kbp_ferm {
       action   => "ACCEPT";
   }
 
+  include kbp_icinga::emptyfirewall
   class { "kbp_icinga::ferm_config":
     filename => "/etc/ferm/ferm.conf";
   }
