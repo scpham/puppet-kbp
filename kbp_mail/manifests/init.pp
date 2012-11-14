@@ -19,7 +19,6 @@
 #  mysql_user      The MySQL username used for Postfix and Dovecot. Only used and has to be set when mode is primary
 #  mysql_pass      The MySQL password used for Postfix and Dovecot. Only used and has to be set when mode is primary
 #  mysql_db        The MySQL database used for Postfix and Dovecot. Only used and has to be set when mode is primary
-#  mysql_host      The MySQL host used for Postfix and Dovecot. Only used and has to be set when mode is primary
 #  relay_domains   Same as Postfix, see http://www.postfix.org/postconf.5.html#relay_domains. Only used when mode is primary or secondary. Defaults to false (which means '$mydestination' in Postfix)
 #  postmaster      Email address of postmaster (used by Dovecot)
 #
@@ -31,12 +30,39 @@
 #  kbp_ferm (only accept_incoming is true or mode is primary or secondary)
 #
 define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=false, $mydestination=false, $accept_incoming=false, $myhostname=false, $mynetworks=false,
-    $always_bcc=false, $mode=false, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false, $relay_domains=false, $mydomain=$domain,
+    $always_bcc=false, $mode=false, $mysql_user='mailserver', $mysql_pass=false, $mysql_db='mailserver', $relay_domains=false, $mydomain=$domain,
     $postmaster=false, $monitor_username=false, $monitor_password=false) {
   if $mode == 'primary' or $mode == 'secondary' or $mode == 'dovecot' {
     include gen_postgrey
 
     if $mode == 'primary' or $mode == 'dovecot' {
+      if !defined(Class["kbp_mysql::server"]) {
+        class { "kbp_mysql::server":
+          mysql_name => regsubst($fqdn, '[^a-zA-Z0-9\-_]', '_', 'G')
+        }
+      }
+
+      file {
+        ['/usr/local','/usr/local/share','/usr/local/share/mail']:
+          ensure => directory,
+          owner  => undef,
+          group  => undef,
+          mode   => undef;
+        '/usr/local/share/mail/mailserver-tables.sql':
+          content => template('kbp_mail/mailserver-tables.sql');
+      }
+
+      mysql::server::grant { "${mysql_user} on ${mysql_db}":
+        password => $mysql_pass,
+        notify   => Exec['create-mailserver-tables'];
+      }
+
+      exec { 'create-mailserver-tables':
+        refreshonly => true,
+        command     => "/usr/bin/mysql -u ${mysql_user} -p{$mysql_pass} ${mysql_db} < /usr/local/share/mail/mailserver-tables.sql",
+        require     => [File['/usr/local/share/mail/mailserver-tables.sql'], Mysql::Server::Grant["${mysql_user} on ${mysql_db}"]];
+      }
+
       if ! $certs {
         fail('When using primary or dovecot mode for kbp_mail, $certs must be set as dovecot and postfix need it.')
       }
@@ -58,7 +84,7 @@ define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=fal
         mysql_user       => $mysql_user,
         mysql_pass       => $mysql_pass,
         mysql_db         => $mysql_db,
-        mysql_host       => $mysql_host,
+        mysql_host       => 'localhost',
         monitor_username => $monitor_username,
         monitor_password => $monitor_password;
       }
@@ -81,7 +107,7 @@ define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=fal
     mysql_user    => $mysql_user,
     mysql_pass    => $mysql_pass,
     mysql_db      => $mysql_db,
-    mysql_host    => $mysql_host,
+    mysql_host    => 'localhost',
     relay_domains => $relay_domains;
   }
 
