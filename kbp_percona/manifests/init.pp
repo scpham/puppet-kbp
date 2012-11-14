@@ -29,9 +29,10 @@ class kbp_percona::mastermaster($percona_name, $repl_password, $repl_user='repl'
 #  percona_name       The name of this Percona setup, used in combination with $environment to make sure the correct resources are imported
 #  slow_query_time    See kbp_percona::server
 #
-class kbp_percona::master($percona_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $slow_query_time=10) {
+class kbp_percona::master($percona_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $slow_query_time=10, $percona_version=false) {
   class { "kbp_percona::server":
     percona_name    => $percona_name,
+    percona_version => $percona_version,
     setup_backup    => $setup_backup,
     bind_address    => $bind_address,
     datadir         => $datadir,
@@ -127,10 +128,11 @@ class kbp_percona::slave($percona_name, $bind_address="0.0.0.0", $mastermaster=f
 #  Undocumented
 #  gen_puppet
 #
-class kbp_percona::server($percona_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $charset=false, $slow_query_time=10) {
+class kbp_percona::server($percona_name, $percona_version=false, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $charset=false, $slow_query_time=10) {
   include kbp_trending::mysql
   include kbp_percona::monitoring::icinga::server
   class { "gen_percona::server":
+    version => $percona_version,
     datadir => $datadir;
   }
 
