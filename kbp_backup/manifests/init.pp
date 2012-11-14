@@ -84,12 +84,19 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
 
   if $ensure == "present" {
     kbp_icinga::service { "daily_backup":
-      service_description => "Daily backup service",
+      service_description => "Daily backup status",
       check_command       => "check_backup",
       nrpe                => true,
       sms                 => false,
       check_interval      => '1800',
       customer_notify     => false,
+    }
+
+    kbp_icinga::servicedependency { "daily_backup_backup_status":
+      service_description           => "Backup status",
+      dependent_service_description => "Daily backup status",
+      execution_failure_criteria    => "w",
+      notification_failure_criteria => "w";
     }
   }
 }
