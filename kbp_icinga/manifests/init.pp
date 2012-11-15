@@ -392,7 +392,7 @@ class kbp_icinga::proxy($proxytag="proxy_${environment}") {
       notify  => Service["openbsd-inetd"];
   }
 
-  kbp_ferm::rule { "NRPE monitoring from ${fqdn}":
+  kbp_ferm::rule { 'NRPE monitoring':
     saddr    => $fqdn,
     proto    => "tcp",
     dport    => 5666,
