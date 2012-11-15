@@ -113,43 +113,73 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
     }
 
     if $real_sslport {
-      kbp_icinga::site { "${name}_ssl":
-        address              => $monitoring_address,
-        ssl                  => true,
-        ha                   => $monitoring_ha,
-        statuscode           => $monitoring_status,
-        path                 => $monitoring_url,
-        host_name            => $monitoring_hostname,
-        port                 => $real_sslport,
-        max_check_attempts   => $max_check_attempts,
-        response             => $monitoring_response,
-        vhost                => false,
-        proxy                => $monitoring_proxy,
-        preventproxyoverride => true;
+      kbp_icinga::site {
+        "${name}_ssl":
+          address              => $monitoring_address,
+          ssl                  => true,
+          ha                   => $monitoring_ha,
+          statuscode           => $monitoring_status,
+          path                 => $monitoring_url,
+          host_name            => $monitoring_hostname,
+          port                 => $real_sslport,
+          max_check_attempts   => $max_check_attempts,
+          response             => $monitoring_response,
+          vhost                => false,
+          proxy                => $monitoring_proxy,
+          preventproxyoverride => true;
+        "${name}_ssl_local":
+          address              => $monitoring_address,
+          ssl                  => true,
+          ha                   => $monitoring_ha,
+          statuscode           => $monitoring_status,
+          path                 => $monitoring_url,
+          host_name            => $monitoring_hostname,
+          port                 => $real_sslport,
+          max_check_attempts   => $max_check_attempts,
+          response             => $monitoring_response;
       }
     }
 
-    kbp_icinga::site { $name:
-      address              => $monitoring_address,
-      ha                   => $monitoring_ha,
-      statuscode           => $redirect_non_ssl ? {
-        false => $real_sslport ? {
-          false   => $monitoring_status,
-          default => "${monitoring_status},301",
+    kbp_icinga::site {
+      $name:
+        address              => $monitoring_address,
+        ha                   => $monitoring_ha,
+        statuscode           => $redirect_non_ssl ? {
+          false => $real_sslport ? {
+            false   => $monitoring_status,
+            default => "${monitoring_status},301",
+          },
+          true  => 301,
         },
-        true  => 301,
-      },
-      path                 => $monitoring_url,
-      host_name            => $monitoring_hostname,
-      port                 => $port,
-      max_check_attempts   => $max_check_attempts,
-      response             => $redirect_non_ssl ? {
-        true    => false,
-        default => $monitoring_response,
-      },
-      vhost                => false,
-      proxy                => $monitoring_proxy,
-      preventproxyoverride => true;
+        path                 => $monitoring_url,
+        host_name            => $monitoring_hostname,
+        port                 => $port,
+        max_check_attempts   => $max_check_attempts,
+        response             => $redirect_non_ssl ? {
+          true    => false,
+          default => $monitoring_response,
+        },
+        vhost                => false,
+        proxy                => $monitoring_proxy,
+        preventproxyoverride => true;
+      "${name}_local":
+        address              => $monitoring_address,
+        ha                   => $monitoring_ha,
+        statuscode           => $redirect_non_ssl ? {
+          false => $real_sslport ? {
+            false   => $monitoring_status,
+            default => "${monitoring_status},301",
+          },
+          true  => 301,
+        },
+        path                 => $monitoring_url,
+        host_name            => $monitoring_hostname,
+        port                 => $port,
+        max_check_attempts   => $max_check_attempts,
+        response             => $redirect_non_ssl ? {
+          true    => false,
+          default => $monitoring_response,
+        };
     }
   }
 }
