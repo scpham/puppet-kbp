@@ -1994,9 +1994,8 @@ define kbp_icinga::java($servicegroups=false, $sms=true, $username=false, $passw
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false,
-      $max_check_attempts=false, $port=false, $path=false, $response=false, $statuscode=false, $vhost=true, $ha=false,
-      $ssl=false, $host_name=false, $preventproxyoverride=false, $check_interval=false, $credentials=false, $proxy=false) {
+define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false, $max_check_attempts=false, $port=false, $path=false, $response=false, $statuscode=false,
+    $vhost=true, $ha=false, $ssl=false, $host_name=false, $preventproxyoverride=false, $check_interval=false, $credentials=false, $proxy=false, $nrpe=false) {
   $real_name = $host_name ? {
     false   => $name,
     default => $host_name,
@@ -2101,7 +2100,8 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     ha                   => $ha,
     proxy                => $proxy,
     preventproxyoverride => $preventproxyoverride,
-    check_interval       => $check_interval;
+    check_interval       => $check_interval,
+    nrpe                 => $nrpe;
   }
 
   if $ssl {
@@ -2129,7 +2129,8 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       proxy                => $proxy,
       preventproxyoverride => $preventproxyoverride,
       check_interval       => $check_interval,
-      sms                  => false;
+      sms                  => false,
+      nrpe                 => nrpe;
     }
 
     if !defined(Kbp_icinga::Servicedependency["ssl_dependency_${real_name}_cert_vhost"]) {

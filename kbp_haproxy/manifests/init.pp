@@ -133,10 +133,11 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
           ha                   => $monitoring_ha,
           statuscode           => $monitoring_status,
           path                 => $monitoring_url,
-          host_name            => $monitoring_hostname,
+          host_name            => '127.0.0.1',
           port                 => $real_sslport,
           max_check_attempts   => $max_check_attempts,
-          response             => $monitoring_response;
+          response             => $monitoring_response,
+          nrpe                 => true;
       }
     }
 
@@ -173,13 +174,14 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
           true  => 301,
         },
         path                 => $monitoring_url,
-        host_name            => $monitoring_hostname,
+        host_name            => '127.0.0.1',
         port                 => $port,
         max_check_attempts   => $max_check_attempts,
         response             => $redirect_non_ssl ? {
           true    => false,
           default => $monitoring_response,
-        };
+        },
+        nrpe                 => true;
     }
   }
 }
