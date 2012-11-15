@@ -609,7 +609,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     ["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd",
      "check_pacemaker","check_mysql","check_mysql_connlimit","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_libvirtd",
      "check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_failures",'check_megaraid_sas',"check_nullmailer","check_passenger_queue","check_mcollective","check_backup_status",
-     'check_unbound', 'check_activemq', 'check_lsimpt','check_doublemount','check_backup']:
+     'check_unbound', 'check_activemq', 'check_lsimpt','check_doublemount','check_backup','check_emptyfirewall']:
       nrpe          => true;
     "return-ok":
       command_name  => "check_dummy",
