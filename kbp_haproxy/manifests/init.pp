@@ -128,6 +128,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
           proxy                => $monitoring_proxy,
           preventproxyoverride => true;
         "${name}_ssl_local":
+          service_description  => "Vhost ${name} SSL",
           address              => $monitoring_address,
           ssl                  => true,
           ha                   => $monitoring_ha,
@@ -164,6 +165,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
         proxy                => $monitoring_proxy,
         preventproxyoverride => true;
       "${name}_local":
+        service_description  => "Vhost ${name}",
         address              => $monitoring_address,
         ha                   => $monitoring_ha,
         statuscode           => $redirect_non_ssl ? {
