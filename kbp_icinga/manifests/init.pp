@@ -91,6 +91,9 @@ class kbp_icinga::client {
     "check_http_vhost_url_response_address":
       command   => "check_http",
       arguments => '-I $ARG1$ -H $ARG2$ -u $ARG3$ -r $ARG4$ -e $ARG5$ -t 20';
+    "check_http_vhost_url_response_ssl_address":
+      command   => "check_http",
+      arguments => '-I $ARG1$ --ssl=3 -H $ARG2$ -u $ARG3$ -r $ARG4$ -e $ARG5$ -t 20'];
     "check_http_vhost_url_ssl_address":
       command   => "check_http",
       arguments => '-I $ARG1$ --ssl=3 -H $ARG2$ -u $ARG3$ -e $ARG4$ -t 20 -N';
@@ -767,6 +770,10 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       command_name  => "check_http",
       host_argument => '-I $ARG1$',
       arguments     => ['--ssl=3', '-H $ARG2$', '-u $ARG3$', '-r $ARG4$', '-e $ARG5$', '-t 20'];
+    "check_http_vhost_url_response_ssl_address_nrpe":
+      command_name  => "check_http_vhost_url_response_ssl_address",
+      argument      => ['$ARG1$', '$ARG2$', '$ARG3$', '$ARG4$', '$ARG5$'],
+      nrpe          => true;
     "check_http_vhost_port_url_response":
       command_name  => "check_http",
       host_argument => '-I $HOSTADDRESS$',
