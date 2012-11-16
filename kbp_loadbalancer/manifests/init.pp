@@ -37,6 +37,11 @@ class kbp_loadbalancer ($failover=true, $haproxy_loglevel='warning', $loadbalanc
         resource_1 => 'ALL_IPs',
         resource_2 => 'HAProxy';
       }
+    } else {
+      sysctl::setting {
+        "net.ipv4.conf.lo.arp_ignore":   value => 1;
+        "net.ipv4.conf.lo.arp_announce": value => 2;
+      }
     }
   }
 
