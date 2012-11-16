@@ -2,5 +2,5 @@
     ModPagespeed off
 
     ModPagespeedFileCachePath            "/srv/mod_pagespeed/cache/"
-    ModPagespeedGeneratedFilePrefix      "/srv/mod_pagespeed/files/"
+    #ModPagespeedGeneratedFilePrefix      "/srv/mod_pagespeed/files/"
 </IfModule>
