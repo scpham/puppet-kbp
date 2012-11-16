@@ -2070,11 +2070,16 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     $arguments_ssl     = $arguments_creds
   }
   if $address == false or $address == '*' {
-    $real_check_command = $check_command_ssl
-    $real_arguments     = split("${arguments_ssl}|${real_statuscode}", '[|]')
+    $check_command_address = $check_command_ssl
+    $real_arguments        = split("${arguments_ssl}|${real_statuscode}", '[|]')
   } else {
-    $real_check_command = "${check_command_ssl}_address"
-    $real_arguments     = split("${address}|${arguments_ssl}|${real_statuscode}", '[|]')
+    $check_command_address = "${check_command_ssl}_address"
+    $real_arguments        = split("${address}|${arguments_ssl}|${real_statuscode}", '[|]')
+  }
+  if $nrpe {
+    $real_check_command = "${check_command_address}_nrpe"
+  } else {
+    $real_check_command = "${check_command_address}"
   }
 
   $vhost_service_description = $service_description ? {

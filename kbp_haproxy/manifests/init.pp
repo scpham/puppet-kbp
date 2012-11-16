@@ -134,7 +134,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
           ha                   => $monitoring_ha,
           statuscode           => $monitoring_status,
           path                 => $monitoring_url,
-          host_name            => '127.0.0.1',
+          host_name            => $monitoring_hostname,
           port                 => $real_sslport,
           max_check_attempts   => $max_check_attempts,
           response             => $monitoring_response,
@@ -176,7 +176,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
           true  => 301,
         },
         path                 => $monitoring_url,
-        host_name            => '127.0.0.1',
+        host_name            => $monitoring_hostname,
         port                 => $port,
         max_check_attempts   => $max_check_attempts,
         response             => $redirect_non_ssl ? {
