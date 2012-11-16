@@ -2130,7 +2130,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       preventproxyoverride => $preventproxyoverride,
       check_interval       => $check_interval,
       sms                  => false,
-      nrpe                 => nrpe;
+      nrpe                 => $nrpe;
     }
 
     if !defined(Kbp_icinga::Servicedependency["ssl_dependency_${real_name}_cert_vhost"]) {
