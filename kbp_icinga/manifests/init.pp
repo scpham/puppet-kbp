@@ -93,7 +93,7 @@ class kbp_icinga::client {
       arguments => '-I $ARG1$ -H $ARG2$ -u $ARG3$ -r $ARG4$ -e $ARG5$ -t 20';
     "check_http_vhost_url_response_ssl_address":
       command   => "check_http",
-      arguments => '-I $ARG1$ --ssl=3 -H $ARG2$ -u $ARG3$ -r $ARG4$ -e $ARG5$ -t 20'];
+      arguments => '-I $ARG1$ --ssl=3 -H $ARG2$ -u $ARG3$ -r $ARG4$ -e $ARG5$ -t 20';
     "check_http_vhost_url_ssl_address":
       command   => "check_http",
       arguments => '-I $ARG1$ --ssl=3 -H $ARG2$ -u $ARG3$ -e $ARG4$ -t 20 -N';
