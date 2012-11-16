@@ -688,7 +688,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       host_argument => '-I $ARG1$',
       arguments     => ['-H $ARG2$','-e $ARG3$','-t 20','-N'];
     "check_http_vhost_address_nrpe":
-      command_name  => "check_http",
+      command_name  => "check_http_vhost_address",
       arguments     => ['$ARG1$', '$ARG2$', '$ARG3$'],
       nrpe          => true;
     "check_http_vhost_port":
@@ -712,7 +712,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       host_argument => '-I $ARG1$',
       arguments     => ['--ssl=3','-H $ARG2$','-e $ARG3$','-t 20','-N'];
     "check_http_vhost_ssl_address_nrpe":
-      command_name  => "check_http",
+      command_name  => "check_http_vhost_ssl_address",
       arguments     => ['$ARG1$', '$ARG2$', '$ARG3$'],
       nrpe          => true;
     "check_http_vhost_url":
@@ -724,7 +724,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       host_argument => '-I $ARG1$',
       arguments     => ['-H $ARG2$','-u $ARG3$','-e $ARG4$','-t 20','-N'];
     "check_http_vhost_url_address_nrpe":
-      command_name  => "check_http",
+      command_name  => "check_http_vhost_url_address",
       arguments     => ['$ARG1$', '$ARG2$', '$ARG3$', '$ARG4$'],
       nrpe          => true;
     "check_http_vhost_url_login_ssl_address":
@@ -744,7 +744,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       host_argument => '-I $ARG1$',
       arguments     => ['--ssl=3','-H $ARG2$','-u $ARG3$','-e $ARG4$','-t 20','-N'];
     "check_http_vhost_url_ssl_address_nrpe":
-      command_name  => "check_http",
+      command_name  => "check_http_vhost_url_ssl_address",
       arguments     => ['$ARG1$', '$ARG2$', '$ARG3$', '$ARG4$'],
       nrpe          => true;
     "check_http_vhost_url_response":
@@ -756,7 +756,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       host_argument => '-I $ARG1$',
       arguments     => ['-H $ARG2$','-u $ARG3$','-r $ARG4$','-e $ARG5$','-t 20'];
     "check_http_vhost_url_response_address_nrpe":
-      command_name  => "check_http",
+      command_name  => "check_http_vhost_url_response_address",
       arguments     => ['$ARG1$', '$ARG2$', '$ARG3$', '$ARG4$', '$ARG5$'],
       nrpe          => true;
     "check_http_vhost_url_response_ssl":
