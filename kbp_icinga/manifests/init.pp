@@ -772,7 +772,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
       arguments     => ['--ssl=3', '-H $ARG2$', '-u $ARG3$', '-r $ARG4$', '-e $ARG5$', '-t 20'];
     "check_http_vhost_url_response_ssl_address_nrpe":
       command_name  => "check_http_vhost_url_response_ssl_address",
-      host_argument => ['$ARG1$', '$ARG2$', '$ARG3$', '$ARG4$', '$ARG5$'],
+      arguments     => ['$ARG1$', '$ARG2$', '$ARG3$', '$ARG4$', '$ARG5$'],
       nrpe          => true;
     "check_http_vhost_port_url_response":
       command_name  => "check_http",
