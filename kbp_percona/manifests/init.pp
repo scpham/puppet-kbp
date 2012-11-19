@@ -185,6 +185,11 @@ class kbp_percona::server($percona_name, $percona_version=false, $bind_address="
     },
   }
 
+  # Since we usually upgrade to Percona, remove the old logrotate config for mysql
+  file { '/etc/logrotate.d/mysql-server':
+    ensure => absent,
+  }
+
   exec { 'remove_root_users':
     onlyif  => '/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf -e "select * from mysql.user where user=\'root\' and password=\'\'" | /bin/grep -q root',
     command => '/usr/bin/mysql --defaults-file=/etc/mysql/debian.cnf -e "delete from mysql.user where user=\'root\'; flush privileges"',
