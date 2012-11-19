@@ -128,6 +128,8 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
           proxy                => $monitoring_proxy,
           preventproxyoverride => true;
         "${name}_ssl_local":
+          # TODO remove after rewriting LB defines
+          icinga_hostname      => "${monitoring_hostname}_${monitoring_address}",
           service_description  => "Vhost ${name} SSL",
           address              => $monitoring_address,
           ssl                  => true,
@@ -165,6 +167,8 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
         proxy                => $monitoring_proxy,
         preventproxyoverride => true;
       "${name}_local":
+        # TODO remove after rewriting LB defines
+        icinga_hostname      => "${monitoring_hostname}_${monitoring_address}",
         service_description  => "Vhost ${name}",
         address              => $monitoring_address,
         ha                   => $monitoring_ha,
