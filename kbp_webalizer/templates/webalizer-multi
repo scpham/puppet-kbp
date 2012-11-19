@@ -67,7 +67,7 @@ for sitedir in "$SITES_BASE_DIR"/*; do
 
     # Run webalizer on both the non-rotated and rotated logfile.  (This will
     # only happen if $logfile is not a rotated log file itself already.)
-    for logfile in $logfile{.*,}; do
+    for logfile in `find ${LOGS} -name "${domain}-access.log*" | sort -r`; do
 
         # Need to skip gzipped files
         [ "${logfile%.gz}" = "$logfile" ] && grep=grep || continue
