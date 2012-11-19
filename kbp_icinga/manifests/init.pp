@@ -2037,7 +2037,7 @@ define kbp_icinga::java($servicegroups=false, $sms=true, $username=false, $passw
 #  gen_puppet
 #
 define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false, $max_check_attempts=false, $port=false, $path=false, $response=false, $statuscode=false,
-    $vhost=true, $ha=false, $ssl=false, $host_name=false, $preventproxyoverride=false, $check_interval=false, $credentials=false, $proxy=false, $nrpe=false, icinga_hostname=false) {
+    $vhost=true, $ha=false, $ssl=false, $host_name=false, $preventproxyoverride=false, $check_interval=false, $credentials=false, $proxy=false, $nrpe=false, $icinga_hostname=false) {
   $real_name = $host_name ? {
     false   => $name,
     default => $host_name,
