@@ -586,7 +586,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     "Cassandra monitoring":
       saddr    => $source_ipaddress,
       proto    => "tcp",
-      dport    => "(7000 8080 9160)",
+      dport    => "(7000 8080 9160 7199)",
       action   => "ACCEPT",
       exported => true,
       ferm_tag => "cassandra_monitoring";
