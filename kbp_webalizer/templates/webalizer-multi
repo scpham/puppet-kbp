@@ -67,10 +67,10 @@ for sitedir in "$SITES_BASE_DIR"/*; do
 
     # Run webalizer on both the non-rotated and rotated logfile.  (This will
     # only happen if $logfile is not a rotated log file itself already.)
-    for logfile in $logfile{.1,}; do
+    for logfile in $logfile{.*,}; do
 
-        # Need to use zgrep for compressed logfiles
-        [ "${logfile%.gz}" = "$logfile" ] && grep=grep || grep=zgrep
+        # Need to skip gzipped files
+        [ "${logfile%.gz}" = "$logfile" ] && grep=grep || continue
 
         # Can we read the logfile?
         [ -r "$logfile" ] || continue
