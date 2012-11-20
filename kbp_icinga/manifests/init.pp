@@ -2037,7 +2037,7 @@ define kbp_icinga::java($servicegroups=false, $sms=true, $username=false, $passw
 #  gen_puppet
 #
 define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false, $max_check_attempts=false, $port=false, $path=false, $response=false, $statuscode=false,
-    $vhost=true, $ha=false, $ssl=false, $host_name=false, $preventproxyoverride=false, $check_interval=false, $credentials=false, $proxy=false, $nrpe=false, icinga_hostname=false) {
+    $vhost=true, $ha=false, $ssl=false, $host_name=false, $preventproxyoverride=false, $check_interval=false, $credentials=false, $proxy=false, $nrpe=false) {
   $real_name = $host_name ? {
     false   => $name,
     default => $host_name,
@@ -2048,10 +2048,6 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       false => "200",
     },
     default => $statuscode,
-  }
-  $real_icinga_hostname = $icinga_hostname ? {
-    false   => $real_name,
-    default => $icinga_hostname,
   }
 
   if ! $vhost {
@@ -2067,8 +2063,8 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       }
     }
 
-    if !defined(Kbp_icinga::Host[$real_icinga_hostname]) {
-      kbp_icinga::host { $real_icinga_hostname:
+    if !defined(Kbp_icinga::Host[$real_name]) {
+      kbp_icinga::host { $real_name:
         conf_dir             => $confdir,
         address              => $address,
         parents              => $parents,
