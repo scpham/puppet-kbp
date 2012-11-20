@@ -53,6 +53,7 @@ define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=fal
       }
 
       mysql::server::grant { "${mysql_user} on ${mysql_db}":
+        hostname => '127.0.0.1',
         password => $mysql_pass,
         notify   => Exec['create-mailserver-tables'];
       }
