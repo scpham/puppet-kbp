@@ -2056,8 +2056,8 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
 
   if ! $vhost {
     $confdir = $conf_dir ? {
-      false   => "${::environment}/${real_icinga_hostname}",
-      default => "${conf_dir}/${real_icinga_hostname}",
+      false   => "${::environment}/${real_name}",
+      default => "${conf_dir}/${real_name}",
     }
 
     if !defined(Gen_icinga::Configdir[$confdir]) {
