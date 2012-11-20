@@ -84,7 +84,7 @@ define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=fal
         mysql_user       => $mysql_user,
         mysql_pass       => $mysql_pass,
         mysql_db         => $mysql_db,
-        mysql_host       => 'localhost',
+        mysql_host       => '127.0.0.1',
         monitor_username => $monitor_username,
         monitor_password => $monitor_password;
       }
@@ -107,7 +107,7 @@ define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=fal
     mysql_user    => $mysql_user,
     mysql_pass    => $mysql_pass,
     mysql_db      => $mysql_db,
-    mysql_host    => 'localhost',
+    mysql_host    => '127.0.0.1',
     relay_domains => $relay_domains;
   }
 
