@@ -49,7 +49,7 @@ class kbp_haproxy ($failover = false, $haproxy_loglevel="warning") {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=$listenaddress, $monitoring_hostname=$name,
+define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=false, $monitoring_hostname=$name,
     $cookie=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s",
     $timeout_http_request="10s", $tcp_sslport=false, $monitoring_proxy=false, $httpcheck_uri=false, $forwardfor_except=false, $httpclose=false, $timeout_server="20s", $sslport=false, $redirect_non_ssl=false) {
   $ip        = regsubst($name, '(.*)_.*', '\1')
@@ -59,6 +59,10 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
     default    => $temp_port,
   }
   $safe_name = regsubst($site, '[^a-zA-Z0-9\-_]', '_', 'G')
+  $real_monitoring_address = $monitoring_address ? {
+    false   => $ip,
+    default => $monitoring_address,
+  }
 
   kbp_ferm::rule { "HAProxy forward for ${site} (${name})":
     proto  => "tcp",
@@ -119,7 +123,7 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
     if $real_sslport {
       kbp_icinga::site {
         "${site}_${ip}_ssl":
-          address              => $monitoring_address,
+          address              => $real_monitoring_address,
           ssl                  => true,
           ha                   => $monitoring_ha,
           statuscode           => $monitoring_status,
@@ -133,7 +137,7 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
           preventproxyoverride => true;
         "${site}_${ip}_ssl_local":
           service_description  => "Vhost ${name} SSL",
-          address              => $monitoring_address,
+          address              => $real_monitoring_address,
           ssl                  => true,
           ha                   => $monitoring_ha,
           statuscode           => $monitoring_status,
@@ -148,7 +152,7 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
 
     kbp_icinga::site {
       "${site}_${ip}":
-        address              => $monitoring_address,
+        address              => $real_monitoring_address,
         ha                   => $monitoring_ha,
         statuscode           => $redirect_non_ssl ? {
           false => $real_sslport ? {
@@ -170,7 +174,7 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
         preventproxyoverride => true;
       "${site}_${ip}_local":
         service_description  => "Vhost ${name}",
-        address              => $monitoring_address,
+        address              => $real_monitoring_address,
         ha                   => $monitoring_ha,
         statuscode           => $redirect_non_ssl ? {
           false => $real_sslport ? {
