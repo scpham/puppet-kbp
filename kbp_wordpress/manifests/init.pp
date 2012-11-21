@@ -38,7 +38,7 @@ class kbp_wordpress::common {
 #  kbp_apache
 #  mysql
 #
-define kbp_wordpress($external_mysql = true, $mysql_name, $db = false, $user = false, $password, $serveralias = false) {
+define kbp_wordpress($external_mysql=true,$mysql_name,$db=false,$user=false,$password,$serveralias=false,$access_logformat="combined") {
   include kbp_wordpress::common
 
   $real_db = $db ? {
@@ -51,8 +51,9 @@ define kbp_wordpress($external_mysql = true, $mysql_name, $db = false, $user = f
   }
 
   kbp_apache::site { $name:
-    serveralias => $serveralias,
-    php         => true;
+    serveralias      => $serveralias,
+    access_logformat => $access_logformat,
+    php              => true;
   }
 
   if $external_mysql {
