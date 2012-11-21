@@ -118,7 +118,7 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
 
     if $real_sslport {
       kbp_icinga::site {
-        "${site}_${ip}":
+        "${site}_${ip}_ssl":
           address              => $monitoring_address,
           ssl                  => true,
           ha                   => $monitoring_ha,
