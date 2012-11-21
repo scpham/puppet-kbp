@@ -82,8 +82,8 @@ define kbp_loadbalancer::ip ($exported=true, $site, $loadbalancer_tag="${environ
       default   => 'ocf:heartbeat:IPaddr2',
     }
 
-    if ! defined(Kbp_pacemaker::Primitive[$site]) {
-      kbp_pacemaker::primitive { $site:
+    if ! defined(Kbp_pacemaker::Primitive["${site}:${ip}"]) {
+      kbp_pacemaker::primitive { "${site}:${ip}":
         provider         => $provider,
         start_timeout    => '300s',
         monitor_interval => $monitor_interval,
