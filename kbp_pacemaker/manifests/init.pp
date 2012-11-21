@@ -20,7 +20,9 @@ class kbp_pacemaker {
 }
 
 define kbp_pacemaker::primitive ($provider, $location=false, $location_score="inf", $location_name=false, $start_timeout=false, $monitor_interval=false, $monitor_timeout=false, $stop_timeout=false, $params=false, $group=false) {
-  gen_pacemaker::primitive { $name:
+  $safe_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
+
+  gen_pacemaker::primitive { $safe_name:
     provider         => $provider,
     location         => $location,
     location_score   => $location_score,

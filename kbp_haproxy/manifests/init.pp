@@ -49,24 +49,29 @@ class kbp_haproxy ($failover = false, $haproxy_loglevel="warning") {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=$listenaddress, $monitoring_hostname=$name,
+define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=$listenaddress, $monitoring_hostname=$name,
     $cookie=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s",
     $timeout_http_request="10s", $tcp_sslport=false, $monitoring_proxy=false, $httpcheck_uri=false, $forwardfor_except=false, $httpclose=false, $timeout_server="20s", $sslport=false, $redirect_non_ssl=false) {
-  $safe_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
+  $ip        = regsubst($name, '(.*)_.*', '\1')
+  $temp_port = regsubst($name, '.*_(.*)', '\1')
+  $port      = $temp_port ? {
+    $real_name => 80,
+    default    => $temp_port,
+  }
+  $safe_name = regsubst($site, '[^a-zA-Z0-9\-_]', '_', 'G')
 
-  kbp_ferm::rule { "HAProxy forward for ${name}":
+  kbp_ferm::rule { "HAProxy forward for ${site} (${name})":
     proto  => "tcp",
-    daddr  => $listenaddress ? {
+    daddr  => $ip ? {
       "0.0.0.0" => undef,
-      default   => $listenaddress,
+      default   => $ip,
     },
     dport  => $port,
     action => "ACCEPT";
   }
 
-  gen_haproxy::site { $name:
-    listenaddress         => $listenaddress,
-    port                  => $port,
+  gen_haproxy::site { "${ip}_${port}":
+    site                  => $site,
     balance               => $balance,
     cookie                => $cookie,
     timeout_connect       => $timeout_connect,
@@ -80,10 +85,9 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
   }
 
   if $tcp_sslport {
-    gen_haproxy::site { "${name}_ssl":
-      listenaddress         => $listenaddress,
-      port                  => "443",
-      mode                  => "tcp",
+    gen_haproxy::site { "${ip}_443":
+      site                  => $site,
+      mode                  => 'tcp',
       balance               => $balance,
       cookie                => $cookie,
       timeout_connect       => $timeout_connect,
@@ -95,9 +99,9 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
       timeout_server        => $timeout_server;
     }
 
-    kbp_ferm::rule { "HAProxy forward for ${name}_ssl":
+    kbp_ferm::rule { "HAProxy forward for ${site} (${name}) over SSL":
       proto  => "tcp",
-      daddr  => $listenaddress,
+      daddr  => $ip,
       dport  => "443",
       action => "ACCEPT";
     }
@@ -114,7 +118,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
 
     if $real_sslport {
       kbp_icinga::site {
-        "${name}_ssl":
+        "${site}_ssl":
           address              => $monitoring_address,
           ssl                  => true,
           ha                   => $monitoring_ha,
@@ -127,7 +131,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
           vhost                => false,
           proxy                => $monitoring_proxy,
           preventproxyoverride => true;
-        "${name}_ssl_local":
+        "${site}_ssl_local":
           service_description  => "Vhost ${name} SSL",
           address              => $monitoring_address,
           ssl                  => true,
@@ -143,7 +147,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
     }
 
     kbp_icinga::site {
-      $name:
+      $site:
         address              => $monitoring_address,
         ha                   => $monitoring_ha,
         statuscode           => $redirect_non_ssl ? {
@@ -164,7 +168,7 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
         vhost                => false,
         proxy                => $monitoring_proxy,
         preventproxyoverride => true;
-      "${name}_local":
+      "${site}_local":
         service_description  => "Vhost ${name}",
         address              => $monitoring_address,
         ha                   => $monitoring_ha,
@@ -221,9 +225,8 @@ define kbp_haproxy::site ($listenaddress, $port=80, $monitor_site=true, $monitor
 #
 define kbp_haproxy::site::add_server ($cookie=false, $httpcheck_uri=false, $httpcheck_port=false, $httpcheck_interval=false, $httpcheck_fall=false, $httpcheck_rise=false, $backupserver=false, $serverip=$ipaddress_eth0, $serverport=80,
     $tcp_sslport=false) {
-  $site_name = regsubst($name, '(.*);(.*)', '\1')
-  $server_name = regsubst($name, '(.*);(.*)', '\2')
-  $safe_name = regsubst($site_name, '[^a-zA-Z0-9\-_]', '_', 'G')
+  $server_name = regsubst($name, '.*;(.*)', '\1')
+  $ip          = regsubst($name, '(.*)_.*;.*', '\1')
 
   gen_haproxy::site::add_server { $name:
     cookie             => $cookie,
@@ -238,7 +241,7 @@ define kbp_haproxy::site::add_server ($cookie=false, $httpcheck_uri=false, $http
   }
 
   if $tcp_sslport {
-    gen_haproxy::site::add_server { "${site_name}_ssl;${server_name}":
+    gen_haproxy::site::add_server { "${ip}_${tcp_sslport};${server_name}":
       cookie             => $cookie,
       httpcheck_uri      => $httpcheck_uri,
       httpcheck_port     => $httpcheck_port,
@@ -247,7 +250,7 @@ define kbp_haproxy::site::add_server ($cookie=false, $httpcheck_uri=false, $http
       httpcheck_rise     => $httpcheck_rise,
       backupserver       => $backupserver,
       serverip           => $serverip,
-      serverport         => $tcp_sslport,
+      serverport         => $tcp_sslport;
     }
   }
 }

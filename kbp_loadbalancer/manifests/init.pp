@@ -49,39 +49,41 @@ class kbp_loadbalancer ($failover=true, $haproxy_loglevel='warning', $loadbalanc
   Kbp_haproxy::Site::Add_server <<| tag == "haproxy_${loadbalancer_tag}" |>>
 }
 
-define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environment}_${custenv}", $port=80, $location=false, $servername=$fqdn, $serverip=$ipaddress, $serverport=80, $cookie=false,
-                             $httpcheck_uri=false, $httpcheck_port=$serverport, $balance='roundrobin', $timeout_connect='10s', $timeout_server_client='10s', $timeout_http_request='10s',
-                             $tcp_sslport=false, $monitoring_ha=false, $monitoring_hostname=$name, $monitoring_status='200', $monitoring_url=false, $monitoring_max_check_attempts=false,
-                             $monitoring_response=false, $monitoring_proxy=false, $nic='eth0', $monitoring_address=$ip, $sslport=false, $httpcheck_interval=false, $httpcheck_fall=false,
-                             $httpcheck_rise=false, $backupserver=false, $monitor_site=true, $export_done=false, $netmask=32, $forwardfor_except=false, $monitor_interval='10s',
-                             $monitor_timeout='20s', $httpclose=false, $timeout_server='20s', $redirect_non_ssl=false) {
-  $real_name = regsubst($name, '(.*);(.*)', '\1')
+define kbp_loadbalancer::ip ($exported=true, $site, $loadbalancer_tag="${environment}_${custenv}", $location=false, $serverip=$ipaddress, $serverport=80, $cookie=false, $httpcheck_uri=false, $httpcheck_port=$serverport,
+    $balance='roundrobin', $timeout_connect='10s', $timeout_server_client='10s', $timeout_http_request='10s', $tcp_sslport=false, $monitoring_ha=false, $monitoring_hostname=$name, $monitoring_status='200', $monitoring_url=false,
+    $monitoring_max_check_attempts=false, $monitoring_response=false, $monitoring_proxy=false, $nic='eth0', $monitoring_address=$ip, $sslport=false, $httpcheck_interval=false, $httpcheck_fall=false, $httpcheck_rise=false,
+    $backupserver=false, $monitor_site=true, $export_done=false, $netmask=32, $forwardfor_except=false, $monitor_interval='10s', $monitor_timeout='20s', $httpclose=false, $timeout_server='20s', $redirect_non_ssl=false,
+    $server_name=$fqdn) {
+  $real_name = regsubst($name, '(.*);.*', '\1')
+  $server    = regsubst($name, '.*;(.*)', '\1')
+  $ip        = regsubst($real_name, '(.*)_.*', '\1')
+  $temp_port = regsubst($real_name, '.*_(.*)', '\1')
+  $port      = $temp_port ? {
+    $real_name => 80,
+    default    => $temp_port,
+  }
+
   if $redirect_non_ssl {
     if ! $sslport {
       fail("kbp_loadbalancer::ip ${name}: \$redirect_non_ssl only makes sense to be true when \$sslport is also set as it only works for when stunnel is used, otherwise the redirect can be done in the normal way on the webservers.")
     } elsif ! $export_done {
-      kbp_apache::vhost_addition { "${real_name}/${real_name}_non_ssl_redirect":
-        content => "RewriteEngine On\nRewriteCond %{HTTP:X-SSL} !^On$\nRewriteRule (.*) https://${real_name}\$1 [QSA,NE,R=301,L]\n";
+      kbp_apache::vhost_addition { "${site}/${site}_non_ssl_redirect":
+        content => "RewriteEngine On\nRewriteCond %{HTTP:X-SSL} !^On$\nRewriteRule (.*) https://${site}\$1 [QSA,NE,R=301,L]\n";
       }
 
-      Kbp_icinga::Site <| title == $real_name |> {
+      Kbp_icinga::Site <| title == $site |> {
         statuscode => 301,
       }
     }
   }
   if ! $exported {
-    $real_servername = regsubst($name, '(.*);(.*)', '\2') ? {
-      $name   => $servername,
-      default => regsubst($name, '(.*);(.*)', '\2'),
-    }
-    $safe_name       = regsubst($real_name, '[^a-zA-Z0-9\-_]', '_', 'G')
-    $provider        = $dcenv ? {
+    $provider  = $dcenv ? {
       'hetzner' => 'ocf:kumina:hetzner-failover-ip',
       default   => 'ocf:heartbeat:IPaddr2',
     }
 
-    if ! defined(Kbp_pacemaker::Primitive[$safe_name]) {
-      kbp_pacemaker::primitive { $safe_name:
+    if ! defined(Kbp_pacemaker::Primitive[$site]) {
+      kbp_pacemaker::primitive { $site:
         provider         => $provider,
         start_timeout    => '300s',
         monitor_interval => $monitor_interval,
@@ -95,11 +97,10 @@ define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environme
       }
     }
 
-    if ! defined(Kbp_haproxy::Site[$real_name]) {
-      kbp_haproxy::site { $real_name:
+    if ! defined(Kbp_haproxy::Site["${ip}_${port}"]) {
+      kbp_haproxy::site { "${ip}_${port}":
         cookie                => $cookie,
-        listenaddress         => $ip,
-        port                  => $port,
+        site                  => $site,
         monitor_site          => $monitor_site,
         monitoring_ha         => $monitoring_ha,
         max_check_attempts    => $max_check_attempts,
@@ -124,7 +125,7 @@ define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environme
     }
 
     if $export_done {
-      kbp_haproxy::site::add_server { "${real_name};${real_servername}":
+      kbp_haproxy::site::add_server { "${ip}_${port};${server}":
         cookie             => $cookie,
         serverport         => $serverport,
         serverip           => $serverip,
@@ -137,7 +138,7 @@ define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environme
         backupserver       => $backupserver;
       }
     } else {
-      @@kbp_haproxy::site::add_server { "${real_name};${real_servername}":
+      @@kbp_haproxy::site::add_server { "${ip}_${port};${server_name}":
         cookie             => $cookie,
         serverport         => $serverport,
         serverip           => $serverip,
@@ -153,18 +154,17 @@ define kbp_loadbalancer::ip ($exported=true, $ip, $loadbalancer_tag="${environme
     }
 
     if $sslport {
-      if ! defined(Kbp_stunnel::Site[$real_name]) {
-        kbp_stunnel::site { $real_name:
+      if ! defined(Kbp_stunnel::Site[$site]) {
+        kbp_stunnel::site { $site:
           port => $sslport;
         }
       }
     }
   } else {
-    @@kbp_loadbalancer::ip { "${name};${servername}":
+    @@kbp_loadbalancer::ip { "${name};${server_name}":
       exported                      => false,
       export_done                   => true,
-      ip                            => $ip,
-      port                          => $port,
+      site                          => $site,
       location                      => $location,
       serverip                      => $serverip,
       serverport                    => $serverport,
