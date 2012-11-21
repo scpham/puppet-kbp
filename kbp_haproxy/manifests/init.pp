@@ -118,7 +118,7 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
 
     if $real_sslport {
       kbp_icinga::site {
-        "${site}_ssl":
+        "${site}_${ip}":
           address              => $monitoring_address,
           ssl                  => true,
           ha                   => $monitoring_ha,
@@ -131,7 +131,7 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
           vhost                => false,
           proxy                => $monitoring_proxy,
           preventproxyoverride => true;
-        "${site}_ssl_local":
+        "${site}_${ip}_ssl_local":
           service_description  => "Vhost ${name} SSL",
           address              => $monitoring_address,
           ssl                  => true,
@@ -147,7 +147,7 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
     }
 
     kbp_icinga::site {
-      $site:
+      "${site}_${ip}":
         address              => $monitoring_address,
         ha                   => $monitoring_ha,
         statuscode           => $redirect_non_ssl ? {
@@ -168,7 +168,7 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
         vhost                => false,
         proxy                => $monitoring_proxy,
         preventproxyoverride => true;
-      "${site}_local":
+      "${site}_${ip}_local":
         service_description  => "Vhost ${name}",
         address              => $monitoring_address,
         ha                   => $monitoring_ha,
