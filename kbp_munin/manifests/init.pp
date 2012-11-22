@@ -605,6 +605,29 @@ class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_
       ensure  => absent,
       require => Package['munin'],
       notify  => Exec['reload-apache2'];
+    '/etc/cron.d/munin':
+      ensure  => absent,
+      require => Package['munin'],
+      notify  => Exec['reload-cron'];
+  }
+
+  kcron {
+    'munin-update':
+      user    => 'munin',
+      command => '/usr/share/munin/munin-update',
+      minute  => '*/5',
+      require => Package['munin'];
+    'munin-html':
+      user    => 'munin',
+      command => '/usr/share/munin/munin-limits ; /usr/bin/nice /usr/share/munin/munin-html',
+      minute  => '1',
+      require => Package['munin'];
+    'munin-limits':
+      user    => 'munin',
+      command => '/usr/share/munin/munin-limits --force --contact nagios --contact old-nagios',
+      minute  => '14',
+      hour    => '10',
+      require => Package['munin'];
   }
 
   kbp_apache::site { $site:
