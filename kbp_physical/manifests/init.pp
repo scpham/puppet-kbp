@@ -78,8 +78,7 @@ class kbp_physical {
           preventproxyoverride => true;
         }
       } else {
-        kbp_icinga::site { "http_${consolefqdn}":
-          host_name            => $consolefqdn,
+        kbp_icinga::site { $consolefqdn:
           proxy                => $consoleproxy,
           ssl                  => $consolessl,
           path                 => $consolepath,

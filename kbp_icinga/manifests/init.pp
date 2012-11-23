@@ -2036,11 +2036,18 @@ define kbp_icinga::java($servicegroups=false, $sms=true, $username=false, $passw
 #  Undocumented
 #  gen_puppet
 #
-define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false, $max_check_attempts=false, $port=false, $path=false, $response=false, $statuscode=false,
-    $vhost=true, $ha=false, $ssl=false, $host_name=false, $preventproxyoverride=false, $check_interval=false, $credentials=false, $proxy=false, $nrpe=false) {
-  $real_name = $host_name ? {
-    false   => $name,
-    default => $host_name,
+define kbp_icinga::site($conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false, $max_check_attempts=false, $path=false, $response=false, $statuscode=false, $vhost=true, $ha=false, $ssl=false,
+    $preventproxyoverride=false, $check_interval=false, $credentials=false, $proxy=false, $nrpe=false) {
+  $site            = regsubst($name, '([^_]+)(_.*)?', '\1')
+  $temp_address    = regsubst($name, '[^_]+_([^_]+)(_.*)?', '\1')
+  $address         = $temp_address ? {
+    $name   => false,
+    default => $temp_address,
+  }
+  $temp_port       = regsubst($name, '[^_]+_[^_]*_([^_]+)(_.*)?', '\1')
+  $port            = $temp_port ? {
+    $name   => false,
+    default => $temp_port,
   }
   $real_statuscode = $statuscode ? {
     false   => $auth ? {
@@ -2052,19 +2059,19 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
 
   if ! $vhost {
     $confdir = $conf_dir ? {
-      false   => "${::environment}/${real_name}",
-      default => "${conf_dir}/${real_name}",
+      false   => "${::environment}/${site}",
+      default => "${conf_dir}/${site}",
     }
 
     if !defined(Gen_icinga::Configdir[$confdir]) {
       gen_icinga::configdir { $confdir:
-        host_name => $real_name,
+        host_name => $site,
         address   => $address;
       }
     }
 
-    if !defined(Kbp_icinga::Host[$real_name]) {
-      kbp_icinga::host { $real_name:
+    if !defined(Kbp_icinga::Host[$site]) {
+      kbp_icinga::host { $site:
         conf_dir             => $confdir,
         address              => $address,
         parents              => $parents,
@@ -2075,7 +2082,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
   }
 
   $check_command_vhost = 'check_http_vhost'
-  $arguments_vhost     = $real_name
+  $arguments_vhost     = $site
   if $port and $port != 80 and (! $ssl or $port != 443) {
     $check_command_port = "${check_command_vhost}_port"
     $arguments_port     = "${arguments_vhost}|${port}"
@@ -2126,8 +2133,8 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
 
   $vhost_service_description = $service_description ? {
     false   => $ssl ? {
-      false => "Vhost ${real_name}",
-      true  => "Vhost ${real_name} SSL",
+      false => "Vhost ${site}",
+      true  => "Vhost ${site} SSL",
     },
     default => $service_description,
   }
@@ -2137,7 +2144,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
     service_description  => $vhost_service_description,
     host_name            => $vhost ? {
       true  => $fqdn,
-      false => $real_name,
+      false => $site,
     },
     # Passing the address to be able to determine to which host the service belongs in the case of multiple hosts with the same name, not used in the actual Icinga config.
     address              => $address,
@@ -2157,7 +2164,7 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       service_description  => "${vhost_service_description} cert",
       host_name            => $vhost ? {
         true  => $fqdn,
-        false => $real_name,
+        false => $site,
       },
       # Passing the address to be able to determine to which host the service belongs in the case of multiple hosts with the same name, not used in the actual Icinga config.
       address              => $address,
@@ -2167,9 +2174,9 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
         default => 'check_http_cert_address',
       },
       arguments            => $address ? {
-        '*'     => $real_name,
-        false   => $real_name,
-        default => [$real_name, $address],
+        '*'     => $site,
+        false   => $site,
+        default => [$site, $address],
       },
       max_check_attempts   => $max_check_attempts,
       ha                   => $ha,
@@ -2180,17 +2187,17 @@ define kbp_icinga::site($address=false, $address6=false, $conf_dir=false, $paren
       nrpe                 => $nrpe;
     }
 
-    if !defined(Kbp_icinga::Servicedependency["ssl_dependency_${real_name}_cert_vhost"]) {
-      kbp_icinga::servicedependency { "ssl_dependency_${real_name}_cert_vhost":
+    if !defined(Kbp_icinga::Servicedependency["ssl_dependency_${site}_cert_vhost"]) {
+      kbp_icinga::servicedependency { "ssl_dependency_${site}_cert_vhost":
         conf_dir                      => $confdir,
         dependent_service_description => "${vhost_service_description} cert",
         dependent_host_name           => $vhost ? {
           true  => $fqdn,
-          false => $real_name,
+          false => $site,
         },
         host_name                     => $vhost ? {
           true  => $fqdn,
-          false => $real_name,
+          false => $site,
         },
         # Passing the address to be able to determine to which host the service belongs in the case of multiple hosts with the same name, not used in the actual Icinga config.
         address                       => $address,

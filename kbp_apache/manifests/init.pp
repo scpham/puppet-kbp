@@ -343,11 +343,8 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
       default => $monitor_ip,
     }
 
-    kbp_icinga::site { $monitor_name:
+    kbp_icinga::site { "${name}_${real_monitor_ip}__ssl":
       service_description => $service_description,
-      address             => $real_monitor_ip,
-      address6            => $address6,
-      host_name           => $name,
       max_check_attempts  => $max_check_attempts,
       auth                => $auth,
       path                => $monitor_path,
@@ -374,11 +371,8 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
     }
 
     if $failover {
-      kbp_icinga::site { "${monitor_name}_fo":
+      kbp_icinga::site { "${name}_${real_monitor_ip}__fo":
         service_description => $service_description,
-        address             => $real_monitor_ip,
-        address6            => $address6,
-        host_name           => $name,
         max_check_attempts  => $max_check_attempts,
         auth                => $auth,
         path                => $monitor_path,
@@ -429,11 +423,8 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
         make_default     => $make_default;
       }
 
-      kbp_icinga::site { $name:
+      kbp_icinga::site { "${name}_${real_monitor_ip}":
         service_description => $service_description,
-        address             => $real_monitor_ip,
-        address6            => $address6,
-        host_name           => $name,
         max_check_attempts  => $max_check_attempts,
         auth                => $auth,
         path                => $monitor_path,
@@ -456,11 +447,8 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
       }
 
       if $failover {
-        kbp_icinga::site { "${name}_fo":
+        kbp_icinga::site { "${name}_${real_monitor_ip}__fo":
           service_description => $service_description,
-          address             => $real_monitor_ip,
-          address6            => $address6,
-          host_name           => $name,
           max_check_attempts  => $max_check_attempts,
           auth                => $auth,
           path                => $monitor_path,
@@ -537,7 +525,12 @@ define kbp_apache::module ($ensure = "enable") {
   }
 }
 
-define kbp_apache::forward_vhost ($forward, $address = '*', $address6 = '::', $ensure="present", $serveralias=false, $statuscode=301, $port=80, $monitor_ip = false, $preserve_path=true) {
+define kbp_apache::forward_vhost ($forward, $address='*', $address6='::', $ensure="present", $serveralias=false, $statuscode=301, $port=80, $monitor_ip=$address, $preserve_path=true) {
+  $real_monitor_ip = $monitor_ip ? {
+    '*'     => '',
+    default => $monitor_ip,
+  }
+
   gen_apache::forward_vhost { $name:
     forward       => $forward,
     address       => $address,
@@ -549,16 +542,8 @@ define kbp_apache::forward_vhost ($forward, $address = '*', $address6 = '::', $e
     port          => $port;
   }
 
-  kbp_icinga::site { "${name}_forward":
+  kbp_icinga::site { "${name}_${real_monitor_ip}_${port}_forward":
     service_description => "Vhost ${name} forward",
-    host_name           => $name,
-    address             => $monitor_ip ? {
-      false   => $address ? {
-        '*'     => false,
-        default => $address,
-      },
-      default => $monitor_ip,
-    },
     statuscode          => $statuscode,
     response            => $forward;
   }
