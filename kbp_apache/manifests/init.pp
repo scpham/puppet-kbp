@@ -459,7 +459,7 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
 #          vhost               => false,
 #          statuscode          => $monitor_statuscode;
 #        }
-      }
+#      }
     }
   }
 
