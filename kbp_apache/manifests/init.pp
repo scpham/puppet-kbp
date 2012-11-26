@@ -435,7 +435,6 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
           true  => false,
           false => $ha,
         },
-        ssl                 => false,
         statuscode          => $monitor_statuscode;
       }
 
