@@ -79,7 +79,7 @@ class kbp_cassandra::server($branch="07x", $customtag="cassandra_${environment}"
 
   # This cronjob creates a daily snapshot.
   kcron { "cassandra-0":
-    command => "/usr/bin/nodetool -h ${hostname} -p ${jmx_port} snapshot -t backup >/dev/null && /bin/rm -rf /var/backups/cassandra && /bin/mkdir /var/backups/cassandra && for i in `ls /var/lib/cassandra/data/`; do mv /var/lib/cassandra/data/\$i/snapshots/backup /var/backups/cassandra/\$i; done",
+    command => "/usr/bin/nodetool -h ${hostname} -p ${jmx_port} snapshot -t backup > /dev/null; /bin/rm -rf /var/backups/cassandra && /bin/mkdir /var/backups/cassandra && for i in `ls /var/lib/cassandra/data/`; do mkdir /var/backups/cassandra/\$i; for j in `ls /var/lib/cassandra/data/\$i/`; do mkdir /var/backups/cassandra/\$i/\$j; if [ -d /var/lib/cassandra/data/\$i/\$j/snapshots/backup ]; then mv /var/lib/cassandra/data/\$i/\$j/snapshots/backup /var/backups/cassandra/\$i/\$j; fi; done; done",
     require => Package['cassandra'],
     hour    => '18',
     minute  => '0',
