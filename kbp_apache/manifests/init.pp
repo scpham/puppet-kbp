@@ -446,19 +446,19 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
         notification_failure_criteria => 'w,u,c';
       }
 
-#      if $failover {
-#        kbp_icinga::site { "${name}_${real_monitor_ip}__fo":
-#          service_description => $service_description,
-#          max_check_attempts  => $max_check_attempts,
-#          auth                => $auth,
-#          path                => $monitor_path,
-#          response            => $monitor_response,
-#          credentials         => $monitor_creds,
-#          check_interval      => $monitor_check_interval,
-#          ha                  => $ha,
-#          vhost               => false,
-#          statuscode          => $monitor_statuscode;
-#        }
+      if $failover {
+        kbp_icinga::site { "${name}_${real_monitor_ip}__fo":
+          service_description => $service_description,
+          max_check_attempts  => $max_check_attempts,
+          auth                => $auth,
+          path                => $monitor_path,
+          response            => $monitor_response,
+          credentials         => $monitor_creds,
+          check_interval      => $monitor_check_interval,
+          ha                  => $ha,
+          vhost               => false,
+          statuscode          => $monitor_statuscode;
+        }
       }
     }
   }
