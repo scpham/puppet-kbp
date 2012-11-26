@@ -12,10 +12,10 @@
 class kbp_sysctl {
   include sysctl
 
-  exec {
-    "/bin/echo 'kernel.panic = 30' >> '/etc/sysctl.conf'":
-      unless => "/bin/grep -Fx 'kernel.panic = 30' /etc/sysctl.conf";
-    "/bin/echo 'kernel.panic_on_oops = 1' >> '/etc/sysctl.conf'":
-      unless => "/bin/grep -Fx 'kernel.panic_on_oops = 1' /etc/sysctl.conf";
+  sysctl::setting {
+    'kernel.panic':
+      value => 30;
+    'kernel.panic_on_oops':
+      value => 1;
   }
 }
