@@ -371,7 +371,7 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
     }
 
     if $failover {
-      kbp_icinga::site { "${name}_${real_monitor_ip}__fo":
+      kbp_icinga::site { "${name}_${real_monitor_ip}_443_fo":
         service_description => $service_description,
         max_check_attempts  => $max_check_attempts,
         auth                => $auth,
@@ -447,7 +447,7 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
       }
 
       if $failover {
-        kbp_icinga::site { "${name}_${real_monitor_ip}__fo":
+        kbp_icinga::site { "${name}_${real_monitor_ip}_80_fo":
           service_description => $service_description,
           max_check_attempts  => $max_check_attempts,
           auth                => $auth,
