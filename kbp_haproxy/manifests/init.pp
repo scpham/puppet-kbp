@@ -39,6 +39,8 @@ class kbp_haproxy ($failover = false, $haproxy_loglevel="warning") {
 #    TCP connection timeout between client and proxy and Maximum time for the server to respond to the proxy
 #  timeout_http_request
 #    Maximum time for HTTP request between client and proxy
+#  timeout_check
+#    Maximum time before a check is considered to have failed
 #  monitoring_proxy
 #    Host to use as nrpe proxy
 #
@@ -49,9 +51,10 @@ class kbp_haproxy ($failover = false, $haproxy_loglevel="warning") {
 #  Undocumented
 #  gen_puppet
 #
-define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=false, $monitoring_hostname=$site,
-    $cookie=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80, $timeout_connect="15s", $timeout_server_client="20s",
-    $timeout_http_request="10s", $tcp_sslport=false, $monitoring_proxy=false, $httpcheck_uri=false, $forwardfor_except=false, $httpclose=false, $timeout_server="20s", $sslport=false, $redirect_non_ssl=false) {
+define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=false,
+    $monitoring_hostname=$site, $cookie=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80,
+    $timeout_connect="15s", $timeout_server_client="20s", $timeout_http_request="10s", $tcp_sslport=false, $monitoring_proxy=false, $httpcheck_uri=false, $forwardfor_except=false,
+    $httpclose=false, $timeout_server="20s", $sslport=false, $redirect_non_ssl=false, $timeout_check='10s') {
   $ip        = regsubst($name, '(.*)_.*', '\1')
   $temp_port = regsubst($name, '.*_(.*)', '\1')
   $port      = $temp_port ? {
@@ -85,6 +88,7 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
     forwardfor_except     => $forwardfor_except,
     httpclose             => $httpclose,
     timeout_server        => $timeout_server,
+    timeout_check         => $timeout_check,
     redirect_non_ssl      => $redirect_non_ssl;
   }
 
@@ -100,6 +104,7 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
       httpcheck_uri         => $httpcheck_uri,
       forwardfor_except     => $forwardfor_except,
       httpclose             => $httpclose,
+      timeout_check         => $timeout_check,
       timeout_server        => $timeout_server;
     }
 
