@@ -20,9 +20,9 @@ class kbp_loadbalancer ($failover=true, $haproxy_loglevel='warning', $loadbalanc
       heartbeat_tag => $loadbalancer_tag;
     }
 
-    kbp_pacemaker::group { 'ALL_IPs':; }
-
     if $haproxy_in_heartbeat {
+      kbp_pacemaker::group { 'ALL_IPs':; }
+
       kbp_pacemaker::primitive { 'HAProxy':
         provider         => 'lsb:haproxy',
         monitor_interval => '10s';
