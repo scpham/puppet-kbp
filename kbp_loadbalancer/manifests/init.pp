@@ -93,7 +93,10 @@ define kbp_loadbalancer::ip ($exported=true, $site, $loadbalancer_tag="${environ
           'ocf:kumina:hetzner-failover-ip' => "ip=\"${ip}\" script=\"/usr/local/sbin/parse-hetzner-json.py\"",
         },
         location         => $location,
-        group            => 'ALL_IPs';
+        group            => $kbp_loadbalancer::real_haproxy_in_heartbeat ? {
+          false   => false,
+          default => 'ALL_IPs',
+        };
       }
     }
 
