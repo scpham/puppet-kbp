@@ -1585,7 +1585,6 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
       max_check_attempts           => $max_check_attempts,
       arguments                    => $arguments,
       register                     => $register,
-      ensure                       => $ensure,
       proxy                        => $proxy;
     }
   }
@@ -1595,7 +1594,6 @@ define kbp_icinga::servicedependency($ensure="present", $dependent_service_descr
     $execution_failure_criteria=false, $notification_failure_criteria="o") {
   if $::monitoring == 'true' or ($::override_nomonitoring and $::monitoring != 'force_off') {
     gen_icinga::servicedependency { $name:
-      ensure                        => $ensure,
       dependent_service_description => $dependent_service_description,
       host_name                     => $host_name,
       address                       => $address,
@@ -1645,7 +1643,6 @@ define kbp_icinga::host($conf_dir=false, $sms=true, $use=false, $hostgroups=fals
 
   if $monitoring == 'true' or ($override_nomonitoring and $::monitoring != 'force_off') {
     gen_icinga::host { $name:
-      ensure                       => $ensure,
       conf_dir                     => $real_conf_dir,
       use                          => $real_use,
       hostgroups                   => $hostgroups,
