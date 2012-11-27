@@ -1662,7 +1662,6 @@ define kbp_icinga::host($conf_dir=false, $sms=true, $use=false, $hostgroups=fals
       retain_status_information    => $retain_status_information,
       retain_nonstatus_information => $retain_nonstatus_information,
       check_command                => $full_check_command,
-      base_check_command           => $check_command,
       check_interval               => $check_interval,
       retry_interval               => $retry_interval,
       notification_period          => $notification_period,
