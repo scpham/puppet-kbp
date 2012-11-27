@@ -207,10 +207,6 @@ class kbp_icinga::client {
       arguments => "-w 5 -c 10 -s Z";
   }
 
-  kbp_icinga::configdir { "${::environment}/${fqdn}":
-    override_nomonitoring => true;
-  }
-
   kbp_icinga::host { "${fqdn};${external_ipaddress}":
     parents               => $parent,
     override_nomonitoring => true;
@@ -912,7 +908,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     make_default => true;
   }
 
-  gen_icinga::configdir { "generic":; }
+  kbp_icinga::configdir { "generic":; }
 
   kbp_icinga::service {
     "ha_service":
@@ -1108,7 +1104,7 @@ class kbp_icinga::environment {
     }
   }
 
-  gen_icinga::configdir { ["${::environment}","${::environment}/generic"]:; }
+  kbp_icinga::configdir { ["${::environment}","${::environment}/generic"]:; }
 
   gen_icinga::contactgroup { "${::environment}_email":
     conf_dir => "${::environment}/generic",
@@ -1319,13 +1315,7 @@ class kbp_icinga::nfs::server ($failover_ip=false, $failover_name="nfs.${domain}
   if $failover_ip {
     $conf_dir = "${environment}/${failover_name}"
 
-    if !defined(Gen_icinga::Configdir[$conf_dir]) {
-      gen_icinga::configdir { $conf_dir:
-        ensure => $ensure;
-      }
-    }
-
-    if !defined(Kbp_icinga::Host[$failover_name]) {
+    if !defined(Kbp_icinga::Host["${failover_name};${failover_ip}"]) {
       kbp_icinga::host { "${failover_name};${failover_ip}":
         conf_dir => $conf_dir,
         proxy    => $ip_proxy;
@@ -1628,7 +1618,7 @@ define kbp_icinga::servicedependency($ensure="present", $dependent_service_descr
 #
 # Depends:
 #  gen_puppet
-define kbp_icinga::host($conf_dir="${::environment}/${name}", $sms=true, $use=false, $hostgroups=false, $parents=false, $ensure=present, $initial_state=false, $notifications_enabled=false, $event_handler_enabled=false,
+define kbp_icinga::host($conf_dir=false, $sms=true, $use=false, $hostgroups=false, $parents=false, $ensure=present, $initial_state=false, $notifications_enabled=false, $event_handler_enabled=false,
     $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $check_command="check_ping", $check_interval=false, $notification_period=false,
     $notification_interval=false, $max_check_attempts=false, $register=1, $proxy=false, $preventproxyoverride=false, $retry_interval=false, $override_nomonitoring=false) {
   $contacts = $register ? {
@@ -1647,11 +1637,16 @@ define kbp_icinga::host($conf_dir="${::environment}/${name}", $sms=true, $use=fa
     false   => $check_command,
     default => "proxy_${check_command}",
   }
+  $real_name = regsubst($name, '([^;]+);.*', '\1')
+  $real_conf_dir = $conf_dir ? {
+    false   => "${::environment}/${real_name}",
+    default => $conf_dir,
+  }
 
   if $monitoring == 'true' or ($override_nomonitoring and $::monitoring != 'force_off') {
     gen_icinga::host { $name:
       ensure                       => $ensure,
-      conf_dir                     => $conf_dir,
+      conf_dir                     => $real_conf_dir,
       use                          => $real_use,
       hostgroups                   => $hostgroups,
       parents                      => $parents,
@@ -1983,10 +1978,6 @@ class kbp_icinga::rabbitmqctl($namespace) {
 #
 define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environment, $parents=false, $hostgroups=false, $sms=true, $notification_period=false, $proxy=false, $preventproxyoverride=false) {
   $confdir = "${conf_dir}/${name}"
-
-  gen_icinga::configdir { $confdir:
-    ensure => $ensure;
-  }
 
   kbp_icinga::host { "${name};${address}":
     ensure               => $ensure,
