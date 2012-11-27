@@ -211,7 +211,7 @@ class kbp_icinga::client {
     override_nomonitoring => true;
   }
 
-  kbp_icinga::host { $fqdn:
+  kbp_icinga::host { "${fqdn};${external_ipaddress}":
     parents               => $parent,
     override_nomonitoring => true;
   }
@@ -1326,9 +1326,8 @@ class kbp_icinga::nfs::server ($failover_ip=false, $failover_name="nfs.${domain}
     }
 
     if !defined(Kbp_icinga::Host[$failover_name]) {
-      kbp_icinga::host { $failover_name:
+      kbp_icinga::host { "${failover_name};${failover_ip}":
         conf_dir => $conf_dir,
-        address  => $failover_ip,
         proxy    => $ip_proxy;
       }
     }
@@ -1629,10 +1628,9 @@ define kbp_icinga::servicedependency($ensure="present", $dependent_service_descr
 #
 # Depends:
 #  gen_puppet
-define kbp_icinga::host($conf_dir="${::environment}/${name}",$sms=true,$use=false,$hostgroups=false,$parents=false,$address=$external_ipaddress,$ensure=present,
-    $initial_state=false, $notifications_enabled=false, $event_handler_enabled=false, $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false,
-    $retain_nonstatus_information=false, $check_command="check_ping", $check_interval=false, $notification_period=false, $notification_interval=false, $max_check_attempts=false,
-    $register=1, $proxy=false, $preventproxyoverride=false, $retry_interval=false, $override_nomonitoring=false) {
+define kbp_icinga::host($conf_dir="${::environment}/${name}", $sms=true, $use=false, $hostgroups=false, $parents=false, $ensure=present, $initial_state=false, $notifications_enabled=false, $event_handler_enabled=false,
+    $flap_detection_enabled=false, $process_perf_data=false, $retain_status_information=false, $retain_nonstatus_information=false, $check_command="check_ping", $check_interval=false, $notification_period=false,
+    $notification_interval=false, $max_check_attempts=false, $register=1, $proxy=false, $preventproxyoverride=false, $retry_interval=false, $override_nomonitoring=false) {
   $contacts = $register ? {
     0       => "devnull",
     default => false,
@@ -1990,25 +1988,24 @@ define kbp_icinga::virtualhost($address, $ensure=present, $conf_dir=$::environme
     ensure => $ensure;
   }
 
-  kbp_icinga::host { $name:
-    ensure                => $ensure,
-    conf_dir              => $confdir,
-    address               => $address,
-    parents               => $parents ? {
+  kbp_icinga::host { "${name};${address}":
+    ensure               => $ensure,
+    conf_dir             => $confdir,
+    parents              => $parents ? {
       false   => undef,
       default => $parents,
     },
-    hostgroups            => $hostgroups ? {
+    hostgroups           => $hostgroups ? {
       false   => undef,
       default => $hostgroups,
     },
-    sms                   => $sms,
-    notification_period   => $notification_period ? {
+    sms                  => $sms,
+    notification_period  => $notification_period ? {
       false   => undef,
       default => $notification_period,
     },
-    proxy                 => $proxy,
-    preventproxyoverride  => $preventproxyoverride;
+    proxy                => $proxy,
+    preventproxyoverride => $preventproxyoverride;
   }
 }
 
@@ -2110,17 +2107,9 @@ define kbp_icinga::site($conf_dir=false, $parents=$::fqdn, $service_description=
       default => "${conf_dir}/${site}",
     }
 
-    if !defined(Gen_icinga::Configdir[$confdir]) {
-      gen_icinga::configdir { $confdir:
-        host_name => $site,
-        address   => $address;
-      }
-    }
-
-    if !defined(Kbp_icinga::Host[$site]) {
-      kbp_icinga::host { $site:
+    if !defined(Kbp_icinga::Host["${site}_${address}"]) {
+      kbp_icinga::host { "${site};${address}":
         conf_dir             => $confdir,
-        address              => $address,
         parents              => $parents,
         proxy                => $proxy,
         preventproxyoverride => false;
