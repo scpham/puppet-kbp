@@ -2107,7 +2107,7 @@ define kbp_icinga::site($conf_dir=false, $parents=$::fqdn, $service_description=
       default => "${conf_dir}/${site}",
     }
 
-    if !defined(Kbp_icinga::Host["${site}_${address}"]) {
+    if !defined(Kbp_icinga::Host["${site};${address}"]) {
       kbp_icinga::host { "${site};${address}":
         conf_dir             => $confdir,
         parents              => $parents,
