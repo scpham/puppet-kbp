@@ -44,6 +44,60 @@ else:
         print 'Error creating base dir ' + basedir + '.'
         sys.exit(1)
 
+configdirs = []
+icinga_resources = []
+
+hosts = {}
+dup_hosts = set()
+c.execute("select title, id from resources where restype='Gen_icinga::Host';")
+resources = c.fetchall()
+for title, host_id in resources:
+    c.execute("select a.name, b.value from param_names as a, param_values as b where b.param_name_id = a.id and b.resource_id = %s", host_id)
+    params = dict(c.fetchall())
+    name = title.split(';')[0]
+    try:
+        address = title.split(';')[1]
+        params['address'] = address
+    except:
+        address = False
+    if address and '%s_%s' % (name, address) in hosts:
+        name = '%s_%s' % (name, address)
+    if name in hosts:
+        if hosts[name]['address'] == params['address']:
+            if params['parents'] != 'false':
+                hosts[name]['parents'] = '%s, %s' % (hosts[name]['parents'], params['parents'])
+            continue
+        else:
+            dup_hosts.add(name)
+            name = '%s_%s' % (name, params['address'])
+            params['conf_dir'] = '%s_%s' % (params['conf_dir'], params['address'])
+    hosts[name] = params
+for name in dup_hosts:
+    params = hosts.pop(name)
+    params['conf_dir'] = '%s_%s' % (params['conf_dir'], params['address'])
+    hosts['%s_%s' % (name, params['address'])] = params
+for name, params in hosts.items():
+    dirname = ''.join([basedir, '/', params['conf_dir']])
+    del params['conf_dir']
+    filename = ''.join([dirname, '/host_', name, '.cfg'])
+    if not path.isdir(dirname):
+        os.makedirs(dirname, 0755)
+    if params['register'] == '1':
+        params['host_name'] = name
+    else:
+        params['name'] = name
+    params['_PROXY'] = params['proxy']
+    del params['proxy']
+    ljust = len(max(params.keys(), key=len))
+    host_str = ['define host {\n']
+    for name, value in params.items():
+        if value != 'false':
+            host_str.append('  %s  %s\n' % (name.ljust(ljust), value))
+    host_str.append('}\n')
+    f = open(filename, 'w')
+    f.write(''.join(host_str))
+    f.close()
+
 class Resource:
     def __init__(self, name, rname):
         self.name = name
@@ -97,8 +151,6 @@ class Configdir(Resource):
         self.params = {}
 
     def create(self):
-        if not path.isdir(basedir + '/' + self.name):
-            os.mkdir(basedir + '/' + self.name, 0755)
             return self.name
 
 # Servicegroups
@@ -190,38 +242,6 @@ class Hostgroup(Resource):
         self.add_param('hg_alias', 'alias')
         self.add_param('members')
 
-# Hosts
-class Host(Resource):
-    restype = 'Gen_icinga::Host'
-
-    def __init__(self, name):
-        Resource.__init__(self, name, 'host')
-        self.add_param('use')
-        self.add_param('name', cust_name_str = 'get_name_str', value = name)
-        self.add_param('hostgroups')
-        self.add_param('address')
-        self.add_param('parents')
-        self.add_param('initial_state')
-        self.add_param('notifications_enabled')
-        self.add_param('event_handler_enabled')
-        self.add_param('flap_detection_enabled')
-        self.add_param('process_perf_data')
-        self.add_param('retain_status_information')
-        self.add_param('retain_nonstatus_information')
-        self.add_param('check_command')
-        self.add_param('proxy', '_PROXY')
-        self.add_param('check_interval')
-        self.add_param('retry_interval')
-        self.add_param('notification_period')
-        self.add_param('notification_interval')
-        self.add_param('contact_groups')
-        self.add_param('contacts')
-        self.add_param('max_check_attempts')
-        self.add_param('register')
-
-    def get_name_str(self):
-        return 'name' if self.params['register']['value'] == '0' else 'host_name'
-
 # Hostescalations
 class Hostescalation(Resource):
     restype = 'Gen_icinga::Hostescalation'
@@ -292,10 +312,9 @@ class Servercommand(Resource):
         self.add_param('name', 'command_name', value=name)
         self.add_param('command_line')
 
-resource_types = [Hostgroup, Host, Hostescalation, Servicegroup, Service, Serviceescalation, Servicedependency, Contactgroup, Contact, Timeperiod, Servercommand, Configdir]
+resource_types = [Configdir, Hostgroup, Hostescalation, Servicegroup, Service, Serviceescalation, Servicedependency, Contactgroup, Contact, Timeperiod, Servercommand]
 configdirs = []
 icinga_resources = []
-hosts = {}
 for resource_type in resource_types:
     c.execute("select title, id from resources where restype='%s';" % resource_type.restype)
     resources = c.fetchall()
@@ -304,26 +323,7 @@ for resource_type in resource_types:
         c.execute("select a.name, b.value from param_names as a, param_values as b where b.param_name_id = a.id and b.resource_id = %s", resource[1])
         params = c.fetchall()
         paramsd = dict(params)
-        if resource_type == Host:
-            if '%s_%s' % (res.name, paramsd['address']) in hosts:
-                res.name = '%s_%s' % (res.name, paramsd['address'])
-            if res.name in hosts:
-                if hosts[res.name].params['address']['value'] == paramsd['address']:
-                    if paramsd['parents'] != 'false':
-                        hosts[res.name].params['parents']['value'] =  '%s, %s' % (hosts[res.name].params['parents']['value'], paramsd['parents'])
-                    continue
-                else:
-                    other_res = hosts.pop(res.name)
-                    other_res.name = '%s_%s' % (other_res.name, other_res.params['address']['value'])
-                    other_res.params['name']['value'] = other_res.name
-                    other_res.params['conf_dir']['value'] = '%s_%s' % (other_res.params['conf_dir']['value'], other_res.params['address']['value'])
-                    hosts[other_res.name] = other_res
-                    res.name = '%s_%s' % (res.name, paramsd['address'])
-                    paramsd['name'] = res.name
-                    paramsd['conf_dir'] = '%s_%s' % (paramsd['conf_dir'], paramsd['address'])
-                    params = paramsd.items()
-            hosts[res.name] = res
-        elif 'host_name' in paramsd and paramsd['host_name'] != 'false' and paramsd['host_name'] not in hosts and 'address' in paramsd and paramsd['address'] != 'false':
+        if 'host_name' in paramsd and paramsd['host_name'] != 'false' and paramsd['host_name'] not in hosts and 'address' in paramsd and paramsd['address'] != 'false':
             if resource_type != Configdir:
                 paramsd['conf_dir'] = '%s_%s' % (paramsd['conf_dir'], paramsd['address'])
                 if 'name' in res.params:
