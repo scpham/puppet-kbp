@@ -2074,11 +2074,13 @@ define kbp_icinga::site($conf_dir=false, $parents=$::fqdn, $service_description=
   $temp_address    = regsubst($name, '[^_]*_([^_]*)(_.*)?', '\1')
   $address         = $temp_address ? {
     $name   => false,
+    ''      => false,
     default => $temp_address,
   }
   $temp_port       = regsubst($name, '[^_]*_[^_]*_([^_]*)(_.*)?', '\1')
   $port            = $temp_port ? {
     $name   => false,
+    ''      => false,
     default => $temp_port,
   }
   $real_statuscode = $statuscode ? {
