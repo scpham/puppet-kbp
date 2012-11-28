@@ -138,7 +138,6 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
           proxy                => $monitoring_proxy,
           preventproxyoverride => true;
         "${monitoring_hostname}_${real_monitoring_address}_${real_sslport}_local":
-          service_description  => "Vhost ${name} SSL",
           ssl                  => true,
           statuscode           => $monitoring_status,
           path                 => $monitoring_url,
@@ -168,7 +167,6 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
         proxy                => $monitoring_proxy,
         preventproxyoverride => true;
       "${monitoring_hostname}_${real_monitoring_address}_${port}_local":
-        service_description  => "Vhost ${name}",
         statuscode           => $redirect_non_ssl ? {
           false => $real_sslport ? {
             false   => $monitoring_status,
