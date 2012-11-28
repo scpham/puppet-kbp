@@ -207,7 +207,12 @@ class kbp_icinga::client {
       arguments => "-w 5 -c 10 -s Z";
   }
 
-  kbp_icinga::host { "${fqdn};${external_ipaddress}":
+  $address = $external_ipaddress ? {
+    undef   => $ipaddress,
+    default => $external_ipaddress,
+  }
+
+  kbp_icinga::host { "${fqdn};${address}":
     parents               => $parent,
     override_nomonitoring => true;
   }
