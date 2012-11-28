@@ -1527,10 +1527,10 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
   }
 
   if $ha {
-    Kbp_icinga::Host <| title == "${host_name}_${address}" |> {
+    Kbp_icinga::Host <| title == "${host_name};${address}" |> {
       hostgroups => "ha_hosts",
     }
-    Gen_icinga::Host <| title == "${host_name}_${address}" |> {
+    Gen_icinga::Host <| title == "${host_name};${address}" |> {
       hostgroups => "ha_hosts",
     }
   }
