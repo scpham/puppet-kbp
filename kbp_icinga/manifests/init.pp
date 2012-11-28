@@ -2070,13 +2070,13 @@ define kbp_icinga::java($servicegroups=false, $sms=true, $username=false, $passw
 #
 define kbp_icinga::site($conf_dir=false, $parents=$::fqdn, $service_description=false, $auth=false, $max_check_attempts=false, $path=false, $response=false, $statuscode=false, $vhost=true, $ha=false, $ssl=false,
     $preventproxyoverride=false, $check_interval=false, $credentials=false, $proxy=false, $nrpe=false) {
-  $site            = regsubst($name, '([^_]+)(_.*)?', '\1')
-  $temp_address    = regsubst($name, '[^_]+_([^_]+)(_.*)?', '\1')
+  $site            = regsubst($name, '([^_]*)(_.*)?', '\1')
+  $temp_address    = regsubst($name, '[^_]*_([^_]*)(_.*)?', '\1')
   $address         = $temp_address ? {
     $name   => false,
     default => $temp_address,
   }
-  $temp_port       = regsubst($name, '[^_]+_[^_]*_([^_]+)(_.*)?', '\1')
+  $temp_port       = regsubst($name, '[^_]*_[^_]*_([^_]*)(_.*)?', '\1')
   $port            = $temp_port ? {
     $name   => false,
     default => $temp_port,
