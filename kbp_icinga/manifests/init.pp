@@ -1647,10 +1647,6 @@ define kbp_icinga::host($conf_dir=false, $sms=true, $use=false, $hostgroups=fals
       use                          => $real_use,
       hostgroups                   => $hostgroups,
       parents                      => $parents,
-      address                      => $register ? {
-        0       => undef,
-        default => $address,
-      },
       initial_state                => $initial_state,
       notifications_enabled        => $notifications_enabled,
       event_handler_enabled        => $event_handler_enabled,

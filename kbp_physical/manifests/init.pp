@@ -78,7 +78,7 @@ class kbp_physical {
           preventproxyoverride => true;
         }
       } else {
-        kbp_icinga::site { $consolefqdn:
+        kbp_icinga::site { "${consolefqdn};${consoleaddress}":
           proxy                => $consoleproxy,
           ssl                  => $consolessl,
           path                 => $consolepath,
@@ -86,6 +86,13 @@ class kbp_physical {
           vhost                => false,
           preventproxyoverride => true;
         }
+      }
+    } else {
+      kbp_icinga::virtualhost { $consolefqdn:
+        address              => $consoleaddress,
+        parents              => $consoleparent,
+        proxy                => $consoleproxy,
+        preventproxyoverride => true;
       }
     }
   }
