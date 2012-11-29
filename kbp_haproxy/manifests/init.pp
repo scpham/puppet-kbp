@@ -1,17 +1,12 @@
 # Author: Kumina bv <support@kumina.nl>
 
-
-class kbp_haproxy ($failover = false, $haproxy_loglevel="warning") {
+class kbp_haproxy ($haproxy_loglevel="warning") {
   include kbp_trending::haproxy
-
   class { "gen_haproxy":
-    failover         => $failover,
     haproxy_loglevel => $haproxy_loglevel;
   }
 
-  if ! $failover {
-    kbp_icinga::proc_status { 'haproxy':; }
-  }
+  kbp_icinga::proc_status { 'haproxy':; }
 }
 
 # Define: kbp_haproxy::site

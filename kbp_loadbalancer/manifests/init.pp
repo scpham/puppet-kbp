@@ -1,48 +1,20 @@
 # Author: Kumina bv <support@kumina.nl>
 
-class kbp_loadbalancer ($failover=true, $haproxy_loglevel='warning', $loadbalancer_tag="${environment}_${custenv}", $heartbeat_dev='eth0', $heartbeat_ip=$ipaddress_eth0, $haproxy_in_heartbeat=true, $heartbeat_initdead='60') {
-  $real_haproxy_in_heartbeat = $failover ? {
-    false   => false,
-    default => $haproxy_in_heartbeat,
-  }
-
-  class { 'kbp_haproxy':
-    failover         => $haproxy_in_heartbeat,
-    haproxy_loglevel => $haproxy_loglevel;
-  }
-
-  if $failover {
-    include kbp_pacemaker
-    class { 'kbp_heartbeat':
+class kbp_loadbalancer ($haproxy_loglevel='warning', $loadbalancer_tag="${environment}_${custenv}", $heartbeat_dev='eth0', $heartbeat_ip=$ipaddress_eth0, $heartbeat_initdead='60') {
+  include kbp_pacemaker
+  class {
+    'kbp_haproxy':
+      haproxy_loglevel => $haproxy_loglevel;
+    'kbp_heartbeat':
       node_dev      => $heartbeat_dev,
       node_ip       => $heartbeat_ip,
       initdead      => $heartbeat_initdead,
       heartbeat_tag => $loadbalancer_tag;
-    }
+  }
 
-    if $haproxy_in_heartbeat {
-      kbp_pacemaker::group { 'ALL_IPs':; }
-
-      kbp_pacemaker::primitive { 'HAProxy':
-        provider         => 'lsb:haproxy',
-        monitor_interval => '10s';
-      }
-
-      kbp_pacemaker::colocation { 'IPs_with_proxy':
-        resource_1 => 'ALL_IPs',
-        resource_2 => 'HAProxy';
-      }
-
-      kbp_pacemaker::order { 'haproxy_after_ALL_IPs':
-        resource_1 => 'ALL_IPs',
-        resource_2 => 'HAProxy';
-      }
-    } else {
-      sysctl::setting {
-        "net.ipv4.conf.all.arp_ignore":   value => 1;
-        "net.ipv4.conf.all.arp_announce": value => 2;
-      }
-    }
+  sysctl::setting {
+    "net.ipv4.conf.all.arp_ignore":   value => 1;
+    "net.ipv4.conf.all.arp_announce": value => 2;
   }
 
   Kbp_loadbalancer::Ip <<| tag == "loadbalancer_${loadbalancer_tag}" |>>
@@ -92,11 +64,7 @@ define kbp_loadbalancer::ip ($exported=true, $site, $loadbalancer_tag="${environ
           'ocf:heartbeat:IPaddr2'          => "ip=\"${ip}\" cidr_netmask=\"${netmask}\" nic=\"${nic}\" lvs_support=\"true\"",
           'ocf:kumina:hetzner-failover-ip' => "ip=\"${ip}\" script=\"/usr/local/sbin/parse-hetzner-json.py\"",
         },
-        location         => $location,
-        group            => $kbp_loadbalancer::real_haproxy_in_heartbeat ? {
-          false   => false,
-          default => 'ALL_IPs',
-        };
+        location         => $location;
       }
     }
 
