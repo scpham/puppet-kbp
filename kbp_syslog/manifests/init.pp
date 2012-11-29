@@ -6,54 +6,11 @@ define kbp_syslog($client=true, $environmentonly=true) {
   }
 
   if $client {
-    include kbp_syslog::client
+    kbp_syslog::client { 'dummy':; }
   } else {
-    class { "kbp_syslog::server":
+    kbp_syslog::server { 'dummy':
       environmentonly => $environmentonly;
     }
-  }
-}
-
-# Class: kbp_syslog::server
-#
-# Parameters:
-#  environmentonly
-#    Undocumented
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_syslog::server($environmentonly=true) {
-  include "kbp_syslog::server::${lsbdistcodename}"
-
-  if $environmentonly {
-    Kbp_ferm::Rule <<| tag == "syslog_${environment}" |>>
-  } else {
-    Kbp_ferm::Rule <<| tag == "syslog" |>>
-  }
-}
-
-# Class: kbp_syslog::client
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_syslog::client inherits rsyslog::client {
-  kbp_ferm::rule { "Syslog traffic":
-    saddr    => $source_ipaddress,
-    proto    => "udp",
-    dport    => 514,
-    action   => "ACCEPT",
-    exported => true,
-    ferm_tag => ["syslog","syslog_${environment}"];
   }
 }
 
@@ -159,35 +116,65 @@ class kbp_syslog::mysql::lenny inherits rsyslog::mysql {
 class kbp_syslog::mysql::squeeze inherits rsyslog::mysql {
 }
 
-# Class: kbp_syslog::cleanup
+# Define: kbp_syslog::server
 #
 # Actions:
-#  Cleans up old syslog files. This class is a temporary workaround.
+#  Setup an rsyslog server that listens for incoming syslog traffic for clients that use the same tag as himself.
+#
+# Parameters:
+#  name
+#    A dummy, not used for anything.
+#  environmentonly
+#    Whether this server should receive data from all systems or only from it's own environment.
+#  custom_tag
+#    Override the tag to use. This setting overrides environmentonly (because that doesn't make sense then).
 #
 # Depends:
+#  kbp_ferm
 #  gen_puppet
 #
-class kbp_syslog::cleanup {
-  $numbers = ["90","89","88","87","86","85","84","83","82","81","80","79","78","77","76","75","74","73","72","71","70",
-              "69","68","67","66","65","64","63","62","61","60","59","58","57","56","55","54","53","52","51","50","49",
-              "48","47","46","45","44","43","42","41","40","39","38","37","36","35","34","33","32","31","30","29","28",
-        "27","26","25","24","23","22","21","20","19","18","17","16","15","14","13","12","11","10", "9", "8", "7",
-         "6", "5", "4", "3", "2", "1", "0"]
+define kbp_syslog::server($environmentonly=true,$custom_tag=false) {
+  include "kbp_syslog::server::${lsbdistcodename}"
 
-  cleanup { $numbers:; }
+  if $custom_tag {
+    Kbp_ferm::Rule <<| tag == $custom_tag |>>
+  } else {
+    if $environmentonly {
+      Kbp_ferm::Rule <<| tag == "syslog_${environment}" |>>
+    } else {
+      Kbp_ferm::Rule <<| tag == "syslog" |>>
+    }
+  }
+}
 
-  define cleanup {
-    $files = ["syslog.${name}","mail.info.${name}","mail.warn.${name}","mail.err.${name}","mail.log.${name}",
-        "daemon.log.${name}","kern.log.${name}","auth.log.${name}","user.log.${name}","lpr.log.${name}",
-        "cron.log.${name}","debug.log.${name}","messages.${name}"]
+# Define: kbp_syslog::client
+#
+# Actions:
+#  Send local syslog data to a remote server.
+#
+# Paramters:
+#  name: A dummy, not used for anything.
+#  custom_tag: Override the tag to use.
+#
+# Depends:
+#  Undocumented
+#  gen_puppet
+#
+define kbp_syslog::client ($custom_tag=false) {
+  include rsyslog::client
 
-    cleanup0 { $files:; }
+  if $custom_tag {
+    $real_tag = $custom_tag
+  } else {
+    $real_tag = ["syslog","syslog_${environment}"]
   }
 
-  define cleanup0 {
-    $base = "/var/log/"
-    file { ["${base}/${name}","${base}/${name}.gz"]:
-      ensure => absent,
-    }
+  kbp_ferm::rule { "Syslog traffic (${name})":
+    saddr    => $source_ipaddress,
+    proto    => "udp",
+    dport    => 514,
+    action   => "ACCEPT",
+    exported => true,
+    ferm_tag => $real_tag;
   }
 }
