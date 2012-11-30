@@ -357,7 +357,8 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
       },
       ssl                 => $real_ssl,
       proxy               => $monitor_proxy,
-      statuscode          => $monitor_statuscode;
+      statuscode          => $monitor_statuscode,
+      nrpe                => $failover;
     }
 
     kbp_icinga::servicedependency { "apache_dependency_${monitor_name}_http":
