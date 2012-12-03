@@ -2,4 +2,5 @@
 server-id = <%= serverid %>
 <% if setup_binlogs -%>
 log-bin = mysql-bin
+binlog_format = MIXED
 <% end -%>
