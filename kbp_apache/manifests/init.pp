@@ -232,7 +232,7 @@ define kbp_apache::php_cgi($ensure="present", $documentroot, $custom_php_ini=fal
   if $ensure == "present" {
     include kbp_apache::php_common
     include gen_php5::cgi
-    include gen_php5::apc
+    include kbp_php5::apc
     include gen_base::apache2_mpm_worker
 
     kbp_apache::cgi { $name:
