@@ -29,4 +29,9 @@ class kbp_php5::apc($shm_size=64, $ttl=3600) {
     script_path => '/usr/share/munin/plugins/kumina',
     script      => 'php_apc_';
   }
+
+  gen_munin::client::plugin::config { 'php_apc':
+    section => 'php_apc_*',
+    content => "env.url http://127.0.0.255/apc_info.php?auto\n";
+  }
 }
