@@ -13,18 +13,11 @@ class kbp_apache {
   include gen_apache
   include kbp_munin::client::apache
 
-  if defined(Package['php-apc']) and defined(Package['libapache2-mod-fcgid']) {
-    $php_apc = true
-  } else {
-    $php_apc = false
-  }
-
   # Needed for /server-status (munin) when using NameVirtualHosts
   kbp_apache::site { 'localhost':
     address      => '127.0.0.255',
     address6     => '::1',
     documentroot => '/var/www',
-    php          => $php_apc,
     monitor      => false;
   }
 
@@ -251,6 +244,12 @@ define kbp_apache::php_cgi($ensure="present", $documentroot, $custom_php_ini=fal
     Package <| title == "libapache2-mod-php5" |> {
       ensure => purged,
       notify => Exec["force-reload-apache2"],
+    }
+
+    if !defined(Kbp_apache::Php_cgi['localhost_80']) {
+      kbp_apache::php_cgi { 'localhost_80':
+        documentroot   => '/var/www';
+      }
     }
   }
 }
