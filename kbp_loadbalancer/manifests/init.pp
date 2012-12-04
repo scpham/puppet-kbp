@@ -12,11 +12,6 @@ class kbp_loadbalancer ($haproxy_loglevel='warning', $loadbalancer_tag="${enviro
       heartbeat_tag => $loadbalancer_tag;
   }
 
-  sysctl::setting {
-    "net.ipv4.conf.all.arp_ignore":   value => 1;
-    "net.ipv4.conf.all.arp_announce": value => 2;
-  }
-
   Kbp_loadbalancer::Ip <<| tag == "loadbalancer_${loadbalancer_tag}" |>>
   Kbp_haproxy::Site::Add_server <<| tag == "haproxy_${loadbalancer_tag}" |>>
 }

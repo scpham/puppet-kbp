@@ -34,6 +34,13 @@ define kbp_pacemaker::primitive ($provider, $location=false, $location_score="in
     group            => $group,
     params           => $params;
   }
+
+  if $provider == 'ocf:heartbeat:IPaddr2' {
+    sysctl::setting {
+      "net.ipv4.conf.all.arp_ignore":   value => 1;
+      "net.ipv4.conf.all.arp_announce": value => 2;
+    }
+  }
 }
 
 
