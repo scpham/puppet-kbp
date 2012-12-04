@@ -13,18 +13,18 @@ class kbp_apache {
   include gen_apache
   include kbp_munin::client::apache
 
-  #if defined(Package['php-apc']) {
-  #  $php_apc = true
-  #} else {
-  #  $php_apc = false
-  #}
+  if defined(Package['php-apc']) and defined(Package['libapache2-mod-fcgid']) {
+    $php_apc = true
+  } else {
+    $php_apc = false
+  }
 
   # Needed for /server-status (munin) when using NameVirtualHosts
   kbp_apache::site { 'localhost':
     address      => '127.0.0.255',
     address6     => '::1',
     documentroot => '/var/www',
-    #php          => $php_apc,
+    php          => $php_apc,
     monitor      => false;
   }
 
