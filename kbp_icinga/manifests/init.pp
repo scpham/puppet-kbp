@@ -424,6 +424,94 @@ class kbp_icinga::proxy($proxytag="proxy_${environment}") {
   }
 }
 
+class kbp_icinga::icinga_mobile($dbpassword, $dbhost="localhost", $ssl=true, $authorized_users=false) {
+  class { 'kbp_icinga::icinga_web':
+    dbpassword       => $dbpassword,
+    dbhost           => $dbhost,
+    ssl              => $ssl,
+    authorized_users => $authorized_users;
+  }
+
+  package { 'icinga-mobile':; }
+}
+
+class kbp_icinga::icinga_web($dbpassword, $dbhost="localhost", $ssl=true, $authorized_users=false) {
+  class { 'kbp_icinga::server':
+    dbpassword       => $dbpassword,
+    dbhost           => $dbhost,
+    ssl              => $ssl,
+    authorized_users => $authorized_users;
+  }
+
+  package { 'icinga-web':; }
+
+  file {
+    "/etc/icinga/ido2db.cfg":
+      content => template("kbp_icinga/ido2db.cfg"),
+      owner   => "nagios",
+      mode    => 600,
+      require => Package["icinga"],
+      notify  => Exec["reload-icinga"];
+    "/etc/icinga/modules/idoutils.cfg":
+      content => template("kbp_icinga/idoutils.cfg"),
+      require => Package["icinga"],
+      notify  => Exec["reload-icinga"];
+    "/etc/icinga-web/conf.d/databases.xml":
+      content => template("kbp_icinga/icinga-web/databases.xml"),
+      owner   => "www-data",
+      mode    => 600,
+      require => Package["icinga-web"],
+      notify  => Exec["clearcache_icinga-web"];
+    "/etc/icinga-web/conf.d/auth.xml":
+      content => template("kbp_icinga/icinga-web/auth.xml"),
+      require => Package["icinga-web"],
+      notify  => Exec["clearcache_icinga-web"];
+    "/etc/icinga-web/conf.d/translation.xml":
+      content => template("kbp_icinga/icinga-web/translation.xml"),
+      require => Package["icinga-web"],
+      notify  => Exec["clearcache_icinga-web"];
+    "/usr/share/icinga-web/app/config/factories.xml":
+      content => template("kbp_icinga/icinga-web/factories.xml"),
+      require => Package["icinga-web"],
+      notify  => Exec["clearcache_icinga-web"];
+  }
+
+  exec { "clearcache_icinga-web":
+    command     => "/usr/lib/icinga-web/bin/clearcache.sh",
+    refreshonly => true;
+  }
+
+  @@mysql::server::db { ["icinga for ${fqdn}", "icinga_web for ${fqdn}"]:
+    tag => "mysql_kumina";
+  }
+
+  @@mysql::server::grant {
+    "icinga on icinga for ${fqdn}":
+      user        => "icinga",
+      db          => "icinga",
+      password    => $dbpassword,
+      hostname    => "%",
+      tag         => "mysql_kumina";
+    "icinga on icinga_web for ${fqdn}":
+      user        => "icinga",
+      db          => "icinga_web",
+      password    => $dbpassword,
+      hostname    => "%",
+      tag         => "mysql_kumina";
+    "icinga on puppet for ${fqdn}":
+      user        => 'icinga',
+      db          => 'puppet',
+      password    => $dbpassword,
+      hostname    => $fqdn,
+      permissions => 'SELECT',
+      tag         => 'mysql_kumina';
+  }
+
+  kbp_mysql::client { "icinga":
+    mysql_name => "icinga";
+  }
+}
+
 class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorized_users=false) {
   include gen_icinga::server
   include kbp_nsca::server
@@ -467,42 +555,12 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   $display_status_totals                    = 1
   $suppress_maintenance_downtime            = 1
 
-  package { ["icinga-web", 'icinga-mobile']:;}
-
   gen_logrotate::rotate { "icinga":
-    logs => "/var/cache/icinga/icinga.log",
+    logs    => "/var/cache/icinga/icinga.log",
     options => ["daily", "compress","rotate 21","missingok"];
   }
 
   file {
-    "/etc/icinga/ido2db.cfg":
-      content => template("kbp_icinga/ido2db.cfg"),
-      owner   => "nagios",
-      mode    => 600,
-      require => Package["icinga"],
-      notify  => Exec["reload-icinga"];
-    "/etc/icinga/modules/idoutils.cfg":
-      content => template("kbp_icinga/idoutils.cfg"),
-      require => Package["icinga"],
-      notify  => Exec["reload-icinga"];
-    "/etc/icinga-web/conf.d/databases.xml":
-      content => template("kbp_icinga/icinga-web/databases.xml"),
-      owner   => "www-data",
-      mode    => 600,
-      require => Package["icinga-web"],
-      notify  => Exec["clearcache_icinga-web"];
-    "/etc/icinga-web/conf.d/auth.xml":
-      content => template("kbp_icinga/icinga-web/auth.xml"),
-      require => Package["icinga-web"],
-      notify  => Exec["clearcache_icinga-web"];
-    "/etc/icinga-web/conf.d/translation.xml":
-      content => template("kbp_icinga/icinga-web/translation.xml"),
-      require => Package["icinga-web"],
-      notify  => Exec["clearcache_icinga-web"];
-    "/usr/share/icinga-web/app/config/factories.xml":
-      content => template("kbp_icinga/icinga-web/factories.xml"),
-      require => Package["icinga-web"],
-      notify  => Exec["clearcache_icinga-web"];
     "/etc/default/icinga":
       content => template("kbp_icinga/default_icinga"),
       notify  => Exec["reload-icinga"];
@@ -526,41 +584,6 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     command => '/etc/icinga/update_icinga_config',
     require => File['/etc/icinga/build_icinga_config','/etc/icinga/update_icinga_config'],
     notify  => Exec['reload-icinga'];
-  }
-
-  exec { "clearcache_icinga-web":
-    command     => "/usr/lib/icinga-web/bin/clearcache.sh",
-    refreshonly => true;
-  }
-
-  @@mysql::server::db { ["icinga for ${fqdn}", "icinga_web for ${fqdn}"]:
-    tag => "mysql_kumina";
-  }
-
-  @@mysql::server::grant {
-    "icinga on icinga for ${fqdn}":
-      user        => "icinga",
-      db          => "icinga",
-      password    => $dbpassword,
-      hostname    => "%",
-      tag         => "mysql_kumina";
-    "icinga on icinga_web for ${fqdn}":
-      user        => "icinga",
-      db          => "icinga_web",
-      password    => $dbpassword,
-      hostname    => "%",
-      tag         => "mysql_kumina";
-    "icinga on puppet for ${fqdn}":
-      user        => 'icinga',
-      db          => 'puppet',
-      password    => $dbpassword,
-      hostname    => $fqdn,
-      permissions => 'SELECT',
-      tag         => 'mysql_kumina';
-  }
-
-  kbp_mysql::client { "icinga":
-    mysql_name => "icinga";
   }
 
   gen_apt::preference { ["icinga","icinga-core","icinga-cgi","icinga-common","icinga-doc","icinga-idoutils"]:; }
@@ -902,6 +925,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     "/etc/icinga/notify_commands.cfg":
       content => template("kbp_icinga/server/config/generic/notify_commands.cfg"),
       notify  => Exec["reload-icinga"];
+    "/usr/bin/icinga-check-alive":
+      content => template("kbp_icinga/server/icinga-check-alive"),
+      mode    => 755;
   }
 
   kbp_icinga::icinga_config { ['/etc/icinga/icinga.cfg', '/etc/icinga/tmp_icinga.cfg']:; }
@@ -1071,12 +1097,6 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
 
   Concat::Add_content <<| tag == "htpasswd" |>> {
     target => "/etc/icinga/htpasswd.users",
-  }
-
-  file {
-    "/usr/bin/icinga-check-alive":
-      content => template("kbp_icinga/server/icinga-check-alive"),
-      mode    => 755;
   }
 
   kcron { "icinga-check-alive":
