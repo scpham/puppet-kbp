@@ -19,6 +19,13 @@ class kbp_pacemaker {
   include gen_pacemaker
 }
 
+class kbp_pacemaker::ip_sysctls {
+  sysctl::setting {
+    "net.ipv4.conf.all.arp_ignore":   value => 1;
+    "net.ipv4.conf.all.arp_announce": value => 2;
+  }
+}
+
 define kbp_pacemaker::primitive ($provider, $location=false, $location_score="inf", $location_name=false, $start_timeout=false, $monitor_interval=false, $monitor_timeout=false, $stop_timeout=false, $params=false, $group=false) {
   $safe_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
 
@@ -36,10 +43,7 @@ define kbp_pacemaker::primitive ($provider, $location=false, $location_score="in
   }
 
   if $provider == 'ocf:heartbeat:IPaddr2' {
-    sysctl::setting {
-      "net.ipv4.conf.all.arp_ignore":   value => 1;
-      "net.ipv4.conf.all.arp_announce": value => 2;
-    }
+    include kbp_pacemaker::ip_sysctls
   }
 }
 
