@@ -741,6 +741,7 @@ class kbp_munin::two::client {
   include gen_munin::client
 
   package { 'munin-plugins-kumina':
+    notify => Service['munin-node'],
     ensure => latest;
   }
 
