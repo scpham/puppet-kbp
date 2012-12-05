@@ -14,7 +14,7 @@ class kbp_dashboard_new::site_host($url, $prod_url, $ssl=true, $dbpassword) {
   kbp_mysql::client { 'dashboard_new':; }
 
   @@mysql::server::db { "dashboard_new for ${fqdn}":
-    tag => "mysql_${environment}_dashboard_new";
+    tag => "mysql_${environment}_${custenv}";
   }
 
   @@mysql::server::grant {
@@ -24,13 +24,13 @@ class kbp_dashboard_new::site_host($url, $prod_url, $ssl=true, $dbpassword) {
       hostname    => $fqdn,
       password    => $dbpassword,
       permissions => 'SELECT',
-      tag         => "mysql_${environment}_dashboard_new";
+      tag         => "mysql_${environment}_${custenv}";
     "dashboard_new on dashboard_new for ${fqdn}":
       user        => 'dashboard_new',
       db          => 'dashboard_new',
       hostname    => $fqdn,
       password    => $dbpassword,
-      tag         => "mysql_${environment}_dashboard_new";
+      tag         => "mysql_${environment}_${custenv}";
   }
 
   Kbp_dashboard_new::Environment <<| |>> {

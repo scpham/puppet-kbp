@@ -19,7 +19,7 @@ class kbp_dashboard::site_host($url, $ssl=true, $dbpassword, $dbhost) {
   kbp_mysql::client { 'dashboard':; }
 
   @@mysql::server::db { "dashboard for ${fqdn}":
-    tag => "mysql_${environment}_dashboard";
+    tag => "mysql_${environment}_${custenv}";
   }
 
   @@mysql::server::grant {
@@ -29,13 +29,13 @@ class kbp_dashboard::site_host($url, $ssl=true, $dbpassword, $dbhost) {
       hostname    => $fqdn,
       password    => $dbpassword,
       permissions => 'SELECT',
-      tag         => "mysql_${environment}_dashboard";
+      tag         => "mysql_${environment}_${custenv}";
     "dashboard on dashboard for ${fqdn}":
       user        => 'dashboard',
       db          => 'dashboard',
       hostname    => $fqdn,
       password    => $dbpassword,
-      tag         => "mysql_${environment}_dashboard";
+      tag         => "mysql_${environment}_${custenv}";
   }
 
   kbp_apache::vhost_addition { "${url}/access":
