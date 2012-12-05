@@ -22,7 +22,7 @@ class kbp_wordpress::common {
 #  Setup a wordpress instance.
 #
 # Parameters:
-#  mysql_name
+#  mysql_tag
 #   The name for the MySQL server.
 #  db
 #   The MySQL database
@@ -38,9 +38,13 @@ class kbp_wordpress::common {
 #  kbp_apache
 #  mysql
 #
-define kbp_wordpress($external_mysql=true,$mysql_name,$db=false,$user=false,$password,$serveralias=false,$access_logformat="combined") {
+define kbp_wordpress($external_mysql=true, $mysql_tag=false, $db=false, $user=false, $password, $serveralias=false, $access_logformat="combined") {
   include kbp_wordpress::common
 
+  $real_tag = $mysql_tag ? {
+    false   => "mysql_${environment}_${custenv}",
+    default => "mysql_${environment}_${custenv}_${mysql_tag}",
+  }
   $real_db = $db ? {
     false   => regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G'),
     default => $db,
@@ -58,17 +62,17 @@ define kbp_wordpress($external_mysql=true,$mysql_name,$db=false,$user=false,$pas
 
   if $external_mysql {
     @@mysql::server::db { $real_db:
-      tag => "mysql_${environment}_${mysql_name}";
+      tag => $real_tag;
     }
 
     @@mysql::server::grant { "${real_user} on ${real_db}.*":
       password   => $password,
-      tag        => "mysql_${environment}_${mysql_name}";
+      tag        => $real_tag;
     }
   } else {
     if ! defined(Class['kbp_mysql::server']) {
       class { 'kbp_mysql::server':
-        mysql_name => $mysql_name;
+        mysql_tag => $mysql_tag;
       }
     }
 

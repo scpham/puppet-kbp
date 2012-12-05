@@ -227,9 +227,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
         tag      => "${environment}_puppetmaster";
       }
 
-      kbp_mysql::client { $pname:
-        mysql_name => "puppetmaster",
-      }
+      kbp_mysql::client { $pname:; }
     }
 
     gen_puppet::set_config {

@@ -1,7 +1,5 @@
-define kbp_pmacct::config ($aggregates_nfprobe=false, $aggregates=["src_host","dst_host"], $aggregates_sql=$aggregates, $filter=false,
-                           $plugins=["mysql"], $sql_host="localhost", $sql_db="pmacct", $sql_user="pmacct", $sql_passwd=false,
-                           $sql_history="5m", $sql_history_roundoff="m", $sql_refresh_time="300", $sql_dont_try_update=true,
-                           $mysql_name="pmacct", $nfprobe_version=9, $nfprobe_receiver=false) {
+define kbp_pmacct::config ($aggregates_nfprobe=false, $aggregates=["src_host","dst_host"], $aggregates_sql=$aggregates, $filter=false, $plugins=["mysql"], $sql_host="localhost", $sql_db="pmacct", $sql_user="pmacct", $sql_passwd=false,
+    $sql_history="5m", $sql_history_roundoff="m", $sql_refresh_time="300", $sql_dont_try_update=true, $nfprobe_version=9, $nfprobe_receiver=false) {
   include gen_base::python_mysqldb
 
   gen_pmacct::config { $name:
@@ -22,21 +20,18 @@ define kbp_pmacct::config ($aggregates_nfprobe=false, $aggregates=["src_host","d
   }
 
   if "mysql" in $plugins {
-    # TODO Should be source_ipaddress?
     kbp_mysql::client { "Client for pmacct":
-      mysql_name => $mysql_name,
-      address    => $source_ipaddress,
+      address => $source_ipaddress,
     }
 
     @@mysql::server::db { "${sql_db} for ${hostname}":
-      tag => "mysql_${environment}_${mysql_name}",
+      tag => "mysql_${environment}_${custenv}";
     }
 
-    # TODO Should be source_ipaddress?
     @@mysql::server::grant { "${sql_user} on ${sql_db} for pmacct on ${hostname}":
       password => $sql_passwd,
       hostname => $source_ipaddress,
-      tag      => "mysql_${environment}_${mysql_name}",
+      tag      => "mysql_${environment}_${custenv}";
     }
   }
 

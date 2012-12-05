@@ -1,10 +1,10 @@
 # Author: Kumina bv <support@kumina.nl>
 
 # Parameters:
-#  mysql_name
+#  mysql_tag
 #    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
-class kbp_mysql::mastermaster($mysql_name, $serverid, $auto_increment_increment=10, $auto_increment_offset=$serverid, $setup_binlogs=true, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10, $repl_password) {
-
+class kbp_mysql::mastermaster($mysql_tag=false, $serverid, $auto_increment_increment=10, $auto_increment_offset=$serverid, $setup_binlogs=true, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false,
+    $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10, $repl_password) {
   if ! $serverid {
     $real_serverid = fqdn_rand(4294967293)+2 # 32 bit integer that is not 0 or 1
   } else {
@@ -13,7 +13,7 @@ class kbp_mysql::mastermaster($mysql_name, $serverid, $auto_increment_increment=
 
   class {
     "kbp_mysql::master":
-      mysql_name      => $mysql_name,
+      mysql_tag       => $mysql_tag,
       bind_address    => $bind_address,
       setup_backup    => $setup_backup,
       serverid        => $real_serverid,
@@ -22,7 +22,7 @@ class kbp_mysql::mastermaster($mysql_name, $serverid, $auto_increment_increment=
       slow_query_time => $slow_query_time;
     "kbp_mysql::slave":
       repl_host       => $repl_host,
-      mysql_name      => $mysql_name,
+      mysql_tag       => $mysql_tag,
       mastermaster    => true,
       monitoring_ha   => $monitoring_ha_slaving,
       datadir         => $datadir,
@@ -39,7 +39,7 @@ class kbp_mysql::mastermaster($mysql_name, $serverid, $auto_increment_increment=
 }
 
 # Parameters:
-#  mysql_name
+#  mysql_tag
 #    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
 #  bind_address:
 #    The address to bind the server to
@@ -48,9 +48,14 @@ class kbp_mysql::mastermaster($mysql_name, $serverid, $auto_increment_increment=
 #  datadir:
 #    Root directory for all the mysql data.
 #  slow_query_time    See kbp_mysql::server
-class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $serverid=1, $setup_binlogs = true, $slow_query_time=10) {
+class kbp_mysql::master($mysql_tag=false, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $serverid=1, $setup_binlogs = true, $slow_query_time=10) {
+  $real_tag = $mysql_tag ? {
+    false   => "mysql_${environment}_${custenv}",
+    default => "mysql_${environment}_${custenv}_${mysql_tag}",
+  }
+
   class { "kbp_mysql::server":
-    mysql_name      => $mysql_name,
+    mysql_tag       => $mysql_tag,
     setup_backup    => $setup_backup,
     bind_address    => $bind_address,
     datadir         => $datadir,
@@ -63,18 +68,20 @@ class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
     notify  => Exec['reload-mysql'];
   }
 
-  Mysql::Server::Grant <<| tag == "mysql_${environment}_${mysql_name}" |>>
-  Kbp_mysql::Monitoring_dependency <<| tag == "mysql_${environment}_${mysql_name}" |>>
+  Mysql::Server::Grant <<| tag == $real_tag |>>
+  Kbp_mysql::Monitoring_dependency <<| tag == $real_tag |>>
 
-  if ! defined(Kbp_mysql::Monitoring_dependency["mysql_${environment}_${mysql_name}_${fqdn}"]) {
-    @@kbp_mysql::monitoring_dependency { "mysql_${environment}_${mysql_name}_${fqdn}":; }
+  if ! defined(Kbp_mysql::Monitoring_dependency["mysql_${environment}_${mysql_tag}_${fqdn}"]) {
+    @@kbp_mysql::monitoring_dependency { "mysql_${environment}_${mysql_tag}_${fqdn}":
+      mysql_tag => $mysql_tag;
+    }
   }
 }
 
 # Class: kbp_mysql::slave
 #
 # Parameters:
-#  mysql_name         The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
+#  mysql_tag         The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
 #  slow_query_time    See kbp_mysql::server
 #
 # Actions:
@@ -84,10 +91,16 @@ class kbp_mysql::master($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$source_ipaddress, $datadir=false, $repl_user='repl', $repl_password, $repl_require_ssl=false, $serverid=false, $slow_query_time=10) {
+class kbp_mysql::slave($mysql_tag=false, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$source_ipaddress, $datadir=false, $repl_user='repl', $repl_password, $repl_require_ssl=false,
+    $serverid=false, $slow_query_time=10) {
+  $real_tag = $mysql_tag ? {
+    false   => "mysql_${environment}_${custenv}",
+    default => "mysql_${environment}_${custenv}_${mysql_tag}",
+  }
+
   if ! $mastermaster {
     class { "kbp_mysql::server":
-      mysql_name      => $mysql_name,
+      mysql_tag       => $mysql_tag,
       setup_backup    => $setup_backup,
       bind_address    => $bind_address,
       datadir         => $datadir,
@@ -121,7 +134,7 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
     db          => '*',
     permissions => "replication slave",
     require_ssl => $repl_require_ssl,
-    tag         => "mysql_${environment}_${mysql_name}";
+    tag         => $real_tag;
   }
 
   mysql::server::grant { "nagios_slavecheck":
@@ -136,7 +149,7 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
     proto    => "tcp",
     dport    => 3306,
     action   => "ACCEPT",
-    ferm_tag => "mysql_${environment}_${mysql_name}";
+    ferm_tag => $real_tag;
   }
 
   kbp_icinga::service { "mysql_slaving":
@@ -158,7 +171,7 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
 # Class: kbp_mysql::server
 #
 # Parameters:
-#  mysql_name       The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
+#  mysql_tag       The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
 #  slow_query_time  Slow query log time in seconds; see mysql documentation for long_query_time global variable. Set to false or 0 to disable.
 #
 #
@@ -169,11 +182,16 @@ class kbp_mysql::slave($mysql_name, $bind_address="0.0.0.0", $mastermaster=false
 #  Undocumented
 #  gen_puppet
 #
-class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $charset=false, $slow_query_time=10) {
+class kbp_mysql::server($mysql_tag=false, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $charset=false, $slow_query_time=10) {
   include kbp_trending::mysql
   include kbp_mysql::monitoring::icinga::server
   class { "mysql::server":
     datadir => $datadir;
+  }
+
+  $real_tag = $mysql_tag ? {
+    false   => "mysql_${environment}_${custenv}",
+    default => "mysql_${environment}_${custenv}_${mysql_tag}",
   }
 
   if $setup_backup and ! defined(Class['Kbp_backup::Disable']) {
@@ -224,7 +242,7 @@ class kbp_mysql::server($mysql_name, $bind_address="0.0.0.0", $setup_backup=true
     require => Service["mysql"];
   }
 
-  Kbp_ferm::Rule <<| tag == "mysql_${environment}_${mysql_name}" |>>
+  Kbp_ferm::Rule <<| tag == $real_tag |>>
 
   Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
 }
@@ -303,7 +321,7 @@ class kbp_mysql::client::java {
 # Define: kbp_mysql::client
 #
 # Parameters:
-#  mysql_name
+#  mysql_tag
 #    The name of the service that's using MySQL
 #
 # Actions:
@@ -315,8 +333,13 @@ class kbp_mysql::client::java {
 #  kbp_ferm
 #  gen_puppet
 #
-define kbp_mysql::client ($mysql_name, $address=$source_ipaddress, $environment=$environment) {
+define kbp_mysql::client ($mysql_tag=false, $address=$source_ipaddress, $environment=$environment) {
   include gen_base::mysql_client
+
+  $real_tag = $mysql_tag ? {
+    false   => "mysql_${environment}_${custenv}",
+    default => "mysql_${environment}_${custenv}_${mysql_tag}",
+  }
 
   kbp_ferm::rule { "MySQL connections for ${name}":
     exported => true,
@@ -324,17 +347,22 @@ define kbp_mysql::client ($mysql_name, $address=$source_ipaddress, $environment=
     proto    => "tcp",
     dport    => 3306,
     action   => "ACCEPT",
-    ferm_tag => "mysql_${environment}_${mysql_name}";
+    ferm_tag => $real_tag;
   }
 }
 
-define kbp_mysql::monitoring_dependency($this_fqdn=$fqdn) {
+define kbp_mysql::monitoring_dependency($this_fqdn=$fqdn, $mysql_tag=false) {
   if $this_fqdn != $fqdn {
+    $real_tag = $mysql_tag ? {
+      false   => "mysql_${environment}_${custenv}",
+      default => "mysql_${environment}_${custenv}_${mysql_tag}",
+    }
+
     gen_icinga::servicedependency { "mysql_dependency_${fqdn}":
       dependent_service_description => "MySQL service",
       host_name                     => $this_fqdn,
       service_description           => "MySQL service",
-      tag                           => "mysql_${environment}_${mysql_name}";
+      tag                           => $real_tag;
     }
   }
 }

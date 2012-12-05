@@ -1,4 +1,4 @@
-class kbp_dashboard::site_host($url, $ssl=true, $mysql_name=$environment, $dbpassword, $dbhost) {
+class kbp_dashboard::site_host($url, $ssl=true, $dbpassword, $dbhost) {
   include gen_base::python_django_south
 
   $port = $ssl ? {
@@ -16,9 +16,7 @@ class kbp_dashboard::site_host($url, $ssl=true, $mysql_name=$environment, $dbpas
     port => $port,
   }
 
-  kbp_mysql::client { 'dashboard':
-    mysql_name => 'dashboard';
-  }
+  kbp_mysql::client { 'dashboard':; }
 
   @@mysql::server::db { "dashboard for ${fqdn}":
     tag => "mysql_${environment}_dashboard";

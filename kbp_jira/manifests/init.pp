@@ -12,6 +12,8 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
   include gen_base::ant
   include gen_base::unzip
   include kbp_mysql::client::java
+  # TODO Allow the DB to reside on another machine.
+  include kbp_mysql::server
 
   # Create the directories needed for jira
   file {
@@ -99,11 +101,6 @@ class kbp_jira ($version="4.4", $db_name="jira", $db_username="jira", $db_passwo
       lens    => 'Xml.lns',
       changes => ["set Context/Manager[#attribute/pathname='']/#attribute/pathname ''"],
       require => File['/srv/tomcat/conf/Catalina/localhost/jira.xml'];
-  }
-
-  # TODO Allow the DB to reside on another machine.
-  class { "kbp_mysql::server":
-    mysql_name => "jira";
   }
 
   kbp_tomcat::apache_proxy_ajp_site { $domain:

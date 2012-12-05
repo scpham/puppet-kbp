@@ -37,9 +37,7 @@ define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=fal
 
     if $mode == 'primary' or $mode == 'dovecot' {
       if !defined(Class["kbp_mysql::server"]) {
-        class { "kbp_mysql::server":
-          mysql_name => regsubst($fqdn, '[^a-zA-Z0-9\-_]', '_', 'G')
-        }
+        include kbp_mysql::server
       }
 
       file {

@@ -507,9 +507,7 @@ class kbp_icinga::icinga_web($dbpassword, $dbhost="localhost", $ssl=true, $autho
       tag         => 'mysql_kumina';
   }
 
-  kbp_mysql::client { "icinga":
-    mysql_name => "icinga";
-  }
+  kbp_mysql::client { "icinga":; }
 }
 
 class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorized_users=false) {
