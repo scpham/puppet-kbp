@@ -4,23 +4,23 @@
 #  percona_name         The name of this Percona setup, used in combination with $environment to make sure the correct resources are imported
 #  slow_query_time    See kbp_percona::server
 #
-class kbp_percona::mastermaster($percona_name, $repl_password, $repl_user='repl', $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10) {
-  class { "kbp_percona::master":
-    percona_name      => $percona_name,
-    bind_address    => $bind_address,
-    setup_backup    => $setup_backup,
-    datadir         => $datadir,
-    slow_query_time => $slow_query_time;
-  }
-  class { "kbp_percona::slave":
-    repl_host       => $repl_host,
-    percona_name      => $percona_name,
-    mastermaster    => true,
-    monitoring_ha   => $monitoring_ha_slaving,
-    datadir         => $datadir,
-    slow_query_time => $slow_query_time,
-    repl_user       => $repl_user,
-    repl_password   => $repl_password;
+class kbp_percona::mastermaster($percona_tag=false, $repl_password, $repl_user='repl', $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10) {
+  class {
+    "kbp_percona::master":
+      percona_tag     => $percona_tag,
+      bind_address    => $bind_address,
+      setup_backup    => $setup_backup,
+      datadir         => $datadir,
+      slow_query_time => $slow_query_time;
+    "kbp_percona::slave":
+      repl_host       => $repl_host,
+      percona_name    => $percona_name,
+      mastermaster    => true,
+      monitoring_ha   => $monitoring_ha_slaving,
+      datadir         => $datadir,
+      slow_query_time => $slow_query_time,
+      repl_user       => $repl_user,
+      repl_password   => $repl_password;
   }
   fail("This class is untested and simply a copy from kbp_mysql.")
 }
@@ -29,9 +29,14 @@ class kbp_percona::mastermaster($percona_name, $repl_password, $repl_user='repl'
 #  percona_name       The name of this Percona setup, used in combination with $environment to make sure the correct resources are imported
 #  slow_query_time    See kbp_percona::server
 #
-class kbp_percona::master($percona_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $slow_query_time=10, $percona_version=false) {
+class kbp_percona::master($percona_tag=false, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $slow_query_time=10, $percona_version=false) {
+  $real_tag = $percona_tag ? {
+    false   => "mysql_${environment}_${custenv}",
+    default => "mysql_${environment}_${custenv}_${percona_tag}",
+  }
+
   class { "kbp_percona::server":
-    percona_name    => $percona_name,
+    percona_tag     => $percona_tag,
     percona_version => $percona_version,
     setup_backup    => $setup_backup,
     bind_address    => $bind_address,
@@ -39,11 +44,13 @@ class kbp_percona::master($percona_name, $bind_address="0.0.0.0", $setup_backup=
     slow_query_time => $slow_query_time;
   }
 
-  Gen_percona::Server::Grant <<| tag == "percona_${environment}_${percona_name}" |>>
-  Kbp_percona::Monitoring_dependency <<| tag == "percona_${environment}_${percona_name}" |>>
+  Gen_percona::Server::Grant <<| tag == $real_tag |>>
+  Kbp_percona::Monitoring_dependency <<| tag == $real_tag |>>
 
-  if ! defined(Kbp_percona::Monitoring_dependency["percona_${environment}_${percona_name}_${fqdn}"]) {
-    @@kbp_percona::monitoring_dependency { "percona_${environment}_${percona_name}_${fqdn}":; }
+  if ! defined(Kbp_percona::Monitoring_dependency["percona_${environment}_${percona_tag}_${fqdn}"]) {
+    @@kbp_percona::monitoring_dependency { "percona_${environment}_${percona_tag}_${fqdn}":
+      percona_tag => $percona_tag;
+    }
   }
 }
 
@@ -60,15 +67,21 @@ class kbp_percona::master($percona_name, $bind_address="0.0.0.0", $setup_backup=
 #  Undocumented
 #  gen_puppet
 #
-class kbp_percona::slave($percona_name, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$source_ipaddress, $datadir=false, $repl_user='repl', $repl_password, $repl_require_ssl=false, $slow_query_time=10) {
+class kbp_percona::slave($percona_tag=false, $bind_address="0.0.0.0", $mastermaster=false, $setup_backup=true, $monitoring_ha=false, $repl_host=$source_ipaddress, $datadir=false, $repl_user='repl', $repl_password,
+    $repl_require_ssl=false, $slow_query_time=10) {
   if ! $mastermaster {
     class { "kbp_percona::server":
-      percona_name      => $percona_name,
+      percona_tag     => $percona_tag,
       setup_backup    => $setup_backup,
       bind_address    => $bind_address,
       datadir         => $datadir,
       slow_query_time => $slow_query_time;
     }
+  }
+
+  $real_tag = $percona_tag ? {
+    false   => "mysql_${environment}_${custenv}",
+    default => "mysql_${environment}_${custenv}_${percona_tag}",
   }
 
   @@percona::server::grant { "repl_${fqdn}":
@@ -78,7 +91,7 @@ class kbp_percona::slave($percona_name, $bind_address="0.0.0.0", $mastermaster=f
     db          => '*',
     permissions => "replication slave",
     require_ssl => $repl_require_ssl,
-    tag         => "percona_${environment}_${percona_name}";
+    tag         => $real_tag;
   }
 
   percona::server::grant { "nagios_slavecheck":
@@ -93,7 +106,7 @@ class kbp_percona::slave($percona_name, $bind_address="0.0.0.0", $mastermaster=f
     proto    => "tcp",
     dport    => 3306,
     action   => "ACCEPT",
-    ferm_tag => "percona_${environment}_${percona_name}";
+    ferm_tag => $percona_tag;
   }
 
   kbp_icinga::service { "percona_slaving":
@@ -128,12 +141,17 @@ class kbp_percona::slave($percona_name, $bind_address="0.0.0.0", $mastermaster=f
 #  Undocumented
 #  gen_puppet
 #
-class kbp_percona::server($percona_name, $percona_version=false, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $charset=false, $slow_query_time=10) {
+class kbp_percona::server($percona_tag=false, $percona_version=false, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $charset=false, $slow_query_time=10) {
   include kbp_trending::mysql
   include kbp_percona::monitoring::icinga::server
   class { "gen_percona::server":
     version => $percona_version,
     datadir => $datadir;
+  }
+
+  $real_tag = $percona_tag ? {
+    false   => "mysql_${environment}_${custenv}",
+    default => "mysql_${environment}_${custenv}_${percona_tag}",
   }
 
   if $setup_backup and ! defined(Class['Kbp_backup::Disable']) {
@@ -196,12 +214,12 @@ class kbp_percona::server($percona_name, $percona_version=false, $bind_address="
     require => Service["percona"];
   }
 
-  Kbp_ferm::Rule <<| tag == "percona_${environment}_${percona_name}" |>>
+  Kbp_ferm::Rule <<| tag == $real_tag |>>
 
   Gen_ferm::Rule <<| tag == "percona_monitoring" |>>
 
   # Stay compatible with MySQL
-  Kbp_ferm::Rule <<| tag == "mysql_${environment}_${percona_name}" |>>
+  Kbp_ferm::Rule <<| tag == $real_tag |>>
 
   Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
 }
@@ -286,8 +304,13 @@ class kbp_percona::client::java {
 #  kbp_ferm
 #  gen_puppet
 #
-define kbp_percona::client ($percona_name, $address=$source_ipaddress, $environment=$environment) {
+define kbp_percona::client ($percona_tag=false, $address=$source_ipaddress, $environment=$environment) {
   include gen_base::percona_client
+
+  $real_tag = $percona_tag ? {
+    false   => "mysql_${environment}_${custenv}",
+    default => "mysql_${environment}_${custenv}_${percona_tag}",
+  }
 
   kbp_ferm::rule { "Percona connections for ${name}":
     exported => true,
@@ -295,18 +318,23 @@ define kbp_percona::client ($percona_name, $address=$source_ipaddress, $environm
     proto    => "tcp",
     dport    => 3306,
     action   => "ACCEPT",
-    ferm_tag => "percona_${environment}_${percona_name}";
+    ferm_tag => $real_tag;
   }
   fail("This define is untested and simply a copy from kbp_mysql.")
 }
 
-define kbp_percona::monitoring_dependency($this_fqdn=$fqdn) {
+define kbp_percona::monitoring_dependency($this_fqdn=$fqdn, $percona_tag=false) {
   if $this_fqdn != $fqdn {
+    $real_tag = $percona_tag ? {
+      false   => "mysql_${environment}_${custenv}",
+      default => "mysql_${environment}_${custenv}_${percona_tag}",
+    }
+
     gen_icinga::servicedependency { "percona_dependency_${fqdn}":
       dependent_service_description => "Percona service",
       host_name                     => $this_fqdn,
       service_description           => "Percona service",
-      tag                           => "percona_${environment}_${percona_name}";
+      tag                           => $real_tag;
     }
   }
   fail("This define is untested and simply a copy from kbp_mysql.")
