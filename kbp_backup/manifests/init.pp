@@ -98,6 +98,17 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
       execution_failure_criteria    => "w",
       notification_failure_criteria => "w";
     }
+
+    # If the backupserver is down, we don't need notifications
+    if $real_method == 'offsite' {
+      kbp_icinga::servicedependency { "daily_backup_ssh_on_server":
+        service_description           => 'SSH connectivity',
+        host_name                     => $backup_server,
+        dependent_service_description => 'Daily backup status',
+        execution_failure_criteria    => 'w,c,u',
+        notification_failure_criteria => 'w,c,u';
+      }
+    }
   }
 }
 
