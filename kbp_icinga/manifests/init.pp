@@ -1615,7 +1615,7 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
 
 define kbp_icinga::servicedependency($ensure="present", $dependent_service_description, $host_name=$fqdn, $address=false, $service_description, $conf_dir="${environment}/${fqdn}", $dependent_host_name=$fqdn,
     $execution_failure_criteria=false, $notification_failure_criteria="o") {
-  if $::monitoring == 'true' or ($::override_nomonitoring and $::monitoring != 'force_off') {
+  if $::monitoring == 'true' or ($::override_nomonitoring and $::monitoring != 'force_off' and $ensure="present") {
     gen_icinga::servicedependency { $name:
       dependent_service_description => $dependent_service_description,
       host_name                     => $host_name,
