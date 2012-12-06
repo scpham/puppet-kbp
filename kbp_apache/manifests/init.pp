@@ -312,6 +312,7 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
   }
   $real_intermediate = $intermediate ? {
     false         => false,
+    'kumina'      => 'KuminaCA.pem',
     'positivessl' => 'PositiveSSLCA.pem',
     'rapidssl'    => 'RapidSSL_CA_bundle.pem',
     'terena'      => 'TerenaCA.pem',
