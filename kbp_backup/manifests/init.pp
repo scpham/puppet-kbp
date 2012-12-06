@@ -100,7 +100,8 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
     }
 
     # If the backupserver is down, we don't need notifications
-    if $real_method == 'offsite' {
+    # TODO workaround for a backup server that's not present in this puppetmaster
+    if $real_method == 'offsite' and defined(Sshkey[$backup_server]) {
       kbp_icinga::servicedependency { "daily_backup_ssh_on_server":
         service_description           => 'SSH connectivity',
         host_name                     => $backup_server,
