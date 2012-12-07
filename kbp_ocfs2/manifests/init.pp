@@ -58,4 +58,6 @@ class kbp_ocfs2($ocfs2_tag=false, $use_ipaddress=$external_ipaddress) {
   if $lsbdistcodename == 'squeeze' {
     gen_apt::preference { 'ocfs2-tools':; }
   }
+
+  kbp_icinga::proc_status { 'o2cb':; }
 }
