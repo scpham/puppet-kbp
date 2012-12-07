@@ -22,6 +22,11 @@ class kbp_ocfs2($ocfs2_tag=false, $use_ipaddress=$external_ipaddress) {
     default => "ocfs2_${environment}_${custenv}_${ocfs2_tag}",
   }
 
+  file { '/etc/init.d/o2cb':
+    content => template('kbp_ocfs2/o2cb'),
+    mode    => 755;
+  }
+
   concat { '/etc/ocfs2/cluster.conf':
     notify => Kservice['o2cb'];
   }
