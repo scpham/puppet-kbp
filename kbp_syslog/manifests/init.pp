@@ -149,12 +149,12 @@ define kbp_syslog::server($environmentonly=true,$custom_tag=false) {
   Concat::Add_content <<| tag == "${real_tag}_client" |>>
 
   @@concat::add_content { "allow syslog server ${fqdn}":
-    content => template('rsyslog/client/zz-allowed-server.conf'),
-    target  => '/etc/rsyslog.d/allowed-server.conf',
+    content => template('rsyslog/client/allowed-server.conf'),
+    target  => '/etc/rsyslog.d/zz-allowed-server.conf',
     tag     => "${real_tag}_server",
   }
 
-  file { '/etc/rsyslog.d/zz-allowed-peers.conf':
+  file { '/etc/rsyslog.d/allowed-peers.conf':
     ensure => absent,
   }
 }
