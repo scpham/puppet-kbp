@@ -138,22 +138,10 @@ define kbp_syslog::server($environmentonly=true,$custom_tag=false) {
     $real_tag = "syslog"
   }
 
-  concat { '/etc/rsyslog.d/zz-allowed-peers.conf':
-    require => Package['rsyslog'],
-    notify  => Service['rsyslog'],
-  }
-
   Kbp_ferm::Rule <<| tag == $real_tag |>>
-  Concat::Add_content <<| tag == "${real_tag}_client" |>>
-
-  @@concat::add_content { "allow syslog server ${fqdn}":
-    content => template('rsyslog/client/allowed-server.conf'),
-    target  => '/etc/rsyslog.d/zz-allowed-server.conf',
-    tag     => "${real_tag}_server",
-  }
 
   # Remove this resource after 2012-12-11
-  concat { '/etc/rsyslog.d/allowed-peers.conf':
+  file { ['/etc/rsyslog.d/allowed-peers.conf','/etc/rsyslog.d/zz-allowed-peers.conf']:
     ensure => absent,
   }
 }
@@ -193,21 +181,8 @@ define kbp_syslog::client ($custom_tag=false) {
     ferm_tag => $real_tag;
   }
 
-  @@concat::add_content { "allow syslog access for ${fqdn}":
-    content => template('rsyslog/server/allow-peer.conf'),
-    target  => '/etc/rsyslog.d/zz-allowed-peers.conf',
-    tag     => "${real_tag}_client";
-  }
-
-  concat { '/etc/rsyslog.d/zz-allowed-server.conf':
-    require => Package['rsyslog'],
-    notify  => Service['rsyslog'],
-  }
-
-  Concat::Add_content <<| tag == "${real_tag}_server" |>>
-
   # Remove the next resource after 2012-12-11
-  file { '/etc/rsyslog.d/allowed-server.conf':
+  file { ['/etc/rsyslog.d/allowed-server.conf','/etc/rsyslog.d/zz-allowed-server.conf']:
     ensure => absent,
   }
 }
