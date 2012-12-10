@@ -1,14 +1,10 @@
 # Author: Kumina bv <support@kumina.nl>
 
 define kbp_syslog($client=true, $environmentonly=true) {
-  Package <| title == "rsyslog" |> {
-    ensure => latest,
-  }
-
   if $client {
-    kbp_syslog::client { 'dummy':; }
+    kbp_syslog::client { $name:; }
   } else {
-    kbp_syslog::server { 'dummy':
+    kbp_syslog::server { $name:
       environmentonly => $environmentonly;
     }
   }
@@ -25,6 +21,8 @@ define kbp_syslog($client=true, $environmentonly=true) {
 #
 class kbp_syslog::server::lenny inherits rsyslog::server {
   include kbp_syslog::server::logrotate
+
+  gen_apt::preferences { 'rsyslog':; }
 }
 
 # Class: kbp_syslog::server::squeeze
