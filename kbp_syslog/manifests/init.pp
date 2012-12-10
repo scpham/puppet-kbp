@@ -155,6 +155,10 @@ define kbp_syslog::server($environmentonly=true,$custom_tag=false) {
     target  => '/etc/rsyslog.d/allowed-server.conf',
     tag     => "${real_tag}_server",
   }
+
+  file { '/etc/rsyslog.d/zz-allowed-peers.conf':
+    ensure => absent,
+  }
 }
 
 # Define: kbp_syslog::client
@@ -197,6 +201,10 @@ define kbp_syslog::client ($custom_tag=false) {
   concat { '/etc/rsyslog.d/zz-allowed-server.conf':
     require => Package['rsyslog'],
     notify  => Service['rsyslog'],
+  }
+
+  file { '/etc/rsyslog.d/allowed-server.conf':
+    ensure => absent,
   }
 
   Concat::Add_content <<| tag == "${real_tag}_server" |>>
