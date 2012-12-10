@@ -152,7 +152,8 @@ define kbp_syslog::server($environmentonly=true,$custom_tag=false) {
     tag     => "${real_tag}_server",
   }
 
-  file { '/etc/rsyslog.d/allowed-peers.conf':
+  # Remove this resource after 2012-12-11
+  concat { '/etc/rsyslog.d/allowed-peers.conf':
     ensure => absent,
   }
 }
@@ -203,9 +204,10 @@ define kbp_syslog::client ($custom_tag=false) {
     notify  => Service['rsyslog'],
   }
 
+  Concat::Add_content <<| tag == "${real_tag}_server" |>>
+
+  # Remove the next resource after 2012-12-11
   file { '/etc/rsyslog.d/allowed-server.conf':
     ensure => absent,
   }
-
-  Concat::Add_content <<| tag == "${real_tag}_server" |>>
 }
