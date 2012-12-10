@@ -21,8 +21,6 @@ define kbp_syslog($client=true, $environmentonly=true) {
 #
 class kbp_syslog::server::lenny inherits rsyslog::server {
   include kbp_syslog::server::logrotate
-
-  gen_apt::preferences { 'rsyslog':; }
 }
 
 # Class: kbp_syslog::server::squeeze
@@ -174,6 +172,10 @@ define kbp_syslog::server($environmentonly=true,$custom_tag=false) {
 #
 define kbp_syslog::client ($custom_tag=false) {
   include rsyslog::client
+
+  if versioncmp($lsbdistrelease, 6) < 0 {
+    gen_apt::preferences { 'rsyslog':; }
+  }
 
   if $custom_tag {
     $real_tag = $custom_tag
