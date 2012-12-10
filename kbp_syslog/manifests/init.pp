@@ -137,13 +137,23 @@ define kbp_syslog::server($environmentonly=true,$custom_tag=false) {
   include "kbp_syslog::server::${lsbdistcodename}"
 
   if $custom_tag {
-    Kbp_ferm::Rule <<| tag == $custom_tag |>>
+    $real_tag = $custom_tag
   } else {
-    if $environmentonly {
-      Kbp_ferm::Rule <<| tag == "syslog_${environment}" |>>
-    } else {
-      Kbp_ferm::Rule <<| tag == "syslog" |>>
-    }
+    $real_tag = "syslog"
+  }
+
+  concat { '/etc/rsyslog.d/allowed-peers.conf':
+    require => Package['rsyslog'],
+    notify  => Service['rsyslog'],
+  }
+
+  Kbp_ferm::Rule <<| tag == $real_tag |>>
+  Concat::Add_content <<| tag == "${real_tag}_client" |>>
+
+  @@concat::add_content { "allow syslog server ${fqdn}":
+    content => template('rsyslog/client/allowed-server.conf'),
+    target  => '/etc/rsyslog.d/allowed-server.conf',
+    tag     => "${real_tag}_server",
   }
 }
 
@@ -166,15 +176,28 @@ define kbp_syslog::client ($custom_tag=false) {
   if $custom_tag {
     $real_tag = $custom_tag
   } else {
-    $real_tag = ["syslog","syslog_${environment}"]
+    $real_tag = "syslog"
   }
 
   kbp_ferm::rule { "Syslog traffic (${name})":
     saddr    => $source_ipaddress,
-    proto    => "udp",
-    dport    => 514,
+    proto    => 'tcp',
+    dport    => 10514,
     action   => "ACCEPT",
     exported => true,
     ferm_tag => $real_tag;
   }
+
+  @@concat::add_content { "allow syslog access for ${fqdn}":
+    content => template('rsyslog/server/allow-peer.conf'),
+    target  => '/etc/rsyslog.d/allowed-peers.conf',
+    tag     => "${real_tag}_client";
+  }
+
+  concat { '/etc/rsyslog.d/allowed-server.conf':
+    require => Package['rsyslog'],
+    notify  => Service['rsyslog'],
+  }
+
+  Concat::Add_content <<| tag == "${real_tag}_server" |>>
 }
