@@ -1,48 +1,196 @@
 # Author: Kumina bv <support@kumina.nl>
 
-# Class: kbp_munin::client
+#
+# Class: kbp_munin::server
 #
 # Actions:
-#  Undocumented
+#  - Install munin (through gen_munin::server)
+#  - Install and setup apache
+#  - Install and setup rrdcached (when requested)
+#
+# Parameters:
+#  site:
+#   The name the munin graphs are hosted on
+#  wildcard:
+#   The wildcard certificate name (there is no support for separate ssl certs for now)
+#  intermediate:
+#   The intermediate certificate
+#  use_rrdcached:
+#   Use rrdcached to cache all writes to RRD
+#  allowed_access_to_root:
+#   By default, access to the root of the site (the overview) is disallowed. When this parameter is set,
+#   the people in it's environment are allowed access to the root and are able to see an overview of all machines.
 #
 # Depends:
-#  Undocumented
+#  gen_munin::server
+#
+class kbp_munin::server ($site, $wildcard=false, $intermediate=false, $use_rrdcached=true, $allowed_access_to_root='kumina'){
+  include gen_munin::server
+
+  if $wildcard {
+    $port = 443
+    include kbp_apache::ssl
+  } else {
+    $port = 80
+  }
+
+  Kbp_munin::Environment <<| |>> {
+    site => $site,
+    port => $port,
+  }
+
+  file {
+    '/etc/munin/munin.conf':
+      content => template('kbp_munin/munin.conf'),
+      require => Package['munin'];
+    '/etc/munin/conf':
+      ensure  => directory,
+      require => Package['munin'];
+    '/etc/apache2/conf.d/munin':
+      ensure  => absent,
+      require => Package['munin'],
+      notify  => Exec['reload-apache2'];
+    '/etc/cron.d/munin':
+      ensure  => absent,
+      require => Package['munin'],
+      notify  => Exec['reload-cron'];
+  }
+
+  kcron {
+    'munin-update':
+      user    => 'munin',
+      command => '/usr/share/munin/munin-update',
+      minute  => '*/5',
+      require => Package['munin'];
+    'munin-html':
+      user    => 'munin',
+      command => '/usr/share/munin/munin-limits ; /usr/bin/nice /usr/share/munin/munin-html',
+      minute  => '1',
+      require => Package['munin'];
+    'munin-limits':
+      user    => 'munin',
+      command => '/usr/share/munin/munin-limits --force --contact nagios --contact old-nagios',
+      minute  => '14',
+      hour    => '10',
+      require => Package['munin'];
+  }
+
+  kbp_apache::site { $site:
+    make_default => true,
+    wildcard     => $wildcard,
+    intermediate => $intermediate,
+    auth         => true;
+  }
+
+  kbp_apache::vhost_addition {
+    "${site}/munin.conf":
+      ports   => $port,
+      content => template("kbp_munin/apache2/munin.conf");
+    # Configure access to the root web-dir
+    "${site}/access_0_common":
+      ports   => $port,
+      content => template("kbp_munin/apache2/access_common");
+  }
+
+  kbp_apache::cgi { "${site}_${port}":
+    set_scriptalias => false;
+  }
+
+  File <| title == "/srv/www/${site}" |> {
+    mode => 775,
+  }
+
+  setfacl { "/srv/www/${site} munin access":
+    acl          => "group:munin:rwx",
+    dir          => "/srv/www/${site}",
+    make_default => true,
+    require      => [Kbp_apache::Site[$site],Package['munin']];
+  }
+
+  if $use_rrdcached {
+    # rrdcached makes for less IO on the machine
+    kservice {"rrdcached":
+      hasreload => false;
+    }
+    group { "rrdcached":
+      system => true,
+      ensure => present;
+    }
+    user { ["www-data", "munin"]:
+      groups  => "rrdcached",
+      require => [Package["munin","apache2"], Group["rrdcached"]];
+    }
+    file { "/etc/default/rrdcached":
+      content => template("kbp_munin/rrdcached.default"),
+      require => Package["rrdcached"],
+      notify  => Exec["reload-rrdcached"];
+    }
+
+    gen_munin::client::plugin { 'rrdcached':
+      script_path => '/usr/share/munin/plugins/kumina';
+    }
+
+    gen_munin::client::plugin::config { 'rrdcached':
+      content => 'user root';
+    }
+  }
+}
+
+#
+# Define: kbp_munin::environment
+#
+# Actions:
+#  - Add apache config for the environment
+#  - Import htpasswd info
+#  - Export config for the clients
+#
+# Depends:
 #  gen_puppet
 #
+define kbp_munin::environment ($site = false, $port = false, $prettyname) {
+  gen_munin::environment{$name:;}
+
+  kbp_apache::vhost_addition { "${site}/access_${name}":
+    ports   => $port,
+    content => template("kbp_munin/apache2/access.conf");
+  }
+
+  concat { "/srv/www/${site}/.htpasswd_${name}":
+    require => File["/srv/www/${site}"];
+  }
+
+  Concat::Add_content <<| tag == "htpasswd_${name}" |>> {
+    target => "/srv/www/${site}/.htpasswd_${name}",
+  }
+
+  kbp_ferm::rule { "Munin connections for ${name}":
+    saddr    => $ipaddress,
+    proto    => "tcp",
+    dport    => "4949",
+    action   => "ACCEPT",
+    exported => true,
+    ferm_tag => "trending_${name}";
+  }
+}
+
+#
+# Class: kbp_munin::client
+#
+# Actions: Install munin-node (through gen_munin) and import config
+#
+# Depends:
+#  kbp_munin
+#  gen_munin::client
+#
 class kbp_munin::client {
-  include munin::client
-  if $munin_proxy and !$munin_proxy_port {
-    fail("Kbp_munin::Client: \$munin_proxy set but no \$munin_proxy_port in site.pp")
-  }
-  if !$munin_proxy and $munin_proxy_port {
-    fail("Kbp_munin::Client: \$munin_proxy_port set but no \$munin_proxy in site.pp")
-  }
+  include gen_munin::client
 
-  package { "libnet-snmp-perl":; }
-
-  gen_munin::client::plugin::config { "files_user_plugin":
-    section => "files_user_*",
-    content => "user root";
+  package { 'munin-plugins-kumina':
+    notify => Service['munin-node'],
+    ensure => latest;
   }
 
-  Kbp_ferm::Rule <<| tag == "general_trending" |>>
-
-  if $munin_proxy {
-    $munin_template = "kbp_munin/munin.conf_client_with_proxy"
-  } else {
-    $real_ipaddress = $external_ipaddress ? {
-      undef   => $ipaddress,
-      false   => $ipaddress,
-      default => $external_ipaddress,
-    }
-    $munin_template = "kbp_munin/munin.conf_client"
-  }
-
-  @@concat::add_content { "2 ${fqdn}":
-    content => template($munin_template),
-    target  => "/etc/munin/munin-${environment}.conf",
-    tag     => "munin_client";
-  }
+  Kbp_ferm::Rule <<| tag == "trending_${environment}" |>>
 }
 
 # Class: kbp_munin::client::activemq
@@ -420,330 +568,4 @@ class kbp_munin::client::tomcat ($trending_password) {
   }
 }
 
-# Class: kbp_munin::server
-#
-# Actions:
-#  Undocumented
-#
-# Depends:
-#  Undocumented
-#  gen_puppet
-#
-class kbp_munin::server($site, $port=443) inherits munin::server {
-  include kbp_nsca::client
 
-  $ssl = $port ? {
-    443 => true,
-    80  => false,
-  }
-
-  kbp_ferm::rule { 'Munin connections':
-    saddr    => $source_ipaddress,
-    proto    => "tcp",
-    dport    => "4949",
-    action   => "ACCEPT",
-    exported => true,
-    ferm_tag => "general_trending";
-  }
-
-  file { ["/var/run/munin", "/var/lib/munin"]:
-    ensure  => directory,
-    owner   => "munin";
-  }
-
-  File <| title == "/etc/munin/munin.conf" |> {
-    ensure  => absent,
-  }
-
-  File <| title == "/etc/cron.d/munin" |> {
-    ensure  => absent,
-  }
-
-  File <| title == "/etc/send_nsca.cfg" |> {
-    mode    => 640,
-    group   => "munin",
-    require +> Package["munin"],
-  }
-
-  Kbp_munin::Environment <<| |>> {
-    site => $site,
-    port => $port,
-  }
-  Kbp_munin::Alert <<| |>>
-  Concat::Add_content <<| tag == "munin_client" |>>
-}
-
-define kbp_munin::environment($site, $port, $offset = false, $sync_offset = false) {
-  if $offset {
-    $real_offset = $offset
-  } else {
-    $real_offset = fqdn_rand(5)
-  }
-
-  # Additional check
-  if $real_offset > 4 or $real_offset < 0 {
-    fail("Offset minute must be between 0 and 4.")
-  }
-
-  if $sync_offset {
-    $real_sync_offset1 = $sync_offset
-    $real_sync_offset2 = $sync_offset+30
-  } else {
-    $real_sync_offset1 = fqdn_rand(30)
-    $real_sync_offset2 = $real_sync_offset1+30
-  }
-
-  # Additional check
-  if $real_sync_offset1 > 29 or $real_sync_offset1 < 0 {
-    fail("Sync offset minute must be between 0 and 4.")
-  }
-
-  file {
-    ["/var/log/munin/${name}", "/var/run/munin/${name}", "/var/lib/munin/${name}"]:
-      ensure  => directory,
-      owner   => "munin";
-    "/srv/www/${site}/${name}":
-      ensure  => directory,
-      group   => "www-data",
-      owner   => "munin";
-    "/etc/cron.d/munin-${name}":
-      owner   => "root",
-      content => template("kbp_munin/cron");
-  }
-
-  gen_logrotate::rotate { "munin-${name}":
-      logs => ["/var/log/munin/${name}/munin-graph.log", "/var/log/munin/${name}/munin-html.log", "/var/log/munin/${name}/munin-limits.log", "/var/log/munin/${name}/munin-update.log"];
-  }
-
-  concat {
-    "/etc/munin/munin-${name}.conf":
-      require     => Package["munin"];
-    "/srv/www/${site}/${name}/.htpasswd":
-      require     => File["/srv/www/${site}/${name}"];
-  }
-
-  concat::add_content { "0 ${name} base":
-    content => template("kbp_munin/munin.conf_base"),
-    target  => "/etc/munin/munin-${name}.conf";
-  }
-
-  kbp_apache::vhost_addition { "${site}/access_${name}":
-    ports   => $port,
-    content => template("kbp_munin/vhost-additions/access");
-  }
-
-  Concat::Add_content <<| tag == "htpasswd_${name}" |>> {
-    target => "/srv/www/${site}/${name}/.htpasswd",
-  }
-}
-
-define kbp_munin::alert_export($command) {
-  $sanitized_name = regsubst($name, '[^a-zA-Z0-9\-_]', '_', 'G')
-
-  @@kbp_munin::alert { "${name}_${environment}":
-    alert_name  => $sanitized_name,
-    command     => $command,
-    environment => $environment;
-  }
-}
-
-define kbp_munin::alert($alert_name, $command, $environment) {
-  concat::add_content { "1 $name":
-    content => template("kbp_munin/munin.conf_alert"),
-    target  => "/etc/munin/munin-${environment}.conf";
-  }
-}
-
-#
-# Class: kbp_munin::two::server
-#
-# Actions:
-#  - Install munin (through gen_munin::server)
-#  - Install and setup apache
-#  - Install and setup rrdcached (when requested)
-#
-# Parameters:
-#  site:
-#   The name the munin graphs are hosted on
-#  wildcard:
-#   The wildcard certificate name (there is no support for separate ssl certs for now)
-#  intermediate:
-#   The intermediate certificate
-#  use_rrdcached:
-#   Use rrdcached to cache all writes to RRD
-#  allowed_access_to_root:
-#   By default, access to the root of the site (the overview) is disallowed. When this parameter is set,
-#   the people in it's environment are allowed access to the root and are able to see an overview of all machines.
-#
-# Depends:
-#  gen_munin::server
-#  kbp_munin::two
-#
-class kbp_munin::two::server ($site, $wildcard=false, $intermediate=false, $use_rrdcached=true, $allowed_access_to_root='kumina'){
-  include gen_munin::server
-
-  if $wildcard {
-    $port = 443
-    include kbp_apache::ssl
-  } else {
-    $port = 80
-  }
-
-  Kbp_munin::Two::Environment <<| |>> {
-    site => $site,
-    port => $port,
-  }
-
-  file {
-    '/etc/munin/munin.conf':
-      content => template('kbp_munin/2/munin.conf'),
-      require => Package['munin'];
-    '/etc/munin/conf':
-      ensure  => directory,
-      require => Package['munin'];
-    '/etc/apache2/conf.d/munin':
-      ensure  => absent,
-      require => Package['munin'],
-      notify  => Exec['reload-apache2'];
-    '/etc/cron.d/munin':
-      ensure  => absent,
-      require => Package['munin'],
-      notify  => Exec['reload-cron'];
-  }
-
-  kcron {
-    'munin-update':
-      user    => 'munin',
-      command => '/usr/share/munin/munin-update',
-      minute  => '*/5',
-      require => Package['munin'];
-    'munin-html':
-      user    => 'munin',
-      command => '/usr/share/munin/munin-limits ; /usr/bin/nice /usr/share/munin/munin-html',
-      minute  => '1',
-      require => Package['munin'];
-    'munin-limits':
-      user    => 'munin',
-      command => '/usr/share/munin/munin-limits --force --contact nagios --contact old-nagios',
-      minute  => '14',
-      hour    => '10',
-      require => Package['munin'];
-  }
-
-  kbp_apache::site { $site:
-    make_default => true,
-    wildcard     => $wildcard,
-    intermediate => $intermediate,
-    auth         => true;
-  }
-
-  kbp_apache::vhost_addition {
-    "${site}/munin.conf":
-      ports   => $port,
-      content => template("kbp_munin/2/apache2/munin.conf");
-    # Configure access to the root web-dir
-    "${site}/access_0_common":
-      ports   => $port,
-      content => template("kbp_munin/2/apache2/access_common");
-  }
-
-  kbp_apache::cgi { "${site}_${port}":
-    set_scriptalias => false;
-  }
-
-  File <| title == "/srv/www/${site}" |> {
-    mode => 775,
-  }
-
-  setfacl { "/srv/www/${site} munin access":
-    acl          => "group:munin:rwx",
-    dir          => "/srv/www/${site}",
-    make_default => true,
-    require      => [Kbp_apache::Site[$site],Package['munin']];
-  }
-
-  if $use_rrdcached {
-    # rrdcached makes for less IO on the machine
-    kservice {"rrdcached":
-      hasreload => false;
-    }
-    group { "rrdcached":
-      system => true,
-      ensure => present;
-    }
-    user { ["www-data", "munin"]:
-      groups  => "rrdcached",
-      require => [Package["munin","apache2"], Group["rrdcached"]];
-    }
-    file { "/etc/default/rrdcached":
-      content => template("kbp_munin/2/rrdcached.default"),
-      require => Package["rrdcached"],
-      notify  => Exec["reload-rrdcached"];
-    }
-
-    gen_munin::client::plugin { 'rrdcached':
-      script_path => '/usr/share/munin/plugins/kumina';
-    }
-
-    gen_munin::client::plugin::config { 'rrdcached':
-      content => 'user root';
-    }
-  }
-}
-
-#
-# Define: kbp_munin::two::environment
-#
-# Actions:
-#  - Add apache config for the environment
-#  - Import htpasswd info
-#  - Export config for the clients
-#
-# Depends:
-#  gen_puppet
-#
-define kbp_munin::two::environment ($site = false, $port = false, $prettyname) {
-  gen_munin::environment{$name:;}
-
-  kbp_apache::vhost_addition { "${site}/access_${name}":
-    ports   => $port,
-    content => template("kbp_munin/2/apache2/access.conf");
-  }
-
-  concat { "/srv/www/${site}/.htpasswd_${name}":
-    require => File["/srv/www/${site}"];
-  }
-
-  Concat::Add_content <<| tag == "htpasswd_${name}" |>> {
-    target => "/srv/www/${site}/.htpasswd_${name}",
-  }
-
-  kbp_ferm::rule { "Munin connections for ${name}":
-    saddr    => $ipaddress,
-    proto    => "tcp",
-    dport    => "4949",
-    action   => "ACCEPT",
-    exported => true,
-    ferm_tag => "trending_${name}";
-  }
-}
-
-#
-# Class: kbp_munin::two::client
-#
-# Actions: Install munin-node (through gen_munin) and import config
-#
-# Depends:
-#  kbp_munin::two
-#  gen_munin::client
-#
-class kbp_munin::two::client {
-  include gen_munin::client
-
-  package { 'munin-plugins-kumina':
-    notify => Service['munin-node'],
-    ensure => latest;
-  }
-
-  Kbp_ferm::Rule <<| tag == "trending_${environment}" |>>
-}

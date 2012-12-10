@@ -13,22 +13,23 @@ class kbp_base {
   include kbp_puppet::default_config
   include kbp_base::wanted_packages
   include gen_cron
-  include lvm
-  include sysctl
   include kbp_acpi
   include kbp_apt
   include kbp_apt::kumina
+  include kbp_ferm
   include kbp_icinga::client
   include kbp_icinga::doublemount
+  include kbp_mcollective::server
+  include kbp_munin::client
+  include kbp_nagios::nrpe
   include kbp_puppet
   include kbp_ssh
   include kbp_sysctl
   include kbp_time
-  include kbp_vim
-  include kbp_mcollective::server
-  include kbp_ferm
-  include kbp_nagios::nrpe
   include kbp_user::admin_users
+  include kbp_vim
+  include lvm
+  include sysctl
   # Needed for 'host'
   if $lsbdistcodename == 'wheezy' {
     include gen_base::libisccc80
@@ -179,18 +180,7 @@ class kbp_base::environment {
 
   kbp_smokeping::targetgroup { $environment:; }
 
-  Kbp_munin::Alert_export <<| |>>
-
-  # Create random offsets for Munin cronjob, to spread the load.
-  $offset = fqdn_rand(5)
-  $sync_offset = fqdn_rand(30)
-
   @@kbp_munin::environment { $environment:
-    offset      => $offset,
-    sync_offset => $sync_offset;
-  }
-
-  @@kbp_munin::two::environment { $environment:
     prettyname => $sanitized_customer_name;
   }
 }
