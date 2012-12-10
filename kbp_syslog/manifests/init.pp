@@ -198,10 +198,10 @@ define kbp_syslog::client ($custom_tag=false) {
     tag     => "${real_tag}_client";
   }
 
-  concat { '/etc/rsyslog.d/zz-allowed-server.conf':
-    require => Package['rsyslog'],
-    notify  => Service['rsyslog'],
-  }
+  #concat { '/etc/rsyslog.d/zz-allowed-server.conf':
+  #  require => Package['rsyslog'],
+  #  notify  => Service['rsyslog'],
+  #}
 
   file { '/etc/rsyslog.d/allowed-server.conf':
     ensure => absent,
