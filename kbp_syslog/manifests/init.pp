@@ -205,5 +205,5 @@ define kbp_syslog::client ($custom_tag=false) {
     ensure => absent,
   }
 
-  Concat::Add_content <<| tag == "${real_tag}_server" |>>
+  #Concat::Add_content <<| tag == "${real_tag}_server" |>>
 }
