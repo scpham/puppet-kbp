@@ -174,7 +174,7 @@ define kbp_syslog::client ($custom_tag=false) {
   include rsyslog::client
 
   if versioncmp($lsbdistrelease, 6) < 0 {
-    gen_apt::preferences { 'rsyslog':; }
+    gen_apt::preference { 'rsyslog':; }
   }
 
   if $custom_tag {
