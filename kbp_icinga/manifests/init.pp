@@ -1106,10 +1106,6 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     minute  => "*/5",
     command => "/usr/bin/icinga-check-alive";
   }
-
-  @@kbp_munin::alert_export { "icinga on ${fqdn}":
-    command => "/usr/sbin/send_nsca -H ${fqdn} -c /etc/send_nsca.cfg";
-  }
 }
 
 # Class: kbp_icinga::environment
