@@ -32,13 +32,17 @@ class kbp_wordpress::common {
 #   The password for the MySQL user.
 #  serveralias
 #   Serveralias for this vhost. Can be an array.
+#  access_logformat
+#   The format to use for the log. Defaults to combined.
+#  monitoring_url
+#   The path to use for the monitoring. Defaults to '/'.
 #
 # Depends:
 #  kbp_wordpress::common
 #  kbp_apache
 #  mysql
 #
-define kbp_wordpress($external_mysql=true, $mysql_tag=false, $db=false, $user=false, $password, $serveralias=false, $access_logformat="combined") {
+define kbp_wordpress($external_mysql=true, $mysql_tag=false, $db=false, $user=false, $password, $serveralias=false, $access_logformat="combined", $monitoring_url='/') {
   include kbp_wordpress::common
 
   $real_tag = $mysql_tag ? {
@@ -57,6 +61,7 @@ define kbp_wordpress($external_mysql=true, $mysql_tag=false, $db=false, $user=fa
   kbp_apache::site { $name:
     serveralias      => $serveralias,
     access_logformat => $access_logformat,
+    monitor_path     => $monitoring_url,
     php              => true;
   }
 
