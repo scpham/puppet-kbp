@@ -17,7 +17,7 @@
 #
 define kbp_drbd($drbd_tag=false, $mastermaster=true, $time_out=false, $connect_int=false, $ping_int=false, $ping_timeout=false, $after_sb_0pri='discard-younger-primary', $after_sb_1pri='discard-secondary',
     $after_sb_2pri='call-pri-lost-after-sb', $rate='5M', $verify_alg='md5', $use_ipaddress=$external_ipaddress, $mount_options='nodev,nosuid,noatime,acl,nointr', $disk_flushes=true, $max_buffers=false,
-    $unplug_watermark=false, $sndbuf_size=false, $al_extents=false, disk) {
+    $unplug_watermark=false, $sndbuf_size=false, $al_extents=false, $disk) {
   include kbp_trending::drbd
 
   $real_tag = $drbd_tag ? {
