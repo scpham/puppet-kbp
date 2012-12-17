@@ -1558,25 +1558,25 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
       hostgroups => "ha_hosts",
     }
     Kbp_icinga::Service <| title == 'mysql_slaving' |> {
-      ha            => true,
-      servicegroups => 'ha_service_spectator',
+      ha  => true,
+      use => 'ha_service_spectator',
     }
     Gen_icinga::Service <| title == 'mysql_slaving' |> {
-      servicegroups => 'ha_service_spectator',
+      use => 'ha_service_spectator',
     }
     Kbp_icinga::Service <| title == 'mysql' |> {
-      ha            => true,
-      servicegroups => 'ha_service_spectator',
+      ha  => true,
+      use => 'ha_service_spectator',
     }
     Gen_icinga::Service <| title == 'mysql' |> {
-      servicegroups => 'ha_service_spectator',
+      use => 'ha_service_spectator',
     }
     Kbp_icinga::Service <| title == 'check_drbd' |> {
-      ha            => true,
-      servicegroups => 'ha_service_spectator',
+      ha  => true,
+      use => 'ha_service_spectator',
     }
     Gen_icinga::Service <| title == 'check_drbd' |> {
-      servicegroups => 'ha_service_spectator',
+      use => 'ha_service_spectator',
     }
   }
 
