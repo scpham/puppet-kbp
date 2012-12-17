@@ -32,6 +32,14 @@ class kbp_softflowd ($interface='eth0', $host='127.0.0.1', $port='9995', $versio
     maxflows  => $maxflows;
   }
 
+  # softflowd in squeeze has a bug causing it to crash regularly
+  # see http://code.google.com/p/softflowd/issues/detail?id=2
+  if $lsbdistcodename == 'squeeze' {
+    gen_apt::preference { 'softflowd':
+      repo => 'squeeze-kumina';
+    }
+  }
+
   kbp_icinga::service { "softflowd":
     service_description => "softflowd process",
     check_command       => "check_softflowd",
