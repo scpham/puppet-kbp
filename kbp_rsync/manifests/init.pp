@@ -113,7 +113,7 @@ define kbp_rsync::source_setup ($source, $key, $path) {
 #  kbp_rsync
 #  kcron
 #
-define kbp_rsync::client ($source_host, $target_dir, $source_dir, $private_key, $public_key, $hour="*", $minute="*/5", bwlimit=false, $target_ip=$::external_ipaddress, $exclude=false, $chown=false) {
+define kbp_rsync::client ($source_host, $target_dir, $source_dir, $private_key, $public_key, $hour="*", $minute="*/5", $bwlimit=false, $target_ip=$::external_ipaddress, $exclude=false, $chown=false) {
   # We prefer entering the bwlimit in kbit/s, so we need to convert it to
   # KBytes/s
   if $bwlimit {
