@@ -35,6 +35,7 @@ class kbp_softflowd ($interface='eth0', $host='127.0.0.1', $port='9995', $versio
   kbp_icinga::service { "softflowd":
     service_description => "softflowd process",
     check_command       => "check_softflowd",
+    sms                 => false,
     nrpe                => true;
   }
 }
