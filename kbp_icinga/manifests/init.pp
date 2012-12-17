@@ -1561,21 +1561,21 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
       ha  => true,
       use => 'ha_service_spectator',
     }
-    Gen_icinga::Service <| title == 'mysql_slaving' |> {
+    Gen_icinga::Service <| title == 'mysql_slaving_wp1.spectator.kumina.nl' |> {
       use => 'ha_service_spectator',
     }
     Kbp_icinga::Service <| title == 'mysql' |> {
       ha  => true,
       use => 'ha_service_spectator',
     }
-    Gen_icinga::Service <| title == 'mysql' |> {
+    Gen_icinga::Service <| title == 'mysql_wp1.spectator.kumina.nl' |> {
       use => 'ha_service_spectator',
     }
     Kbp_icinga::Service <| title == 'check_drbd' |> {
       ha  => true,
       use => 'ha_service_spectator',
     }
-    Gen_icinga::Service <| title == 'check_drbd' |> {
+    Gen_icinga::Service <| title == 'check_drbd_wp1.spectator.kumina.nl' |> {
       use => 'ha_service_spectator',
     }
   }
