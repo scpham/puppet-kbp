@@ -1556,20 +1556,14 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     Gen_icinga::Host <| title == "${host_name};${address}" |> {
       hostgroups => "ha_hosts",
     }
-    if defined(Kbp_icinga::Service['mysql_slaving']) {
-      Kbp_icinga::Service <| title == 'mysql_slaving' |> {
-        ha => true,
-      }
+    Kbp_icinga::Service <| title == 'mysql_slaving' |> {
+      ha => true,
     }
-    if defined(Kbp_icinga::Service['mysql']) {
-      Kbp_icinga::Service <| title == 'mysql' |> {
-        ha => true,
-      }
+    Kbp_icinga::Service <| title == 'mysql' |> {
+      ha => true,
     }
-    if defined(Kbp_icinga::Service['check_drbd']) {
-      Kbp_icinga::Service <| title == 'check_drbd' |> {
-        ha => true,
-      }
+    Kbp_icinga::Service <| title == 'check_drbd' |> {
+      ha => true,
     }
   }
 
