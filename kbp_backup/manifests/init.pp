@@ -16,7 +16,7 @@ class kbp_backup::disable {
   }
 }
 
-define kbp_backup::client($ensure="present", $method="offsite", $backup_server="backup2.kumina.nl", $backup_home="/backup/${environment}", $backup_user=$environment, $backup_remove_older_than="30B") {
+define kbp_backup::client($ensure="present", $method="offsite", $backup_server="backup2.kumina.nl", $backup_home="/backup/${environment}", $backup_user=$environment, $backup_remove_older_than="30B", $splay=28800) {
   $real_method = $ensure ? {
     "absent" => "absent",
     absent   => "absent",
@@ -33,6 +33,7 @@ define kbp_backup::client($ensure="present", $method="offsite", $backup_server="
       $package = "offsite-backup"
 
       class { "offsitebackup::client":
+        splay                    => $splay,
         backup_server            => $backup_server,
         backup_home              => $backup_home,
         backup_user              => $backup_user,
