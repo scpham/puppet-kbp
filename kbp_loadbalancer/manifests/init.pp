@@ -20,7 +20,8 @@ define kbp_loadbalancer::ip ($exported=true, $site, $loadbalancer_tag="${environ
     $httpcheck_port=$serverport, $balance='roundrobin', $timeout_connect='10s', $timeout_server_client='10s', $timeout_http_request='10s', $tcp_sslport=false, $monitoring_ha=false,
     $monitoring_hostname=$site, $monitoring_status='200', $monitoring_url=false, $monitoring_max_check_attempts=false, $monitoring_response=false, $monitoring_proxy=false, $nic='eth0',
     $monitoring_address=$ip, $sslport=false, $httpcheck_interval=false, $httpcheck_fall=false, $httpcheck_rise=false, $backupserver=false, $monitor_site=true, $export_done=false, $netmask=32,
-    $forwardfor_except=false, $monitor_interval='10s', $monitor_timeout='20s', $httpclose=false, $timeout_server='20s', $redirect_non_ssl=false, $server_name=$fqdn, $timeout_check='10s') {
+    $forwardfor_except=false, $monitor_interval='10s', $monitor_timeout='20s', $httpclose=false, $timeout_server='20s', $redirect_non_ssl=false, $server_name=$fqdn, $timeout_check='10s',
+    $redirect_non_ssl_monitoring_statuscode=301) {
   $real_name = regsubst($name, '(.*);.*', '\1')
   $server    = regsubst($name, '.*;(.*)', '\1')
   $ip        = regsubst($real_name, '(.*)_.*', '\1')
@@ -39,7 +40,7 @@ define kbp_loadbalancer::ip ($exported=true, $site, $loadbalancer_tag="${environ
       }
 
       Kbp_icinga::Site <| title == $site |> {
-        statuscode => 301,
+        statuscode => $redirect_non_ssl_monitoring_statuscode,
       }
     }
   }
