@@ -203,16 +203,17 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
 #    The port for haproxy to connect to on the backend server
 #  serverip
 #    The IP of the backend server
+#  redir
+#    Redirect to a url instead of a server
 #
 # Actions:
-#  Undocumented
+#  Add a server to a haproxy setup.
 #
 # Depends:
-#  Undocumented
-#  gen_puppet
+#  gen_haproxy
 #
 define kbp_haproxy::site::add_server ($cookie=false, $httpcheck_uri=false, $httpcheck_port=false, $httpcheck_interval=false, $httpcheck_fall=false, $httpcheck_rise=false, $backupserver=false, $serverip=$ipaddress_eth0, $serverport=80,
-    $tcp_sslport=false) {
+    $tcp_sslport=false, $redir=false) {
   $server_name = regsubst($name, '.*;(.*)', '\1')
   $ip          = regsubst($name, '(.*)_.*;.*', '\1')
 
@@ -225,7 +226,8 @@ define kbp_haproxy::site::add_server ($cookie=false, $httpcheck_uri=false, $http
     httpcheck_rise     => $httpcheck_rise,
     backupserver       => $backupserver,
     serverip           => $serverip,
-    serverport         => $serverport;
+    serverport         => $serverport,
+    redir              => $redir,
   }
 
   if $tcp_sslport {
@@ -238,7 +240,8 @@ define kbp_haproxy::site::add_server ($cookie=false, $httpcheck_uri=false, $http
       httpcheck_rise     => $httpcheck_rise,
       backupserver       => $backupserver,
       serverip           => $serverip,
-      serverport         => $tcp_sslport;
+      serverport         => $tcp_sslport,
+      redir              => $redir;
     }
   }
 }
