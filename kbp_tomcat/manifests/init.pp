@@ -11,7 +11,7 @@
 #
 class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $serveralias=false, $documentroot=false, $ssl=false, $ajp13_connector_port = "8009",
                   $java_opts="", $jvm_max_mem=false, $jvm_permgen_mem=false, $trending_password=false, $monitoring_password=false,
-                  $ajp13_maxclients='200'){
+                  $ajp13_maxclients='200', $max_open_files=false){
   include kbp_apache
 
   if $trending_password {
@@ -42,6 +42,7 @@ class kbp_tomcat ($tomcat_tag="tomcat_${environment}", $serveralias=false, $docu
     jvm_max_mem          => $jvm_max_mem,
     jvm_permgen_mem      => $jvm_permgen_mem,
     ajp13_maxclients     => $ajp13_maxclients,
+    max_open_files       => $max_open_files,
     tomcat_tag           => $tomcat_tag;
   }
 
