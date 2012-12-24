@@ -32,16 +32,23 @@ define kbp_user($ensure="present", $uid, $gid, $comment, $groups=false, $shell='
     }
   }
 
-  if $ensure == "absent" {
-    file { "/home/${name}":
-      ensure => "absent",
-      force  => true;
-    }
+  $ensure_directory = $ensure ? {
+    'present' => 'directory',
+    default   => $ensure,
+  }
+
+  file { "/home/${name}":
+    ensure => $ensure_directory,
+    mode   => 750,
+    owner  => $name,
+    group  => $gid,
+    force  => true;
   }
 }
 
-define kbp_user::admin_user($comment, $uid, $gid, $groups=false, $shell, $passwords, $key, $key_type='ssh-rsa', $files=false) {
+define kbp_user::admin_user($ensure='present', $comment, $uid, $gid, $groups=false, $shell, $passwords, $key, $key_type='ssh-rsa', $files=false) {
   kbp_user { $name:
+    ensure   => $ensure,
     comment  => $comment,
     uid      => $uid,
     gid      => $gid,
@@ -52,35 +59,38 @@ define kbp_user::admin_user($comment, $uid, $gid, $groups=false, $shell, $passwo
     key_type => $key_type;
   }
 
+  $ensure_directory = $ensure ? {
+    'present' => 'directory',
+    default   => $ensure,
+  }
+
   file {
-    "/home/${name}":
-      ensure  => directory,
-      mode    => 750,
-      owner   => $name,
-      group   => $gid;
     "/home/${name}/.ssh":
-      ensure  => directory,
+      ensure  => $ensure_directory,
       mode    => 700,
       owner   => $name,
       group   => $gid;
     "/home/${name}/.tmp":
-      ensure  => directory,
+      ensure  => $ensure_directory,
       owner   => $name,
       group   => $gid;
     "/home/${name}/.reportbugrc":
+      ensure  => $ensure,
       content => "REPORTBUGEMAIL=${name}@kumina.nl\n",
       owner   => $name,
       group   => $gid;
   }
 
-  gen_postfix::alias { "${name}: ${name}@kumina.nl":; }
+  if $ensure == 'present' {
+    gen_postfix::alias { "${name}: ${name}@kumina.nl":; }
 
-  concat::add_content { "Add ${name} to Kumina SSH keyring":
-    target  => "/etc/ssh/kumina.keys",
-    content => "# ${comment} <${name}@kumina.nl>\n${key_type} ${key}";
+    concat::add_content { "Add ${name} to Kumina SSH keyring":
+      target  => "/etc/ssh/kumina.keys",
+      content => "# ${comment} <${name}@kumina.nl>\n${key_type} ${key}";
+    }
   }
 
-  if $files {
+  if $files and $ensure == 'present' {
     create_resources(file, $files)
   }
 }
