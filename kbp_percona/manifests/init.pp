@@ -240,10 +240,14 @@ class kbp_percona::server($percona_tag=false, $percona_version=false, $bind_addr
 #  kbp_ssl::keys
 #  gen_puppet
 #
-class kbp_percona::server::ssl ($certname=$fqdn, $intermediate){
+class kbp_percona::server::ssl ($certlocation="database/ssl/${name}", $intermediate){
   class { 'kbp_mysql::server::ssl':
-    certname => $certname,
+    certlocation => $certlocation,
     intermediate => $intermediate,
+  }
+
+  Kbp_ssl::Keys <| title == $certlocation |> {
+    require => Package['percona-server'],
   }
 }
 
