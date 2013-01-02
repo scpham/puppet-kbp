@@ -22,13 +22,13 @@ class kbp_rabbitmq($rabbitmq_name=false, $port=5672, $ssl_cert=false, $ssl_key=f
     default => "rabbitmq_${rabbitmq_name}",
   }
 
-  class { $real_class:
-    ssl_cert => $ssl_cert,
-    ssl_key  => $ssl_key,
-    ssl_port => $ssl_port,
-  }
-  class { "kbp_icinga::rabbitmqctl":
-    namespace => $namespace;
+  class {
+    $real_class:
+      ssl_cert => $ssl_cert,
+      ssl_key  => $ssl_key,
+      ssl_port => $ssl_port,
+    "kbp_icinga::rabbitmqctl":
+      namespace => $namespace;
   }
 
   Kbp_ferm::Rule <<| tag == $real_tag |>> {
