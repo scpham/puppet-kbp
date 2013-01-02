@@ -556,7 +556,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   $display_status_totals                    = 1
   $suppress_maintenance_downtime            = 1
 
-  gen_logrotate::rotate { "icinga":
+  kbp_logrotate::rotate { "icinga":
     logs    => "/var/cache/icinga/icinga.log",
     options => ["daily", "compress","rotate 21","missingok"];
   }

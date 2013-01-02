@@ -45,7 +45,7 @@ class kbp_apache {
     }
   }
 
-  gen_logrotate::rotate { "apache2":
+  kbp_logrotate::rotate { "apache2":
     logs       => "/var/log/apache2/*.log",
     options    => ["weekly", "rotate 52", "missingok", "notifempty", "create 640 root adm", "compress", "delaycompress", "sharedscripts", "dateext"],
     postrotate => "/etc/init.d/apache2 reload > /dev/null",

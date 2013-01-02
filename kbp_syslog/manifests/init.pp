@@ -42,11 +42,11 @@ class kbp_syslog::server::squeeze inherits rsyslog::server {
 #  Setup logrotation to our defaults for syslog and companions.
 #
 # Depends:
-#  gen_logrotate::rotate
+#  kbp_logrotate::rotate
 #  gen_puppet
 #
 class kbp_syslog::server::logrotate {
-  gen_logrotate::rotate { "rsyslog":
+  kbp_logrotate::rotate { "rsyslog":
     logs       => ["/var/log/syslog", "/var/log/mail.info", "/var/log/mail.warn", "/var/log/mail.err", "/var/log/mail.log", "/var/log/daemon.log",
       "/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log", "/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
       "/var/log/messages","/var/log/external/*/syslog.log"],
