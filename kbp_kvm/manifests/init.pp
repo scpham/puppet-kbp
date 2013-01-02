@@ -27,6 +27,8 @@ class kbp_kvm {
     gen_apt::preference { "qemu-utils":
       ensure => absent;
     }
+
+    gen_insserv::disable_script { 'libvirt-guests':; }
   }
 
   # Enable KSM
