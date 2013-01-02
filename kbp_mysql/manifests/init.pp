@@ -264,9 +264,12 @@ class kbp_mysql::server($mysql_tag=false, $bind_address="0.0.0.0", $setup_backup
 #  gen_puppet
 #
 class kbp_mysql::server::ssl ($certlocation="database/ssl/${name}", $intermediate){
+
+  $certname = regsubst($certlocation, '([^\/]*\/)*', '')
+
   file { "/etc/mysql/conf.d/ssl.cnf":
-    content  => "[mysqld]\nssl\nssl-ca=/etc/ssl/certs/${intermediate}.pem\nssl-cert=/etc/ssl/certs/${name}.pem\nssl-key=/etc/ssl/private/${name}.key",
-    require => File["/etc/ssl/certs/${intermediate}.pem", "/etc/ssl/certs/${name}.pem", "/etc/ssl/private/${name}.key"],
+    content  => "[mysqld]\nssl\nssl-ca=/etc/ssl/certs/${intermediate}.pem\nssl-cert=/etc/ssl/certs/${certname}.pem\nssl-key=/etc/ssl/private/${certname}.key",
+    require => File["/etc/ssl/certs/${intermediate}.pem", "/etc/ssl/certs/${certname}.pem", "/etc/ssl/private/${certname}.key"],
     notify  => Exec['reload-mysql'];
   }
 
