@@ -26,7 +26,7 @@ class kbp_rabbitmq($rabbitmq_name=false, $port=5672, $ssl_cert=false, $ssl_key=f
     $real_class:
       ssl_cert => $ssl_cert,
       ssl_key  => $ssl_key,
-      ssl_port => $ssl_port,
+      ssl_port => $ssl_port;
     "kbp_icinga::rabbitmqctl":
       namespace => $namespace;
   }
