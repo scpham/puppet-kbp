@@ -17,6 +17,16 @@
 class kbp_pacemaker {
   include kbp_icinga::pacemaker
   include gen_pacemaker
+
+  file { '/usr/lib/ocf/resource.d/heartbeat/MailTo':
+    content => template('kbp_pacemaker/MailTo'),
+    mode    => 755;
+  }
+
+  kbp_pacemaker::primitive { 'mail_alert':
+    provider => 'ocf:heartbeat:MailTo',
+    params   => "email=\"reports+${environment}@kumina.nl\" subject=\"Cluster Failover\"";
+  }
 }
 
 class kbp_pacemaker::ip_sysctls {
