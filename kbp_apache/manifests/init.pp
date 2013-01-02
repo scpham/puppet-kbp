@@ -35,6 +35,9 @@ class kbp_apache {
       content => template('kbp_apache/conf.d/server-status'),
       require => Package['apache2'],
       notify  => Exec['reload-apache2'];
+    '/etc/apache2/conf.d/logformat-xforwardedfor':
+      content => 'LogFormat "%{X-Forwarded-For}i (%h) %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\" %V" combined-xforwardedfor',
+      notify  => Exec['reload-apache2'];
   }
 
   # There are classes that override /srv/www (think the NFS class), this makes sure
