@@ -1118,15 +1118,6 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
 #  gen_puppet
 #
 class kbp_icinga::environment {
-  if ! $monitoring_sms {
-    Kbp_icinga::Service <| |> {
-      sms => false,
-    }
-    Kbp_icinga::Host <| |> {
-      sms => false,
-    }
-  }
-
   kbp_icinga::configdir { ["${::environment}","${::environment}/generic"]:; }
 
   gen_icinga::contactgroup { "${::environment}_email":
@@ -1496,12 +1487,16 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
     0       => "devnull",
     default => false,
   }
+  $real_sms = $monitoring_sms ? {
+    'false' => false,
+    'true'  => $sms,
+  }
   $temp_use = $use ? {
-    false          => $passive ? {
+    false   => $passive ? {
       true  => "passive_service",
       false => $ha ? {
         true  => "ha_service",
-        false => $sms ? {
+        false => $real_sms ? {
           false => "mail_service",
           true  => $warnsms ? {
             true  => "warnsms_service",
@@ -1510,8 +1505,8 @@ define kbp_icinga::service($ensure="present", $service_description=false, $use=f
         },
       },
     },
-    " "            => false,
-    default        => $use,
+    " "     => false,
+    default => $use,
   }
   $real_use = $temp_use ? {
     false   => false,
@@ -1668,8 +1663,12 @@ define kbp_icinga::host($conf_dir=false, $sms=true, $use=false, $hostgroups=fals
     0       => "devnull",
     default => false,
   }
+  $real_sms => $monitoring_sms ? {
+    'false' => false,
+    'true'  => $sms,
+  }
   $real_use = $use ? {
-    false   => $sms ? {
+    false   => $real_sms ? {
       true  => "wh_host_${::environment}",
       false => "mail_host_${::environment}",
     },
