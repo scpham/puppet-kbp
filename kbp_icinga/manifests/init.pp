@@ -1663,7 +1663,7 @@ define kbp_icinga::host($conf_dir=false, $sms=true, $use=false, $hostgroups=fals
     0       => "devnull",
     default => false,
   }
-  $real_sms => $monitoring_sms ? {
+  $real_sms = $monitoring_sms ? {
     'false' => false,
     'true'  => $sms,
   }
