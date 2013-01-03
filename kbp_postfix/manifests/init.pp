@@ -15,22 +15,24 @@ class kbp_postfix::mailgraph {
 #
 class kbp_postfix($certs=false, $relayhost=false, $mailname=false, $myhostname=false, $mynetworks=false, $mydestination=false, $mode=false,
     $mailname=$fqdn, $incoming=false, $always_bcc=false, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false,
-    $relay_domains=false, $mydomain=$domain) {
+    $relay_domains=false, $mydomain=$domain, $check_policy_service='inet:127.0.0.1:10023', $content_filter='lmtp-amavis:[127.0.0.1]:10024') {
   include kbp_openssl::common
   class { 'gen_postfix':
-    certs         => $certs,
-    relayhost     => $relayhost,
-    mydomain      => $mydomain,
-    myhostname    => $myhostname,
-    mynetworks    => $mynetworks,
-    mydestination => $mydestination,
-    mode          => $mode,
-    always_bcc    => $always_bcc,
-    mysql_user    => $mysql_user,
-    mysql_pass    => $mysql_pass,
-    mysql_db      => $mysql_db,
-    mysql_host    => $mysql_host,
-    relay_domains => $relay_domains;
+    certs                => $certs,
+    relayhost            => $relayhost,
+    mydomain             => $mydomain,
+    myhostname           => $myhostname,
+    mynetworks           => $mynetworks,
+    mydestination        => $mydestination,
+    mode                 => $mode,
+    always_bcc           => $always_bcc,
+    mysql_user           => $mysql_user,
+    mysql_pass           => $mysql_pass,
+    mysql_db             => $mysql_db,
+    mysql_host           => $mysql_host,
+    relay_domains        => $relay_domains,
+    check_policy_service => $check_policy_service,
+    content_filter       => $content_filter;
   }
   if $mode == 'primary' {
     include gen_base::postfix_mysql
