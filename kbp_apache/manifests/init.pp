@@ -314,14 +314,9 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
     },
     default => $port,
   }
-  $real_intermediate = $intermediate ? {
-    false         => false,
-    'kumina'      => 'KuminaCA.pem',
-    'positivessl' => 'PositiveSSLCA.pem',
-    'rapidssl'    => 'RapidSSL_CA_bundle.pem',
-    'terena'      => 'TerenaCA.pem',
-    'thawte'      => 'Thawte_SSL_CA.pem',
-    'verisign'    => 'verisign_bundle.pem',
+  $real_intermediate = template("kbp_ssl/translate_names.erb") ? {
+    'false' => false,
+    default => template("kbp_ssl/translate_names.erb"),
   }
   $full_name   = regsubst($name, '^([^_]*)$', "\1_${real_port}")
   $dontmonitor = ["default","default-ssl","localhost"]
