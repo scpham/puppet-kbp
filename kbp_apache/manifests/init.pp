@@ -37,6 +37,7 @@ class kbp_apache {
       notify  => Exec['reload-apache2'];
     '/etc/apache2/conf.d/logformat-xforwardedfor':
       content => 'LogFormat "%{X-Forwarded-For}i (%h) %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\" %V" combined-xforwardedfor',
+      require => Package['apache2'],
       notify  => Exec['reload-apache2'];
   }
 
