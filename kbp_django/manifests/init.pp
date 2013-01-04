@@ -12,7 +12,7 @@ class kbp_django {
   }
 }
 
-define kbp_django::site($settings='settings', $root_path='/', $root_django="/${name}", $static_path='/media', $static_django="/${name}/media", $auth=false, $wildcard=false, $intermediate=false, $monitor=true, $make_default=false,
+define kbp_django::site($settings='settings', $root_path='/', $root_django="/${name}", $static_path='/media', $static_django="/${name}/media", $auth=false, $cert=false, $wildcard=false, $intermediate=false, $monitor=true, $make_default=false,
     $serveralias=false, $monitor_path=false, $address='*', $monitor_ip=false, $monitor_statuscode=false, $wsgi_file='dispatch.wsgi', $wsgi_owner='root') {
   include kbp_django
 
@@ -20,6 +20,7 @@ define kbp_django::site($settings='settings', $root_path='/', $root_django="/${n
     address            => $address,
     auth               => $auth,
     wildcard           => $wildcard,
+    cert               => $cert,
     intermediate       => $intermediate,
     monitor            => $monitor,
     make_default       => $make_default,
@@ -29,7 +30,7 @@ define kbp_django::site($settings='settings', $root_path='/', $root_django="/${n
     monitor_statuscode => $monitor_statuscode;
   }
 
-  if $wildcard or $intermediate {
+  if $wildcard or $intermediate or $cert {
     $real_ssl = true
   }
 
