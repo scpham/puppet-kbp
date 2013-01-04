@@ -105,12 +105,15 @@ class kbp_puppet::master {
 #
 # Depends:
 #  kbp_puppet::master
+#  kbp_apache
 #  gen_puppet
 #
 define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet/puppet.conf", $debug = false, $dbsetup = true, $dbname = false, $dbuser = false, $dbpasswd = false,
         $dbhost = false, $dbserver = false, $dbsocket = false, $environments = [], $factpath = '$vardir/lib/facter', $logdir = "/var/log/puppet", $pluginsync = true, $port = "8140",
         $queue = false, $queue_host = "localhost", $queue_port = "61613", $rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet", $ssldir = "/var/lib/puppet/ssl",
         $templatedir = '$confdir/templates', $vardir = "/var/lib/puppet") {
+  include kbp_apache::ssl
+
   # The dbhost config option changed into dbserver somewhere in 2.6-2.7, we
   # accept both for now. Maybe give a message at some point.
   if $dbserver { $set_dbserver = $dbserver }
