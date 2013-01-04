@@ -1,0 +1,10 @@
+<% case intermediate
+     when 'kumina',  'KuminaCA' -%>KuminaCA<% -%>
+<%   when 'positivessl', 'PositiveSSLCA' -%>PositiveSSLCA<% -%>
+<%   when 'rapidssl', 'RapidSSL_CA_bundle' -%>RapidSSL_CA_bundle<% -%>
+<%   when 'terena', 'TerenaCA'-%>TerenaCA<% -%>
+<%   when 'thawte', 'Thawte_SSL_CA' -%>Thawte_SSL_CA<% -%>
+<%   when 'verisign', 'verisign_bundle' -%>verisign_bundle<% -%>
+<%   when 'false', false then return false -%>
+<% else scope.function_fail("#{intermediate} is not known") -%>
+<% end -%>

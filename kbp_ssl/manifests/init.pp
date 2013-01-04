@@ -58,15 +58,8 @@ define kbp_ssl::private_key($key_location=false, $owner='root') {
 }
 
 define kbp_ssl::intermediate {
-  $realname = $name ? {
-    'kumina'      => 'KuminaCA',
-    'positivessl' => 'PositiveSSLCA',
-    'rapidssl'    => 'RapidSSL_CA_bundle',
-    'terena'      => 'TerenaCA',
-    'thawte'      => 'Thawte_SSL_CA',
-    'verisign'    => 'verisign_bundle',
-    default       => fail("${name} is not a known intermediate."),
-  }
+  $intermediate = $name
+  $realname = template("kbp_ssl/translate_names.erb")
 
   kbp_ssl::public_key { $realname:
     key_location => "kbp_ssl/${realname}.pem";
