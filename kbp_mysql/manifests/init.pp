@@ -118,7 +118,7 @@ class kbp_mysql::slave($mysql_tag=false, $bind_address="0.0.0.0", $mastermaster=
     $real_serverid = $serverid
   }
 
-  file { '/etc/mysql/conf.d/slave.conf':
+  file { '/etc/mysql/conf.d/slave.cnf':
     content => $mastermaster ? {
       true  => '# see master.cnf for the server-id', # Serverid is set in kbp_mysql::master
       default => "[mysqld]\nserver-id = ${real_serverid}",
@@ -263,13 +263,14 @@ class kbp_mysql::server($mysql_tag=false, $bind_address="0.0.0.0", $setup_backup
 #  kbp_ssl::keys
 #  gen_puppet
 #
-class kbp_mysql::server::ssl ($certlocation="database/ssl/${name}", $intermediate){
-
+class kbp_mysql::server::ssl ($certlocation="database/ssl/${fqdn}", $intermediate){
+  include "kbp_ssl::intermediate::${intermediate}"
   $certname = regsubst($certlocation, '([^\/]*\/)*', '')
+  $intermediate_name = template("kbp_ssl/translate_names.erb")
 
   file { "/etc/mysql/conf.d/ssl.cnf":
-    content  => "[mysqld]\nssl\nssl-ca=/etc/ssl/certs/${intermediate}.pem\nssl-cert=/etc/ssl/certs/${certname}.pem\nssl-key=/etc/ssl/private/${certname}.key",
-    require => File["/etc/ssl/certs/${intermediate}.pem", "/etc/ssl/certs/${certname}.pem", "/etc/ssl/private/${certname}.key"],
+    content  => "[mysqld]\nssl\nssl-ca=/etc/ssl/certs/${intermediate_name}.pem\nssl-cert=/etc/ssl/certs/${certname}.pem\nssl-key=/etc/ssl/private/${certname}.key",
+    require => File["/etc/ssl/certs/${intermediate_name}.pem", "/etc/ssl/certs/${certname}.pem", "/etc/ssl/private/${certname}.key"],
     notify  => Exec['reload-mysql'];
   }
 
