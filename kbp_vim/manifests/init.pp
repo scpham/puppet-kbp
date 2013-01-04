@@ -31,6 +31,13 @@ class kbp_vim {
     "autocmd FileType python set shiftwidth=4":;
     "autocmd FileType python set expandtab":;
   }
+
+  # This setting only works for vim in Wheezy or higher
+  if versioncmp($lsbmajdistrelease, 6) > 0 {
+    gen_vim::global_setting {
+      "autocmd FileType puppet set colorcolumn=167":;
+    }
+  }
 }
 
 # Class: kbp_vim::puppet
