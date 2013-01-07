@@ -314,10 +314,12 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
     },
     default => $port,
   }
-  $real_intermediate = template("kbp_ssl/translate_names.erb") ? {
+  $tmp_intermediate = template("kbp_ssl/translate_names.erb")
+  $real_intermediate = $tmp_intermediate ? {
     'false' => false,
-    default => template("kbp_ssl/translate_names_pem.erb"),
+    default => "${tmp_intermediate}.pem",
   }
+
   $full_name   = regsubst($name, '^([^_]*)$', "\1_${real_port}")
   $dontmonitor = ["default","default-ssl","localhost"]
 

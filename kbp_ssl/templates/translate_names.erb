@@ -6,5 +6,5 @@
 <%   when 'thawte', 'Thawte_SSL_CA' -%>Thawte_SSL_CA<% -%>
 <%   when 'verisign', 'verisign_bundle' -%>verisign_bundle<% -%>
 <%   when 'false', false then return false -%>
-<% else scope.function_fail("#{intermediate} is not known") -%>
+<% else scope.function_fail(["#{intermediate} is not a known intermediate certificate."]) -%>
 <% end -%>
