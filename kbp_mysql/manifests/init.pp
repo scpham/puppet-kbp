@@ -266,11 +266,11 @@ class kbp_mysql::server($mysql_tag=false, $bind_address="0.0.0.0", $setup_backup
 class kbp_mysql::server::ssl ($certlocation="database/ssl/${fqdn}", $intermediate){
   include "kbp_ssl::intermediate::${intermediate}"
   $certname = regsubst($certlocation, '([^\/]*\/)*', '')
-  $intermediate_name = template("kbp_ssl/translate_names.erb")
+  $intermediate_name = template("kbp_ssl/translate_names_pem.erb")
 
   file { "/etc/mysql/conf.d/ssl.cnf":
     content  => "[mysqld]\nssl\nssl-ca=/etc/ssl/certs/${intermediate_name}.pem\nssl-cert=/etc/ssl/certs/${certname}.pem\nssl-key=/etc/ssl/private/${certname}.key",
-    require => File["/etc/ssl/certs/${intermediate_name}.pem", "/etc/ssl/certs/${certname}.pem", "/etc/ssl/private/${certname}.key"],
+    require => File["/etc/ssl/certs/${intermediate_name}", "/etc/ssl/certs/${certname}.pem", "/etc/ssl/private/${certname}.key"],
     notify  => Exec['reload-mysql'];
   }
 

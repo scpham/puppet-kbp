@@ -316,7 +316,7 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
   }
   $real_intermediate = template("kbp_ssl/translate_names.erb") ? {
     'false' => false,
-    default => template("kbp_ssl/translate_names.erb"),
+    default => template("kbp_ssl/translate_names_pem.erb"),
   }
   $full_name   = regsubst($name, '^([^_]*)$', "\1_${real_port}")
   $dontmonitor = ["default","default-ssl","localhost"]
