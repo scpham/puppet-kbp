@@ -269,7 +269,7 @@ class kbp_mysql::server::ssl ($certlocation="database/ssl/${fqdn}", $intermediat
   $intermediate_name = template("kbp_ssl/translate_names_pem.erb")
 
   file { "/etc/mysql/conf.d/ssl.cnf":
-    content  => "[mysqld]\nssl\nssl-ca=/etc/ssl/certs/${intermediate_name}.pem\nssl-cert=/etc/ssl/certs/${certname}.pem\nssl-key=/etc/ssl/private/${certname}.key",
+    content  => "[mysqld]\nssl\nssl-ca=/etc/ssl/certs/${intermediate_name}\nssl-cert=/etc/ssl/certs/${certname}.pem\nssl-key=/etc/ssl/private/${certname}.key",
     require => File["/etc/ssl/certs/${intermediate_name}", "/etc/ssl/certs/${certname}.pem", "/etc/ssl/private/${certname}.key"],
     notify  => Exec['reload-mysql'];
   }
