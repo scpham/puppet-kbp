@@ -15,15 +15,32 @@ class kbp_activemq {
   include kbp_trending::activemq
   include kbp_icinga::activemq
 
-  file {
-    "/etc/activemq/activemq.xml":
-      content => template("kbp_activemq/activemq.xml"),
-      notify  => Exec["/bin/rm -Rf /var/lib/activemq/*"],
-      require => Package["activemq"];
-    "/etc/activemq/jetty.xml":
-      content => template("kbp_activemq/jetty.xml"),
-      notify  => Exec["reload-activemq"],
-      require => Package["activemq"];
+  if $lsbdistcodename == 'squeeze' {
+    file {
+      "/etc/activemq/activemq.xml":
+        content => template("kbp_activemq/activemq.xml"),
+        notify  => Exec["/bin/rm -Rf /var/lib/activemq/*"],
+        require => Package["activemq"];
+      "/etc/activemq/jetty.xml":
+        content => template("kbp_activemq/jetty.xml"),
+        notify  => Exec["reload-activemq"],
+        require => Package["activemq"];
+    }
+  }
+
+  if $lsbdistcodename == 'wheezy' {
+    file {
+      "/etc/activemq/site-enabled/main":
+        ensure  => directory;
+      "/etc/activemq/site-enabled/main/activemq.xml":
+        content => template("kbp_activemq/activemq.xml"),
+        notify  => Exec["/bin/rm -Rf /var/lib/activemq/*"],
+        require => Package["activemq"];
+      "/etc/activemq/site-enabled/main/jetty.xml":
+        content => template("kbp_activemq/jetty.xml"),
+        notify  => Exec["reload-activemq"],
+        require => Package["activemq"];
+    }
   }
 
   exec { "/bin/rm -Rf /var/lib/activemq/*":
