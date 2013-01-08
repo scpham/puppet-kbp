@@ -113,6 +113,7 @@ define kbp_puppet::master::config ($caserver = false, $configfile = "/etc/puppet
         $queue = false, $queue_host = "localhost", $queue_port = "61613", $rackroot = "/usr/local/share/puppet/rack", $rundir = "/var/run/puppet", $ssldir = "/var/lib/puppet/ssl",
         $templatedir = '$confdir/templates', $vardir = "/var/lib/puppet") {
   include kbp_apache::ssl
+  include kbp_puppet::master
 
   # The dbhost config option changed into dbserver somewhere in 2.6-2.7, we
   # accept both for now. Maybe give a message at some point.
