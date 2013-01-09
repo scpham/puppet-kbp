@@ -110,21 +110,18 @@ class kbp_mysql::slave($mysql_tag=false, $bind_address="0.0.0.0", $mastermaster=
     file { '/etc/mysql/conf.d/master.cnf':
       ensure => absent;
     }
-  }
 
-  if ! $serverid {
-    $real_serverid = fqdn_rand(4294967293)+2 # 32 bit number that cannot be 0 or 1 (1=master usually)
-  } else {
-    $real_serverid = $serverid
-  }
+    if ! $serverid {
+      $real_serverid = fqdn_rand(4294967293)+2 # 32 bit number that cannot be 0 or 1 (1=master usually)
+    } else {
+      $real_serverid = $serverid
+    }
 
-  file { '/etc/mysql/conf.d/slave.cnf':
-    content => $mastermaster ? {
-      true  => '# see master.cnf for the server-id', # Serverid is set in kbp_mysql::master
-      default => "[mysqld]\nserver-id = ${real_serverid}",
-    },
-    require => Service['mysql'],
-    notify  => Exec['reload-mysql'];
+    file { '/etc/mysql/conf.d/slave.cnf':
+      content => "[mysqld]\nserver-id = ${real_serverid}",
+      require => Service['mysql'],
+      notify  => Exec['reload-mysql'];
+    }
   }
 
   @@mysql::server::grant { "repl_${fqdn}":
