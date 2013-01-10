@@ -35,3 +35,29 @@ class kbp_php5::apc($shm_size=64, $ttl=3600) {
     content => "env.url http://127.0.0.255/apc_info.php?auto\n";
   }
 }
+
+# Define: kbp_php5::config
+#
+# Actions:
+#
+define kbp_php5::config ($ensure='present', $value=false, $variable=false) {
+  gen_php5::common::config { $name:
+    ensure   => $ensure,
+    value    => $value,
+    variable => $variable;
+  }
+
+  if $name == 'upload_max_filesize' {
+    file { '/etc/apache2/conf.d/fcgi_max_requestlength':
+      content => "<IfModule mod_fcgid.c>\nFcgidMaxRequestLen ${value}\n</IfModule>\n";
+    }
+  }
+
+  if $name == 'post_max_size' {
+    kbp_php5::config { 'upload_max_filesize':
+      ensure   => $ensure,
+      value    => $value,
+      variable => $variable;
+     }
+  }
+}
