@@ -161,10 +161,13 @@ class kbp_powerdns::admin ($dbserver, $adminpassword, $sitename, $intermediate=f
     ferm_tag => "pdns_admin_${environment}";
   }
 
-  @@mysql::server::grant { 'pdns_admin on pdns':
+  @@mysql::server::grant { "pdns_admin on pdns from ${fqdn}":
     permissions => 'select, insert, update, delete',
+    user        => 'pdns_admin',
+    db          => 'pdns',
     password    => $admin_password,
     hostname    => $fqdn,
+    require_ssl => true,
     tag         => "powerdns_admin_${environment}"
   }
 
