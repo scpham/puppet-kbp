@@ -155,6 +155,7 @@ class kbp_powerdns::admin ($dbserver, $sitename, $intermediate=false, $cert=fals
     dport    => 3306,
     proto    => tcp,
     exported => true,
+    action   => 'ACCEPT',
     ferm_tag => "pdns_admin_${environment}";
   }
 
