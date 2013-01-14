@@ -41,7 +41,7 @@ class kbp_postfix($certs=false, $relayhost=false, $mailname=false, $myhostname=f
     }
   }
 
-  gen_postfix::alias { ["root: reports+${environment}@kumina.nl",'reports: root']:; }
+  gen_postfix::alias { ["root: reports+${environment}@kumina.nl","reports: reports+${environment}@kumina.nl"]:; }
 
   file { '/etc/mailname':
     content => $mailname ? {
