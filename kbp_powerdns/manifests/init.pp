@@ -166,7 +166,7 @@ class kbp_powerdns::admin ($dbserver, $adminpassword, $sitename, $intermediate=f
     user        => 'pdns_admin',
     db          => 'pdns',
     password    => $admin_password,
-    hostname    => $fqdn,
+    hostname    => $external_ipaddress,
     require_ssl => true,
     tag         => "powerdns_admin_${environment}"
   }
