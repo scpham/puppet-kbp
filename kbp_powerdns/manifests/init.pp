@@ -148,7 +148,7 @@ class kbp_powerdns::authoritative ($localaddress) {
 #  cert         The certificate used for the site
 #  wildcard     The wildcard certificate for this site
 #
-class kbp_powerdns::admin ($dbserver, $adminpassword, $sitename, $intermediate=false, $cert=false, $wildcard=false) {
+class kbp_powerdns::admin ($dbserver, $admin_password, $sitename, $intermediate=false, $cert=false, $wildcard=false) {
   include gen_base::python_mysqldb
   include gen_base::python-dnspython
 
