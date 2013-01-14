@@ -148,6 +148,7 @@ class kbp_powerdns::authoritative ($localaddress) {
 #
 class kbp_powerdns::admin ($dbserver, $sitename, $intermediate=false, $cert=false, $wildcard=false) {
   include gen_base::python_mysqldb
+  include gen_base::python-dnspython
 
   kbp_ferm::rule { 'pdns_admin access':
     saddr    => $external_ipaddress,
