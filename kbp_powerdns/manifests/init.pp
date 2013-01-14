@@ -55,6 +55,8 @@ class kbp_powerdns::authoritative::master ($db_password, $certlocation, $interme
       password    => $db_password;
   }
 
+  Mysql::Server::Grant <<| tag == "powerdns_admin_${environment}" |>>
+
   file {
     '/etc/powerdns/admin':
       ensure  => directory,
@@ -146,7 +148,7 @@ class kbp_powerdns::authoritative ($localaddress) {
 #  cert         The certificate used for the site
 #  wildcard     The wildcard certificate for this site
 #
-class kbp_powerdns::admin ($dbserver, $sitename, $intermediate=false, $cert=false, $wildcard=false) {
+class kbp_powerdns::admin ($dbserver, $adminpassword, $sitename, $intermediate=false, $cert=false, $wildcard=false) {
   include gen_base::python_mysqldb
   include gen_base::python-dnspython
 
@@ -157,6 +159,13 @@ class kbp_powerdns::admin ($dbserver, $sitename, $intermediate=false, $cert=fals
     exported => true,
     action   => 'ACCEPT',
     ferm_tag => "pdns_admin_${environment}";
+  }
+
+  @@mysql::server::grant { 'pdns_admin on pdns':
+    permissions => 'select, insert, update, delete',
+    password    => $admin_password,
+    hostname    => $fqdn,
+    tag         => "powerdns_admin_${environment}"
   }
 
   kbp_django::site { $sitename:
