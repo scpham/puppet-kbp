@@ -35,7 +35,7 @@ class kbp_syslog::server::lenny inherits rsyslog::server {
 class kbp_syslog::server::squeeze inherits rsyslog::server {
   include kbp_syslog::server::logrotate
 
-  gen_apt::preference { ['rsyslog','rsyslog-gnutls':; }
+  gen_apt::preference { ['rsyslog','rsyslog-gnutls']:; }
 }
 
 # Class: kbp_syslog::server::logrotate
