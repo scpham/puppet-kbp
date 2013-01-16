@@ -56,8 +56,7 @@ define kbp_php5::config ($ensure='present', $value=false, $variable=false) {
   if $name == 'post_max_size' {
     kbp_php5::config { 'upload_max_filesize':
       ensure   => $ensure,
-      value    => $value,
-      variable => $variable;
+      value    => $value;
      }
   }
 }
