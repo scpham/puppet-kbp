@@ -15,7 +15,8 @@ class kbp_postfix::mailgraph {
 #
 class kbp_postfix($certs=false, $relayhost=false, $mailname=false, $myhostname=false, $mynetworks=false, $mydestination=false, $mode=false,
     $mailname=$fqdn, $incoming=false, $always_bcc=false, $mysql_user=false, $mysql_pass=false, $mysql_db=false, $mysql_host=false,
-    $relay_domains=false, $mydomain=$domain, $check_policy_service='inet:127.0.0.1:10023', $content_filter='lmtp-amavis:[127.0.0.1]:10024') {
+    $relay_domains=false, $mydomain=$domain, $check_policy_service='inet:127.0.0.1:10023', $content_filter='lmtp-amavis:[127.0.0.1]:10024',
+    $inet_protocols='all') {
   include kbp_openssl::common
   class { 'gen_postfix':
     certs                => $certs,
@@ -32,6 +33,7 @@ class kbp_postfix($certs=false, $relayhost=false, $mailname=false, $myhostname=f
     mysql_host           => $mysql_host,
     relay_domains        => $relay_domains,
     check_policy_service => $check_policy_service,
+    inet_protocols       => $inet_protocols,
     content_filter       => $content_filter;
   }
   if $mode == 'primary' {
