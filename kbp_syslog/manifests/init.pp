@@ -141,11 +141,6 @@ define kbp_syslog::server($environmentonly=true,$custom_tag=false) {
   }
 
   Kbp_ferm::Rule <<| tag == $real_tag |>>
-
-  # Remove this resource after 2012-12-11
-  file { ['/etc/rsyslog.d/allowed-peers.conf','/etc/rsyslog.d/zz-allowed-peers.conf']:
-    ensure => absent,
-  }
 }
 
 # Define: kbp_syslog::client
@@ -181,10 +176,5 @@ define kbp_syslog::client ($custom_tag=false) {
     action   => "ACCEPT",
     exported => true,
     ferm_tag => $real_tag;
-  }
-
-  # Remove the next resource after 2012-12-11
-  file { ['/etc/rsyslog.d/allowed-server.conf','/etc/rsyslog.d/zz-allowed-server.conf']:
-    ensure => absent,
   }
 }
