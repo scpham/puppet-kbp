@@ -53,7 +53,7 @@ class kbp_syslog::server::logrotate {
       "/var/log/kern.log", "/var/log/auth.log", "/var/log/user.log", "/var/log/lpr.log", "/var/log/cron.log", "/var/log/debug",
       "/var/log/messages","/var/log/external/*/syslog.log"],
     options    => ["daily", "rotate 90", "missingok", "notifempty", "compress", "delaycompress", "sharedscripts", "dateext"],
-    postrotate => "invoke-rc.d rsyslog reload > /dev/null";
+    postrotate => "invoke-rc.d rsyslog rotate > /dev/null";
   }
 
   # TODO
