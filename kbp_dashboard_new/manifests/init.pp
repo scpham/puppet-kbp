@@ -33,11 +33,6 @@ class kbp_dashboard_new::site_host($url, $prod_url, $ssl=true, $dbpassword) {
     prod_url => $prod_url,
     port     => $port,
   }
-
-  kbp_apache::vhost_addition { "${url}/access":
-    ports   => $port,
-    content => template('kbp_dashboard_new/vhost-additions/base_access');
-  }
 }
 
 define kbp_dashboard_new::environment($url, $prod_url, $port) {
