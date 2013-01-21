@@ -6,11 +6,6 @@ class kbp_dashboard_new::site_host($url, $prod_url, $ssl=true, $dbpassword) {
     true  => 443,
   }
 
-  file { "/srv/www/${url}/.htpasswd":
-    ensure  => link,
-    target  => "/srv/www/${prod_url}/.htpasswd";
-  }
-
   kbp_mysql::client { 'dashboard_new':; }
 
   @@mysql::server::db { "dashboard_new for ${fqdn}":
@@ -46,20 +41,8 @@ class kbp_dashboard_new::site_host($url, $prod_url, $ssl=true, $dbpassword) {
 }
 
 define kbp_dashboard_new::environment($url, $prod_url, $port) {
-  file {
-    "/srv/www/${url}/${name}":
-      ensure  => directory;
-    "/srv/www/${url}/${name}/.htpasswd":
-      ensure  => link,
-      target  => "/srv/www/${prod_url}/${name}/.htpasswd";
-  }
-
-  kbp_apache::vhost_addition {
-    "${url}/access_${name}":
-      ports   => $port,
-      content => template('kbp_dashboard_new/vhost-additions/access');
-    "${url}/proxies_${name}":
-      ports   => $port,
-      content => template('kbp_dashboard_new/vhost-additions/proxies');
+  kbp_apache::vhost_addition { "${url}/proxies_${name}":
+    ports   => $port,
+    content => template('kbp_dashboard_new/vhost-additions/proxies');
   }
 }
