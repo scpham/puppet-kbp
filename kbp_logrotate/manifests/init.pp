@@ -24,11 +24,12 @@ class kbp_logrotate {
 # Parameters:
 #  name: The name of the logrotate config file to create
 #  logs: Defines which log file(s) to rotate
+#  ensure: Defines if the rotation should exist or not. Defaults to 'present'. Can also be 'absent'.
 #  options: An array with the logrotate options, defaults to ["weekly","compress","rotate 7","missingok"]
 #  prerotate: Defines a command to run before rotating the log. Defaults to false (no command).
 #  postrotate: Defines a command to run after rotating the log. Defaults to false (no command).
 #
-define kbp_logrotate::rotate ($logs, $options=["weekly","compress","rotate 7","missingok"], $prerotate=false, $postrotate=false) {
+define kbp_logrotate::rotate ($logs, $ensure='present', $options=["weekly","compress","rotate 7","missingok"], $prerotate=false, $postrotate=false) {
   include kbp_logrotate
 
   gen_logrotate::rotate { $name:
