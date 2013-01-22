@@ -33,9 +33,10 @@ define kbp_logrotate::rotate ($logs, $ensure='present', $options=["weekly","comp
   include kbp_logrotate
 
   gen_logrotate::rotate { $name:
-    logs => $logs,
-    options => $options,
-    prerotate => $prerotate,
+    ensure     => $ensure,
+    logs       => $logs,
+    options    => $options,
+    prerotate  => $prerotate,
     postrotate => $postrotate,
   }
 }
