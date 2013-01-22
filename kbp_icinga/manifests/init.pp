@@ -556,7 +556,9 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
   $display_status_totals                    = 1
   $suppress_maintenance_downtime            = 1
 
+  # TODO Can be removed after 2013-01-23.
   kbp_logrotate::rotate { "icinga":
+    ensure  => absent,
     logs    => "/var/cache/icinga/icinga.log",
     options => ["daily", "compress","rotate 21","missingok"];
   }
