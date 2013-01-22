@@ -162,6 +162,8 @@ class kbp_icinga::client {
       path      => "/usr/sbin/",
       command   => "crm_mon",
       arguments => "-s";
+    'check_pacemaker_standby':
+      sudo      => true;
     "check_passenger_queue":
       sudo      => true;
     "check_ping":
@@ -658,7 +660,7 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
      "check_pacemaker","check_mysql","check_mysql_connlimit","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_libvirtd",
      "check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_failures",'check_megaraid_sas',"check_nullmailer","check_passenger_queue","check_mcollective","check_backup_status",
      'check_unbound', 'check_activemq', 'check_lsimpt','check_doublemount','check_backup','check_emptyfirewall',
-     'check_softflowd']:
+     'check_softflowd', 'check_pacemaker_standby']:
       nrpe          => true;
     "return-ok":
       command_name  => "check_dummy",
@@ -1815,16 +1817,28 @@ define kbp_icinga::ipsec ($monitoring_remote_ip) {
 #  gen_puppet
 class kbp_icinga::pacemaker {
   gen_sudo::rule { "pacemaker sudo rules":
-    entity => "nagios",
-    as_user => "root",
-    command => "/usr/sbin/crm_mon -s",
+    entity            => "nagios",
+    as_user           => "root",
+    command           => "/usr/sbin/crm_mon -s",
     password_required => false;
   }
 
-  kbp_icinga::service { "pacemaker":
-    service_description => "Pacemaker",
-    check_command       => "check_pacemaker",
-    nrpe                => true;
+  kbp_icinga::service {
+    "pacemaker":
+      service_description => "Pacemaker",
+      check_command       => "check_pacemaker",
+      nrpe                => true;
+    'pacemaker standby':
+      service_description => "Pacemaker standby",
+      check_command       => "check_pacemaker_standby",
+      nrpe                => true;
+  }
+
+  kbp_icinga::servicedependency { 'pacemaker_standby_on_status':
+    dependent_service_description => "Pacemaker standby",
+    service_description           => 'Pacemaker',
+    execution_failure_criteria    => "w,c,u",
+    notification_failure_criteria => "w,c,u";
   }
 }
 
