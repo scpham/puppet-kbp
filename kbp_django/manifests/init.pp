@@ -12,8 +12,8 @@ class kbp_django {
   }
 }
 
-define kbp_django::site($settings='settings', $root_path='/', $root_django="/${name}", $static_path='/media', $static_django="/${name}/media", $auth=false, $cert=false, $wildcard=false, $intermediate=false, $monitor=true, $make_default=false,
-    $serveralias=false, $monitor_path=false, $address='*', $monitor_ip=false, $monitor_statuscode=false, $wsgi_file='dispatch.wsgi', $wsgi_owner='root') {
+define kbp_django::site($settings='settings', $root_path='/', $root_django="/${name}", $static_path='/media', $static_django="/${name}/media", $auth=false, $cert=false, $wildcard=false, $intermediate=false, $monitor=true,
+    $make_default=false, $serveralias=false, $monitor_path=false, $address='*', $monitor_ip=false, $monitor_statuscode=false, $wsgi_file='dispatch.wsgi', $wsgi_owner='root') {
   include kbp_django
 
   kbp_apache::site { $name:

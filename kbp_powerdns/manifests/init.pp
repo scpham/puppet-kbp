@@ -174,7 +174,8 @@ class kbp_powerdns::admin ($dbserver, $admin_password, $sitename, $intermediate=
   kbp_django::site { $sitename:
     cert         => $cert,
     intermediate => $intermediate,
-    wildcard     => $wildcard;
+    wildcard     => $wildcard,
+    monitor_path => '/admin/';
   }
 
   if $cert or $intermediate or $wildcard {
