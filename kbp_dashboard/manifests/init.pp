@@ -33,11 +33,6 @@ class kbp_dashboard::site_host($url, $ssl=true, $dbpassword, $dbhost) {
       tag         => "mysql_${environment}_${custenv}";
   }
 
-  kbp_apache::vhost_addition { "${url}/access":
-    ports   => $port,
-    content => template('kbp_dashboard/vhost-additions/base_access');
-  }
-
   kcron { 'filldashboarddb':
     command => "/srv/django/dashboard.kumina.nl/dashboard/fill_dashboard_database -ps ${dbhost} -pp ${dbpassword} -ds ${dbhost} -dp ${dbpassword} >/dev/null",
     minute  => 0;
