@@ -1,4 +1,4 @@
-class kbp_dashboard::site_host($url, $ssl=true, $dbpassword, $dbhost, $setup_login=true) {
+class kbp_dashboard::site_host($url, $ssl=true, $dbpassword, $dbhost) {
   include gen_base::python_django_south
 
   $port = $ssl ? {
@@ -6,17 +6,9 @@ class kbp_dashboard::site_host($url, $ssl=true, $dbpassword, $dbhost, $setup_log
     true  => 443,
   }
 
-  if $setup_login {
-    file { "/srv/www/${url}/.htpasswd":
-      ensure  => link,
-      target  => "/srv/www/${url}/${environment}/.htpasswd";
-    }
-  }
-
   Kbp_dashboard::Environment <<| |>> {
     url         => $url,
     port        => $port,
-    setup_login => $setup_login,
   }
 
   kbp_mysql::client { 'dashboard':; }
@@ -52,19 +44,9 @@ class kbp_dashboard::site_host($url, $ssl=true, $dbpassword, $dbhost, $setup_log
   }
 }
 
-define kbp_dashboard::environment($url, $port, $setup_login) {
+define kbp_dashboard::environment($url, $port) {
   file { "/srv/www/${url}/${name}":
     ensure  => directory;
-  }
-
-  if $setup_login {
-    concat { "/srv/www/${url}/${name}/.htpasswd":
-      require => File["/srv/www/${url}/${name}"];
-    }
-
-    Concat::Add_content <<| tag == "htpasswd_${name}" |>> {
-      target => "/srv/www/${url}/${name}/.htpasswd",
-    }
   }
 
   kbp_apache::vhost_addition {
