@@ -14,6 +14,11 @@ class kbp_wordpress::common {
   include gen_php5::mysql
   include gen_php5::gd
   include gen_php5::curl
+
+  file { '/usr/local/bin/fix_wp_permissions':
+    content => template('kbp_wordpress/fix_wp_permissions.sh'),
+    mode    => 755;
+  }
 }
 
 # Define: kbp_wordpress
