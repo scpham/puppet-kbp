@@ -85,6 +85,9 @@ class kbp_ferm::offenders {
       ips => "(208.80.127.4 222.124.21.98 212.70.217.216 77.95.229.72 80.152.154.224 199.15.252.136 140.206.35.27 212.198.163.71 219.232.244.89 222.186.24.13)";
     "20120626 Port scans on entire range":
       ips => "(210.0.207.196)";
+  }
+
+  kbp_ferm::spammer {
     "20130122 Spammer":
       ips => '77.241.91.53';
     "20130124 A company dedicated to spamming":
@@ -114,6 +117,37 @@ define kbp_ferm::block ($ips) {
       action => "DROP";
     "Block IPs in FORWARD chain due to: ${name}":
       saddr  => $ips,
+      chain  => "FORWARD",
+      action => "DROP";
+  }
+}
+
+# Define: kbp_ferm::spammer
+#
+# Parameters:
+#  name
+#    Description of why these IP addresses are spammers, add a date added please
+#  ips
+#    List of IP addresses to block email from in ferm syntax
+#
+# Actions:
+#  Drops all mail traffic from the IP address.
+#
+# Depends:
+#  kbp_ferm
+#  gen_puppet
+#
+define kbp_ferm::spammer ($ips) {
+  gen_ferm::rule {
+    "Block spammer in INPUT chain due to: ${name}":
+      saddr  => $ips,
+      proto  => 'tcp',
+      dport  => '(25 465)',
+      action => "DROP";
+    "Block spammer in FORWARD chain due to: ${name}":
+      saddr  => $ips,
+      proto  => 'tcp',
+      dport  => '(25 465)',
       chain  => "FORWARD",
       action => "DROP";
   }
