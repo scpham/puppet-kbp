@@ -87,6 +87,8 @@ class kbp_ferm::offenders {
       ips => "(210.0.207.196)";
     "20130122 Spammer":
       ips => '77.241.91.53';
+    "20130124 A company dedicated to spamming":
+      ips => '78.41.64.0/21';
   }
 }
 
