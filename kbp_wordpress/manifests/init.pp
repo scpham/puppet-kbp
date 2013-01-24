@@ -67,10 +67,6 @@ define kbp_wordpress($external_mysql=true, $mysql_tag=false, $db=false, $user=fa
   }
 
   if $external_mysql {
-    @@mysql::server::db { $real_db:
-      tag => $real_tag;
-    }
-
     @@mysql::server::grant { "${real_user} on ${real_db}.*":
       password   => $password,
       tag        => $real_tag;
@@ -81,8 +77,6 @@ define kbp_wordpress($external_mysql=true, $mysql_tag=false, $db=false, $user=fa
         mysql_tag => $mysql_tag;
       }
     }
-
-    mysql::server::db { $real_db:; }
 
     mysql::server::grant { "${real_user} on ${real_db}.*":
       password => $password;
