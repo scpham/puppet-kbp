@@ -1,4 +1,10 @@
 #!/bin/sh
+# fix_wp_permissions - A script that finds and fixes permissions in
+# WordPress installations
+#
+# Copyright 2013 - Kumina B.V.
+# Licensed under the terms of the GNU GPL version 3 or higher
+
 if [ $(id -u) -ne 0 ]; then
 	echo "Please run ${0} as root." >&2
 	exit 1
@@ -6,11 +12,12 @@ fi
 
 usage() {
 	echo "Usage: $0 <PATH|all>" >&2
-	echo "\tPATH is the path to the directory containing the WordPress" >&2
-	echo "\tinstallation. e.g. '/srv/www/myblog.mysite.com'." >&2
-	echo "\tWhen supplying 'all', ALL subdirectories of /srv/www are checked" >&2
-	echo "\tfor WordPress installations and all wp-content/uploads directories" >&2
-	echo "\tand file therein will be chowned to www-data." >&2
+	echo "  PATH is the path to the directory containing the WordPress" >&2
+	echo "  installation. e.g. '/srv/www/myblog.mysite.com'." >&2
+	echo "  When supplying 'all', ALL subdirectories of /srv/www are checked" >&2
+	echo "  for WordPress installations and all wp-content/uploads and " >&2
+	echo "  wp-content/blogs.dir directories and file therein will be " >&2
+	echo "  chowned to www-data." >&2
 	exit 1
 }
 
@@ -46,6 +53,8 @@ if [ -z $1 ]; then
 	usage
 elif [ $# -ne 1 ]; then
 	usage
+elif [ $1 = '-h' -o $1 = '--help' -o $1 = '-u' -o $1 = '--usage' ]; then
+	usage
 fi
 
 if [ $1 = 'all' ]; then
@@ -54,6 +63,11 @@ if [ $1 = 'all' ]; then
 	done
 	exit 0
 else
-	do_chown $1 X
-	exit 0
+	if [ -d $1 ]; then
+		do_chown $1 X
+		exit 0
+	else
+		echo "Error: ${1} is not a directory."
+		exit 4
+	fi
 fi
