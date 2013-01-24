@@ -67,7 +67,7 @@ else
 		do_chown $1 X
 		exit 0
 	else
-		echo "Error: ${1} is not a directory."
+		echo "Error: ${1} is not a directory." >&2
 		exit 4
 	fi
 fi
