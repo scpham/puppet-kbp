@@ -320,7 +320,7 @@ define kbp_apache::site($ensure="present", $serveralias=false, $documentroot = "
     default => "${tmp_intermediate}.pem",
   }
 
-  $full_name   = regsubst($name, '^([^_]*)$', "\1_${real_port}")
+  $full_name   = regsubst($name, '^([^_]*)$', "\\1_${real_port}")
   $dontmonitor = ["default","default-ssl","localhost"]
 
   gen_apache::site { $full_name:
