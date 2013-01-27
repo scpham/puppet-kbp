@@ -52,26 +52,8 @@ define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=fal
         include kbp_mysql::server
       }
 
-      file {
-        ['/usr/local','/usr/local/share','/usr/local/share/mail']:
-          ensure => directory,
-          owner  => undef,
-          group  => undef,
-          mode   => undef;
-        '/usr/local/share/mail/mailserver-tables.sql':
-          content => template('kbp_mail/mailserver-tables.sql');
-      }
-
-      mysql::server::grant { "${mysql_user} on ${mysql_db}":
-        hostname => '127.0.0.1',
-        password => $mysql_pass,
-        notify   => Exec['create-mailserver-tables'];
-      }
-
-      exec { 'create-mailserver-tables':
-        refreshonly => true,
-        command     => "/usr/bin/mysql -u ${mysql_user} -p{$mysql_pass} ${mysql_db} < /usr/local/share/mail/mailserver-tables.sql",
-        require     => [File['/usr/local/share/mail/mailserver-tables.sql'], Mysql::Server::Grant["${mysql_user} on ${mysql_db}"]];
+      if ! $mysql_pass {
+        fail('When using primary or dovecot mode for kbp_mail, $mysql_pass must be set as kbp_dovecot needs it.')
       }
 
       if ! $certs {
@@ -79,12 +61,6 @@ define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=fal
       }
       if ! $postmaster {
         fail('When using primary or dovecot mode for kbp_mail, $postmaster must be set as dovecot needs it.')
-      }
-      if ! $monitor_username {
-        fail('When using primary or dovecot mode for kbp_mail, $monitor_username must be set as dovecot needs it.')
-      }
-      if ! $monitor_password {
-        fail('When using primary or dovecot mode for kbp_mail, $monitor_password must be set as dovecot needs it.')
       }
 
       include kbp_amavis

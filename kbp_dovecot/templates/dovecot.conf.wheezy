@@ -1,0 +1,59 @@
+# 2.1.7: /etc/dovecot/dovecot.conf
+# OS: Linux 3.2.0-4-amd64 x86_64 Debian 7.0 ext4
+auth_mechanisms = plain login
+disable_plaintext_auth = no
+first_valid_gid = 8
+first_valid_uid = 8
+last_valid_gid = 8
+last_valid_uid = 8
+listen = *, [::]
+log_timestamp = "%Y-%m-%d %H:%M:%S "
+mail_access_groups = mail
+mail_location = maildir:/srv/mail/%d/%n
+mail_privileged_group = mail
+managesieve_notify_capability = mailto
+managesieve_sieve_capability = fileinto reject envelope encoded-character vacation subaddress comparator-i;ascii-numeric relational regex imap4flags copy include variables body enotify environment mailbox date ihave
+passdb {
+  args = /etc/dovecot/dovecot-sql.conf
+  driver = sql
+}
+plugin {
+  sieve = /srv/sieve/%h/.dovecot.sieve
+  sieve_dir = /srv/sieve/%h/sieve
+}
+protocols = imap sieve
+service auth {
+  unix_listener /var/spool/postfix/dovecot/auth-client {
+    group = mail
+    mode = 0660
+    user = postfix
+  }
+  unix_listener auth-master {
+    group = mail
+    mode = 0600
+    user = mail
+  }
+  user = dovecot-auth
+}
+ssl_cert = </etc/ssl/certs/mail.timstoop.nl.pem
+ssl_cipher_list = HIGH:+TLSv1:!SSLv2:+SSLv3:!ADH:!aNULL:!eNULL:!NULL
+ssl_key = </etc/ssl/private/mail.timstoop.nl.key
+userdb {
+  driver = passwd
+}
+userdb {
+  args = /etc/dovecot/dovecot-sql.conf
+  driver = sql
+}
+protocol imap {
+  imap_client_workarounds = delay-newmail
+  mail_max_userip_connections = 20
+}
+protocol pop3 {
+  pop3_client_workarounds = outlook-no-nuls oe-ns-eoh
+  pop3_uidl_format = %08Xu%08Xv
+}
+protocol lda {
+  mail_plugins = sieve
+  postmaster_address = postmaster@timstoop.nl
+}
