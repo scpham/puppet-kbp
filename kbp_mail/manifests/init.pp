@@ -22,6 +22,7 @@
 #  relay_domains   Same as Postfix, see http://www.postfix.org/postconf.5.html#relay_domains. Only used when mode is primary or secondary. Defaults to false (which means '$mydestination' in Postfix)
 #  postmaster      Email address of postmaster (used by Dovecot)
 #  inet_protocols  Same as Postfix, which protocols to allow. Defaults to 'auto', which tries to determine it by itself via facts.
+#  self_signed_certs Set this to true if you're using self-signed certificates. Defaults to false.
 #
 # Depends:
 #  gen_postgrey (only when mode is primary or secondary)
@@ -32,7 +33,7 @@
 #
 define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=false, $mydestination=false, $accept_incoming=false, $myhostname=false, $mynetworks=false,
     $always_bcc=false, $mode=false, $mysql_user='mailserver', $mysql_pass=false, $mysql_db='mailserver', $relay_domains=false, $mydomain=$domain,
-    $postmaster=false, $monitor_username=false, $monitor_password=false, $inet_protocols='auto') {
+    $postmaster=false, $monitor_username=false, $monitor_password=false, $inet_protocols='auto', $self_signed_certs=false) {
   # Determine correct internet protocols to use, if we want that
   if $inet_protocols == 'auto' {
     if $external_ipaddress_v6 {
@@ -79,24 +80,25 @@ define kbp_mail($certs=false, $deploycerts=true, $relayhost=false, $mailname=fal
   }
 
   class { 'kbp_postfix':
-    certs          => $certs,
-    relayhost      => $relayhost,
-    mailname       => $mailname,
-    mydomain       => $mydomain,
-    mydestination  => $mydestination,
-    myhostname     => $myhostname,
-    mynetworks     => $mynetworks,
-    always_bcc     => $always_bcc,
-    inet_protocols => $real_inet_protocols,
-    mode           => $mode ? {
+    certs             => $certs,
+    self_signed_certs => $self_signed_certs,
+    relayhost         => $relayhost,
+    mailname          => $mailname,
+    mydomain          => $mydomain,
+    mydestination     => $mydestination,
+    myhostname        => $myhostname,
+    mynetworks        => $mynetworks,
+    always_bcc        => $always_bcc,
+    inet_protocols    => $real_inet_protocols,
+    mode              => $mode ? {
     'dovecot' => false,
     default   => $mode,
     },
-    mysql_user     => $mysql_user,
-    mysql_pass     => $mysql_pass,
-    mysql_db       => $mysql_db,
-    mysql_host     => '127.0.0.1',
-    relay_domains  => $relay_domains;
+    mysql_user        => $mysql_user,
+    mysql_pass        => $mysql_pass,
+    mysql_db          => $mysql_db,
+    mysql_host        => '127.0.0.1',
+    relay_domains     => $relay_domains;
   }
 
   if $accept_incoming or $mode == 'primary' or $mode == 'secondary' {
