@@ -33,7 +33,6 @@ service auth {
     mode = 0600
     user = mail
   }
-  user = dovecot-auth
 }
 ssl_cert = </etc/ssl/certs/mail.timstoop.nl.pem
 ssl_cipher_list = HIGH:+TLSv1:!SSLv2:+SSLv3:!ADH:!aNULL:!eNULL:!NULL
