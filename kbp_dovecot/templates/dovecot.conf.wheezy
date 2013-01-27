@@ -39,9 +39,6 @@ ssl_cert = </etc/ssl/certs/mail.timstoop.nl.pem
 ssl_cipher_list = HIGH:+TLSv1:!SSLv2:+SSLv3:!ADH:!aNULL:!eNULL:!NULL
 ssl_key = </etc/ssl/private/mail.timstoop.nl.key
 userdb {
-  driver = passwd
-}
-userdb {
   args = /etc/dovecot/dovecot-sql.conf
   driver = sql
 }
