@@ -44,6 +44,7 @@
 class kbp_dovecot::imap($certs, $monitor_username=false, $monitor_password=false, $deploycerts=true, $postmaster='support@kumina.nl', $mysql_user='mailserver', $mysql_pass, $mysql_db='mailserver', $mysql_host='localhost', $mysql_tag=false) {
   include gen_dovecot::imap
   include gen_dovecot::sieve
+  include gen_dovecot::mysql
 
   $key_name = regsubst($certs,'^(.*)/(.*)$','\2')
 
