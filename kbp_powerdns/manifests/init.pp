@@ -35,12 +35,14 @@ class kbp_powerdns::master {
 # Depends:
 #  kbp_powerdns::authoritative
 #
-class kbp_powerdns::authoritative::master ($db_password, $certlocation, $intermediate, $admin_password, $mysql_tag='powerdns', $localaddress=$::external_ipaddress) {
+class kbp_powerdns::authoritative::master ($db_password, $certlocation, $intermediate, $admin_password, $pdns_tag="pdns_${environment}", $localaddress=$::external_ipaddress, $localport=53) {
   class {
     'kbp_powerdns::authoritative':
-      localaddress => $localaddress;
+      localaddress => $localaddress,
+      localport    => $localport,
+      pdns_tag     => $pdns_tag;
     'kbp_mysql::master':
-      mysql_tag    => $mysql_tag;
+      mysql_tag    => $pdns_tag;
     'kbp_mysql::server::ssl':
       certlocation => $certlocation,
       intermediate => $intermediate;
@@ -55,7 +57,7 @@ class kbp_powerdns::authoritative::master ($db_password, $certlocation, $interme
       password    => $db_password;
   }
 
-  Mysql::Server::Grant <<| tag == "powerdns_admin_${environment}" |>>
+  Mysql::Server::Grant <<| tag == $pdns_tag |>>
 
   file {
     '/etc/powerdns/admin':
@@ -67,13 +69,13 @@ class kbp_powerdns::authoritative::master ($db_password, $certlocation, $interme
   }
 
   # This export is imported by ALL kbp_powerdns::authoritative imports to configure its database settings.
-  @@gen_powerdns::backend::mysql { "pdns_${environment}":
+  @@gen_powerdns::backend::mysql { $pdns_tag:
     db_password => $db_password;
   }
 
   @@host { $fqdn:
     ip  => $external_ipaddress,
-    tag => "powerdns_${environment}";
+    tag => $pdns_tag;
   }
 
   Kbp_ferm::Rule <<| tag == "pdns_admin_${environment}" |>>
@@ -92,13 +94,15 @@ class kbp_powerdns::authoritative::master ($db_password, $certlocation, $interme
 # Depends:
 #  kbp_powerdns::authoritative
 #
-class kbp_powerdns::authoritative::slave ($repl_password, $intermediate, $mysql_tag='powerdns', $localaddress=$::external_ipaddress){
+class kbp_powerdns::authoritative::slave ($repl_password, $intermediate, $pdns_tag="pdns_${environment}", $localaddress=$::external_ipaddress, $localport=53){
   include "kbp_ssl::intermediate::${intermediate}"
   class {
     'kbp_powerdns::authoritative':
-      localaddress     => $localaddress;
+      localaddress     => $localaddress,
+      localport        => $localport,
+      pdns_tag         => $pdns_tag;
     'kbp_mysql::slave':
-      mysql_tag        => $mysql_tag,
+      mysql_tag        => $pdns_tag,
       repl_user        => 'pdns_repl',
       repl_password    => $repl_password,
       repl_require_ssl => true,
@@ -106,7 +110,7 @@ class kbp_powerdns::authoritative::slave ($repl_password, $intermediate, $mysql_
       setup_backup     => false;
   }
 
-  Host <<| tag == "powerdns_${environment}" |>>
+  Host <<| tag == $pdns_tag |>>
 }
 
 # Class: kbp_powerdns::authoritative
@@ -119,19 +123,22 @@ class kbp_powerdns::authoritative::slave ($repl_password, $intermediate, $mysql_
 # Depends:
 #  gen_powerdns
 #
-class kbp_powerdns::authoritative ($localaddress) {
+class kbp_powerdns::authoritative ($localaddress, $localport=53, $pdns_tag="pdns_${environment}") {
   include kbp_munin::client::powerdns
   class { 'gen_powerdns':
-    localaddress => $localaddress;
+    localaddress => $localaddress,
+    localport    => $localport;
   }
 
-  Gen_powerdns::Backend::Mysql <<| title == "pdns_${environment}" |>>
+  Gen_powerdns::Backend::Mysql <<| title == $pdns_tag |>>
 
-  kbp_ferm::rule { 'PowerDNS':
-    proto  => '(tcp udp)',
-    daddr  => "(${localaddress})",
-    dport  => 53,
-    action => ACCEPT;
+  if $localaddress != '127.0.0.1' {
+    kbp_ferm::rule { 'PowerDNS':
+      proto  => '(tcp udp)',
+      daddr  => "(${localaddress})",
+      dport  => 53,
+      action => ACCEPT;
+    }
   }
 
   kbp_icinga::proc_status { 'pdns':; }
@@ -148,7 +155,7 @@ class kbp_powerdns::authoritative ($localaddress) {
 #  cert         The certificate used for the site
 #  wildcard     The wildcard certificate for this site
 #
-class kbp_powerdns::admin ($dbserver, $admin_password, $sitename, $intermediate=false, $cert=false, $wildcard=false) {
+class kbp_powerdns::admin ($dbserver, $admin_password, $sitename, $intermediate=false, $cert=false, $wildcard=false, $pdns_tag="pdns_${environment}") {
   include gen_base::python_mysqldb
   include gen_base::python-dnspython
 
@@ -168,7 +175,7 @@ class kbp_powerdns::admin ($dbserver, $admin_password, $sitename, $intermediate=
     password    => $admin_password,
     hostname    => $external_ipaddress,
     require_ssl => true,
-    tag         => "powerdns_admin_${environment}"
+    tag         => $pdns_tag;
   }
 
   kbp_django::site { $sitename:
