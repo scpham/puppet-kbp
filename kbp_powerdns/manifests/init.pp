@@ -78,7 +78,7 @@ class kbp_powerdns::authoritative::master ($db_password, $certlocation, $interme
     tag => $pdns_tag;
   }
 
-  Kbp_ferm::Rule <<| tag == "pdns_admin_${environment}" |>>
+  Kbp_ferm::Rule <<| tag == $pdns_tag |>>
 }
 
 # Class: kbp_powerdns::authoritative::slave
@@ -159,13 +159,13 @@ define kbp_powerdns::admin ($dbserver, $admin_password, $intermediate=false, $ce
   include gen_base::python_mysqldb
   include gen_base::python-dnspython
 
-  kbp_ferm::rule { 'pdns_admin access':
+  kbp_ferm::rule { "pdns_admin access for ${name}":
     saddr    => $external_ipaddress,
     dport    => 3306,
     proto    => tcp,
     exported => true,
     action   => 'ACCEPT',
-    ferm_tag => "pdns_admin_${environment}";
+    ferm_tag => $pdns_tag;
   }
 
   @@mysql::server::grant { "pdns_admin on pdns from ${fqdn}":
