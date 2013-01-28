@@ -150,12 +150,12 @@ class kbp_powerdns::authoritative ($localaddress, $localport=53, $pdns_tag="pdns
 #
 # Parameters:
 #  dbserver     The server on which the pdns database resides
-#  sitename     The url for this website (like pdnsadmin.yousite.com)
 #  intermediate The intermediate certificate
 #  cert         The certificate used for the site
 #  wildcard     The wildcard certificate for this site
+#  pdns_tag     The tag for the pdns server used
 #
-class kbp_powerdns::admin ($dbserver, $admin_password, $sitename, $intermediate=false, $cert=false, $wildcard=false, $pdns_tag="pdns_${environment}") {
+define kbp_powerdns::admin ($dbserver, $admin_password, $intermediate=false, $cert=false, $wildcard=false, $pdns_tag="pdns_${environment}") {
   include gen_base::python_mysqldb
   include gen_base::python-dnspython
 
@@ -178,7 +178,7 @@ class kbp_powerdns::admin ($dbserver, $admin_password, $sitename, $intermediate=
     tag         => $pdns_tag;
   }
 
-  kbp_django::site { $sitename:
+  kbp_django::site { $name:
     cert         => $cert,
     intermediate => $intermediate,
     wildcard     => $wildcard,
@@ -189,7 +189,7 @@ class kbp_powerdns::admin ($dbserver, $admin_password, $sitename, $intermediate=
     $ssl = true
   }
 
-  kbp_apache::vhost_addition { "${sitename}/static":
+  kbp_apache::vhost_addition { "${name}/static":
     ports   => $ssl ? {
       true    => 443,
       default => 80,
