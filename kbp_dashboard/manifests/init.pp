@@ -34,6 +34,7 @@ class kbp_dashboard::site_host($url, $ssl=true, $dbpassword, $dbhost) {
   }
 
   kcron { 'filldashboarddb':
+    ensure  => 'absent',
     command => "/srv/django/dashboard.kumina.nl/dashboard/fill_dashboard_database -ps ${dbhost} -pp ${dbpassword} -ds ${dbhost} -dp ${dbpassword} >/dev/null",
     minute  => 0;
   }
