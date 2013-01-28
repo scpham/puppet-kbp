@@ -15,12 +15,14 @@ class kbp_unbound {
   include kbp_icinga::unbound
   include kbp_munin::client::unbound
 
-  # get the backports version
-  gen_apt::preference { ["unbound", "libunbound2", "unbound-anchor", "libldns1"]:; }
+  if $lsbdistcodename == 'squeeze' {
+    # get the backports version
+    gen_apt::preference { ["unbound", "libunbound2", "unbound-anchor", "libldns1"]:; }
 
-  # The backported version supports status
-  Service <| title == "unbound" |> {
-    hasstatus => true,
+    # The backported version supports status
+    Service <| title == "unbound" |> {
+      hasstatus => true,
+    }
   }
 
   concat::add_content { "05 unbound.conf settings for trending":
@@ -77,13 +79,15 @@ define kbp_unbound::stub_zone ($stub_host=false, $stub_addr=false, $stub_prime=f
     stub_first => $stub_first;
   }
 
-  kbp_ferm::rule { "Unbound stubzone ${name}":
-    saddr    => $source_ipaddress,
-    proto    => '(tcp udp)',
-    dport    => 53,
-    action   => 'ACCEPT',
-    exported => true,
-    ferm_tag => "unbound_stubzone_${::environment}"
+  if $stub_host != 'localhost' and $stub_addr !~ /127\.0\.0\.1/ {
+    kbp_ferm::rule { "Unbound stubzone ${name}":
+      saddr    => $source_ipaddress,
+      proto    => '(tcp udp)',
+      dport    => 53,
+      action   => 'ACCEPT',
+      exported => true,
+      ferm_tag => "unbound_stubzone_${::environment}"
+    }
   }
 }
 
