@@ -168,7 +168,7 @@ define kbp_powerdns::admin ($dbserver, $admin_password, $intermediate=false, $ce
     ferm_tag => $pdns_tag;
   }
 
-  @@mysql::server::grant { "pdns_admin on pdns from ${fqdn}":
+  @@mysql::server::grant { "pdns_admin on pdns from ${fqdn} for ${name}":
     permissions => 'select, insert, update, delete',
     user        => 'pdns_admin',
     db          => 'pdns',
