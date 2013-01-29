@@ -1831,6 +1831,7 @@ class kbp_icinga::pacemaker {
     'pacemaker standby':
       service_description => "Pacemaker standby",
       check_command       => "check_pacemaker_standby",
+      sms                 => false,
       nrpe                => true;
   }
 
