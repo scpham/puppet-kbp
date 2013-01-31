@@ -125,7 +125,7 @@ class kbp_percona::slave($percona_tag=false, $bind_address="0.0.0.0", $mastermas
     proto    => "tcp",
     dport    => 3306,
     action   => "ACCEPT",
-    ferm_tag => $percona_tag;
+    ferm_tag => $real_tag;
   }
 
   kbp_icinga::service { "percona_slaving":
