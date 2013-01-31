@@ -111,7 +111,7 @@ class kbp_percona::slave($percona_tag=false, $bind_address="0.0.0.0", $mastermas
 
   kbp_icinga::service { "percona_slaving":
     service_description => "Percona slaving",
-    check_command       => "check_percona_slave",
+    check_command       => "check_mysql_slave",
     nrpe                => true,
     ha                  => $monitoring_ha,
     check_interval      => 60;
