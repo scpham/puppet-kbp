@@ -3,8 +3,8 @@
 # Parameters:
 #  mysql_tag
 #    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
-class kbp_mysql::mastermaster($mysql_tag=false, $serverid, $auto_increment_increment=10, $auto_increment_offset=$serverid, $setup_binlogs=true, $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false,
-    $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10, $repl_password) {
+class kbp_mysql::mastermaster($mysql_tag=false, $serverid, $auto_increment_increment=10, $auto_increment_offset=$serverid, $setup_binlogs=true, $bind_address="0.0.0.0", $setup_backup=true,
+    $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10, $repl_password, $repl_user='repl') {
   if ! $serverid {
     $real_serverid = fqdn_rand(4294967293)+2 # 32 bit integer that is not 0 or 1
   } else {
