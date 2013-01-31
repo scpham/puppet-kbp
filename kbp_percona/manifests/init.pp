@@ -4,17 +4,25 @@
 #  percona_name         The name of this Percona setup, used in combination with $environment to make sure the correct resources are imported
 #  slow_query_time    See kbp_percona::server
 #
-class kbp_percona::mastermaster($percona_tag=false, $repl_password, $repl_user='repl', $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10) {
+class kbp_percona::mastermaster($percona_tag=false, $serverid, $repl_password, $repl_user='repl', $bind_address="0.0.0.0", $setup_backup=true, $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10,$serverid, $auto_increment_increment=10, $auto_increment_offset=$serverid, $setup_binlogs=true) {
+  if ! $serverid {
+    $real_serverid = fqdn_rand(4294967293)+2 # 32 bit integer that is not 0 or 1
+  } else {
+    $real_serverid = $serverid
+  }
+
   class {
     "kbp_percona::master":
       percona_tag     => $percona_tag,
       bind_address    => $bind_address,
       setup_backup    => $setup_backup,
+      serverid        => $real_serverid,
+      setup_binlogs   => $setup_binlogs,
       datadir         => $datadir,
       slow_query_time => $slow_query_time;
     "kbp_percona::slave":
       repl_host       => $repl_host,
-      percona_name    => $percona_name,
+      percona_tag     => $percona_tag,
       mastermaster    => true,
       monitoring_ha   => $monitoring_ha_slaving,
       datadir         => $datadir,
@@ -22,14 +30,19 @@ class kbp_percona::mastermaster($percona_tag=false, $repl_password, $repl_user='
       repl_user       => $repl_user,
       repl_password   => $repl_password;
   }
-  fail("This class is untested and simply a copy from kbp_mysql.")
+
+  file { '/etc/mysql/conf.d/auto_increment.cnf':
+    content => "[mysqld]\nauto_increment_increment = ${auto_increment_increment}\nauto_increment_offset = ${auto_increment_offset}",
+    require => File['/etc/mysql/conf.d/master.cnf'],
+    notify  => Exec['reload-percona'];
+  }
 }
 
 # Parameters:
 #  percona_name       The name of this Percona setup, used in combination with $environment to make sure the correct resources are imported
 #  slow_query_time    See kbp_percona::server
 #
-class kbp_percona::master($percona_tag=false, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $slow_query_time=10, $percona_version=false) {
+class kbp_percona::master($percona_tag=false, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $serverid=1, $setup_binlogs=false, $slow_query_time=10, $percona_version=false) {
   $real_tag = $percona_tag ? {
     false   => "mysql_${environment}_${custenv}",
     default => "mysql_${environment}_${custenv}_${percona_tag}",
@@ -42,6 +55,12 @@ class kbp_percona::master($percona_tag=false, $bind_address="0.0.0.0", $setup_ba
     bind_address    => $bind_address,
     datadir         => $datadir,
     slow_query_time => $slow_query_time;
+  }
+
+  file { '/etc/mysql/conf.d/master.cnf':
+    content => template('kbp_mysql/master.cnf'),
+    require => Service['mysql'],
+    notify  => Exec['reload-mysql'];
   }
 
   Gen_percona::Server::Grant <<| tag == $real_tag |>>
@@ -84,7 +103,7 @@ class kbp_percona::slave($percona_tag=false, $bind_address="0.0.0.0", $mastermas
     default => "mysql_${environment}_${custenv}_${percona_tag}",
   }
 
-  @@percona::server::grant { "repl_${fqdn}":
+  @@gen_percona::server::grant { "repl_${fqdn}":
     user        => $repl_user,
     password    => $repl_password,
     hostname    => $repl_host,
@@ -94,7 +113,7 @@ class kbp_percona::slave($percona_tag=false, $bind_address="0.0.0.0", $mastermas
     tag         => $real_tag;
   }
 
-  percona::server::grant { "nagios_slavecheck":
+  gen_percona::server::grant { "nagios_slavecheck":
     user        => "nagios",
     db          => "*",
     permissions => "super, replication client";
@@ -123,8 +142,6 @@ class kbp_percona::slave($percona_tag=false, $bind_address="0.0.0.0", $mastermas
     execution_failure_criteria    => "u,w,c",
     notification_failure_criteria => "u,w,c";
   }
-
-  fail("This class is untested and simply a copy from kbp_mysql.")
 }
 
 # Class: kbp_percona::server
@@ -309,7 +326,7 @@ class kbp_percona::client::java {
 #  gen_puppet
 #
 define kbp_percona::client ($percona_tag=false, $address=$source_ipaddress, $environment=$environment) {
-  include gen_base::percona_client
+  include gen_base::mysql_client
 
   $real_tag = $percona_tag ? {
     false   => "mysql_${environment}_${custenv}",
@@ -324,7 +341,6 @@ define kbp_percona::client ($percona_tag=false, $address=$source_ipaddress, $env
     action   => "ACCEPT",
     ferm_tag => $real_tag;
   }
-  fail("This define is untested and simply a copy from kbp_mysql.")
 }
 
 define kbp_percona::monitoring_dependency($this_fqdn=$fqdn, $percona_tag=false) {
