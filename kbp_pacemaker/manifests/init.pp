@@ -20,7 +20,8 @@ class kbp_pacemaker {
 
   file { '/usr/lib/ocf/resource.d/heartbeat/MailTo':
     content => template('kbp_pacemaker/MailTo'),
-    mode    => 755;
+    mode    => 755,
+    require => Package['pacemaker'];
   }
 
   kbp_pacemaker::primitive { 'mail_alert':
