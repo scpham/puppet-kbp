@@ -3,7 +3,7 @@
 # Parameters:
 #  mysql_tag
 #    The name of this MySQL setup, used in combination with $environment to make sure the correct resources are imported
-class kbp_mysql::mastermaster($mysql_tag=false, $serverid, $auto_increment_increment=10, $auto_increment_offset=$serverid, $setup_binlogs=true, $bind_address="0.0.0.0", $setup_backup=true,
+class kbp_mysql::mastermaster($mysql_tag=false, $serverid=false, $auto_increment_increment=10, $auto_increment_offset=$serverid, $setup_binlogs=true, $bind_address="0.0.0.0", $setup_backup=true,
     $monitoring_ha_slaving=false, $repl_host=$source_ipaddress, $datadir=false, $slow_query_time=10, $repl_password, $repl_user='repl') {
   if ! $serverid {
     $real_serverid = fqdn_rand(4294967293)+2 # 32 bit integer that is not 0 or 1
@@ -31,8 +31,18 @@ class kbp_mysql::mastermaster($mysql_tag=false, $serverid, $auto_increment_incre
       repl_password   => $repl_password;
   }
 
+  if $real_serverid != $auto_increment_offset {
+    $real_auto_increment_offset = regsubst($hostname,'[^0-9]*(\d)','\1')
+  } else {
+    $real_auto_increment_offset = $real_serverid
+  }
+
+  if $real_auto_increment_offset !~ /^\d$/ {
+    fail("Unable to distill an auto-increment-offset setting from the hostname ${hostname}, please supply it")
+  }
+
   file { '/etc/mysql/conf.d/auto_increment.cnf':
-    content => "[mysqld]\nauto_increment_increment = ${auto_increment_increment}\nauto_increment_offset = ${auto_increment_offset}",
+    content => "[mysqld]\nauto_increment_increment = ${auto_increment_increment}\nauto_increment_offset = ${real_auto_increment_offset}",
     require => File['/etc/mysql/conf.d/master.cnf'],
     notify  => Exec['reload-mysql'];
   }
