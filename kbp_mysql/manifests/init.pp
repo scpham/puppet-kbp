@@ -207,6 +207,16 @@ class kbp_mysql::server($mysql_tag=false, $bind_address="0.0.0.0", $setup_backup
       target  => "/usr/share/backup-scripts/prepare/mysql",
       require => Package["backup-scripts"];
     }
+
+    if $datadir {
+      if ! defined(Kbp_backup::Exclude[$datadir]) {
+        kbp_backup::exclude { $datadir:; }
+      }
+    } else {
+      if ! defined(Kbp_backup::Exclude['/var/lib/mysql/']) {
+        kbp_backup::exclude { '/var/lib/mysql/':; }
+      }
+    }
   } else {
     file { "/etc/backup/prepare.d/mysql":
       ensure => absent;
@@ -237,10 +247,6 @@ class kbp_mysql::server($mysql_tag=false, $bind_address="0.0.0.0", $setup_backup
         require => Package[$mysql::server::mysqlserver];
       }
     }
-  }
-
-  kbp_backup::exclude { "exclude_var_lib_mysql":
-    content => "/var/lib/mysql/*";
   }
 
   exec { 'remove_root_users':

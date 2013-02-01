@@ -178,18 +178,20 @@ class kbp_percona::server($percona_tag=false, $percona_version=false, $bind_addr
       require => Package["backup-scripts"];
     }
 
-    file { "/etc/mysql/conf.d/expire_logs.cnf":
-      content => "[mysqld]\nexpire_logs_days = 7\n";
+    if $datadir {
+      if ! defined(Kbp_backup::Exclude[$datadir]) {
+        kbp_backup::exclude { $datadir:; }
+      }
+    } else {
+      if ! defined(Kbp_backup::Exclude['/var/lib/mysql/']) {
+        kbp_backup::exclude { '/var/lib/mysql/':; }
+      }
     }
   } else {
     # Remove the backup script. Don't remove the expire_logs, since that might inadvertently fill up a disk
     # where binlogs are created but no longer removed. We just remove them earlier.
     file { "/etc/backup/prepare.d/percona":
       ensure => absent,
-    }
-
-    file { "/etc/mysql/conf.d/expire_logs.cnf":
-      content => "[mysqld]\nexpire_logs_days = 1\n";
     }
   }
 
@@ -211,13 +213,6 @@ class kbp_percona::server($percona_tag=false, $percona_version=false, $bind_addr
         require => Package[$gen_percona::server::perconaserver];
       }
     }
-  }
-
-  kbp_backup::exclude { "exclude_percona_data_dir":
-    content => $datadir ? {
-      false   => "/var/lib/mysql/*",
-      default => $datadir,
-    },
   }
 
   # Since we usually upgrade to Percona, remove the old logrotate config for mysql
