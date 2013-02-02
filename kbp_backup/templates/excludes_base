@@ -21,9 +21,7 @@
 /usr/lib64/*
 /usr/sbin/*
 /usr/share/*
-/var/cache/approx
-/var/cache/apt/archives
-/var/cache/rsnapshot
+/var/cache/*
 /var/lib/amavis/tmp
 /var/lib/media/*
 /var/lib/xen/save
