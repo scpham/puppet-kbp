@@ -25,6 +25,7 @@
 /var/lib/amavis/tmp
 /var/lib/media/*
 /var/lib/xen/save
+/var/lib/pengine/*
 /var/lock/*
 /var/run/*
 /var/tmp/*
