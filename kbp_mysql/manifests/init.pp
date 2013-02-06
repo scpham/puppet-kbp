@@ -78,9 +78,6 @@ class kbp_mysql::master($mysql_tag=false, $bind_address="0.0.0.0", $setup_backup
     notify  => Exec['reload-mysql'];
   }
 
-  Mysql::Server::Grant <<| tag == $real_tag |>>
-  Kbp_mysql::Monitoring_dependency <<| tag == $real_tag |>>
-
   if ! defined(Kbp_mysql::Monitoring_dependency["mysql_${environment}_${mysql_tag}_${fqdn}"]) {
     @@kbp_mysql::monitoring_dependency { "mysql_${environment}_${mysql_tag}_${fqdn}":
       mysql_tag => $mysql_tag;
@@ -258,6 +255,9 @@ class kbp_mysql::server($mysql_tag=false, $bind_address="0.0.0.0", $setup_backup
   Kbp_ferm::Rule <<| tag == $real_tag |>>
 
   Gen_ferm::Rule <<| tag == "mysql_monitoring" |>>
+
+  Mysql::Server::Grant <<| tag == $real_tag |>>
+  Kbp_mysql::Monitoring_dependency <<| tag == $real_tag |>>
 }
 
 # Class: kbp_mysql::server::ssl
