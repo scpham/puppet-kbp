@@ -26,6 +26,7 @@
 /var/lib/media/*
 /var/lib/xen/save
 /var/lib/pengine/*
+/var/lib/dpkg/*
 /var/lock/*
 /var/run/*
 /var/tmp/*
