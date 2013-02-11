@@ -30,3 +30,4 @@
 /var/lock/*
 /var/run/*
 /var/tmp/*
+/var/spool/*
