@@ -457,6 +457,10 @@ class kbp_icinga::icinga_web($dbpassword, $dbhost="localhost", $ssl=true, $autho
     authorized_users => $authorized_users;
   }
 
+  # ido2db.cfg options
+  $max_servicechecks_age                    = 44640
+  $max_hostchecks_age                       = 44640
+
   package { 'icinga-web':; }
 
   file {
