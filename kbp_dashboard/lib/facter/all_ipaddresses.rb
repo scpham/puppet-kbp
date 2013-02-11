@@ -1,7 +1,7 @@
 fact = ''
 Facter.value(:interfaces).split(',').each do |interface|
   fact = fact + interface + '|'
-  addresses = %x{/bin/ip address show #{interface}}
+  addresses = %x{/bin/ip address show #{interface} 2> /dev/null}
   addresses.scan(/^    inet ([^ ]*)/).flatten.each do |address|
     fact = fact + address + ',' if address !~ /^127\.0\.0\./
   end
