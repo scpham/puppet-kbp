@@ -120,6 +120,9 @@ class kbp_debian inherits kbp_base {
     ensure => installed;
   }
 
+  # We do not need to backup the dlocate database
+  kbp_backup::exclude { '/var/lib/dlocate/*':; }
+
   package { "ca-certificates":
     ensure => latest;
   }
