@@ -25,6 +25,12 @@ class kbp_dashboard::site_host($url, $ssl=true, $dbpassword, $dbhost) {
       password    => $dbpassword,
       permissions => 'SELECT',
       tag         => "mysql_${environment}_${custenv}";
+    "dashboard on icinga for ${fqdn}":
+      user        => 'dashboard',
+      db          => 'icinga',
+      hostname    => $fqdn,
+      password    => $dbpassword,
+      tag         => "mysql_${environment}_${custenv}";
     "dashboard on dashboard for ${fqdn}":
       user        => 'dashboard',
       db          => 'dashboard',
