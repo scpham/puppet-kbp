@@ -59,6 +59,9 @@ class kbp_apache {
   kbp_apache::module { ["deflate","rewrite"]:; }
 
   kbp_icinga::http { "http_${fqdn}":; }
+
+  # Do not backup running state of Apache
+  kbp_backup::exclude { '/var/lib/apache2':; }
 }
 
 # Class: kbp_apache::global_umask_007
