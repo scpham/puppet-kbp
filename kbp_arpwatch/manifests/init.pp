@@ -3,11 +3,11 @@
 # Class: kbp_arpwatch
 #
 # Actions:
-#  Undocumented
+#  Setup arpwatch.
 #
 # Depends:
-#  Undocumented
-#  gen_puppet
+#  arpwatch
+#  kbp_icinga
 #
 class kbp_arpwatch {
   include arpwatch
@@ -21,4 +21,15 @@ class kbp_arpwatch {
     check_command       => "check_arpwatch",
     nrpe                => true;
   }
+}
+
+# Class: kbp_arpwatch::disable
+#
+# Actions: Remove arpwatch from a machine
+#
+# Depends:
+#  arpwatch
+#
+class kbp_arpwatch::disable {
+  include arpwatch::disable
 }
