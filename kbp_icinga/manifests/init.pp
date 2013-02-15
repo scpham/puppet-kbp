@@ -458,8 +458,10 @@ class kbp_icinga::icinga_web($dbpassword, $dbhost="localhost", $ssl=true, $autho
   }
 
   # ido2db.cfg options
-  $max_servicechecks_age                    = 44640
-  $max_hostchecks_age                       = 44640
+  $max_servicechecks_age   = 44640
+  $max_hostchecks_age      = 44640
+  # idomod.cfg options
+  $data_processing_options = 67108861
 
   package { 'icinga-web':; }
 
@@ -468,6 +470,10 @@ class kbp_icinga::icinga_web($dbpassword, $dbhost="localhost", $ssl=true, $autho
       content => template("kbp_icinga/ido2db.cfg"),
       owner   => "nagios",
       mode    => 600,
+      require => Package["icinga"],
+      notify  => Exec["reload-icinga"];
+    "/etc/icinga/idomod.cfg":
+      content => template("kbp_icinga/server/idomod.cfg"),
       require => Package["icinga"],
       notify  => Exec["reload-icinga"];
     "/etc/icinga/modules/idoutils.cfg":
