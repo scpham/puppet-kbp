@@ -350,7 +350,7 @@ class kbp_icinga::client {
       sms                 => false,
       customer_notify     => false;
     "puppet_exploit_libkeyutils64":
-      service_description => "Libkeyutils exploit (64bit)",
+      service_description => "Libkeyutils exploit 64bit",
       check_command       => "check_exploit_libkeyutils64",
       check_interval      => 1200,
       nrpe                => true,
