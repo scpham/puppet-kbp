@@ -220,7 +220,7 @@ class kbp_icinga::client {
       arguments => '-f "/lib/libkeyutils.so.1.9" -n';
     "check_exploit_libkeyutils64":
       command   => "check_file",
-      arguments => '-f "/lib/libkeyutils.so.1.9" -n';
+      arguments => '-f "/lib64/libkeyutils.so.1.9" -n';
   }
 
   $address = $external_ipaddress ? {
