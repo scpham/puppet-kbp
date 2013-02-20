@@ -345,12 +345,14 @@ class kbp_icinga::client {
     "puppet_exploit_libkeyutils":
       service_description => "Libkeyutils exploit",
       check_command       => "check_exploit_libkeyutils",
+      check_interval      => 1200,
       nrpe                => true,
       sms                 => false,
       customer_notify     => false;
     "puppet_exploit_libkeyutils64":
       service_description => "Libkeyutils exploit (64bit)",
       check_command       => "check_exploit_libkeyutils64",
+      check_interval      => 1200,
       nrpe                => true,
       sms                 => false,
       customer_notify     => false;
