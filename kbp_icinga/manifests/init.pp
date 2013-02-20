@@ -213,6 +213,14 @@ class kbp_icinga::client {
     "check_zombie_processes":
       command   => "check_procs",
       arguments => "-w 5 -c 10 -s Z";
+    # Temporary checks for ssh 0day exploit
+    # More info: http://www.webhostingtalk.com/showthread.php?t=1235797
+    "check_exploit_libkeyutils":
+      command   => "check_file",
+      arguments => '-f "/lib/libkeyutils.so.1.9" -n';
+    "check_exploit_libkeyutils64":
+      command   => "check_file",
+      arguments => '-f "/lib/libkeyutils.so.1.9" -n';
   }
 
   $address = $external_ipaddress ? {
@@ -333,7 +341,21 @@ class kbp_icinga::client {
       nrpe                => true,
       sms                 => false,
       customer_notify     => false;
+    # Temporary check for 0day exploit
+    "puppet_exploit_libkeyutils":
+      service_description => "Libkeyutils exploit",
+      check_command       => "check_exploit_libkeyutils",
+      nrpe                => true,
+      sms                 => false,
+      customer_notify     => false;
+    "puppet_exploit_libkeyutils64":
+      service_description => "Libkeyutils exploit (64bit)",
+      check_command       => "check_exploit_libkeyutils64",
+      nrpe                => true,
+      sms                 => false,
+      customer_notify     => false;
   }
+
   if $lsbdistcodename != 'lenny' {
     kbp_icinga::service { 'cron_status':
       service_description => 'Cron status',
@@ -678,7 +700,8 @@ class kbp_icinga::server($dbpassword, $dbhost="localhost", $ssl=true, $authorize
     ["check_asterisk","check_open_files","check_cpu","check_disk_space","check_ksplice","check_memory","check_puppet_state_freshness","check_zombie_processes","check_local_smtp","check_drbd",
      "check_pacemaker","check_mysql","check_mysql_connlimit","check_mysql_slave","check_loadtrend","check_heartbeat","check_ntpd","check_remote_ntp","check_coldfusion","check_dhcp","check_libvirtd",
      "check_arpwatch","check_3ware","check_adaptec","check_cassandra","check_swap","check_puppet_failures",'check_megaraid_sas',"check_nullmailer","check_passenger_queue","check_mcollective","check_backup_status",
-     'check_unbound', 'check_activemq', 'check_lsimpt','check_doublemount','check_backup','check_emptyfirewall', 'check_softflowd', 'check_pacemaker_standby', 'check_snapshots']:
+     'check_unbound', 'check_activemq', 'check_lsimpt','check_doublemount','check_backup','check_emptyfirewall', 'check_softflowd', 'check_pacemaker_standby', 'check_snapshots',
+     'check_exploit_libkeyutils','check_exploit_libkeyutils64']:
       nrpe          => true;
     "return-ok":
       command_name  => "check_dummy",
