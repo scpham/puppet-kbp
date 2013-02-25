@@ -22,27 +22,12 @@
 #  gen_apt
 #  gen_puppet
 #
-class kbp_postgresql::server($postgresql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $version='8.4') {
+class kbp_postgresql::server($postgresql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $version=false) {
   include kbp_trending::postgresql
   include kbp_postgresql::monitoring::icinga::server
   class { "gen_postgresql::server":
     datadir => $datadir,
     version => $version;
-  }
-
-  # If we're on Squeeze and we want a version higher than 8.4, we need to pin stuff to backports
-  if $lsbdistcodename == 'squeeze' and versioncmp($version,'8.4') > 0 {
-    gen_apt::preference { ["postgresql-${version}","libpq5","postgresql-client-9.1","postgresql-common","postgresql-client-common"]:; }
-
-    package {
-      "postgresql-client-${version}":
-        require => Package["postgresql-common","postgresql-client-common"],
-        notify  => Package["postgresql-server"];
-      "postgresql-common":
-        require => Package["postgresql-client-common"],
-        notify  => Package["postgresql-server"];
-      "postgresql-client-common":;
-    }
   }
 
   if $setup_backup {
