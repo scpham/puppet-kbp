@@ -38,6 +38,8 @@ class kbp_haproxy ($haproxy_loglevel="warning") {
 #    Maximum time before a check is considered to have failed
 #  monitoring_proxy
 #    Host to use as nrpe proxy
+#  mode
+#    The mode to use for connecting. Defaults to 'http'. Another one used often (for SSL, for instance) is 'tcp'.
 #
 # Actions:
 #  Undocumented
@@ -49,7 +51,7 @@ class kbp_haproxy ($haproxy_loglevel="warning") {
 define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=false,
     $monitoring_hostname=$site, $cookie=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80,
     $timeout_connect="15s", $timeout_server_client="20s", $timeout_http_request="10s", $tcp_sslport=false, $monitoring_proxy=false, $httpcheck_uri=false, $forwardfor_except=false,
-    $httpclose=false, $timeout_server="20s", $sslport=false, $redirect_non_ssl=false, $timeout_check='10s', $redirect_non_ssl_monitoring_statuscode=301) {
+    $httpclose=false, $timeout_server="20s", $sslport=false, $redirect_non_ssl=false, $timeout_check='10s', $redirect_non_ssl_monitoring_statuscode=301, $mode='http') {
   $ip        = regsubst($name, '(.*)_.*', '\1')
   $temp_port = regsubst($name, '.*_(.*)', '\1')
   $port      = $temp_port ? {
@@ -74,6 +76,7 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
 
   gen_haproxy::site { "${ip}_${port}":
     site                  => $site,
+    mode                  => $mode,
     balance               => $balance,
     cookie                => $cookie,
     timeout_connect       => $timeout_connect,
@@ -197,8 +200,6 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
 #    The number of times a check should succeed after downtime before the resource is considered up
 #  backupserver
 #    Whether this server is a backupserver or a normal one
-#  servername
-#    The hostname(or made up name) for the backend server
 #  serverport
 #    The port for haproxy to connect to on the backend server
 #  serverip
