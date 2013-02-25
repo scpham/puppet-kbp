@@ -12,13 +12,12 @@ fi
 
 usage() {
 	echo "Usage: $0 [-g|--group GROUP] <PATH|all>" >&2
-	echo "  PATH is the path to the directory containing the WordPress" >&2
-	echo "  installation. e.g. '/srv/www/myblog.mysite.com'." >&2
-	echo "  When supplying 'all', ALL subdirectories of /srv/www are checked" >&2
-	echo "  for WordPress installations and all wp-content/uploads and " >&2
-	echo "  wp-content/blogs.dir directories and file therein will be " >&2
-	echo "  chowned to www-data." >&2
-	echo "" >&2
+	echo "  PATH  is the path to the directory containing the WordPress" >&2
+	echo "        installation. e.g. '/srv/www/myblog.mysite.com'. When" >&2
+	echo "        supplying 'all', ALL subdirectories of /srv/www are checked" >&2
+	echo "        for WordPress installations and all wp-content/uploads and " >&2
+	echo "        wp-content/blogs.dir directories and files therein will be " >&2
+	echo "        chowned to www-data." >&2
 	echo "  GROUP is an optional group name to chgrp the WP installation to." >&2
 	exit 1
 }
