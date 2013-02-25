@@ -13,7 +13,7 @@
 #  Undocumented
 #  gen_puppet
 #
-define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024,vers=3", $export_options="rw,sync,no_subtree_check", $serverpath=false, $nfs_tag="default", $ferm_saddr=$fqdn, $nfs_client=$fqdn) {
+define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024,vers=3", $export_options="rw,sync,no_subtree_check", $serverpath=false, $nfs_tag="default", $ferm_saddr=$fqdn, $nfs_client=$fqdn, $enable_cache=false) {
   include kbp_trending::nfs
 
   $real_serverpath = $serverpath ? {
@@ -34,11 +34,6 @@ define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024,ver
 
   kbp_icinga::nfs::client { $name:; }
 
-  gen_nfs::mount { $name:
-    source  => "${server}:${real_serverpath}",
-    options => $mount_options;
-  }
-
   kbp_backup::exclude { "exclude_nfsmount_${name}":
     content => "${name}/*";
   }
@@ -48,6 +43,21 @@ define kbp_nfs::client::mount($server, $mount_options="wsize=1024,rsize=1024,ver
     options  => $export_options,
     client   => $nfs_client,
     tag      => $real_tag;
+  }
+
+  if $enable_cache {
+    include gen_nfs::cachefilesd
+
+    gen_nfs::mount { $name:
+      source  => "${server}:${real_serverpath}",
+      require => Service['cachefilesd'],
+      options => "${mount_options},fsc";
+    }
+  } else {
+    gen_nfs::mount { $name:
+      source  => "${server}:${real_serverpath}",
+      options => $mount_options;
+    }
   }
 }
 
