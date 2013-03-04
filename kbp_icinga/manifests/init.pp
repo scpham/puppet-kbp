@@ -2307,7 +2307,7 @@ define kbp_icinga::site($conf_dir=false, $parents=$::fqdn, $service_description=
       ha                   => $ha,
       proxy                => $proxy,
       preventproxyoverride => $preventproxyoverride,
-      check_interval       => $check_interval,
+      check_interval       => 7200,
       sms                  => false,
       nrpe                 => $nrpe;
     }
