@@ -11,8 +11,8 @@ ProxyPassMatch ^(/images/.*)$ https://icinga.kumina.nl$1
 ProxyPassReverse /images/ https://icinga.kumina.nl
 
 # Munin
-ProxyPass /<%= name %>/munin https://munin.kumina.nl/<%= name %>
-ProxyPassReverse /<%= name %>/munin https://munin.kumina.nl/<%= name %>
+ProxyPass /<%= name %>/munin https://munin.kumina.nl/<%= prettyname %>
+ProxyPassReverse /<%= name %>/munin https://munin.kumina.nl/<%= prettyname %>
 
 # Smokeping
 ProxyPass /<%= name %>/smokeping https://smokeping.kumina.nl/<%= name %>

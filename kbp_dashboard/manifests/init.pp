@@ -45,7 +45,7 @@ class kbp_dashboard::site_host($url, $ssl=true, $dbpassword, $dbhost) {
   }
 }
 
-define kbp_dashboard::environment($url, $port) {
+define kbp_dashboard::environment($url, $port, $prettyname) {
   kbp_apache::vhost_addition { "${url}/proxies_${name}":
     ports   => $port,
     content => template('kbp_dashboard/vhost-additions/proxies');
