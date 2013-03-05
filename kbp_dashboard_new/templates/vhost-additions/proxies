@@ -13,6 +13,10 @@ ProxyPassReverse /images/ https://icinga.kumina.nl
 # Munin
 ProxyPass /<%= name %>/munin https://munin.kumina.nl/<%= prettyname %>
 ProxyPassReverse /<%= name %>/munin https://munin.kumina.nl/<%= prettyname %>
+ProxyPassMatch ^/<%= name %>/static/(.*)$ https://munin.kumina.nl/static/$1
+ProxyPassReverse /<%= name %>/static/style-new.css https://munin.kumina.nl
+ProxyPassMatch ^(/munin-cgi/.*)$ https://munin.kumina.nl$1
+ProxyPasReverse /munin-cgi/ https://munin.kumina.nl
 
 # Smokeping
 ProxyPass /<%= name %>/smokeping https://smokeping.kumina.nl/<%= name %>
