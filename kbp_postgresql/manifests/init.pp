@@ -22,7 +22,7 @@
 #  gen_apt
 #  gen_puppet
 #
-class kbp_postgresql::server($postgresql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $version=false) {
+class kbp_postgresql::server($postgresql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $version) {
   include kbp_trending::postgresql
   include kbp_postgresql::monitoring::icinga::server
   class { "gen_postgresql::server":
