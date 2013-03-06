@@ -91,7 +91,7 @@ class kbp_postgresql::monitoring::icinga::server($otherhost=false) {
 #  kbp_ferm
 #  gen_puppet
 #
-define kbp_postgresql::client ($postgresql_name, $address=$fqdn, $environment=$environment) {
+define kbp_postgresql::client ($postgresql_name, $address=$source_ipaddress, $environment=$environment) {
   include gen_postgresql::client
 
   kbp_ferm::rule { "PostgreSQL connections for ${name}":
