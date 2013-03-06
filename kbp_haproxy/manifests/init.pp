@@ -76,19 +76,20 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
   }
 
   gen_haproxy::site { "${ip}_${port}":
-    site                  => $site,
-    mode                  => $mode,
-    balance               => $balance,
-    cookie                => $cookie,
-    timeout_connect       => $timeout_connect,
-    timeout_server_client => $timeout_server_client,
-    timeout_http_request  => $timeout_http_request,
-    httpcheck_uri         => $httpcheck_uri,
-    forwardfor_except     => $forwardfor_except,
-    httpclose             => $httpclose,
-    timeout_server        => $timeout_server,
-    timeout_check         => $timeout_check,
-    redirect_non_ssl      => $redirect_non_ssl;
+    site                          => $site,
+    mode                          => $mode,
+    balance                       => $balance,
+    cookie                        => $cookie,
+    timeout_connect               => $timeout_connect,
+    timeout_server_client         => $timeout_server_client,
+    timeout_http_request          => $timeout_http_request,
+    httpcheck_uri                 => $httpcheck_uri,
+    forwardfor_except             => $forwardfor_except,
+    httpclose                     => $httpclose,
+    timeout_server                => $timeout_server,
+    timeout_check                 => $timeout_check,
+    remove_external_forwarded_for => $remove_external_forwarded_for,
+    redirect_non_ssl              => $redirect_non_ssl;
   }
 
   if $tcp_sslport {
