@@ -51,7 +51,8 @@ class kbp_haproxy ($haproxy_loglevel="warning") {
 define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $monitoring_status="200", $monitoring_url=false, $monitoring_response=false, $monitoring_address=false,
     $monitoring_hostname=$site, $cookie=false, $httpcheck_port=false, $balance="static-rr", $max_check_attempts=false, $servername=$hostname, $serverip=$ipaddress_eth0, $serverport=80,
     $timeout_connect="15s", $timeout_server_client="20s", $timeout_http_request="10s", $tcp_sslport=false, $monitoring_proxy=false, $httpcheck_uri=false, $forwardfor_except=false,
-    $httpclose=false, $timeout_server="20s", $sslport=false, $redirect_non_ssl=false, $timeout_check='10s', $redirect_non_ssl_monitoring_statuscode=301, $mode='http') {
+    $httpclose=false, $timeout_server="20s", $sslport=false, $redirect_non_ssl=false, $timeout_check='10s', $redirect_non_ssl_monitoring_statuscode=301, $mode='http',
+    $remove_external_forwarded_for=true) {
   $ip        = regsubst($name, '(.*)_.*', '\1')
   $temp_port = regsubst($name, '.*_(.*)', '\1')
   $port      = $temp_port ? {
