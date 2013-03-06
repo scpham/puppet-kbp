@@ -94,18 +94,19 @@ define kbp_haproxy::site ($site, $monitor_site=true, $monitoring_ha=false, $moni
 
   if $tcp_sslport {
     gen_haproxy::site { "${ip}_443":
-      site                  => $site,
-      mode                  => 'tcp',
-      balance               => $balance,
-      cookie                => $cookie,
-      timeout_connect       => $timeout_connect,
-      timeout_server_client => $timeout_server_client,
-      timeout_http_request  => $timeout_http_request,
-      httpcheck_uri         => $httpcheck_uri,
-      forwardfor_except     => $forwardfor_except,
-      httpclose             => $httpclose,
-      timeout_check         => $timeout_check,
-      timeout_server        => $timeout_server;
+      site                          => $site,
+      mode                          => 'tcp',
+      balance                       => $balance,
+      cookie                        => $cookie,
+      timeout_connect               => $timeout_connect,
+      timeout_server_client         => $timeout_server_client,
+      timeout_http_request          => $timeout_http_request,
+      httpcheck_uri                 => $httpcheck_uri,
+      forwardfor_except             => $forwardfor_except,
+      httpclose                     => $httpclose,
+      timeout_check                 => $timeout_check,
+      timeout_server                => $timeout_server,
+      remove_external_forwarded_for => $remove_external_forwarded_for;
     }
 
     kbp_ferm::rule { "HAProxy forward for ${site} (${name}) over SSL":
