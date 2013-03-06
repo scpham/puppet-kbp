@@ -93,6 +93,6 @@ define kbp_wordpress($external_mysql=true, $mysql_tag=false, $db=false, $user=fa
 
   # Add default expire headers suitable for Wordpress
   kbp_apache::vhost_addition { "${name}/expires":
-    content => "<FilesMatch \"\.(ico|jpg|jpeg|png|gif|js|css|swf)$\">\n ExpiresDefault \"access plus 2 hours\"\n</FilesMatch>\n",
+    content => template('kbp_wordpress/vhost-additions/expires'),
   }
 }
