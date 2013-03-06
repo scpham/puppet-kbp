@@ -14,6 +14,8 @@ class kbp_wordpress::common {
   include gen_php5::mysql
   include gen_php5::gd
   include gen_php5::curl
+  include kbp_apache::module::expires
+  include kbp_apache::module::headers
 
   file { '/usr/local/bin/fix_wp_permissions':
     content => template('kbp_wordpress/fix_wp_permissions.sh'),
