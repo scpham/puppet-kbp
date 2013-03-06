@@ -165,6 +165,7 @@ define kbp_loadbalancer::ip ($exported=true, $site, $loadbalancer_tag="${environ
       sslport                                => $sslport,
       redirect_non_ssl                       => $redirect_non_ssl,
       redirect_non_ssl_monitoring_statuscode => $redirect_non_ssl_monitoring_statuscode,
+      remove_external_forwarded_for          => $remove_external_forwarded_for,
       backupserver                           => $backupserver,
       forwardfor_except                      => $forwardfor_except,
       monitor_timeout                        => $monitor_timeout,
