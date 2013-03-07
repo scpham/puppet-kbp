@@ -47,7 +47,7 @@ class kbp_wordpress::common {
 #  kbp_apache
 #  mysql
 #
-define kbp_wordpress($external_mysql=true, $mysql_tag=false, $db=false, $user=false, $password, $serveralias=false, $access_logformat="combined", $monitoring_url='/', $address='*') {
+define kbp_wordpress($external_mysql=true, $mysql_tag=false, $db=false, $user=false, $password, $serveralias=false, $access_logformat="combined", $monitoring_url='/', $address='*', $auth=false) {
   include kbp_wordpress::common
 
   $real_tag = $mysql_tag ? {
@@ -68,7 +68,8 @@ define kbp_wordpress($external_mysql=true, $mysql_tag=false, $db=false, $user=fa
     access_logformat => $access_logformat,
     monitor_path     => $monitoring_url,
     php              => true,
-    address          => $address;
+    address          => $address,
+    auth             => $auth;
   }
 
   if $external_mysql {
