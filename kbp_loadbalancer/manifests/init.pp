@@ -21,7 +21,7 @@ define kbp_loadbalancer::ip ($exported=true, $site, $loadbalancer_tag="${environ
     $monitoring_hostname=$site, $monitoring_status='200', $monitoring_url=false, $monitoring_max_check_attempts=false, $monitoring_response=false, $monitoring_proxy=false, $nic='eth0',
     $monitoring_address=$ip, $sslport=false, $httpcheck_interval=false, $httpcheck_fall=false, $httpcheck_rise=false, $backupserver=false, $monitor_site=true, $export_done=false, $netmask=32,
     $forwardfor_except=false, $monitor_interval='10s', $monitor_timeout='20s', $httpclose=false, $timeout_server='20s', $redirect_non_ssl=false, $server_name=$fqdn, $timeout_check='10s',
-    $redirect_non_ssl_monitoring_statuscode=301, $redir=false) {
+    $redirect_non_ssl_monitoring_statuscode=301, $redir=false, $remove_external_forwarded_for=true) {
   $real_name = regsubst($name, '(.*);.*', '\1')
   $server    = regsubst($name, '.*;(.*)', '\1')
   $ip        = regsubst($real_name, '(.*)_.*', '\1')
@@ -88,6 +88,7 @@ define kbp_loadbalancer::ip ($exported=true, $site, $loadbalancer_tag="${environ
         httpclose                              => $httpclose,
         timeout_server                         => $timeout_server,
         sslport                                => $sslport,
+        remove_external_forwarded_for          => $remove_external_forwarded_for,
         redirect_non_ssl_monitoring_statuscode => $redirect_non_ssl_monitoring_statuscode,
         redirect_non_ssl                       => $redirect_non_ssl;
       }
@@ -164,6 +165,7 @@ define kbp_loadbalancer::ip ($exported=true, $site, $loadbalancer_tag="${environ
       sslport                                => $sslport,
       redirect_non_ssl                       => $redirect_non_ssl,
       redirect_non_ssl_monitoring_statuscode => $redirect_non_ssl_monitoring_statuscode,
+      remove_external_forwarded_for          => $remove_external_forwarded_for,
       backupserver                           => $backupserver,
       forwardfor_except                      => $forwardfor_except,
       monitor_timeout                        => $monitor_timeout,

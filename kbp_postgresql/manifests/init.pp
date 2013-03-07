@@ -22,7 +22,7 @@
 #  gen_apt
 #  gen_puppet
 #
-class kbp_postgresql::server($postgresql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $version=false) {
+class kbp_postgresql::server($postgresql_name, $bind_address="0.0.0.0", $setup_backup=true, $datadir=false, $version) {
   include kbp_trending::postgresql
   include kbp_postgresql::monitoring::icinga::server
   class { "gen_postgresql::server":
@@ -91,7 +91,7 @@ class kbp_postgresql::monitoring::icinga::server($otherhost=false) {
 #  kbp_ferm
 #  gen_puppet
 #
-define kbp_postgresql::client ($postgresql_name, $address=$fqdn, $environment=$environment) {
+define kbp_postgresql::client ($postgresql_name, $address=$source_ipaddress, $environment=$environment) {
   include gen_postgresql::client
 
   kbp_ferm::rule { "PostgreSQL connections for ${name}":

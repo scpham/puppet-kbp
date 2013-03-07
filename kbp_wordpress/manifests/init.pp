@@ -14,6 +14,8 @@ class kbp_wordpress::common {
   include gen_php5::mysql
   include gen_php5::gd
   include gen_php5::curl
+  include kbp_apache::module::expires
+  include kbp_apache::module::headers
 
   file { '/usr/local/bin/fix_wp_permissions':
     content => template('kbp_wordpress/fix_wp_permissions.sh'),
@@ -88,5 +90,10 @@ define kbp_wordpress($external_mysql=true, $mysql_tag=false, $db=false, $user=fa
     mysql::server::grant { "${real_user} on ${real_db}.*":
       password => $password;
     }
+  }
+
+  # Add default expire headers suitable for Wordpress
+  kbp_apache::vhost_addition { "${name}/expires":
+    content => template('kbp_wordpress/vhost-additions/expires'),
   }
 }
