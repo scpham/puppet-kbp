@@ -113,3 +113,31 @@ define kbp_unbound::local_zone ($zonetype) {
     zonetype => $zonetype;
   }
 }
+
+#
+# Define: kbp_unbound::forward_zone
+#
+# Actions:
+#  Configure a forward-zone
+#
+# Parameters (see http://www.unbound.net/documentation/unbound.conf.html for info):
+#  forward_host:
+#   An array of hostnames that the query should be forwarded to.
+#  forward_addr:
+#   An array of IP addresses that the query should be forwarded to.
+#  forward_first:
+#   true or false, see unbound documentation
+#
+# Depends:
+#  kbp_unbound
+#
+# ToDo:
+#  Create a define for local-data, so puppet can add this data to the config file
+#
+define kbp_unbound::forward_zone ($forward_host=false, $forward_addr=false, $forward_first=false) {
+  gen_unbound::forward_zone { $name:
+    forward_host  => $forward_host,
+    forward_addr  => $forward_addr,
+    forward_first => $forward_first;
+  }
+}
