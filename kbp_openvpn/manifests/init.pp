@@ -46,3 +46,15 @@ class kbp_openvpn::server inherits openvpn::server {
       action => "ACCEPT";
   }
 }
+
+define kbp_openvpn::client ($keylocation, $ca_cert, $remote_host=$name) {
+  kbp_ssl::keys { $keylocation:; }
+
+  $certname = regsubst($keylocation,'^(.*)/(.*)$','\2')
+  gen_openvpn::client { $name:
+    remote_host => $remote_host,
+    ca_cert     => $ca_cert,
+    certname    => $certname,
+    require     => File["/etc/ssl/certs/${certname}.pem", "/etc/ssl/private/${certname}.key", "/etc/ssl/certs/${ca_cert}.pem"];
+  }
+}
